@@ -1,6 +1,7 @@
 // Original bundled/bundled_test.go assertions. Embedded-resource packaging and
 // source-tree testing paths are the explicit managed representation adapters.
 using Configuration.Checks;
+using TypeScript.Scanner;
 using TypeScript.Vfs;
 using OsVfs = TypeScript.Vfs.OsVfs.OsVfs;
 using Bundled = TypeScript.Bundled.Bundled;
@@ -23,8 +24,8 @@ public static class BundledChecks
             case "TestEmbeddedLibs":
                 var fs = Bundled.WrapFS(OsVfs.FS());
                 var files = fs.GetAccessibleEntries(Bundled.LibPath()).Files;
-                files?.Sort(StringComparer.Ordinal);
-                Check.Sequence(files, Bundled.LibNames, "complete original embedded names");
+                GoSlices.SortFunc(files, static (left, right) => ByteStringKey.FromValue(left).CompareTo(ByteStringKey.FromValue(right)));
+                Check.Sequence(GoSlices.ToListOrNull(files)?.Select(static name => name.Materialize()!).ToArray(), GoSlices.ToListOrNull(Bundled.LibNames), "complete original embedded names");
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(name));

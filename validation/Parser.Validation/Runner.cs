@@ -100,12 +100,14 @@ public sealed class Encoder
         if ((uint)id >= (uint)raw.Count) throw new ArgumentException("Invalid text probe canonical node ID");
         return new(id, Convert.ToBase64String(Scanner.GetTextOfNodeBytes(raw[id])), Scanner.GetTokenPosOfNode(raw[id], file, includeJSDoc));
     }
+    public static List<CanonicalDiagnostic> Diagnostics(Slice<Diagnostic> diagnostics) => Diagnostics(GoSlices.ToListOrNull(diagnostics));
     public static List<CanonicalDiagnostic> Diagnostics(IEnumerable<Diagnostic>? diagnostics) => diagnostics?.Select(d => new CanonicalDiagnostic
     {
         Code = d.Code(), Category = (int)d.Category(), Pos = d.Pos(), End = d.End(), Key = d.MessageKey(),
         ArgsBase64 = d.MessageArgs()?.Select(Bytes).ToList() ?? [], Text = d.String(),
         Related = Diagnostics(d.RelatedInformation()), Chain = Diagnostics(d.MessageChain()),
     }).ToList() ?? [];
+    public static List<CanonicalReference> References(Slice<FileReference> refs) => References(GoSlices.ToListOrNull(refs));
     public static List<CanonicalReference> References(IEnumerable<FileReference>? refs) => refs?.Select(r => new CanonicalReference(r.Pos(), r.End(), Bytes(r.FileName), (int)r.ResolutionMode, r.Preserve)).ToList() ?? [];
 }
 
@@ -131,13 +133,13 @@ public static class Runner
             ScriptKind = (int)file.ScriptKind, LanguageVariant = (int)file.LanguageVariant, IsDeclarationFile = file.IsDeclarationFile,
             NodeCount = file.NodeCount, IdentifierCount = file.IdentifierCount, TextCount = file.TextCount,
             ExternalModuleIndicator = encoder.Indicator(file.ExternalModuleIndicator), CommonJSModuleIndicator = encoder.Indicator(file.CommonJSModuleIndicator),
-            CommentDirectives = file.CommentDirectives?.Select(d => new CanonicalDirective(d.Loc.Pos(), d.Loc.End(), (int)d.Kind)).ToList() ?? [],
+            CommentDirectives = GoSlices.ToListOrNull(file.CommentDirectives)?.Select(d => new CanonicalDirective(d.Loc.Pos(), d.Loc.End(), (int)d.Kind)).ToList() ?? [],
             ReferencedFiles = Encoder.References(file.ReferencedFiles), TypeReferenceDirectives = Encoder.References(file.TypeReferenceDirectives), LibReferenceDirectives = Encoder.References(file.LibReferenceDirectives),
             ReparsedClones = encoder.AddNodes(file.ReparsedClones), Imports = encoder.AddNodes(file.Imports()), ModuleAugmentations = encoder.AddNodes(file.ModuleAugmentations),
-            AmbientModuleNamesBase64 = file.AmbientModuleNames?.Select(Encoder.Bytes).ToList() ?? [], UsesUriStyleNodeCoreModules = (int)file.UsesUriStyleNodeCoreModules,
+            AmbientModuleNamesBase64 = GoSlices.ToListOrNull(file.AmbientModuleNames)?.Select(value => Encoder.Bytes(value.Materialize()!)).ToList() ?? [], UsesUriStyleNodeCoreModules = (int)file.UsesUriStyleNodeCoreModules,
             CheckJsDirective = file.CheckJsDirective is { } check ? new(check.Enabled, check.Range.Pos, check.Range.End, (int)check.Range.Kind, check.Range.HasTrailingNewLine) : null,
-            Pragmas = file.Pragmas?.Select(p => new CanonicalPragma(p.CommentRange.Pos, p.CommentRange.End, (int)p.CommentRange.Kind, p.CommentRange.HasTrailingNewLine, p.Name,
-                p.Args?.ToDictionary(kv => kv.Key, kv => new CanonicalPragmaArgument(kv.Value.TextRange.Pos(), kv.Value.TextRange.End(), Encoder.Bytes(kv.Value.Value))) ?? [])).ToList() ?? [],
+            Pragmas = GoSlices.ToListOrNull(file.Pragmas)?.Select(p => new CanonicalPragma(p.CommentRange.Pos, p.CommentRange.End, (int)p.CommentRange.Kind, p.CommentRange.HasTrailingNewLine, p.Name,
+                p.Args?.ToDictionary(kv => kv.Key.Value.Materialize()!, kv => new CanonicalPragmaArgument(kv.Value.TextRange.Pos(), kv.Value.TextRange.End(), Encoder.Bytes(kv.Value.Value))) ?? [])).ToList() ?? [],
         };
         encoder.FinishParents();
         var response = new Response { Nodes = encoder.Nodes, Metadata = metadata, ParseDiagnostics = Encoder.Diagnostics(file.Diagnostics()), JsDiagnostics = Encoder.Diagnostics(file.JSDiagnostics()), JsDocDiagnostics = Encoder.Diagnostics(file.JSDocDiagnostics()), TextProbes = (request.TextProbeIds ?? []).Select(id => encoder.TextProbe(id, request.TextProbeIncludeJSDoc)).ToList() };

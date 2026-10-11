@@ -4,6 +4,7 @@
 // Linux statx uses a stable 256-byte ABI; ordinary stat follows links (flags=0).
 // Other platform representations are independent and are not claimed verified here.
 using System.Runtime.InteropServices;
+using TypeScript.Scanner;
 
 namespace TypeScript.Vfs.OsVfs;
 internal static partial class LinuxStat
@@ -41,7 +42,7 @@ internal static partial class LinuxStat
         return PathMode(nativePath, false)is { } mode && (mode & 0xF000) == 0xA000;
     }
 
-    internal static FileInfo? Stat(string nativePath, string rawName)
+    internal static FileInfo? Stat(string nativePath, ByteStringValue rawName)
     {
         // Go syscall pathname conversion rejects NUL; never let libc truncate it.
         if (nativePath.Contains('\0'))
@@ -70,9 +71,9 @@ internal static partial class LinuxStat
         return new linuxFileInfo(rawName, unchecked((long)result.Size), mode, result.ModifiedSeconds, result.ModifiedNanoseconds);
     }
 
-    private sealed class linuxFileInfo(string name, long size, FileMode mode, long seconds, uint nanoseconds) : FileInfo
+    private sealed class linuxFileInfo(ByteStringValue name, long size, FileMode mode, long seconds, uint nanoseconds) : FileInfo
     {
-        public string Name() => name;
+        public string Name() => name.Materialize()!;
         public long Size() => size;
         public FileMode Mode() => mode;
         public DateTimeOffset ModTime() => DateTimeOffset.FromUnixTimeSeconds(seconds).AddTicks(nanoseconds / 100);

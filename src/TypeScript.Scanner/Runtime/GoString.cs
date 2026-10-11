@@ -34,7 +34,8 @@ internal static class GoString
     // Go range reads an immutable UTF-8 string without owning a rune array.
     public static GoRuneRange EnumerateRunes(string bytes) => new(bytes);
     public static GoRuneRange EnumerateRunes(ByteStringValue bytes) => new(bytes);
-    public static int CountRunes(string bytes)
+    public static int CountRunes(string bytes) => CountRunes(ByteStringValue.FromString(bytes));
+    public static int CountRunes(ByteStringValue bytes)
     {
         int count = 0;
         foreach (int rune in EnumerateRunes(bytes)) count++;
@@ -44,7 +45,8 @@ internal static class GoString
     // Go runtime/string.go stringtoslicerune: count then fill the owned output.
     // See licenses/Go-LICENSE.txt. Indexing/mutation clients retain this array API;
     // ordinary range clients use EnumerateRunes and never allocate this storage.
-    public static int[] Runes(string bytes)
+    public static int[] Runes(string bytes) => Runes(ByteStringValue.FromString(bytes));
+    public static int[] Runes(ByteStringValue bytes)
     {
         int count = CountRunes(bytes);
         if (count == 0) return Array.Empty<int>();

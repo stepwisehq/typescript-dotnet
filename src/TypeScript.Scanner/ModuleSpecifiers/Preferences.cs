@@ -37,7 +37,7 @@ internal static partial class ModuleSpecifiers
         {
             foreach (var @ref in GoRuntime.RangeValues(file.Imports()))
             {
-                var text = @ref.Text();
+                var text = @ref.TextValue();
                 if ((TsPath.PathIsRelative(text) && !TsPath.FileExtensionIsOneOf(text, TsPath.ExtensionsNotSupportingExtensionlessResolution)))
                 {
                     return (TsPath.HasTSFileExtension(text) || TsPath.HasJSFileExtension(text));
@@ -67,7 +67,7 @@ internal static partial class ModuleSpecifiers
         {
             foreach (var specifier in GoRuntime.RangeValues(specifiers))
             {
-                var path = specifier.Text();
+                var path = specifier.TextValue();
                 if (TsPath.PathIsRelative(path))
                 {
                     if ((moduleResolutionIsNodeNext && (resolutionMode == ResolutionMode.CommonJS)))
@@ -180,7 +180,7 @@ internal static partial class ModuleSpecifiers
 
         var moduleResolution = compilerOptions.GetModuleResolutionKind();
         var moduleResolutionIsNodeNext = ((ModuleResolutionKind.Node16 <= moduleResolution) && (moduleResolution <= ModuleResolutionKind.NodeNext));
-        var allowImportingTsExtension = shouldAllowImportingTsExtension(compilerOptions, RootedFilePath.FromGoString(importingSourceFile.FileNameGoBytes()));
+        var allowImportingTsExtension = shouldAllowImportingTsExtension(compilerOptions, RootedFilePath.FromValue(importingSourceFile.FileNameGoValue()));
         var effectiveSyntaxMode = syntaxImpliedNodeFormat;
         if ((effectiveSyntaxMode == ResolutionMode.None))
         {

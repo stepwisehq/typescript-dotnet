@@ -82,7 +82,7 @@ public static class ProjectControls
         var diagnostic = diagnostics[0];
         Require(diagnostic.Code() == 1003 && diagnostic.Category() == DiagnosticCategory.Error && diagnostic.Pos() == 25 && diagnostic.End() == 26, "Original anonymous interface parse code/range differs");
         Require(diagnostic.MessageKey() == "Identifier_expected_1003" && diagnostic.String() == "Identifier expected.", "Original parse message differs");
-        Require(diagnostic.MessageArgs()is null && diagnostic.MessageChain()is null && diagnostic.RelatedInformation()is null && diagnostic.Source() == "", "Original parse payload differs");
+        Require(diagnostic.MessageArgs()is null && diagnostic.MessageChain().IsNil && diagnostic.RelatedInformation().IsNil && diagnostic.Source() == "", "Original parse payload differs");
         Require(!diagnostic.ReportsUnnecessary() && !diagnostic.ReportsDeprecated() && !diagnostic.SkippedOnNoEmit(), "Original parse flags differ");
         Require(diagnostic.File()?.FileName() == Path.Combine(Path.GetDirectoryName(fixture.Config)!, "types.ts"), "Original parse file ownership differs");
         Require(project.ProgramDiagnostics.Count == 0, "Unexpected program diagnostic for anonymous interface");

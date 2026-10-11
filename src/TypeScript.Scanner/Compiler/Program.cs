@@ -85,9 +85,9 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     private readonly ProgramLazyValue<TypeScript.Symlinks.KnownSymlinks> knownSymlinks = new();
     private readonly ProgramLazyValue<PackageNamesInfo> packageNames = new();
     internal Slice<SourceFile> files { get => processedFiles.files; set => processedFiles.files = value; }
-    internal Dictionary<string, SourceFile> filesByPath { get => processedFiles.filesByPath; set => processedFiles.filesByPath = value; }
-    internal Dictionary<string, ModeAwareCache<ResolvedModule?>> resolvedModules => processedFiles.resolvedModules;
-    internal Dictionary<string, ModeAwareCache<ResolvedTypeReferenceDirective?>> typeResolutionsInFile => processedFiles.typeResolutionsInFile;
+    internal Dictionary<ByteStringKey, SourceFile> filesByPath { get => processedFiles.filesByPath; set => processedFiles.filesByPath = value; }
+    internal Dictionary<ByteStringKey, ModeAwareCache<ResolvedModule?>> resolvedModules => processedFiles.resolvedModules;
+    internal Dictionary<ByteStringKey, ModeAwareCache<ResolvedTypeReferenceDirective?>> typeResolutionsInFile => processedFiles.typeResolutionsInFile;
     internal ProjectReferenceFileMapper projectReferenceFileMapper => processedFiles.projectReferenceFileMapper;
 
     public static Program NewProgram(ProgramOptions options)
@@ -147,10 +147,10 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     public List<string>? ContentMapperExtensions() => opts.Config.ContentMapperExtensions();
     public Slice<Diagnostic> GetConfigFileParsingDiagnostics() => opts.Config.GetConfigFileParsingDiagnostics();
     public Exception? ModuleResolutionError() => moduleResolutionError;
-    public Dictionary<string, SourceFile> FilesByPath() => filesByPath;
+    public Dictionary<ByteStringKey, SourceFile> FilesByPath() => filesByPath;
     public PathKey PathKeyForFileName(RootedFilePath file) => caseSensitivity.PathKey(file.AsPath());
     public SourceFile? GetSourceFile(RootedFilePath file) => GetSourceFileByPath(PathKeyForFileName(file));
-    public SourceFile? GetSourceFileByPath(PathKey path) => filesByPath.GetValueOrDefault(path.AsString());
+    public SourceFile? GetSourceFileByPath(PathKey path) => filesByPath.GetValueOrDefault(ByteStringKey.FromValue(path.AsValue()));
     public SourceFile? GetSourceFileForResolvedModule(ResolvedModule resolved) => getSourceFileWithRedirect(resolved.ResolvedFileName, resolved.ResolvedPath);
     internal SourceFile? getSourceFileWithRedirect(RootedFilePath file, PathKey path)
     {
@@ -172,23 +172,23 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         var otherRedirects = other.processedFiles.redirectFilesByPath;
         return filesByPath.Count == other.filesByPath.Count &&
             filesByPath.All(pair => other.filesByPath.TryGetValue(pair.Key, out var file) &&
-                pair.Value.FileNameGoBytes() == file.FileNameGoBytes()) &&
+                pair.Value.FileNameGoValue().EqualsValue(file.FileNameGoValue())) &&
             (redirects?.Count ?? 0) == (otherRedirects?.Count ?? 0) &&
             (redirects is null || redirects.All(pair =>
                 otherRedirects is not null && otherRedirects.TryGetValue(pair.Key, out var file) &&
                 pair.Value.FileName() == file.FileName()));
     }
 
-    public Dictionary<string, Slice<FileIncludeReason>> GetIncludeReasons() => processedFiles.fileIncludeData.fileIncludeReasons;
-    public bool IsMissingPath(PathKey path) => processedFiles.missingFiles.Contains(path.AsString());
-    public SourceFileMetaData GetSourceFileMetaData(PathKey path) => processedFiles.sourceFileMetaDatas.GetValueOrDefault(path.AsString());
-    public bool IsSourceFileDefaultLibrary(PathKey path) => processedFiles.libFiles.ContainsKey(path.AsString());
-    public bool IsLibFile(SourceFile source) => IsSourceFileDefaultLibrary(PathKey.FromGoString(source.PathKey()));
-    public LibFile? GetDefaultLibFile(PathKey path) => processedFiles.libFiles.GetValueOrDefault(path.AsString());
+    public Dictionary<ByteStringKey, Slice<FileIncludeReason>> GetIncludeReasons() => processedFiles.fileIncludeData.fileIncludeReasons;
+    public bool IsMissingPath(PathKey path) => processedFiles.missingFiles.Contains(ByteStringKey.FromValue(path.AsValue()));
+    public SourceFileMetaData GetSourceFileMetaData(PathKey path) => processedFiles.sourceFileMetaDatas.GetValueOrDefault(ByteStringKey.FromValue(path.AsValue()));
+    public bool IsSourceFileDefaultLibrary(PathKey path) => processedFiles.libFiles.ContainsKey(ByteStringKey.FromValue(path.AsValue()));
+    public bool IsLibFile(SourceFile source) => IsSourceFileDefaultLibrary(PathKey.FromValue(source.PathKeyValue()));
+    public LibFile? GetDefaultLibFile(PathKey path) => processedFiles.libFiles.GetValueOrDefault(ByteStringKey.FromValue(path.AsValue()));
     public bool IsGlobalTypingsFile(RootedFilePath file) => file.IsDeclarationFile() && caseSensitivity.ContainsPath(GetGlobalTypingsCacheLocation(), file.AsPath());
-    public bool IsSourceFileFromExternalLibrary(SourceFile file) => processedFiles.sourceFilesFoundSearchingNodeModules.Contains(file.PathKey());
-    public Slice<RootedFilePath> GetRedirectTargets(PathKey path) => processedFiles.redirectTargetsMap.GetValueOrDefault(path.AsString());
-    public RootedFilePath GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file) => processedFiles.outputFileToProjectReferenceSource.GetValueOrDefault(file.PathKey(), RootedFilePath.FromGoString(file.FileNameGoBytes()));
+    public bool IsSourceFileFromExternalLibrary(SourceFile file) => processedFiles.sourceFilesFoundSearchingNodeModules.Contains(file.PathKeyKey());
+    public Slice<RootedFilePath> GetRedirectTargets(PathKey path) => processedFiles.redirectTargetsMap.GetValueOrDefault(ByteStringKey.FromValue(path.AsValue()));
+    public RootedFilePath GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file) => processedFiles.outputFileToProjectReferenceSource.GetValueOrDefault(file.PathKeyKey(), RootedFilePath.FromValue(file.FileNameGoValue()));
     public SourceOutputAndProjectReference? GetProjectReferenceFromSource(PathKey path) => projectReferenceFileMapper.GetProjectReferenceFromSource(path);
     public bool IsSourceFromProjectReference(PathKey path) => projectReferenceFileMapper.IsSourceFromProjectReference(path);
     public SourceOutputAndProjectReference? GetProjectReferenceFromOutputDts(PathKey path) => projectReferenceFileMapper.GetProjectReferenceFromOutputDts(path);
@@ -200,7 +200,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     public bool RangeResolvedProjectReference(Func<PathKey, ParsedCommandLine?, ParsedCommandLine, int, bool> callback) => projectReferenceFileMapper.RangeResolvedProjectReference(callback);
     public bool RangeResolvedProjectReferenceInChildConfig(ParsedCommandLine child, Func<PathKey, ParsedCommandLine?, ParsedCommandLine, int, bool> callback) => projectReferenceFileMapper.RangeResolvedProjectReferenceInChildConfig(child, callback);
     public ResolvedModule? GetResolvedModule(SourceFile file, string moduleReference, ResolutionMode mode) => GetResolvedModule(file, ByteStringValue.FromString(moduleReference), mode);
-    public ResolvedModule? GetResolvedModule(SourceFile file, ByteStringValue moduleReference, ResolutionMode mode) => resolvedModules.GetValueOrDefault(file.PathKey())?.GetValueOrDefault(new(moduleReference, mode));
+    public ResolvedModule? GetResolvedModule(SourceFile file, ByteStringValue moduleReference, ResolutionMode mode) => resolvedModules.GetValueOrDefault(file.PathKeyKey())?.GetValueOrDefault(new(moduleReference, mode));
     public ResolvedModule? GetResolvedModuleFromModuleSpecifier(SourceFile file, Node specifier)
     {
         if (!Ast.IsStringLiteralLike(specifier))
@@ -210,17 +210,17 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         return GetResolvedModule(file, specifier.TextValue(), GetModeForUsageLocation(file, specifier));
     }
 
-    public Dictionary<string, ModeAwareCache<ResolvedModule?>> GetResolvedModules() => resolvedModules;
+    public Dictionary<ByteStringKey, ModeAwareCache<ResolvedModule?>> GetResolvedModules() => resolvedModules;
     public ResolvedTypeReferenceDirective? GetResolvedTypeReferenceDirective(SourceFile file, string name, ResolutionMode mode) => GetResolvedTypeReferenceDirective(file, ByteStringValue.FromString(name), mode);
-    internal ResolvedTypeReferenceDirective? GetResolvedTypeReferenceDirective(SourceFile file, ByteStringValue name, ResolutionMode mode) => typeResolutionsInFile.GetValueOrDefault(file.PathKey())?.GetValueOrDefault(new(name, mode));
+    internal ResolvedTypeReferenceDirective? GetResolvedTypeReferenceDirective(SourceFile file, ByteStringValue name, ResolutionMode mode) => typeResolutionsInFile.GetValueOrDefault(file.PathKeyKey())?.GetValueOrDefault(new(name, mode));
     public ResolvedTypeReferenceDirective? GetResolvedTypeReferenceDirectiveFromTypeReferenceDirective(FileReference reference, SourceFile file) => GetResolvedTypeReferenceDirective(file, reference.FileNameValue, getModeForTypeReferenceDirectiveInFile(reference, file));
     internal ResolutionMode getModeForTypeReferenceDirectiveInFile(FileReference reference, SourceFile file) => reference.ResolutionMode != ResolutionMode.None ? reference.ResolutionMode : GetDefaultResolutionModeForFile(file);
-    public Dictionary<string, ModeAwareCache<ResolvedTypeReferenceDirective?>> GetResolvedTypeReferenceDirectives() => typeResolutionsInFile;
-    public ModuleKind GetEmitModuleFormatOfFile(SourceFile file) => Ast.GetEmitModuleFormatOfFileWorker(RootedFilePath.FromGoString(file.FileNameGoBytes()), projectReferenceFileMapper.GetCompilerOptionsForFile(file), GetSourceFileMetaData(PathKey.FromGoString(file.PathKey())));
-    public ResolutionMode GetEmitSyntaxForUsageLocation(SourceFile file, Node usage) => FileLoader.GetEmitSyntaxForUsageLocationWorker(RootedFilePath.FromGoString(file.FileNameGoBytes()), GetSourceFileMetaData(PathKey.FromGoString(file.PathKey())), usage, projectReferenceFileMapper.GetCompilerOptionsForFile(file));
-    public ResolutionMode GetImpliedNodeFormatForEmit(SourceFile file) => Ast.GetImpliedNodeFormatForEmitWorker(RootedFilePath.FromGoString(file.FileNameGoBytes()), projectReferenceFileMapper.GetCompilerOptionsForFile(file).GetEmitModuleKind(), GetSourceFileMetaData(PathKey.FromGoString(file.PathKey())));
-    public ResolutionMode GetModeForUsageLocation(SourceFile file, Node usage) => FileLoader.GetModeForUsageLocation(RootedFilePath.FromGoString(file.FileNameGoBytes()), GetSourceFileMetaData(PathKey.FromGoString(file.PathKey())), usage, projectReferenceFileMapper.GetCompilerOptionsForFile(file));
-    public ResolutionMode GetDefaultResolutionModeForFile(SourceFile file) => FileLoader.GetDefaultResolutionModeForFile(RootedFilePath.FromGoString(file.FileNameGoBytes()), GetSourceFileMetaData(PathKey.FromGoString(file.PathKey())), projectReferenceFileMapper.GetCompilerOptionsForFile(file));
+    public Dictionary<ByteStringKey, ModeAwareCache<ResolvedTypeReferenceDirective?>> GetResolvedTypeReferenceDirectives() => typeResolutionsInFile;
+    public ModuleKind GetEmitModuleFormatOfFile(SourceFile file) => Ast.GetEmitModuleFormatOfFileWorker(RootedFilePath.FromValue(file.FileNameGoValue()), projectReferenceFileMapper.GetCompilerOptionsForFile(file), GetSourceFileMetaData(PathKey.FromValue(file.PathKeyValue())));
+    public ResolutionMode GetEmitSyntaxForUsageLocation(SourceFile file, Node usage) => FileLoader.GetEmitSyntaxForUsageLocationWorker(RootedFilePath.FromValue(file.FileNameGoValue()), GetSourceFileMetaData(PathKey.FromValue(file.PathKeyValue())), usage, projectReferenceFileMapper.GetCompilerOptionsForFile(file));
+    public ResolutionMode GetImpliedNodeFormatForEmit(SourceFile file) => Ast.GetImpliedNodeFormatForEmitWorker(RootedFilePath.FromValue(file.FileNameGoValue()), projectReferenceFileMapper.GetCompilerOptionsForFile(file).GetEmitModuleKind(), GetSourceFileMetaData(PathKey.FromValue(file.PathKeyValue())));
+    public ResolutionMode GetModeForUsageLocation(SourceFile file, Node usage) => FileLoader.GetModeForUsageLocation(RootedFilePath.FromValue(file.FileNameGoValue()), GetSourceFileMetaData(PathKey.FromValue(file.PathKeyValue())), usage, projectReferenceFileMapper.GetCompilerOptionsForFile(file));
+    public ResolutionMode GetDefaultResolutionModeForFile(SourceFile file) => FileLoader.GetDefaultResolutionModeForFile(RootedFilePath.FromValue(file.FileNameGoValue()), GetSourceFileMetaData(PathKey.FromValue(file.PathKeyValue())), projectReferenceFileMapper.GetCompilerOptionsForFile(file));
     public ResolutionMode GetModeForResolutionAtIndex(SourceFile file, int index)
     {
         var imports = file.Imports();
@@ -276,7 +276,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
                 foreach (var modules in resolvedModules.Values)
                     foreach (var module in modules?.Values.AsEnumerable() ?? [])
                         if (module is not null && module.PackageId.Name != "")
-                            packagesMap[module.PackageId.Name] = packagesMap.GetValueOrDefault(module.PackageId.Name) || module.Extension == TsPath.ExtensionDts;
+                            packagesMap[module.PackageId.Name] = packagesMap.GetValueOrDefault(module.PackageId.Name) || module.ExtensionValue.EqualsString(TsPath.ExtensionDts);
                 packagesMapInitialized = true;
             }
 
@@ -290,7 +290,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         {
             if (!hasTSFileInitialized)
             {
-                hasTSFile = Core.Some(files, static file => RootedFilePath.FromGoString(file.FileNameGoBytes()).HasImplementationTSFileExtension());
+                hasTSFile = Core.Some(files, static file => RootedFilePath.FromValue(file.FileNameGoValue()).HasImplementationTSFileExtension());
                 hasTSFileInitialized = true;
             }
 
@@ -311,35 +311,35 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     internal Slice<ByteStringValue> extractUnresolvedImportsFromSourceFile(SourceFile file)
     {
         Slice<ByteStringValue> result = default;
-        foreach (var(key, resolution)in resolvedModules.GetValueOrDefault(file.PathKey()) ?? [])
-            if ((!resolution.IsResolved() || !TsPath.ExtensionIsOneOf(resolution!.Extension, TsPath.SupportedTSExtensionsWithJsonFlat)) && !TsPath.IsExternalModuleNameRelative(key.NameValue))
+        foreach (var(key, resolution)in resolvedModules.GetValueOrDefault(file.PathKeyKey()) ?? [])
+            if ((!resolution.IsResolved() || !TsPath.ExtensionIsOneOf(resolution!.ExtensionValue, TsPath.SupportedTSExtensionsWithJsonFlat)) && !TsPath.IsExternalModuleNameRelative(key.NameValue))
                 result = result.Append(key.NameValue);
         return result;
     }
 
     public void ForEachResolvedModule(Action<ResolvedModule, string, ResolutionMode, PathKey> callback, SourceFile? file = null) => forEachResolution(resolvedModules, (value, name, mode, path) => callback(value!, name, mode, path), file);
     public void ForEachResolvedTypeReferenceDirective(Action<ResolvedTypeReferenceDirective, string, ResolutionMode, PathKey> callback, SourceFile? file = null) => forEachResolution(typeResolutionsInFile, (value, name, mode, path) => callback(value!, name, mode, path), file);
-    internal static void forEachResolution<T>(Dictionary<string, ModeAwareCache<T>> cache, Action<T, string, ResolutionMode, PathKey> callback, SourceFile? file)
+    internal static void forEachResolution<T>(Dictionary<ByteStringKey, ModeAwareCache<T>> cache, Action<T, string, ResolutionMode, PathKey> callback, SourceFile? file)
     {
         if (file is not null)
         {
-            foreach (var(key, value)in cache.GetValueOrDefault(file.PathKey()) ?? [])
-                callback(value, key.Name, key.Mode, PathKey.FromGoString(file.PathKey()));
+            foreach (var(key, value)in cache.GetValueOrDefault(file.PathKeyKey()) ?? [])
+                callback(value, key.Name, key.Mode, PathKey.FromValue(file.PathKeyValue()));
         }
         else
             foreach (var(path, resolutions)in cache)
                 foreach (var(key, value)in resolutions ?? [])
-                    callback(value, key.Name, key.Mode, PathKey.FromGoString(path));
+                    callback(value, key.Name, key.Mode, PathKey.FromValue(path.Value));
     }
 
     public (Program? Program, SourceFile? NewFile, bool Reused) ReuseProgram(PathKey changedFilePath, ICompilerHost newHost, Func<Program, ICheckerPool>? createCheckerPool = null, Func<ResolverOptions, IResolver>? createModuleResolver = null)
     {
-        var oldFile = filesByPath.GetValueOrDefault(changedFilePath.AsString())!;
+        var oldFile = filesByPath.GetValueOrDefault(ByteStringKey.FromValue(changedFilePath.AsValue()))!;
         SourceFile? newFile;
         Slice<SourceFile> oldSupplemental = default, newSupplemental = default;
         if (oldFile.ContentMapper() != "")
         {
-            var mapper = opts.Config.GetContentMapperForFileName(RootedFilePath.FromGoString(oldFile.FileNameGoBytes()));
+            var mapper = opts.Config.GetContentMapperForFileName(RootedFilePath.FromValue(oldFile.FileNameGoValue()));
             var(sourceFiles, error) = newHost.GetContentMappedSourceFiles(oldFile.ParseOptions(), mapper!);
             newFile = sourceFiles.Canonical;
             if (error is not null)
@@ -349,13 +349,13 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         }
         else
             newFile = newHost.GetSourceFile(oldFile.ParseOptions());
-        if (processedFiles.redirectFilesByPath?.ContainsKey(changedFilePath.AsString()) == true || processedFiles.redirectTargetsMap.ContainsKey(changedFilePath.AsString()))
+        if (processedFiles.redirectFilesByPath?.ContainsKey(ByteStringKey.FromValue(changedFilePath.AsValue())) == true || processedFiles.redirectTargetsMap.ContainsKey(ByteStringKey.FromValue(changedFilePath.AsValue())))
             return (null, newFile, false);
         if (moduleResolutionError is not null || !canReplaceFileInProgram(oldFile, newFile))
             return (null, newFile, false);
-        if (processedFiles.importHelpersImportSpecifiers?.GetValueOrDefault(oldFile.PathKey())is not null || needsImportHelpersImportSpecifier(newFile!))
+        if (processedFiles.importHelpersImportSpecifiers?.GetValueOrDefault(oldFile.PathKeyKey())is not null || needsImportHelpersImportSpecifier(newFile!))
             return (null, newFile, false);
-        if (processedFiles.jsxRuntimeImportSpecifiers?.GetValueOrDefault(oldFile.PathKey())is not null || jsxRuntimeImportSpecifier(newFile!) != "")
+        if (processedFiles.jsxRuntimeImportSpecifiers?.GetValueOrDefault(oldFile.PathKeyKey())is not null || jsxRuntimeImportSpecifier(newFile!) != "")
             return (null, newFile, false);
         if (oldSupplemental.Length != newSupplemental.Length)
             return (null, newFile, false);
@@ -363,11 +363,11 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         {
             var old = oldSupplemental![i];
             var updated = newSupplemental![i];
-            if (old.PathKey() != updated.PathKey() || !canReplaceFileInProgram(old, updated))
+            if (!old.PathKeyValue().EqualsValue(updated.PathKeyValue()) || !canReplaceFileInProgram(old, updated))
                 return (null, newFile, false);
-            if (processedFiles.importHelpersImportSpecifiers?.GetValueOrDefault(old.PathKey())is not null || needsImportHelpersImportSpecifier(updated))
+            if (processedFiles.importHelpersImportSpecifiers?.GetValueOrDefault(old.PathKeyKey())is not null || needsImportHelpersImportSpecifier(updated))
                 return (null, newFile, false);
-            if (processedFiles.jsxRuntimeImportSpecifiers?.GetValueOrDefault(old.PathKey())is not null || jsxRuntimeImportSpecifier(updated) != "")
+            if (processedFiles.jsxRuntimeImportSpecifiers?.GetValueOrDefault(old.PathKeyKey())is not null || jsxRuntimeImportSpecifier(updated) != "")
                 return (null, newFile, false);
         }
 
@@ -389,19 +389,19 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         result.unresolvedImports.tryReuse(unresolvedImports);
         result.knownSymlinks.tryReuse(knownSymlinks);
         result.packageNames.tryReuse(packageNames);
-        int index = Core.FindIndex(result.files, newFile!, static (file, updated) => file.PathKey() == updated.PathKey());
+        int index = Core.FindIndex(result.files, newFile!, static (file, updated) => file.PathKeyValue().EqualsValue(updated.PathKeyValue()));
         var resultFiles = GoSlices.Clone(result.files);
         result.files = resultFiles;
         resultFiles[index] = newFile!;
-        result.filesByPath = new(result.filesByPath, StringComparer.Ordinal);
-        result.filesByPath[newFile!.PathKey()] = newFile;
+        result.filesByPath = new(result.filesByPath, ByteStringKey.Comparer);
+        result.filesByPath[newFile!.PathKeyKey()] = newFile;
         for (int i = 0; i < oldSupplemental.Length; i++)
         {
             var old = oldSupplemental![i];
             var updated = newSupplemental![i];
             int supplementalIndex = Core.FindIndex(result.files, old, static (file, original) => ReferenceEquals(file, original));
             resultFiles[supplementalIndex] = updated;
-            result.filesByPath[updated.PathKey()] = updated;
+            result.filesByPath[updated.PathKeyKey()] = updated;
         }
 
         result.includeProcessor = new(result);
@@ -476,13 +476,13 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     {
         if (file.ContentMapper() == "")
             return null;
-        var mapper = opts.Config.GetContentMapperForFileName(RootedFilePath.FromGoString(file.FileNameGoBytes()));
+        var mapper = opts.Config.GetContentMapperForFileName(RootedFilePath.FromValue(file.FileNameGoValue()));
         return mapper is not null && mapper.Identity() == file.ContentMapper() ? mapper : null;
     }
 
     public SourceFile? GetSourceFileFromReference(SourceFile origin, FileReference reference)
     {
-        var fileName = RootedFilePath.FromGoString(origin.FileNameGoBytes()).Directory().ResolveFile(reference.FileName);
+        var fileName = RootedFilePath.FromValue(origin.FileNameGoValue()).Directory().ResolveFile(reference.FileNameValue);
         var extensions = TypeScript.TsOptions.TsOptions.GetSupportedExtensions(Options(), CommandLine().ContentMapperExtensions());
         var supported = TypeScript.TsOptions.TsOptions.GetSupportedExtensionsWithJsonIfResolveJsonModule(Options(), extensions);
         bool allowNonTs = Options().AllowNonTsExtensions == Tristate.True;
@@ -513,7 +513,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
 
     string ICheckerProgramHost.GetSourceFileNameGoBytes(SourceFile file) => file.FileNameGoBytes();
     ModuleKind ICheckerProgramHost.GetImpliedNodeFormatForEmit(SourceFile file) => (ModuleKind)(int)GetImpliedNodeFormatForEmit(file);
-    bool ICheckerProgramHost.IsSourceFileDefaultLibrary(SourceFile file) => IsSourceFileDefaultLibrary(PathKey.FromGoString(file.PathKey()));
+    bool ICheckerProgramHost.IsSourceFileDefaultLibrary(SourceFile file) => IsSourceFileDefaultLibrary(PathKey.FromValue(file.PathKeyValue()));
 
     // Selected emitter.go:476/538 producers: eligibility and output enumeration only.
     internal static bool sourceFileMayBeEmitted(SourceFile file, Program host, bool forceDtsEmit, bool forceJsEmit)
@@ -529,7 +529,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
             return false;
         if (forceDtsEmit || forceJsEmit)
             return true;
-        if (host.GetProjectReferenceFromSource(PathKey.FromGoString(file.PathKey()))is not null)
+        if (host.GetProjectReferenceFromSource(PathKey.FromValue(file.PathKeyValue()))is not null)
             return false;
         if (!Ast.IsJsonSourceFile(file))
             return true;
@@ -538,7 +538,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         if (options.RootDir != default || options.ConfigFilePath != default)
         {
             var directory = TypeScript.OutputPaths.OutputPaths.GetCommonSourceDirectory(options, () => null, host.BaseDirectory(), host.CaseSensitivity(), null);
-            var filename = RootedFilePath.FromGoString(file.FileNameGoBytes());
+            var filename = RootedFilePath.FromValue(file.FileNameGoValue());
             var output = TypeScript.OutputPaths.OutputPaths.GetSourceFileNameInNewDir(filename, options.OutDir, directory, host.CaseSensitivity());
             if (host.CaseSensitivity().CompareFilePaths(filename, output) == 0)
                 return false;
@@ -573,7 +573,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         var result = new List<RootedFilePath>();
         foreach (var file in files)
             if (!file.IsDeclarationFile && sourceFileMayBeEmitted(file, this, false, false))
-                result.Add(RootedFilePath.FromGoString(file.FileNameGoBytes()));
+                result.Add(RootedFilePath.FromValue(file.FileNameGoValue()));
         return result;
     }
 
@@ -597,7 +597,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         foreach (var file in sourceFiles ?? [])
             if (!caseSensitivity.ContainsFilePath(rootDirectory, file))
             {
-                addProcessingDiagnostic(new() { file = caseSensitivity.PathKey(file.AsPath()).AsString(), message = Diagnostics.File_0_is_not_under_rootDir_1_rootDir_is_expected_to_contain_all_source_files, args = [file.AsString(), rootDirectory.AsString()] });
+                addProcessingDiagnostic(new() { file = ByteStringKey.FromValue(caseSensitivity.PathKey(file.AsPath()).AsValue()), message = Diagnostics.File_0_is_not_under_rootDir_1_rootDir_is_expected_to_contain_all_source_files, args = [file.AsString(), rootDirectory.AsString()] });
                 all = false;
             }
 
@@ -664,7 +664,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     {
         var options = Options();
         var sourceFile = opts.Config.ConfigFile?.SourceFile;
-        var configFilePath = sourceFile is not null ? RootedFilePath.FromGoString(sourceFile.FileNameGoBytes()) : default;
+        var configFilePath = sourceFile is not null ? RootedFilePath.FromValue(sourceFile.FileNameGoValue()) : default;
         var compilerOptionsProperty = TypeScript.TsOptions.TsOptions.ForEachTsConfigPropArray(sourceFile, "compilerOptions", property => property);
         var compilerOptionsObject = compilerOptionsProperty is not null && Ast.IsObjectLiteralExpression(compilerOptionsProperty.Initializer) ? compilerOptionsProperty.Initializer.AsObjectLiteralExpression() : null;
         Diagnostic? InObject(ObjectLiteralExpression? syntax, bool onKey, string key, string key2, Message message, params object[] args)
@@ -766,9 +766,9 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
             var roots = new HashSet<PathKey>((opts.Config.FileNames() ?? []).Select(file => caseSensitivity.PathKey(file.AsPath())));
             foreach (var file in files)
             {
-                string rootPath = file.CanonicalSourceFile()?.PathKey() ?? file.PathKey();
-                if (sourceFileMayBeEmitted(file, this, false, false) && !roots.Contains(PathKey.FromGoString(rootPath)))
-                    addProcessingDiagnostic(new() { file = file.PathKey(), message = Diagnostics.File_0_is_not_listed_within_the_file_list_of_project_1_Projects_must_list_all_files_or_use_an_include_pattern, args = [file.FileNameGoBytes(), configFilePath.AsString()] });
+                var rootPath = file.CanonicalSourceFile()?.PathKeyValue() ?? file.PathKeyValue();
+                if (sourceFileMayBeEmitted(file, this, false, false) && !roots.Contains(PathKey.FromValue(rootPath)))
+                    addProcessingDiagnostic(new() { file = file.PathKeyKey(), message = Diagnostics.File_0_is_not_listed_within_the_file_list_of_project_1_Projects_must_list_all_files_or_use_an_include_pattern, args = [file.FileNameGoBytes(), configFilePath.AsString()] });
             }
         }
 
@@ -825,7 +825,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         if (options.OutDir != default || options.RootDir != default || options.SourceRoot != default || options.MapRoot != default || options.GetEmitDeclarations() && options.DeclarationDir != default)
         {
             var directory = CommonSourceDirectory();
-            if (options.OutDir != default && directory == default && Core.Some(files, static file => RootedFilePath.FromGoString(file.FileNameGoBytes()).RootLength() > 1))
+            if (options.OutDir != default && directory == default && Core.Some(files, static file => RootedFilePath.FromValue(file.FileNameGoValue()).RootLength() > 1))
                 Name(Diagnostics.Cannot_find_the_common_subdirectory_path_for_the_input_files, "outDir", "");
         }
 
@@ -905,7 +905,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
                 if (file == default)
                     return;
                 var path = PathKeyForFileName(file);
-                if (filesByPath.ContainsKey(path.AsString()))
+                if (filesByPath.ContainsKey(ByteStringKey.FromValue(path.AsValue())))
                 {
                     var diagnostic = Ast.NewCompilerDiagnostic(Diagnostics.Cannot_write_file_0_because_it_would_overwrite_input_file, file);
                     if (configFilePath == default)
@@ -1037,7 +1037,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         return getDiagnosticsWithPrecedingDirectives(file, includeProcessor.GetDiagnostics(this).GetDiagnosticsForFile(file)).Diagnostics;
     }
 
-    public bool SkipTypeChecking(SourceFile file, bool ignoreNoCheck = false) => !ignoreNoCheck && Options().NoCheck == Tristate.True || Options().SkipLibCheck == Tristate.True && file.IsDeclarationFile || Options().SkipDefaultLibCheck == Tristate.True && IsSourceFileDefaultLibrary(PathKey.FromGoString(file.PathKey())) || IsSourceFromProjectReference(PathKey.FromGoString(file.PathKey())) || !canIncludeBindAndCheckDiagnostics(file);
+    public bool SkipTypeChecking(SourceFile file, bool ignoreNoCheck = false) => !ignoreNoCheck && Options().NoCheck == Tristate.True || Options().SkipLibCheck == Tristate.True && file.IsDeclarationFile || Options().SkipDefaultLibCheck == Tristate.True && IsSourceFileDefaultLibrary(PathKey.FromValue(file.PathKeyValue())) || IsSourceFromProjectReference(PathKey.FromValue(file.PathKeyValue())) || !canIncludeBindAndCheckDiagnostics(file);
     internal bool canIncludeBindAndCheckDiagnostics(SourceFile file)
     {
         if (file.CheckJsDirective is not null && !file.CheckJsDirective.Enabled)
@@ -1299,11 +1299,11 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     }
     public (ByteStringValue ModuleReference, Node? Specifier) GetJSXRuntimeImportSpecifierValue(PathKey path)
     {
-        var result = processedFiles.jsxRuntimeImportSpecifiers?.GetValueOrDefault(path.AsString());
+        var result = processedFiles.jsxRuntimeImportSpecifiers?.GetValueOrDefault(ByteStringKey.FromValue(path.AsValue()));
         return result is not null ? (result.moduleReference.Snapshot(), result.specifier) : (default, null);
     }
 
-    public Node? GetImportHelpersImportSpecifier(PathKey path) => processedFiles.importHelpersImportSpecifiers?.GetValueOrDefault(path.AsString());
+    public Node? GetImportHelpersImportSpecifier(PathKey path) => processedFiles.importHelpersImportSpecifiers?.GetValueOrDefault(ByteStringKey.FromValue(path.AsValue()));
     public HashSet<ByteStringKey> ResolvedPackageNames() => collectPackageNames().resolved;
     public HashSet<ByteStringKey> UnresolvedPackageNames() => collectPackageNames().unresolved;
     public HashSet<ByteStringKey> DeepImportPackageNames() => collectPackageNames().deepImportPackages;
@@ -1313,41 +1313,41 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         var names = new PackageNamesInfo();
         foreach (var file in files)
         {
-            var filename = RootedFilePath.FromGoString(file.FileNameGoBytes());
-            if (IsSourceFileDefaultLibrary(PathKey.FromGoString(file.PathKey())) || IsSourceFileFromExternalLibrary(file) || filename.ContainsLowercaseDirectorySequence("/node_modules/"))
+            var filename = RootedFilePath.FromValue(file.FileNameGoValue());
+            if (IsSourceFileDefaultLibrary(PathKey.FromValue(file.PathKeyValue())) || IsSourceFileFromExternalLibrary(file) || filename.ContainsLowercaseDirectorySequence("/node_modules/"))
                 continue;
             foreach (var import in file.Imports())
             {
                 if (Ast.IsSourcePhaseImport(import.Parent) || TsPath.IsExternalModuleNameRelative(import.TextValue()))
                     continue;
                 var key = new ModeAwareCacheKey(import.TextValue(), GetModeForUsageLocation(file, import));
-                if (resolvedModules.GetValueOrDefault(file.PathKey())?.GetValueOrDefault(key)is { } module && module.IsResolved())
+                if (resolvedModules.GetValueOrDefault(file.PathKeyKey())?.GetValueOrDefault(key)is { } module && module.IsResolved())
                 {
                     if (!module.IsExternalLibraryImport)
                         continue;
-                    string name = module.PackageId.Name;
-                    if (name == "")
+                    var name = ByteStringValue.FromString(module.PackageId.Name);
+                    if (name.Length == 0)
                     {
                         var scope = resolver.GetPackageScopeForPath(module.ResolvedFileName.Directory());
                         if (scope.Exists())
                         {
                             var(value, ok) = scope!.Contents!.Fields.Name.GetValue();
                             if (ok)
-                                name = value;
+                                name = ByteStringValue.FromString(value);
                         }
                     }
 
-                    if (name == "")
-                        name = TypeScript.ModuleSpecifiers.ModuleSpecifiers.GetPackageNameFromDirectory(module.ResolvedFileName.AsPath());
-                    if (name != "")
+                    if (name.Length == 0)
+                        name = TypeScript.ModuleSpecifiers.ModuleSpecifiers.GetPackageNameValueFromDirectory(module.ResolvedFileName.AsPath());
+                    if (name.Length != 0)
                     {
-                        names.resolved.Add(ByteStringKey.FromString(name));
+                        names.resolved.Add(ByteStringKey.FromValue(name));
                         var(_, rest) = ModuleUtilities.ParsePackageName(import.TextValue());
                         if (rest.Length != 0)
                         {
                             var scope = resolver.GetPackageScopeForPath(module.ResolvedFileName.Directory());
                             if (scope.Exists() && !scope!.Contents!.Exports.IsPresent())
-                                names.deepImportPackages.Add(ByteStringKey.FromString(ModuleUtilities.GetPackageNameFromTypesPackageName(name)));
+                                names.deepImportPackages.Add(ByteStringKey.FromValue(ModuleUtilities.GetPackageNameFromTypesPackageNameValue(name)));
                         }
                     }
 
@@ -1369,7 +1369,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         var seen = new HashSet<PathKey>();
         foreach (var(path, metadata)in processedFiles.sourceFileMetaDatas)
         {
-            if (metadata.PackageJsonDirectory == default || !SourceFileMayBeEmitted(GetSourceFileByPath(PathKey.FromGoString(path))!, false) || !seen.Add(caseSensitivity.PathKey(metadata.PackageJsonDirectory.AsPath())))
+            if (metadata.PackageJsonDirectory == default || !SourceFileMayBeEmitted(GetSourceFileByPath(PathKey.FromValue(path.Value))!, false) || !seen.Add(caseSensitivity.PathKey(metadata.PackageJsonDirectory.AsPath())))
                 continue;
             var packageJsonFile = metadata.PackageJsonDirectory.ResolveFile("package.json");
             var info = GetPackageJsonInfo(packageJsonFile);
@@ -1397,11 +1397,11 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     });
     public SourceFile? GetLibFileFromReference(FileReference reference)
     {
-        var(name, ok) = TypeScript.TsOptions.TsOptions.GetLibFileName(reference.FileName);
+        var(name, ok) = TypeScript.TsOptions.TsOptions.GetLibFileName(reference.FileNameValue);
         if (!ok)
             return null;
         foreach (var(path, lib)in processedFiles.libFiles)
-            if (lib.Name == name)
+            if (lib.NameValue.EqualsValue(name))
                 return filesByPath.GetValueOrDefault(path);
         return null;
     }
@@ -1424,7 +1424,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
         void Explain(RootedFilePath filename, PathKey path)
         {
             WriteLine(Relative(filename));
-            foreach (var reason in processedFiles.fileIncludeData.fileIncludeReasons.GetValueOrDefault(path.AsString()))
+            foreach (var reason in processedFiles.fileIncludeData.fileIncludeReasons.GetValueOrDefault(ByteStringKey.FromValue(path.AsValue())))
                 WriteLine("   " + TypeScript.DiagnosticWriter.DiagnosticWriter.WrapASTDiagnostic(reason.ToDiagnostic(this, true, currentDirectory), true).Localize(locale));
             foreach (var diagnostic in includeProcessor.ExplainRedirectAndImpliedFormat(this, path, Relative))
                 WriteLine("   " + TypeScript.DiagnosticWriter.DiagnosticWriter.WrapASTDiagnostic(diagnostic, true).Localize(locale));
@@ -1439,7 +1439,7 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
             while (explained < end)
             {
                 var file = files[sourceIndex++];
-                Explain(RootedFilePath.FromGoString(file.FileNameGoBytes()), PathKey.FromGoString(file.PathKey()));
+                Explain(RootedFilePath.FromValue(file.FileNameGoValue()), PathKey.FromValue(file.PathKeyValue()));
             }
         }
 

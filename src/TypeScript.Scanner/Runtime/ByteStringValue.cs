@@ -22,6 +22,44 @@ public struct ByteStringValue
         offset = text is null ? -1 : 0,
         Length = text?.Length ?? 0
     };
+    // Fixed Go concatenation computes its complete length before owning output.
+    // Empty operands can reuse the sole nonempty header. Byte-role output needs
+    // one exact array, without an intermediate builder or growth copies.
+    internal static ByteStringValue Concat(params ReadOnlySpan<ByteStringValue> parts)
+    {
+        int count = 0;
+        int length = 0;
+        ByteStringValue single = default;
+        bool needsLegacyText = false;
+        foreach (var part in parts)
+        {
+            if (part.Length == 0) continue;
+            count++;
+            single = part;
+            length = checked(length + part.Length);
+            needsLegacyText |= !part.IsBytes && part.CharSpan.IndexOfAnyExceptInRange('\0', '\u00ff') >= 0;
+        }
+        if (count <= 1) return single;
+        if (needsLegacyText)
+        {
+            // Supplied non-byte UTF16 is an existing managed compatibility role;
+            // preserve those characters rather than truncate or UTF8 encode them.
+            var builder = new GoBuilder();
+            builder.Grow(length);
+            foreach (var part in parts) builder.WriteString(part);
+            return builder.Value();
+        }
+        var bytes = new byte[length];
+        int offset = 0;
+        foreach (var part in parts)
+        {
+            var destination = bytes.AsSpan(offset, part.Length);
+            if (part.IsBytes) part.ByteSpan.CopyTo(destination);
+            else System.Text.Encoding.Latin1.GetBytes(part.CharSpan, destination);
+            offset += part.Length;
+        }
+        return FromView(ByteStringView.FromOwnedBytes(bytes));
+    }
     internal static ByteStringValue FromView(ByteStringView text)
     {
         if (!MemoryMarshal.TryGetArray(text.Memory, out var memory))
@@ -84,10 +122,14 @@ public struct ByteStringValue
         offset = offset,
         Length = Length
     };
-    // Ordinal Dictionary lookup adapts byte characters to the standard library
-    // alternate comparer. No string is owned on a hit; persistent inserted keys
-    // retain the existing string contract. A rented long buffer never escapes.
+    // Compatible Dictionary comparers borrow alternate keys. Caller-supplied
+    // comparers without that optional interface use normal key lookup and retain
+    // the actual stored key; string compatibility may then own a projection.
+    // A rented long buffer never escapes.
     public readonly bool TryGetValue<T>(Dictionary<string, T> values,
+        [MaybeNullWhen(false)] out string actualKey, [MaybeNullWhen(false)] out T value) =>
+        TryGetStringValue(values, true, out actualKey, out value);
+    private readonly bool TryGetStringValue<T>(Dictionary<string, T> values, bool needActualKey,
         [MaybeNullWhen(false)] out string actualKey, [MaybeNullWhen(false)] out T value)
     {
         if (IsNull)
@@ -95,7 +137,26 @@ public struct ByteStringValue
             actualKey = null!;
             return values.TryGetValue(null!, out value); // Original null-key failure.
         }
-        var lookup = values.GetAlternateLookup<ReadOnlySpan<char>>();
+        if (!values.TryGetAlternateLookup<ReadOnlySpan<char>>(out var lookup))
+        {
+            string key = Materialize()!;
+            if (values.TryGetValue(key, out value))
+            {
+                if (!needActualKey)
+                {
+                    actualKey = key;
+                    return true;
+                }
+                foreach (string storedKey in values.Keys)
+                    if (values.Comparer.Equals(key, storedKey))
+                    {
+                        actualKey = storedKey;
+                        return true;
+                    }
+            }
+            actualKey = null!;
+            return false;
+        }
         if (!IsBytes)
             return lookup.TryGetValue(CharSpan, out actualKey, out value);
         char[]? rented = null;
@@ -113,25 +174,55 @@ public struct ByteStringValue
         }
     }
     public readonly bool TryGetValue<T>(Dictionary<string, T> values, [MaybeNullWhen(false)] out T value) =>
-        TryGetValue(values, out _, out value);
+        TryGetStringValue(values, false, out _, out value);
     // Retained Go-byte keys use the same standard Dictionary alternate comparer
     // for lookup and insertion, with no widening/projection on a byte-owned hit.
     public readonly bool TryGetValue<T>(Dictionary<ByteStringKey, T> values,
         out ByteStringValue actualKey, [MaybeNullWhen(false)] out T value)
     {
-        var lookup = values.GetAlternateLookup<ByteStringValue>();
-        if (lookup.TryGetValue(this, out var storedKey, out value))
+        if (values.TryGetAlternateLookup<ByteStringValue>(out var lookup))
         {
-            actualKey = storedKey.Value;
-            return true;
+            if (lookup.TryGetValue(this, out var storedKey, out value))
+            {
+                actualKey = storedKey.Value;
+                return true;
+            }
+        }
+        else
+        {
+            var key = ByteStringKey.FromValue(this);
+            if (values.TryGetValue(key, out value))
+                foreach (var storedKey in values.Keys)
+                    if (values.Comparer.Equals(key, storedKey))
+                    {
+                        actualKey = storedKey.Value;
+                        return true;
+                    }
         }
         actualKey = default;
         return false;
     }
     public readonly bool TryGetValue<T>(Dictionary<ByteStringKey, T> values,
-        [MaybeNullWhen(false)] out T value) => TryGetValue(values, out _, out value);
+        [MaybeNullWhen(false)] out T value) =>
+        values.TryGetAlternateLookup<ByteStringValue>(out var lookup)
+            ? lookup.TryGetValue(this, out value)
+            : values.TryGetValue(ByteStringKey.FromValue(this), out value);
+    public readonly bool ContainsIn(HashSet<string> values)
+    {
+        if (IsNull) return values.Contains(null!);
+        if (!values.TryGetAlternateLookup<ReadOnlySpan<char>>(out var lookup))
+            return values.Contains(Materialize()!);
+        if (!IsBytes) return lookup.Contains(CharSpan);
+        char[]? rented = null;
+        Span<char> chars = Length <= 256 ? stackalloc char[Length]
+            : (rented = System.Buffers.ArrayPool<char>.Shared.Rent(Length)).AsSpan(0, Length);
+        try { System.Text.Encoding.Latin1.GetChars(ByteSpan, chars); return lookup.Contains(chars); }
+        finally { if (rented is not null) System.Buffers.ArrayPool<char>.Shared.Return(rented); }
+    }
     public readonly bool ContainsIn(HashSet<ByteStringKey> values) =>
-        values.GetAlternateLookup<ByteStringValue>().Contains(this);
+        values.TryGetAlternateLookup<ByteStringValue>(out var lookup)
+            ? lookup.Contains(this)
+            : values.Contains(ByteStringKey.FromValue(this));
     // Search the existing raw byte role; supplied UTF16 characters above FF
     // remain distinguishable instead of being truncated or UTF8 encoded.
     public readonly int IndexOf(int character)
@@ -139,6 +230,48 @@ public struct ByteStringValue
         if (IsNull) throw new NullReferenceException();
         return IsBytes ? (uint)character <= byte.MaxValue ? ByteSpan.IndexOf((byte)character) : -1
             : (uint)character <= char.MaxValue ? CharSpan.IndexOf((char)character) : -1;
+    }
+    public readonly int LastIndexOf(int character)
+    {
+        if (IsNull) throw new NullReferenceException();
+        return IsBytes ? (uint)character <= byte.MaxValue ? ByteSpan.LastIndexOf((byte)character) : -1
+            : (uint)character <= char.MaxValue ? CharSpan.LastIndexOf((char)character) : -1;
+    }
+    public int IndexOf(ByteStringValue value, int start) => IndexOfFrom(value, start);
+    private int IndexOfFrom(ByteStringValue value, int start)
+    {
+        int found = Slice(start).IndexOf(value);
+        return found < 0 ? -1 : start + found;
+    }
+    public int LastIndexOf(ByteStringValue value)
+    {
+        if (IsNull || value.IsNull) throw new NullReferenceException();
+        if (IsBytes && value.IsBytes) return ByteSpan.LastIndexOf(value.ByteSpan);
+        if (!IsBytes && !value.IsBytes) return CharSpan.LastIndexOf(value.CharSpan);
+        if (value.Length == 0) return Length;
+        for (int start = Length - value.Length; start >= 0; start--)
+            if (Slice(start, start + value.Length).EqualsValue(value)) return start;
+        return -1;
+    }
+    public ByteStringValue TrimEnd(int character)
+    {
+        if (IsNull) throw new NullReferenceException();
+        int end = Length;
+        while (end > 0 && this[end - 1] == character) end--;
+        return Slice(0, end);
+    }
+    public readonly int IndexOfAny(int first, int second)
+    {
+        if (IsNull) throw new NullReferenceException();
+        if (IsBytes)
+        {
+            if ((uint)first > byte.MaxValue) return IndexOf(second);
+            if ((uint)second > byte.MaxValue) return IndexOf(first);
+            return ByteSpan.IndexOfAny((byte)first, (byte)second);
+        }
+        if ((uint)first > char.MaxValue) return IndexOf(second);
+        if ((uint)second > char.MaxValue) return IndexOf(first);
+        return CharSpan.IndexOfAny((char)first, (char)second);
     }
     public readonly bool Contains(int character) => IndexOf(character) >= 0;
     public int IndexOf(ByteStringValue value)

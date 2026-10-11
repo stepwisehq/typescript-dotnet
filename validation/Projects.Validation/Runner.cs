@@ -51,13 +51,13 @@ public static class Runner
         }
 
         var checker = project.Checker;
-        var files = project.SourceFiles.ToList();
+        var files = GoSlices.ToListOrNull(project.SourceFiles)!;
         var primary = files.Last();
         var fileIds = new Dictionary<SourceFile, int>(ReferenceEqualityComparer.Instance);
         var perFile = new Dictionary<SourceFile, List<Diagnostic>?>(ReferenceEqualityComparer.Instance);
         // Same original user-file checking order as Program.GetSemanticDiagnostics(nil).
         foreach (var file in files)
-            perFile[file] = TypeScript.Compiler.Program.GetSemanticDiagnosticsWithChecker(file, project.Options, checker);
+            perFile[file] = GoSlices.ToListOrNull(TypeScript.Compiler.Program.GetSemanticDiagnosticsWithChecker(file, project.Options, checker));
         var globalDiagnostics = checker.GetGlobalDiagnostics();
         var encoder = new Encoder(primary, false);
         for (int i = 0; i < files.Count; i++)
@@ -72,7 +72,7 @@ public static class Runner
         int NodeId(Node node) => encoder.RawNodes.ToList().IndexOf(node)is int id && id >= 0 ? id : throw new InvalidDataException("Unrooted node");
         BoundName? NameProjection(string name, Symbol symbol)
         {
-            foreach (var declaration in symbol.Declarations ?? [])
+            foreach (var declaration in symbol.Declarations)
                 if (declaration.Kind == Kind.SourceFile && declaration.AsSourceFile().ExternalModuleIndicator is not null && (ReferenceEquals(declaration.Symbol(), symbol) || ReferenceEquals(checker.VerificationProjectExportType(symbol).Target, declaration.Symbol())))
                 {
                     string filename = declaration.AsSourceFile().FileName();
@@ -159,11 +159,11 @@ public static class Runner
                 continue;
             var symbol = f.AsNode().Symbol();
             var exports = checker.GetExportsOfModule(symbol);
-            var ordered = (exports ?? []).OrderBy(s => s.Name, StringComparer.Ordinal).ToList();
+            var ordered = GoSlices.Values(exports).OrderBy(s => s.Name, StringComparer.Ordinal).ToList();
             var second = checker.GetExportsOfModule(symbol);
             var state = checker.VerificationProjectModule(symbol);
             var exportRecords = ordered.Select(s => new ExportRecord(Encoder.Bytes(s.Name), graph.Symbol(s)!.Value)).ToList();
-            result.Modules.Add(new(graph.Symbol(symbol)!.Value, exportRecords, (exports?.Count ?? 0) == (second?.Count ?? 0) && (exports ?? []).All(s => (second ?? []).Contains(s, ReferenceEqualityComparer.Instance)), state.Present, graph.Table(state.Exports), state.TypeOnlyStars is null, state.TypeOnlyStars?.OrderBy(p => p.Key, StringComparer.Ordinal).Select(p => new StarRecord(Encoder.Bytes(p.Key), graph.AddNode(p.Value)!.Value)).ToList() ?? [], state.Checked));
+            result.Modules.Add(new(graph.Symbol(symbol)!.Value, exportRecords, exports.Length == second.Length && GoSlices.Values(exports).All(s => GoSlices.Values(second).Contains(s, ReferenceEqualityComparer.Instance)), state.Present, graph.Table(state.Exports), state.TypeOnlyStars is null, state.TypeOnlyStars?.OrderBy(p => p.Key.ToString(), StringComparer.Ordinal).Select(p => new StarRecord(Encoder.Bytes(p.Key.ToString()), graph.AddNode(p.Value)!.Value)).ToList() ?? [], state.Checked));
         }
 
         result.Globals = graph.Table(checker.Globals);
@@ -239,7 +239,7 @@ public static class Runner
         result.GlobalDiagnostics = Diagnostics(globalDiagnostics, fileIds, project);
         result.ProgramDiagnostics = project.ProgramDiagnostics.Count == 0 ? null : Diagnostics(project.ProgramDiagnostics, fileIds, project);
         result.ConfigDiagnostics = null;
-        result.ExitCode = (globalDiagnostics?.Count ?? 0) + project.ProgramDiagnostics.Count + perFile.Values.Sum(ds => ds?.Count ?? 0) > 0 ? 1 : 0;
+        result.ExitCode = globalDiagnostics.Length + project.ProgramDiagnostics.Count + perFile.Values.Sum(ds => ds?.Count ?? 0) > 0 ? 1 : 0;
         return result;
     }
 
@@ -344,6 +344,7 @@ public static class Runner
 
     // Exact relocation of filename-role diagnostic arguments only. Stored source
     // diagnostics remain untouched; the private clone uses original localization.
+    private static List<FullDiagnostic>? Diagnostics(Slice<Diagnostic> values, Dictionary<SourceFile, int> files, Project project) => Diagnostics(GoSlices.ToListOrNull(values), files, project);
     private static List<FullDiagnostic>? Diagnostics(IEnumerable<Diagnostic>? values, Dictionary<SourceFile, int> files, Project project) => values?.Select(original =>
     {
         var d = original.Clone();
@@ -435,6 +436,8 @@ public static class Runner
             return id;
         }
 
+        private List<int>? Ts(Slice<Type> values) => values.IsNil ? null : GoSlices.Values(values).Select(t => Type(t)!.Value).ToList();
+        private List<int>? Ts(Slice<Type>? values) => values.HasValue ? Ts(values.Value) : null;
         private List<int>? Ts(List<Type>? values) => values?.Select(t => Type(t)!.Value).ToList();
         public void Drain()
         {
@@ -454,9 +457,9 @@ public static class Runner
                         Symbol = graph.Symbol(t.Symbol()),
                         Target = Type(t.AsObjectType()?.target),
                         Arguments = Ts(t.AsTypeReference()?.resolvedTypeArguments),
-                        Constituents = (t.Flags() & TypeFlags.UnionOrIntersection) != 0 ? Ts(GoSlices.ToListOrNull(t.AsUnionOrIntersectionType().types)) : null,
+                        Constituents = (t.Flags() & TypeFlags.UnionOrIntersection) != 0 ? Ts(t.AsUnionOrIntersectionType().types) : null,
                         Members = graph.Table(d?.members),
-                        Properties = d?.properties?.Select(s => graph.Symbol(s)!.Value).ToList(),
+                        Properties = d is null ? null : GoSlices.ToListOrNull(d.properties)?.Select(s => graph.Symbol(s)!.Value).ToList(),
                         CallSignatureCount = d?.callSignatureCount ?? 0
                     };
                     if ((t.Flags() & TypeFlags.TypeParameter) != 0)
@@ -481,6 +484,10 @@ public static class Runner
                     if (row.DataType == "LiteralType")
                         switch (t.AsLiteralType().Value())
                         {
+                            case ByteStringValue value:
+                                row.LiteralKind = "bytes";
+                                row.LiteralValue = Encoder.Bytes(value.Materialize()!);
+                                break;
                             case string value:
                                 row.LiteralKind = "bytes";
                                 row.LiteralValue = Encoder.Bytes(value);
@@ -511,7 +518,7 @@ public static class Runner
                         ResolvedMinArgumentCount = s.resolvedMinArgumentCount,
                         Declaration = graph.AddNode(s.Declaration()),
                         TypeParameters = Ts(s.TypeParameters()),
-                        Parameters = s.Parameters()?.Select(s => graph.Symbol(s)!.Value).ToList(),
+                        Parameters = GoSlices.ToListOrNull(s.Parameters())?.Select(s => graph.Symbol(s)!.Value).ToList(),
                         ThisParameter = graph.Symbol(s.ThisParameter()),
                         ReturnType = Type(checker.GetReturnTypeOfSignature(s)),
                         Target = Signature(s.Target())

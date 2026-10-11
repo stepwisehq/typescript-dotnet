@@ -1250,10 +1250,8 @@ public sealed partial class Checker
             }
             if ((GoRuntime.Len(symbol.Declarations) > 1))
             {
-                if (Core.Some(symbol.Declarations, (d) =>
-{
-    return (((d != node) && Ast.IsVariableLike(d)) && !this.areDeclarationFlagsIdentical(d, node));
-}))
+                if (Core.Some(symbol.Declarations, (checker: this, node), static (d, state) =>
+                    d != state.node && Ast.IsVariableLike(d) && !state.checker.areDeclarationFlagsIdentical(d, state.node)))
                 {
                     this.error(name, Diagnostics.All_declarations_of_0_must_have_identical_modifiers, TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(name));
                 }
@@ -1898,6 +1896,7 @@ public sealed partial class Checker
         ArgumentsSymbol = argumentsSymbol,
         RequireSymbol = requireSymbol,
         Lookup = getSuggestionForSymbolNameLookup,
+        LookupTextValue = getSuggestionForSymbolNameLookup,
         SymbolReferenced = symbolReferenced,
         SetRequiresScopeChangeCache = setRequiresScopeChangeCache,
         GetRequiresScopeChangeCache = getRequiresScopeChangeCache,
@@ -2023,7 +2022,10 @@ public sealed partial class Checker
     }
 
     private static bool isPrimitiveTypeName(string s) => s is "any" or "string" or "number" or "boolean" or "never" or "unknown";
-    private Symbol getSuggestionForSymbolNameLookup(SymbolTable symbols, string name, SymbolFlags meaning)
+    private Symbol getSuggestionForSymbolNameLookup(SymbolTable symbols, string name, SymbolFlags meaning) =>
+        getSuggestionForSymbolNameLookup(symbols, ByteStringValue.FromString(name), meaning);
+
+    private Symbol getSuggestionForSymbolNameLookup(SymbolTable symbols, ByteStringValue name, SymbolFlags meaning)
     {
         var symbol = getSymbol(symbols, name, meaning);
         if (symbol != null)
@@ -2034,21 +2036,21 @@ public sealed partial class Checker
         return getSpellingSuggestionForName(name, (symbols?.Values ?? Enumerable.Empty<Symbol>()).Concat(extras), meaning);
     }
 
-    private Symbol getSpellingSuggestionForName(string name, IEnumerable<Symbol> symbols, SymbolFlags meaning) => Core.GetSpellingSuggestion(name, symbols, candidate =>
+    private Symbol getSpellingSuggestionForName(ByteStringValue name, IEnumerable<Symbol> symbols, SymbolFlags meaning) => Core.GetSpellingSuggestion(name, symbols, (checker: this, meaning), static (candidate, state) =>
     {
-        var candidateName = Ast.SymbolName(candidate);
+        var candidateName = Ast.SymbolNameValue(candidate);
         if (candidateName.Length == 0 || candidateName[0] is '"' or '\u00FE')
-            return "";
-        if ((candidate.Flags & meaning) != 0)
+            return default;
+        if ((candidate.Flags & state.meaning) != 0)
             return candidateName;
         if ((candidate.Flags & SymbolFlags.Alias) != 0)
         {
-            var alias = tryResolveAlias(candidate);
-            if (alias != null && (alias.Flags & meaning) != 0)
+            var alias = state.checker.tryResolveAlias(candidate);
+            if (alias != null && (alias.Flags & state.meaning) != 0)
                 return candidateName;
         }
 
-        return "";
+        return default;
     }, compareSymbols);
     private void onSuccessfullyResolvedSymbol(Node errorLocation, Symbol result, SymbolFlags meaning, Node lastLocation, Node associatedDeclarationForContainingInitializerOrBindingName, bool withinDeferredContext)
     {
@@ -3976,7 +3978,7 @@ public sealed partial class Checker
         return symbol;
     }
 
-    private Symbol getSuggestedSymbolForNonexistentModule(Node name, Symbol targetModule) => getSpellingSuggestionForName(name.Text(), getExportsOfModule(targetModule).Values, SymbolFlags.ModuleMember);
+    private Symbol getSuggestedSymbolForNonexistentModule(Node name, Symbol targetModule) => getSpellingSuggestionForName(name.TextValue(), getExportsOfModule(targetModule).Values, SymbolFlags.ModuleMember);
     private string getFullyQualifiedName(Symbol symbol, Node containingLocation) => symbol.Parent != null ? getFullyQualifiedName(symbol.Parent, containingLocation) + "." + symbolToString(symbol) : symbolToStringWithoutSymbolChain(symbol, containingLocation);
 }
 
@@ -7151,7 +7153,7 @@ public sealed partial class Checker
 {
     private RelationComparisonResult reliabilityFlags;
     private Relater freeRelater;
-    private string getSuggestionForNonexistentProperty(string name, Type containingType) => getSpellingSuggestionForName(name, GoSlices.Values(getPropertiesOfType(containingType)), SymbolFlags.Value)?.Name ?? "";
+    private string getSuggestionForNonexistentProperty(ByteStringValue name, Type containingType) => getSpellingSuggestionForName(name, GoSlices.Values(getPropertiesOfType(containingType)), SymbolFlags.Value)?.Name ?? "";
     private Symbol getLateBoundSymbol(Symbol symbol)
     {
         if ((((symbol.Flags & SymbolFlags.ClassMember) == 0) || (!symbol.NameValue.EqualsString(Ast.InternalSymbolNameComputed))))
@@ -8512,8 +8514,8 @@ public sealed partial class Checker
     {
         var properties = getPropertiesOfType(containingType);
         if (name.Parent.Kind == Kind.PropertyAccessExpression)
-            properties = Core.Filter(properties, property => isValidPropertyAccessForCompletions(name.Parent, containingType, property));
-        return getSpellingSuggestionForName(name.Text(), GoSlices.Values(properties), SymbolFlags.Value);
+            properties = Core.Filter(properties, (checker: this, name, containingType), static (property, state) => state.checker.isValidPropertyAccessForCompletions(state.name.Parent, state.containingType, property));
+        return getSpellingSuggestionForName(name.TextValue(), GoSlices.Values(properties), SymbolFlags.Value);
     }
 
     private bool isValidPropertyAccessForCompletions(Node node, Type t, Symbol property) => isPropertyAccessible(node, false, false, t, property);
@@ -9226,7 +9228,7 @@ public sealed partial class Checker
             if ((type.flags & TypeFlags.StringLiteral) != 0) yield return type;
     }
 
-    private Type getSuggestedTypeForNonexistentStringLiteralType(Type source, Type target) => Core.GetSpellingSuggestionWithMaxCandidateCount(getStringLiteralValue(source), getStringLiteralConstituentsForSuggestion(target.Types()), getStringLiteralValue, CompareTypes, 1000);
+    private Type getSuggestedTypeForNonexistentStringLiteralType(Type source, Type target) => Core.GetSpellingSuggestionWithMaxCandidateCount(getStringLiteralValueText(source), getStringLiteralConstituentsForSuggestion(target.Types()), getStringLiteralValueText, CompareTypes, 1000);
 }
 
 public sealed partial class Checker
@@ -9268,8 +9270,8 @@ public sealed partial class Checker
         var discriminated = getMatchingUnionConstituentForObjectLiteral(contextualType, node);
         if (discriminated == null)
         {
-            var properties = Core.Filter(node.Properties(), p => p.Symbol() != null && (p.Kind == Kind.PropertyAssignment ? isPossiblyDiscriminantValue(p.Initializer()) && isDiscriminantProperty(contextualType, p.Symbol().NameValue) : p.Kind == Kind.ShorthandPropertyAssignment && isDiscriminantProperty(contextualType, p.Symbol().NameValue)));
-            var members = Core.Filter(getPropertiesOfType(contextualType), s => (s.Flags & SymbolFlags.Optional) != 0 && node.Symbol().Members?[s.NameValue] == null && isDiscriminantProperty(contextualType, s.NameValue));
+            var properties = Core.Filter(node.Properties(), (checker: this, contextualType), static (p, state) => p.Symbol() != null && (p.Kind == Kind.PropertyAssignment ? state.checker.isPossiblyDiscriminantValue(p.Initializer()) && state.checker.isDiscriminantProperty(state.contextualType, p.Symbol().NameValue) : p.Kind == Kind.ShorthandPropertyAssignment && state.checker.isDiscriminantProperty(state.contextualType, p.Symbol().NameValue)));
+            var members = Core.Filter(getPropertiesOfType(contextualType), (checker: this, node, contextualType), static (s, state) => (s.Flags & SymbolFlags.Optional) != 0 && state.node.Symbol().Members?[s.NameValue] == null && state.checker.isDiscriminantProperty(state.contextualType, s.NameValue));
             discriminated = discriminateTypeByDiscriminableItems(contextualType, new ObjectLiteralDiscriminator(this, properties, members));
         }
 
@@ -9282,7 +9284,7 @@ public sealed partial class Checker
         var keyPropertyName = getKeyPropertyName(unionType);
         if (keyPropertyName.Length != 0)
         {
-            var property = Core.Find(node.Properties(), p => p.Symbol() != null && p.Kind == Kind.PropertyAssignment && p.Symbol().NameValue.EqualsValue(keyPropertyName) && isPossiblyDiscriminantValue(p.Initializer()));
+            var property = Core.Find(node.Properties(), (checker: this, keyPropertyName), static (p, state) => p.Symbol() != null && p.Kind == Kind.PropertyAssignment && p.Symbol().NameValue.EqualsValue(state.keyPropertyName) && state.checker.isPossiblyDiscriminantValue(p.Initializer()));
             if (property != null)
                 return getConstituentTypeForKeyType(unionType, getContextFreeTypeOfExpression(property.Initializer()));
         }
@@ -10111,7 +10113,7 @@ public sealed partial class Checker
                                 string suggestion = "";
                                 if (hasPropName)
                                 {
-                                    suggestion = this.getSuggestionForNonexistentProperty(propName.Materialize(), objectType);
+                                    suggestion = this.getSuggestionForNonexistentProperty(propName, objectType);
                                 }
 
                                 if ((suggestion != ""))
@@ -11186,10 +11188,10 @@ public sealed partial class Checker
         if ((t.objectFlags & (ObjectFlags.ClassOrInterface | ObjectFlags.Reference)) != 0)
         {
             var target = getTargetType(t);
-            return target == checkBase || (Core.Some(getBaseTypes(target), x => hasBaseType(x, checkBase)));
+            return target == checkBase || (Core.Some(getBaseTypes(target), (checker: this, checkBase), static (x, state) => state.checker.hasBaseType(x, state.checkBase)));
         }
 
-        return (t.flags & TypeFlags.Intersection) != 0 && Core.Some(t.Types(), x => hasBaseType(x, checkBase));
+        return (t.flags & TypeFlags.Intersection) != 0 && Core.Some(t.Types(), (checker: this, checkBase), static (x, state) => state.checker.hasBaseType(x, state.checkBase));
     }
 
     private void reportCircularBaseType(Node node, Type t) => error(node, Diagnostics.Type_0_recursively_references_itself_as_a_base_type, typeToStringWriteArrayAsGenericType(t));
@@ -15874,14 +15876,17 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static bool someType(Type t, Func<Type, bool> f)
+    private static bool someType(Type t, Func<Type, bool> f) =>
+        someType(t, f, static (type, callback) => callback(type));
+
+    private static bool someType<TState>(Type t, TState state, Func<Type, TState, bool> f)
     {
         if (((t.flags & TypeFlags.Union) != 0))
         {
-            return Core.Some(t.Types(), f);
+            return Core.Some(t.Types(), state, f);
         }
 
-        return f(t);
+        return f(t, state);
     }
 }
 
@@ -19333,10 +19338,8 @@ public sealed partial class Checker
             }
 
             this.awaitedTypeStack = this.awaitedTypeStack.Append(t);
-            var mapped = this.mapType(t, (t2) =>
-            {
-                return this.getAwaitedTypeNoAliasEx(t2, errorNode, diagnosticMessage, args);
-            });
+            var mapped = this.mapTypeEx(t, (checker: this, errorNode, diagnosticMessage, args), static (t2, state) =>
+                state.checker.getAwaitedTypeNoAliasEx(t2, state.errorNode, state.diagnosticMessage, state.args), false);
             this.awaitedTypeStack = this.awaitedTypeStack.Slice2(0, this.awaitedTypeStack.Length - 1);
             this.cachedTypes[key] = mapped;
             return mapped;
@@ -19348,8 +19351,8 @@ public sealed partial class Checker
             return t;
         }
 
-        Type thisTypeForError = default;
-        var promisedType = this.getPromisedTypeOfPromiseEx(t, null, new GoRef<Type>(() => thisTypeForError, v => thisTypeForError = v));
+        var thisTypeForError = new GoRef<Type>(default(Type));
+        var promisedType = this.getPromisedTypeOfPromiseEx(t, null, thisTypeForError);
         if ((promisedType != null))
         {
             if (((t == promisedType) || GoSlices.Contains(this.awaitedTypeStack, promisedType)))
@@ -19379,9 +19382,9 @@ public sealed partial class Checker
             if ((errorNode != null))
             {
                 Diagnostic diagnostic = default;
-                if ((thisTypeForError != null))
+                if ((thisTypeForError.Value != null))
                 {
-                    diagnostic = NewDiagnosticForNode(errorNode, Diagnostics.The_this_context_of_type_0_is_not_assignable_to_method_s_this_of_type_1, this.typeToStringByteString(t), this.typeToStringByteString(thisTypeForError));
+                    diagnostic = NewDiagnosticForNode(errorNode, Diagnostics.The_this_context_of_type_0_is_not_assignable_to_method_s_this_of_type_1, this.typeToStringByteString(t), this.typeToStringByteString(thisTypeForError.Value));
                 }
 
                 this.addDiagnostic(NewDiagnosticChainForNode(diagnostic, errorNode, diagnosticMessage, args));
@@ -20412,7 +20415,7 @@ public sealed partial class Checker
                         }
                         else
                         {
-                            this.reportOperatorError(leftType, @operator, rightType, errorNode, this.bothAreBigIntLike);
+                            this.reportOperatorError(leftType, @operator, rightType, errorNode, this, static (left, right, checker) => checker.bothAreBigIntLike(left, right));
                             resultType = this.errorType;
                         }
                     }
@@ -20501,9 +20504,9 @@ public sealed partial class Checker
                     if ((resultType2 == null))
                     {
                         var closeEnoughKind = (((TypeFlags.NumberLike | TypeFlags.BigIntLike) | TypeFlags.StringLike) | TypeFlags.AnyOrUnknown);
-                        this.reportOperatorError(leftType, @operator, rightType, errorNode, (left2, right2) =>
+                        this.reportOperatorError(leftType, @operator, rightType, errorNode, (checker: this, closeEnoughKind), static (left2, right2, state) =>
                         {
-                            return (this.isTypeAssignableToKind(left2, closeEnoughKind) && this.isTypeAssignableToKind(right2, closeEnoughKind));
+                            return (state.checker.isTypeAssignableToKind(left2, state.closeEnoughKind) && state.checker.isTypeAssignableToKind(right2, state.closeEnoughKind));
                         });
                         return this.anyType;
                     }
@@ -20525,16 +20528,16 @@ public sealed partial class Checker
                     {
                         leftType = this.getBaseTypeOfLiteralTypeForComparison(this.checkNonNullType(leftType, left));
                         rightType = this.getBaseTypeOfLiteralTypeForComparison(this.checkNonNullType(rightType, right));
-                        this.reportOperatorErrorUnless(leftType, @operator, rightType, errorNode, (left3, right3) =>
+                        this.reportOperatorErrorUnless(leftType, @operator, rightType, errorNode, this, static (left3, right3, checker) =>
                         {
                             if ((IsTypeAny(left3) || IsTypeAny(right3)))
                             {
                                 return true;
                             }
 
-                            var leftAssignableToNumber = this.isTypeAssignableTo(left3, this.numberOrBigIntType);
-                            var rightAssignableToNumber = this.isTypeAssignableTo(right3, this.numberOrBigIntType);
-                            return ((leftAssignableToNumber && rightAssignableToNumber) || ((!leftAssignableToNumber && !rightAssignableToNumber) && this.areTypesComparable(left3, right3)));
+                            var leftAssignableToNumber = checker.isTypeAssignableTo(left3, checker.numberOrBigIntType);
+                            var rightAssignableToNumber = checker.isTypeAssignableTo(right3, checker.numberOrBigIntType);
+                            return ((leftAssignableToNumber && rightAssignableToNumber) || ((!leftAssignableToNumber && !rightAssignableToNumber) && checker.areTypesComparable(left3, right3)));
                         });
                     }
 
@@ -20555,9 +20558,9 @@ public sealed partial class Checker
                         }
 
                         this.checkNaNEquality(errorNode, @operator, left, right);
-                        this.reportOperatorErrorUnless(leftType, @operator, rightType, errorNode, (left4, right4) =>
+                        this.reportOperatorErrorUnless(leftType, @operator, rightType, errorNode, this, static (left4, right4, checker) =>
                         {
-                            return (this.isTypeEqualityComparableTo(left4, right4) || this.isTypeEqualityComparableTo(right4, left4));
+                            return (checker.isTypeEqualityComparableTo(left4, right4) || checker.isTypeEqualityComparableTo(right4, left4));
                         });
                     }
 
@@ -20661,21 +20664,24 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private void reportOperatorError(Type leftType, Kind @operator, Type rightType, Node errorNode, Func<Type, Type, bool> isRelated)
+    private void reportOperatorError(Type leftType, Kind @operator, Type rightType, Node errorNode, Func<Type, Type, bool> isRelated) =>
+        reportOperatorError(leftType, @operator, rightType, errorNode, isRelated, isRelated == null ? null : static (left, right, callback) => callback(left, right));
+
+    private void reportOperatorError<TState>(Type leftType, Kind @operator, Type rightType, Node errorNode, TState state, Func<Type, Type, TState, bool> isRelated)
     {
         var wouldWorkWithAwait = false;
         if ((isRelated != null))
         {
             var awaitedLeftType = this.getAwaitedTypeNoAlias(leftType);
             var awaitedRightType = this.getAwaitedTypeNoAlias(rightType);
-            wouldWorkWithAwait = (((!(((awaitedLeftType == leftType) && (awaitedRightType == rightType))) && (awaitedLeftType != null)) && (awaitedRightType != null)) && isRelated(awaitedLeftType, awaitedRightType));
+            wouldWorkWithAwait = (((!(((awaitedLeftType == leftType) && (awaitedRightType == rightType))) && (awaitedLeftType != null)) && (awaitedRightType != null)) && isRelated(awaitedLeftType, awaitedRightType, state));
         }
 
         var effectiveLeft = leftType;
         var effectiveRight = rightType;
         if ((!wouldWorkWithAwait && (isRelated != null)))
         {
-            (effectiveLeft, effectiveRight) = this.getBaseTypesIfUnrelated(leftType, rightType, isRelated);
+            (effectiveLeft, effectiveRight) = this.getBaseTypesIfUnrelated(leftType, rightType, state, isRelated);
         }
 
         var tuple1 = this.getTypeNamesForErrorDisplay(effectiveLeft, effectiveRight);
@@ -20703,24 +20709,24 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private void reportOperatorErrorUnless(Type leftType, Kind @operator, Type rightType, Node errorNode, Func<Type, Type, bool> typesAreCompatible)
+    private void reportOperatorErrorUnless<TState>(Type leftType, Kind @operator, Type rightType, Node errorNode, TState state, Func<Type, Type, TState, bool> typesAreCompatible)
     {
-        if (!typesAreCompatible(leftType, rightType))
+        if (!typesAreCompatible(leftType, rightType, state))
         {
-            this.reportOperatorError(leftType, @operator, rightType, errorNode, typesAreCompatible);
+            this.reportOperatorError(leftType, @operator, rightType, errorNode, state, typesAreCompatible);
         }
     }
 }
 
 public sealed partial class Checker
 {
-    private (Type, Type) getBaseTypesIfUnrelated(Type leftType, Type rightType, Func<Type, Type, bool> isRelated)
+    private (Type, Type) getBaseTypesIfUnrelated<TState>(Type leftType, Type rightType, TState state, Func<Type, Type, TState, bool> isRelated)
     {
         var effectiveLeft = leftType;
         var effectiveRight = rightType;
         var leftBase = this.getBaseTypeOfLiteralType(leftType);
         var rightBase = this.getBaseTypeOfLiteralType(rightType);
-        if (!isRelated(leftBase, rightBase))
+        if (!isRelated(leftBase, rightBase, state))
         {
             effectiveLeft = leftBase;
             effectiveRight = rightBase;
@@ -28164,10 +28170,10 @@ public sealed partial class Checker
         }
         if ((!Ast.IsDecorator(node) && !Ast.IsBinaryExpression(node)))
         {
-            var skipBindingPatterns = Core.Every(signature.typeParameters, (p) =>
-{
-    return (this.getDefaultFromTypeParameter(p) != null);
-});
+            var skipBindingPatterns = Core.Every(signature.typeParameters, this, static (p, checker) =>
+            {
+                return (checker.getDefaultFromTypeParameter(p) != null);
+            });
             var contextualType = this.getContextualType(node, Core.IfElse(skipBindingPatterns, ContextFlags.SkipBindingPatterns, ContextFlags.None));
             if ((contextualType != null))
             {
@@ -28219,10 +28225,10 @@ public sealed partial class Checker
         }
         if (((restType != null) && ((restType.flags & TypeFlags.TypeParameter) != 0)))
         {
-            var info = Core.Find(context.inferences, (info2) =>
-{
-    return (info2.typeParameter == restType);
-});
+            var info = Core.Find(context.inferences, restType, static (info2, target) =>
+            {
+                return (info2.typeParameter == target);
+            });
             if ((info != null))
             {
                 if ((Core.FindIndex(GoRuntime.Slice(args, argCount), isSpreadArgument) < 0))
@@ -28881,9 +28887,9 @@ public sealed partial class Checker
         var inDestructuringPattern = Ast.IsAssignmentTarget(node);
         var inConstContext = this.isConstContext(node);
         var contextualType = this.getApparentTypeOfContextualType(node, ContextFlags.None);
-        var inTupleContext = (isSpreadIntoCallOrNew(node) || ((contextualType != null) && someType(contextualType, (t) =>
+        var inTupleContext = (isSpreadIntoCallOrNew(node) || ((contextualType != null) && someType(contextualType, this, static (t, checker) =>
         {
-            return (this.isTupleLikeType(t) || ((this.isGenericMappedType(t) && (t.AsMappedType().nameType == null)) && (this.getHomomorphicTypeVariable(Core.OrElse(t.AsMappedType().target, t)) != null)));
+            return (checker.isTupleLikeType(t) || ((checker.isGenericMappedType(t) && (t.AsMappedType().nameType == null)) && (checker.getHomomorphicTypeVariable(Core.OrElse(t.AsMappedType().target, t)) != null)));
         })));
         var hasOmittedExpression = false;
         {
@@ -28981,7 +28987,7 @@ public sealed partial class Checker
 
         if (((((checkMode & CheckMode.ForceTuple) != 0) || inConstContext) || inTupleContext))
         {
-            return this.createArrayLiteralType(this.createTupleTypeEx(elementTypes, elementInfos, (inConstContext && !(((contextualType != null) && someType(contextualType, this.isMutableArrayLikeType))))));
+            return this.createArrayLiteralType(this.createTupleTypeEx(elementTypes, elementInfos, (inConstContext && !(((contextualType != null) && someType(contextualType, this, static (t, checker) => checker.isMutableArrayLikeType(t)))))));
         }
 
         Type elementType = default;
@@ -31064,7 +31070,7 @@ public sealed partial class Checker
             }
             if (targetMode == ModuleKind.None && file.AsSourceFile().IsDeclarationFile &&
                 (program.GetRedirectForResolution(file.AsSourceFile()) != null ||
-                 program.GetProjectReferenceFromOutputDts(PathKey.FromGoString(file.AsSourceFile().PathKey())) != null))
+                 program.GetProjectReferenceFromOutputDts(PathKey.FromValue(file.AsSourceFile().PathKeyValue())) != null))
             {
                 var targetModuleKind = program.GetEmitModuleFormatOfFile(file.AsSourceFile());
                 if (usageMode == ResolutionMode.ESNext && targetModuleKind >= ModuleKind.ES2015 && targetModuleKind <= ModuleKind.ESNext)
@@ -32378,7 +32384,7 @@ public sealed partial class Checker
                 var constEnumDeclaration = target.ValueDeclaration;
                 if (((constEnumDeclaration != null) && ((constEnumDeclaration.Flags & NodeFlags.Ambient) != 0)))
                 {
-                    var redirect = this.program.GetProjectReferenceFromOutputDts(PathKey.FromGoString(Ast.GetSourceFileOfNode(constEnumDeclaration).PathKey()));
+                    var redirect = this.program.GetProjectReferenceFromOutputDts(PathKey.FromValue(Ast.GetSourceFileOfNode(constEnumDeclaration).PathKeyValue()));
                     if (((redirect == null) || !redirect.Resolved.CompilerOptions().ShouldPreserveConstEnums()))
                     {
                         this.error(node, Diagnostics.Cannot_access_ambient_const_enums_when_0_is_enabled, this.getIsolatedModulesLikeFlagName());
@@ -33055,7 +33061,7 @@ public sealed partial class Checker
                 }
                 else
                 {
-                    if ((resolvedModule.ResolvedUsingTsExtension && !this.compilerOptions.AllowImportingTsExtensionsFrom(importingSourceFile.FileNameGoBytes())))
+                    if ((resolvedModule.ResolvedUsingTsExtension && !this.compilerOptions.AllowImportingTsExtensionsFrom(importingSourceFile.FileNameGoValue())))
                     {
                         if ((Ast.FindAncestor(location, Ast.IsEmittableImport) != null))
                         {
@@ -33089,7 +33095,7 @@ public sealed partial class Checker
                             {
                                 var relativeToSourceFile = resolvedModule.ResolvedFileName.AsString();
                                 {
-                                    var tuple2 = this.program.CaseSensitivity().RelativePathFromFile(RootedFilePath.FromGoString(importingSourceFile.FileNameGoBytes()), resolvedModule.ResolvedFileName); var relativePath = tuple2.Item1; var ok = tuple2.Item2;
+                                    var tuple2 = this.program.CaseSensitivity().RelativePathFromFile(RootedFilePath.FromValue(importingSourceFile.FileNameGoValue()), resolvedModule.ResolvedFileName); var relativePath = tuple2.Item1; var ok = tuple2.Item2;
                                     if (ok)
                                     {
                                         relativeToSourceFile = relativePath.AsModuleSpecifier().AsString();
@@ -33116,12 +33122,12 @@ public sealed partial class Checker
                                                 var caseSensitivity = this.program.CaseSensitivity();
                                                 var tuple3 = caseSensitivity.RelativePathFromDirectory(ownRootDir, TsPath.RootedFilePathFromPath(otherRootDir.AsPath())); var rootDirPath = tuple3.Item1; var rootsCompatible = tuple3.Item2;
                                                 var ownOutDir = ownRootDir;
-                                                if ((this.compilerOptions.OutDir.AsString() != ""))
+                                                if ((this.compilerOptions.OutDir.AsValue().Length != 0))
                                                 {
                                                     ownOutDir = this.compilerOptions.OutDir;
                                                 }
                                                 var otherOutDir = otherRootDir;
-                                                if ((redirect.CompilerOptions().OutDir.AsString() != ""))
+                                                if ((redirect.CompilerOptions().OutDir.AsValue().Length != 0))
                                                 {
                                                     otherOutDir = redirect.CompilerOptions().OutDir;
                                                 }
@@ -33143,7 +33149,7 @@ public sealed partial class Checker
             {
                 if ((errorNode != null))
                 {
-                    if ((resolvedModule.IsExternalLibraryImport && !resolutionExtensionIsTSOrJson(resolvedModule.Extension)))
+                    if ((resolvedModule.IsExternalLibraryImport && !resolutionExtensionIsTSOrJson(resolvedModule.ExtensionValue)))
                     {
                         this.errorOnImplicitAnyModule(false, errorNode, mode, resolvedModule, moduleReference);
                     }
@@ -33160,7 +33166,7 @@ public sealed partial class Checker
                             else
                             {
                                 Diagnostic diagnosticDetails = default;
-                                var ext2 = RootedFilePath.FromGoString(importingSourceFile.FileNameGoBytes()).Extension();
+                                var ext2 = RootedFilePath.FromValue(importingSourceFile.FileNameGoValue()).Extension();
                                 if (((((ext2 == TsPath.ExtensionTs) || (ext2 == TsPath.ExtensionJs)) || (ext2 == TsPath.ExtensionTsx)) || (ext2 == TsPath.ExtensionJsx)))
                                 {
                                     diagnosticDetails = this.createModeMismatchDetails(importingSourceFile, errorNode);
@@ -33208,7 +33214,7 @@ public sealed partial class Checker
         {
             return null;
         }
-        if ((((resolvedModule.IsResolved() && !resolutionExtensionIsTSOrJson(resolvedModule.Extension)) && (resolutionDiagnostic == null)) || (resolutionDiagnostic == Diagnostics.Could_not_find_a_declaration_file_for_module_0_1_implicitly_has_an_any_type)))
+        if ((((resolvedModule.IsResolved() && !resolutionExtensionIsTSOrJson(resolvedModule.ExtensionValue)) && (resolutionDiagnostic == null)) || (resolutionDiagnostic == Diagnostics.Could_not_find_a_declaration_file_for_module_0_1_implicitly_has_an_any_type)))
         {
             if (isForAugmentation)
             {
@@ -33225,7 +33231,7 @@ public sealed partial class Checker
             if (resolvedModule.IsResolved())
             {
                 var redirect2 = this.program.GetProjectReferenceFromSource(resolvedModule.ResolvedPath);
-                if (((redirect2 != null) && (redirect2.OutputDts.AsString() != "")))
+                if (((redirect2 != null) && (redirect2.OutputDts.AsValue().Length != 0)))
                 {
                     this.error(errorNode, Diagnostics.Output_file_0_has_not_been_built_from_source_file_1, redirect2.OutputDts, resolvedModule.ResolvedFileName);
                     return null;
@@ -33250,7 +33256,7 @@ public sealed partial class Checker
                         string suggestedExt = "";
                         if (!TsPath.HasTrailingDirectorySeparator(moduleReference))
                         {
-                            var absoluteRef = RootedFilePath.FromGoString(importingSourceFile.FileNameGoBytes()).Directory().ResolveFile(moduleReference.Materialize());
+                            var absoluteRef = RootedFilePath.FromValue(importingSourceFile.FileNameGoValue()).Directory().ResolveFile(moduleReference);
                             suggestedExt = this.getSuggestedImportExtension(absoluteRef);
                         }
                         if ((suggestedExt != ""))
@@ -33264,7 +33270,7 @@ public sealed partial class Checker
                     }
                     else
                     {
-                        if (((resolvedModule != null) && (resolvedModule.AlternateResult.AsString() != "")))
+                        if (((resolvedModule != null) && (resolvedModule.AlternateResult.AsValue().Length != 0)))
                         {
                             var errorInfo = this.createModuleNotFoundChain(resolvedModule, errorNode, moduleReference.Materialize(), mode, moduleReference.Materialize());
                             this.addDiagnostic(NewDiagnosticChainForNode(errorInfo, errorNode, moduleNotFoundError, moduleReference));
@@ -35233,9 +35239,9 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static bool resolutionExtensionIsTSOrJson(string ext)
+    private static bool resolutionExtensionIsTSOrJson(ByteStringValue ext)
     {
-        return (TsPath.ExtensionIsTs(ext) || (ext == TsPath.ExtensionJson));
+        return (TsPath.ExtensionIsTs(ext) || ext.EqualsString(TsPath.ExtensionJson));
     }
 }
 
@@ -35685,10 +35691,10 @@ public sealed partial class Checker
 {
     private bool isNodeWithinClass(Node node, Node classDeclaration)
     {
-        return this.forEachEnclosingClass(node, (n) =>
-{
-    return (n == classDeclaration);
-});
+        return this.forEachEnclosingClass(node, classDeclaration, static (n, declaration) =>
+        {
+            return (n == declaration);
+        });
     }
 }
 
@@ -35729,12 +35735,12 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private bool forEachEnclosingClass(Node node, Func<Node, bool> callback)
+    private bool forEachEnclosingClass<TState>(Node node, TState state, Func<Node, TState, bool> callback)
     {
         var containingClass = Ast.GetContainingClass(node);
         while ((containingClass != null))
         {
-            var result = callback(containingClass);
+            var result = callback(containingClass, state);
             if (result)
             {
                 return true;
@@ -36935,7 +36941,7 @@ public sealed partial class Checker
             {
                 if ((errorNode != null))
                 {
-                    var suggestion = this.getSuggestedSymbolForNonexistentClassMember(Ast.SymbolName(member), baseType);
+                    var suggestion = this.getSuggestedSymbolForNonexistentClassMember(Ast.SymbolNameValue(member), baseType);
                     if ((suggestion != null))
                     {
                         this.error(errorNode, Core.IfElse(isJs, Diagnostics.This_member_cannot_have_a_JSDoc_comment_with_an_override_tag_because_it_is_not_declared_in_the_base_class_0_Did_you_mean_1, Diagnostics.This_member_cannot_have_an_override_modifier_because_it_is_not_declared_in_the_base_class_0_Did_you_mean_1), this.typeToStringByteString(baseWithThis), this.symbolToString(suggestion));
@@ -36990,7 +36996,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Symbol getSuggestedSymbolForNonexistentClassMember(string name, Type baseType)
+    private Symbol getSuggestedSymbolForNonexistentClassMember(ByteStringValue name, Type baseType)
     {
         return this.getSpellingSuggestionForName(name, GoSlices.Values(this.getPropertiesOfType(baseType)), SymbolFlags.ClassMember);
     }
@@ -37727,7 +37733,7 @@ public sealed partial class Checker
         ref var links = ref this.sourceFileLinks.Get(file.AsNode());
         if ((links.externalHelpersModule == null))
         {
-            var location = this.program.GetImportHelpersImportSpecifier(PathKey.FromGoString(file.PathKey()));
+            var location = this.program.GetImportHelpersImportSpecifier(PathKey.FromValue(file.PathKeyValue()));
             var helpersModule = this.resolveExternalModule(location, externalHelpersModuleNameText, Diagnostics.This_syntax_requires_an_imported_helper_but_module_0_cannot_be_found, errorNode, false, null);
             if ((helpersModule == null))
             {
@@ -38315,7 +38321,7 @@ public sealed partial class Checker
         if ((node.Kind == Kind.TypeAssertionExpression))
         {
             var file = Ast.GetSourceFileOfNode(node);
-            if (((file != null) && RootedFilePath.FromGoString(file.FileNameGoBytes()).ExtensionIsOneOf(new List<string> { TsPath.ExtensionMts, TsPath.ExtensionCts })))
+            if (((file != null) && RootedFilePath.FromValue(file.FileNameGoValue()).ExtensionIsOneOf(new List<string> { TsPath.ExtensionMts, TsPath.ExtensionCts })))
             {
                 this.grammarErrorOnNode(node, Diagnostics.This_syntax_is_reserved_in_files_with_the_mts_or_cts_extension_Use_an_as_expression_instead);
             }
@@ -40420,7 +40426,7 @@ public sealed partial class Checker
     {
         if (((ModuleKind.Node16 <= this.moduleKind) && (this.moduleKind <= ModuleKind.NodeNext)))
         {
-            var sourceFileMetaData = this.program.GetSourceFileMetaData(PathKey.FromGoString(Ast.GetSourceFileOfNode(node).PathKey()));
+            var sourceFileMetaData = this.program.GetSourceFileMetaData(PathKey.FromValue(Ast.GetSourceFileOfNode(node).PathKeyValue()));
             if ((sourceFileMetaData.ImpliedNodeFormat != ResolutionMode.ESNext))
             {
                 this.error(node, Diagnostics.The_import_meta_meta_property_is_not_allowed_in_files_which_will_build_into_CommonJS_output);
@@ -41988,7 +41994,7 @@ public sealed partial class Checker
         {
             Debug.Assert(((t.symbol.Flags & SymbolFlags.ConstEnum) != 0));
             var constEnumDeclaration = t.symbol.ValueDeclaration;
-            var redirect = this.program.GetProjectReferenceFromOutputDts(PathKey.FromGoString(Ast.GetSourceFileOfNode(constEnumDeclaration).PathKey()));
+            var redirect = this.program.GetProjectReferenceFromOutputDts(PathKey.FromValue(Ast.GetSourceFileOfNode(constEnumDeclaration).PathKeyValue()));
             if (((((constEnumDeclaration.Flags & NodeFlags.Ambient) != 0) && !Ast.IsValidTypeOnlyAliasUseSite(node)) && (((redirect == null) || !redirect.Resolved.CompilerOptions().ShouldPreserveConstEnums()))))
             {
                 this.error(node, Diagnostics.Cannot_access_ambient_const_enums_when_0_is_enabled, this.getIsolatedModulesLikeFlagName());

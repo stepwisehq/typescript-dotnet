@@ -15,7 +15,8 @@ public enum Usage : sbyte
 public static class VfsMatch
 {
     public const int UnlimitedDepth = int.MaxValue;
-    public static bool IsImplicitGlob(string component) => component.IndexOfAny(['.', '*', '?']) < 0;
+    public static bool IsImplicitGlob(string component) => IsImplicitGlob(ByteStringValue.FromString(component is null ? throw new NullReferenceException() : component));
+    internal static bool IsImplicitGlob(ByteStringValue component) => component.IndexOf('.') < 0 && component.IndexOfAny('*', '?') < 0;
     internal enum ComponentKind
     {
         Literal,
@@ -35,18 +36,18 @@ public static class VfsMatch
     internal static bool isHiddenPath(ByteStringValue name) => name.Length > 0 && name[0] == '.';
     internal static bool isPackageFolder(ByteStringValue name) => name.Length switch
     {
-        12 => UnicodeCase.EqualFold(name.CharSpan, "node_modules".AsSpan()),
-        13 => UnicodeCase.EqualFold(name.CharSpan, "jspm_packages".AsSpan()),
-        16 => UnicodeCase.EqualFold(name.CharSpan, "bower_components".AsSpan()),
+        12 => UnicodeCase.EqualFold(name, ByteStringValue.FromString("node_modules")),
+        13 => UnicodeCase.EqualFold(name, ByteStringValue.FromString("jspm_packages")),
+        16 => UnicodeCase.EqualFold(name, ByteStringValue.FromString("bower_components")),
         _ => false
     };
-    internal static Slice<Segment> parseSegments(string value)
+    internal static Slice<Segment> parseSegments(ByteStringValue value)
     {
         int wildcards = 0;
-        foreach (char c in value)
-            if (c is '*' or '?') wildcards++;
+        for (int i = 0; i < value.Length; i++)
+            if (value[i] is '*' or '?') wildcards++;
         var result = Slice<Segment>.Make(0, 2 * wildcards + 1);
-        var text = ByteStringValue.FromString(value);
+        var text = value;
         int start = 0;
         for (int i = 0; i < value.Length; i++)
         {
@@ -63,35 +64,39 @@ public static class VfsMatch
         return result;
     }
 
-    internal static Component parseComponent(string value, bool include)
+    internal static Component parseComponent(ByteStringValue value, bool include)
     {
-        if (value == "**")
+        if (value.EqualsBytes("**"u8))
             return new(ComponentKind.DoubleAsterisk, default, default, false);
-        if (value.IndexOfAny(['*', '?']) < 0)
-            return new(ComponentKind.Literal, ByteStringValue.FromString(value), default, false);
+        if (value.IndexOfAny('*', '?') < 0)
+            return new(ComponentKind.Literal, value, default, false);
         return new(ComponentKind.Wildcard, default, parseSegments(value), include);
     }
 
-    internal static (GlobPattern? Pattern, bool Ok) compileGlobPattern(string spec, RootedDirectoryPath basePath, Usage usage, CaseSensitivity sensitivity)
+    private static int decodeRuneSize(ByteStringValue value, int offset) => value.IsBytes
+        ? Utf8.DecodeRuneInString(value.ByteSpan.Slice(offset)).Size
+        : Utf8.DecodeRuneInString(value.CharSpan.Slice(offset)).Size;
+
+    internal static (GlobPattern? Pattern, bool Ok) compileGlobPattern(ByteStringValue spec, RootedDirectoryPath basePath, Usage usage, CaseSensitivity sensitivity)
     {
-        List<string> parts = TsPath.ReducePathComponents(TsPath.GetPathComponents(TsPath.CombinePaths(basePath.AsString(), spec)));
-        if (parts[0].StartsWith("^/~ts-uri~/", StringComparison.Ordinal))
+        var parts = TsPath.ReducePathComponents(TsPath.GetPathComponents(TsPath.CombinePaths(basePath.AsValue(), spec)));
+        if (parts[0].StartsWith("^/~ts-uri~/"u8))
             sensitivity = CaseSensitivity.CaseSensitive;
-        if (usage != Usage.Exclude && parts[^1] == "**")
+        if (usage != Usage.Exclude && parts[parts.Length - 1].EqualsBytes("**"u8))
             return (null, false);
         parts[0] = TsPath.RemoveTrailingDirectorySeparator(parts[0]);
-        if (parts[0].StartsWith("^/~ts-uri~/", StringComparison.Ordinal))
-            parts = [..parts[0].Split('/'), ..parts.Skip(1)];
-        if (IsImplicitGlob(parts[^1]))
+        if (parts[0].StartsWith("^/~ts-uri~/"u8))
+            parts = GoStrings.Split(parts[0], "/").Append(parts.Slice2(1, parts.Length));
+        if (IsImplicitGlob(parts[parts.Length - 1]))
         {
-            parts.Add("**");
-            parts.Add("*");
+            parts = parts.Append(ByteStringValue.FromString("**"));
+            parts = parts.Append(ByteStringValue.FromString("*"));
         }
 
         return (new GlobPattern(Core.MapSlice(parts, usage, static (part, usage) => parseComponent(part, usage != Usage.Exclude)), usage == Usage.Exclude, sensitivity, usage == Usage.Files), true);
     }
 
-    internal static (ByteStringValue Part, int NextOffset, bool Ok) nextPathPartSingle(string value, int offset)
+    internal static (ByteStringValue Part, int NextOffset, bool Ok) nextPathPartSingle(ByteStringValue value, int offset)
     {
         if (offset >= value.Length)
             return (default, offset, false);
@@ -101,15 +106,16 @@ public static class VfsMatch
             offset++;
         if (offset >= value.Length)
             return (default, offset, false);
-        int index = value.IndexOf('/', offset);
-        return index >= 0 ? (ByteStringValue.FromString(value).Slice(offset, index), index, true) : (ByteStringValue.FromString(value).Slice(offset), value.Length, true);
+        int index = value.Slice(offset).IndexOf('/');
+        if (index >= 0) index += offset;
+        return index >= 0 ? (value.Slice(offset, index), index, true) : (value.Slice(offset), value.Length, true);
     }
 
-    internal static (ByteStringValue Part, int NextOffset, bool Ok) nextPathPartParts(string prefix, string suffix, int offset)
+    internal static (ByteStringValue Part, int NextOffset, bool Ok) nextPathPartParts(ByteStringValue prefix, ByteStringValue suffix, int offset)
     {
-        if (suffix == "")
+        if (suffix.Length == 0)
             return nextPathPartSingle(prefix, offset);
-        if (prefix == "")
+        if (prefix.Length == 0)
             return nextPathPartSingle(suffix, offset);
         if (offset >= prefix.Length + suffix.Length)
             return (default, offset, false);
@@ -121,30 +127,31 @@ public static class VfsMatch
                 offset++;
             if (offset < prefix.Length)
             {
-                int index = prefix.IndexOf('/', offset);
+                int index = prefix.Slice(offset).IndexOf('/');
+                if (index >= 0) index += offset;
                 if (index < 0)
                     throw new InvalidOperationException("virtual prefix must end with slash");
-                return (ByteStringValue.FromString(prefix).Slice(offset, index), index, true);
+                return (prefix.Slice(offset, index), index, true);
             }
         }
 
         int suffixOffset = offset - prefix.Length;
-        return suffixOffset >= suffix.Length ? (default, offset, false) : (ByteStringValue.FromString(suffix).Slice(suffixOffset), prefix.Length + suffix.Length, true);
+        return suffixOffset >= suffix.Length ? (default, offset, false) : (suffix.Slice(suffixOffset), prefix.Length + suffix.Length, true);
     }
 
     internal readonly struct GlobPattern(Slice<Component> components, bool isExclude, CaseSensitivity sensitivity, bool excludeMinJs)
     {
-        internal bool stringsEqual(ByteStringValue left, ByteStringValue right) => sensitivity.IsCaseSensitive() ? left.EqualsValue(right) : UnicodeCase.EqualFold(left.CharSpan, right.CharSpan);
-        internal bool matches(string path) => matchPathParts(path, "", 0, 0, false);
-        internal bool matchesParts(string prefix, string suffix) => matchPathParts(prefix, suffix, 0, 0, false);
-        internal bool matchesPrefixParts(string prefix, string suffix) => matchPathParts(prefix, suffix, 0, 0, true);
+        internal bool stringsEqual(ByteStringValue left, ByteStringValue right) => sensitivity.IsCaseSensitive() ? left.EqualsValue(right) : UnicodeCase.EqualFold(left, right);
+        internal bool matches(ByteStringValue path) => path.IsNull ? throw new NullReferenceException() : matchPathParts(path, default, 0, 0, false);
+        internal bool matchesParts(ByteStringValue prefix, ByteStringValue suffix) => matchPathParts(prefix, suffix, 0, 0, false);
+        internal bool matchesPrefixParts(ByteStringValue prefix, ByteStringValue suffix) => matchPathParts(prefix, suffix, 0, 0, true);
         internal bool patternSatisfied(int index)
         {
             foreach (var component in components.Slice2(index, components.Length))
                 if (component.Kind != ComponentKind.DoubleAsterisk) return false;
             return true;
         }
-        internal bool matchPathParts(string prefix, string suffix, int pathOffset, int componentIndex, bool prefixOnly)
+        internal bool matchPathParts(ByteStringValue prefix, ByteStringValue suffix, int pathOffset, int componentIndex, bool prefixOnly)
         {
             while (true)
             {
@@ -220,7 +227,7 @@ public static class VfsMatch
                         case SegmentKind.Question:
                             if (value[stringIndex] != '/')
                             {
-                                stringIndex += Utf8.DecodeRuneInString(value.CharSpan.Slice(stringIndex)).Size;
+                                stringIndex += decodeRuneSize(value, stringIndex);
                                 segmentIndex++;
                                 continue;
                             }
@@ -236,7 +243,7 @@ public static class VfsMatch
 
                 if (starSegment >= 0 && starString < value.Length && value[starString] != '/')
                 {
-                    starString += Utf8.DecodeRuneInString(value.CharSpan.Slice(starString)).Size;
+                    starString += decodeRuneSize(value, starString);
                     stringIndex = starString;
                     segmentIndex = starSegment + 1;
                     continue;
@@ -282,7 +289,7 @@ public static class VfsMatch
             Includes = Slice<GlobPattern>.Make(0, includeCount);
             excludes = Slice<GlobPattern>.Make(0, excludeCount);
         }
-        internal static GlobMatcher Create<T>(ReadOnlySpan<T> includes, ReadOnlySpan<T> excludeSpecs, RootedDirectoryPath path, CaseSensitivity sensitivity, Usage usage, Func<T, string> text)
+        internal static GlobMatcher Create<T>(ReadOnlySpan<T> includes, ReadOnlySpan<T> excludeSpecs, RootedDirectoryPath path, CaseSensitivity sensitivity, Usage usage, Func<T, ByteStringValue> text)
         {
             var result = new GlobMatcher(includes.Length, excludeSpecs.Length);
             foreach (var spec in includes)
@@ -298,7 +305,7 @@ public static class VfsMatch
             return result;
         }
 
-        internal (int Index, bool Ok) matchesFileParts(string prefix, string suffix)
+        internal (int Index, bool Ok) matchesFileParts(ByteStringValue prefix, ByteStringValue suffix)
         {
             foreach (var pattern in excludes)
                 if (pattern.matchesParts(prefix, suffix)) return (0, false);
@@ -310,7 +317,7 @@ public static class VfsMatch
             return (0, false);
         }
 
-        internal bool matchesDirectoryParts(string prefix, string suffix)
+        internal bool matchesDirectoryParts(ByteStringValue prefix, ByteStringValue suffix)
         {
             foreach (var pattern in excludes)
                 if (pattern.matchesParts(prefix, suffix)) return false;
@@ -321,15 +328,15 @@ public static class VfsMatch
         }
     }
 
-    internal static string getIncludeBasePath(string absolute)
+    internal static ByteStringValue getIncludeBasePath(ByteStringValue absolute)
     {
-        int wildcard = absolute.IndexOfAny(['*', '?']);
+        int wildcard = absolute.IndexOfAny('*', '?');
         if (wildcard < 0)
             return !TsPath.GetBaseFileName(absolute).Contains('.') ? absolute : TsPath.RemoveTrailingDirectorySeparator(TsPath.GetDirectoryPath(absolute));
-        return absolute[..Math.Max(absolute[..wildcard].LastIndexOf('/'), TsPath.GetRootLength(absolute))];
+        return absolute.Slice(0, Math.Max(absolute.Slice(0, wildcard).LastIndexOf('/'), TsPath.GetRootLength(absolute)));
     }
 
-    internal static Slice<RootedDirectoryPath> getBasePaths<T>(RootedDirectoryPath path, ReadOnlySpan<T> includes, CaseSensitivity sensitivity, Func<T, string> text)
+    internal static Slice<RootedDirectoryPath> getBasePaths<T>(RootedDirectoryPath path, ReadOnlySpan<T> includes, CaseSensitivity sensitivity, Func<T, ByteStringValue> text)
     {
         var result = Slice<RootedDirectoryPath>.FromArray([path]);
         if (includes.IsEmpty) return result;
@@ -337,7 +344,7 @@ public static class VfsMatch
         foreach (var spec in includes)
         {
             var include = text(spec);
-            includePaths = includePaths.Append(TsPath.ToRootedDirectoryPath(getIncludeBasePath(TsPath.NormalizePath(TsPath.IsRootedDiskPath(include) ? include : TsPath.CombinePaths(path.AsString(), include))), path));
+            includePaths = includePaths.Append(TsPath.ToRootedDirectoryPath(getIncludeBasePath(TsPath.NormalizePath(TsPath.IsRootedDiskPath(include) ? include : TsPath.CombinePaths(path.AsValue(), include))), path));
         }
         GoSlices.SortStableFunc(includePaths, (a, b) => sensitivity.ComparePaths(a.AsPath(), b.AsPath()));
         foreach (var candidate in includePaths)
@@ -356,20 +363,20 @@ public static class VfsMatch
         internal Slice<Slice<RootedFilePath>> Results = Slice<Slice<RootedFilePath>>.Make(Math.Max(fileMatcher.Includes.Length, 1));
         internal void visit(RootedDirectoryPath path, int depth, RootedDirectoryPath realPath)
         {
-            if (realPath.AsString() == "")
+            if (realPath.AsValue().Length == 0)
                 realPath = TsPath.RootedDirectoryPathFromPath(host.Realpath(path.AsPath()));
             if (!visited.Add(sensitivity.PathKey(realPath.AsPath())))
                 return;
             Entries entries = host.GetAccessibleEntries(path);
-            string prefix = TsPath.EnsureTrailingDirectorySeparator(path.AsString());
+            var prefix = TsPath.EnsureTrailingDirectorySeparator(path.AsValue());
             if (!entries.Files.IsNil)
-                foreach (string file in entries.Files)
+                foreach (var file in entries.Files)
                 {
                     if (extensions is { Count: > 0 })
                     {
                         bool hasExtension = false;
                         foreach (var extension in extensions)
-                            if (file.Length > extension.Length && file.EndsWith(extension, StringComparison.Ordinal)) { hasExtension = true; break; }
+                            if (file.Length > extension.Length && file.EndsWith(ByteStringValue.FromString(extension))) { hasExtension = true; break; }
                         if (!hasExtension) continue;
                     }
                     var(index, ok) = fileMatcher.matchesFileParts(prefix, file);
@@ -386,12 +393,12 @@ public static class VfsMatch
 
             if (entries.Directories.IsNil)
                 return;
-            foreach (string directory in entries.Directories)
+            foreach (var directory in entries.Directories)
             {
                 if (!directoryMatcher.matchesDirectoryParts(prefix, directory))
                     continue;
                 RootedDirectoryPath childRealPath = default;
-                if (entries.Symlinks != null && !entries.Symlinks.Contains(directory))
+                if (entries.Symlinks != null && !directory.ContainsIn(entries.Symlinks))
                     childRealPath = realPath.ResolveDirectory(directory);
                 visit(path.ResolveDirectory(directory), depth, childRealPath);
             }
@@ -399,7 +406,7 @@ public static class VfsMatch
     }
 
     private static ReadOnlySpan<T> Borrow<T>(List<T>? values) => values is null ? default : System.Runtime.InteropServices.CollectionsMarshal.AsSpan(values);
-    private static Slice<RootedFilePath> readDirectory<T>(IFS host, RootedDirectoryPath path, List<string>? extensions, ReadOnlySpan<T> excludes, ReadOnlySpan<T> includes, int depth, Func<T, string> text)
+    private static Slice<RootedFilePath> readDirectory<T>(IFS host, RootedDirectoryPath path, List<string>? extensions, ReadOnlySpan<T> excludes, ReadOnlySpan<T> includes, int depth, Func<T, ByteStringValue> text)
     {
         CaseSensitivity sensitivity = host.CaseSensitivity();
         var fileMatcher = GlobMatcher.Create(includes, excludes, path, sensitivity, Usage.Files, text);
@@ -413,10 +420,12 @@ public static class VfsMatch
     }
 
     public static Slice<RootedFilePath> ReadDirectory(IFS host, RootedDirectoryPath path, List<string>? extensions, List<string>? excludes, List<string>? includes, int depth) =>
-        readDirectory(host, path, extensions, Borrow(excludes), Borrow(includes), depth, static value => value);
+        readDirectory(host, path, extensions, Borrow(excludes), Borrow(includes), depth, static value => ByteStringValue.FromString(value));
+    internal static Slice<RootedFilePath> ReadDirectory(IFS host, RootedDirectoryPath path, List<string>? extensions, Slice<ByteStringValue> excludes, Slice<ByteStringValue> includes, int depth) =>
+        readDirectory(host, path, extensions, excludes.AsSpan(), includes.AsSpan(), depth, static value => value);
     public static Slice<RootedFilePath> ReadDirectory(IFS host, RootedDirectoryPath path, List<string>? extensions, List<PathPattern>? excludes, List<PathPattern>? includes, int depth) =>
-        readDirectory(host, path, extensions, Borrow(excludes), Borrow(includes), depth, static value => value.AsString());
-    private static SpecMatcher? newSpecMatcher<T>(ReadOnlySpan<T> specs, RootedDirectoryPath path, Usage usage, CaseSensitivity sensitivity, Func<T, string> text)
+        readDirectory(host, path, extensions, Borrow(excludes), Borrow(includes), depth, static value => value.AsValue());
+    private static SpecMatcher? newSpecMatcher<T>(ReadOnlySpan<T> specs, RootedDirectoryPath path, Usage usage, CaseSensitivity sensitivity, Func<T, ByteStringValue> text)
     {
         if (specs.IsEmpty) return null;
         var patterns = Slice<GlobPattern>.Make(0, specs.Length);
@@ -428,9 +437,9 @@ public static class VfsMatch
         return patterns.Length == 0 ? null : new SpecMatcher(patterns);
     }
     public static SpecMatcher? NewSpecMatcher(List<string>? specs, RootedDirectoryPath path, Usage usage, CaseSensitivity sensitivity) =>
-        newSpecMatcher(Borrow(specs), path, usage, sensitivity, static value => value);
+        newSpecMatcher(Borrow(specs), path, usage, sensitivity, static value => ByteStringValue.FromString(value));
     public static SpecMatcher? NewSpecMatcher(List<PathPattern>? specs, RootedDirectoryPath path, Usage usage, CaseSensitivity sensitivity) =>
-        newSpecMatcher(Borrow(specs), path, usage, sensitivity, static value => value.AsString());
+        newSpecMatcher(Borrow(specs), path, usage, sensitivity, static value => value.AsValue());
 
 }
 
@@ -438,14 +447,16 @@ public sealed class SpecMatcher
 {
     private readonly Slice<VfsMatch.GlobPattern> patterns;
     internal SpecMatcher(Slice<VfsMatch.GlobPattern> patterns) => this.patterns = patterns;
-    public bool MatchString(string path)
+    public bool MatchString(string path) => MatchValue(ByteStringValue.FromString(path));
+    public bool MatchValue(ByteStringValue path)
     {
         foreach (var pattern in patterns)
             if (pattern.matches(path)) return true;
         return false;
     }
-    public bool MatchFileName(RootedFilePath path) => MatchString(path.AsString());
-    public int MatchIndex(string path)
+    public bool MatchFileName(RootedFilePath path) => MatchValue(path.AsValue());
+    public int MatchIndex(string path) => MatchIndex(ByteStringValue.FromString(path));
+    public int MatchIndex(ByteStringValue path)
     {
         for (int i = 0; i < patterns.Length; i++)
             if (patterns[i].matches(path))
@@ -453,5 +464,5 @@ public sealed class SpecMatcher
         return -1;
     }
 
-    public int MatchFileNameIndex(RootedFilePath path) => MatchIndex(path.AsString());
+    public int MatchFileNameIndex(RootedFilePath path) => MatchIndex(path.AsValue());
 }

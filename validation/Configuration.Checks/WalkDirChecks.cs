@@ -57,7 +57,7 @@ public static class WalkDirChecks
                 var entries = basis.GetAccessibleEntries(path);
                 entries.Symlinks = null;
                 if (path.AsString() == "/root")
-                    (entries.Files ??= []).Add("C:/foreign.ts");
+                    entries.Files = entries.Files.Append(ByteStringValue.FromString("C:/foreign.ts"));
                 return entries;
             },
             Resolve = path => path.AsString() switch

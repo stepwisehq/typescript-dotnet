@@ -26,8 +26,8 @@ public static partial class Vfs
         if (rootInfo == null)
             return normalizeWalkDirError(walkFn(root, null, ErrNotExist));
         CaseSensitivity sensitivity = fileSystem.CaseSensitivity();
-        var(rootPrefix, _) = root.RootAndRelativePath();
-        bool SameRoot(RootedPath path) => sensitivity.ComparePaths(path.RootAndRelativePath().Root.AsPath(), rootPrefix.AsPath()) == 0;
+        var(rootPrefix, _) = root.RootAndRelativePathValue();
+        bool SameRoot(RootedPath path) => sensitivity.ComparePaths(path.RootAndRelativePathValue().Root.AsPath(), rootPrefix.AsPath()) == 0;
         bool Equivalent(RootedPath left, RootedPath right) => sensitivity.ComparePaths(left, right) == 0;
         var visited = new HashSet<PathKey>();
         Exception? Visit(RootedPath path, DirEntry entry, RootedPath realpath)
@@ -46,13 +46,13 @@ public static partial class Vfs
                 return null;
             RootedDirectoryPath directory = TsPath.RootedDirectoryPathFromPath(path);
             Entries entries = fileSystem.GetAccessibleEntries(directory);
-            var directories = new HashSet<string>(entries.Directories.Length, StringComparer.Ordinal);
-            foreach (var name in entries.Directories) directories.Add(name);
+            var directories = new HashSet<ByteStringKey>(entries.Directories.Length, ByteStringKey.Comparer);
+            foreach (var name in entries.Directories) directories.Add(ByteStringKey.FromValue(name));
             var names = GoSlices.Clone(entries.Directories).Append(entries.Files);
-            GoSlices.SortFunc(names, static (left, right) => string.CompareOrdinal(left, right));
-            foreach (string name in names)
+            GoSlices.SortFunc(names, static (left, right) => ByteStringKey.FromValue(left).CompareTo(ByteStringKey.FromValue(right)));
+            foreach (var name in names)
             {
-                FileMode mode = directories.Contains(name) ? FileMode.Dir : FileMode.Regular;
+                FileMode mode = name.ContainsIn(directories) ? FileMode.Dir : FileMode.Regular;
                 RootedPath childPath = (mode & FileMode.Dir) != 0 ? directory.ResolveDirectory(name).AsPath() : directory.ResolveFile(name).AsPath();
                 if (!SameRoot(childPath))
                     continue;
@@ -60,7 +60,7 @@ public static partial class Vfs
                 bool isSymlink;
                 if (entries.Symlinks != null)
                 {
-                    isSymlink = entries.Symlinks.Contains(name);
+                    isSymlink = name.ContainsIn(entries.Symlinks);
                     if (!isSymlink && (mode & FileMode.Dir) != 0)
                         childRealpath = TsPath.RootedDirectoryPathFromPath(realpath).ResolveDirectory(name).AsPath();
                 }
@@ -88,7 +88,7 @@ public static partial class Vfs
                     continue;
                 }
 
-                if (childRealpath.AsString() == "")
+                if (childRealpath.AsValue().Length == 0)
                     childRealpath = fileSystem.Realpath(childPath);
                 error = Visit(childPath, childEntry, childRealpath);
                 if (error != null)
@@ -107,9 +107,9 @@ public static partial class Vfs
         if (root != rootPrefix.AsPath())
         {
             RootedDirectoryPath parent = root.Directory();
-            RootedPath expected = TsPath.RootedDirectoryPathFromPath(fileSystem.Realpath(parent.AsPath())).ResolveDirectory(root.BaseName()).AsPath();
+            RootedPath expected = TsPath.RootedDirectoryPathFromPath(fileSystem.Realpath(parent.AsPath())).ResolveDirectory(root.BaseNameValue()).AsPath();
             if (!Equivalent(rootRealpath, expected))
-                rootEntry = new walkDirEntry(fileSystem, root, root.BaseName(), FileMode.Symlink);
+                rootEntry = new walkDirEntry(fileSystem, root, root.BaseNameValue(), FileMode.Symlink);
         }
 
         return normalizeWalkDirError(Visit(root, rootEntry, rootRealpath));
@@ -123,9 +123,9 @@ public static partial class Vfs
         public (FileInfo? Info, Exception? Error) Info() => (info, null);
     }
 
-    private sealed class walkDirEntry(IFS fileSystem, RootedPath path, string name, FileMode mode) : DirEntry
+    private sealed class walkDirEntry(IFS fileSystem, RootedPath path, ByteStringValue name, FileMode mode) : DirEntry
     {
-        public string Name() => name;
+        public string Name() => name.Materialize()!;
         public bool IsDir() => (mode & FileMode.Dir) != 0;
         public FileMode Type() => mode & FileMode.Type;
         public (FileInfo? Info, Exception? Error) Info()
@@ -137,9 +137,9 @@ public static partial class Vfs
         }
     }
 
-    private sealed class walkDirFileInfo(string name, FileMode mode) : FileInfo
+    private sealed class walkDirFileInfo(ByteStringValue name, FileMode mode) : FileInfo
     {
-        public string Name() => name;
+        public string Name() => name.Materialize()!;
         public long Size() => 0;
         public FileMode Mode() => mode;
         public DateTimeOffset ModTime() => DateTimeOffset.MinValue;

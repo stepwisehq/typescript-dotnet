@@ -3,7 +3,7 @@ using TypeScript.Scanner;
 namespace TypeScript.Foundation;
 public static partial class SyntaxServiceChecks
 {
-    private static object DiagnosticSnapshot(Diagnostic d) => Map(("code", d.Code()), ("category", (int)d.Category()), ("pos", d.Pos()), ("end", d.End()), ("key", d.MessageKey()), ("source", Bytes(d.Source())), ("messageText", Bytes(d.MessageText())), ("text", d.String()), ("args", (d.MessageArgs() ?? []).Select(a => (object)Bytes(a)).ToArray()), ("argsNull", d.MessageArgs()is null), ("chain", (d.MessageChain() ?? []).Select(DiagnosticSnapshot).ToArray()), ("chainNull", d.MessageChain()is null), ("related", (d.RelatedInformation() ?? []).Select(DiagnosticSnapshot).ToArray()), ("relatedNull", d.RelatedInformation()is null), ("unnecessary", d.ReportsUnnecessary()), ("deprecated", d.ReportsDeprecated()), ("skipped", d.SkippedOnNoEmit()));
+    private static object DiagnosticSnapshot(Diagnostic d) => Map(("code", d.Code()), ("category", (int)d.Category()), ("pos", d.Pos()), ("end", d.End()), ("key", d.MessageKey()), ("source", Bytes(d.Source())), ("messageText", Bytes(d.MessageText())), ("text", d.String()), ("args", (d.MessageArgs() ?? []).Select(a => (object)Bytes(a)).ToArray()), ("argsNull", d.MessageArgs()is null), ("chain", GoSlices.Values(d.MessageChain()).Select(DiagnosticSnapshot).ToArray()), ("chainNull", d.MessageChain().IsNil), ("related", GoSlices.Values(d.RelatedInformation()).Select(DiagnosticSnapshot).ToArray()), ("relatedNull", d.RelatedInformation().IsNil), ("unnecessary", d.ReportsUnnecessary()), ("deprecated", d.ReportsDeprecated()), ("skipped", d.SkippedOnNoEmit()));
     private static object DiagnosticData()
     {
         var file = Parse("const x=1");
@@ -16,9 +16,9 @@ public static partial class SyntaxServiceChecks
         var second = DiagnosticSnapshot(d);
         var unknown = Ast.NewDiagnosticFromSerialized(null, new(0, 0), 123, DiagnosticCategory.Error, "nonexistent-key", null, null, null, false, false, false);
         var collection = new DiagnosticsCollection();
-        bool emptyGlobal = collection.GetGlobalDiagnostics()is null, emptyAll = collection.GetDiagnostics()is null;
+        bool emptyGlobal = collection.GetGlobalDiagnostics().IsNil, emptyAll = collection.GetDiagnostics().IsNil;
         var canonical = collection.Add(clone);
         var duplicate = collection.Add(clone.Clone());
-        return Map(("serialized", first), ("externalOverride", second), ("unknownKeyThrows", Caught(() => unknown.String())), ("cloneDistinct", !ReferenceEquals(clone, d)), ("cloneSharesArgs", ReferenceEquals(clone.MessageArgs(), d.MessageArgs())), ("cloneSharesChain", ReferenceEquals(clone.MessageChain(), d.MessageChain())), ("canonicalIdentity", ReferenceEquals(canonical, clone)), ("duplicateIdentity", ReferenceEquals(duplicate, clone)), ("globalInitiallyNil", emptyGlobal), ("allInitiallyNil", emptyAll), ("equivalentFileCount", collection.GetDiagnosticsForFile(Parse(""))?.Count ?? 0));
+        return Map(("serialized", first), ("externalOverride", second), ("unknownKeyThrows", Caught(() => unknown.String())), ("cloneDistinct", !ReferenceEquals(clone, d)), ("cloneSharesArgs", ReferenceEquals(clone.MessageArgs(), d.MessageArgs())), ("cloneSharesChain", Core.Same(clone.MessageChain(), d.MessageChain())), ("canonicalIdentity", ReferenceEquals(canonical, clone)), ("duplicateIdentity", ReferenceEquals(duplicate, clone)), ("globalInitiallyNil", emptyGlobal), ("allInitiallyNil", emptyAll), ("equivalentFileCount", collection.GetDiagnosticsForFile(Parse("")).Count));
     }
 }

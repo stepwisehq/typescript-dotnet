@@ -87,7 +87,7 @@ public sealed class ProjectDiagnosticPolicyTests
             var configured = Project.LoadConfiguration(configPath);
             var overridden = Project.LoadConfiguration(configPath, new CompilerOptions { NoEmit = Tristate.True });
             Assert.Equal(configured.RootFiles.Select(file => file.FileName()), overridden.RootFiles.Select(file => file.FileName()));
-            Assert.Equal(configured.SourceFiles.Select(file => file.FileName()), overridden.SourceFiles.Select(file => file.FileName()));
+            Assert.Equal(configured.SourceFiles.AsSpan().ToArray().Select(file => file.FileName()), overridden.SourceFiles.AsSpan().ToArray().Select(file => file.FileName()));
             Assert.Equal(new[] { 5096 }, configured.Check().Select(diagnostic => diagnostic.Code()));
             Assert.Equal(new[] { 2322 }, overridden.Check().Select(diagnostic => diagnostic.Code()));
         }
@@ -144,6 +144,8 @@ public sealed class ProjectDiagnosticPolicyTests
                 RerootReferenceFiles(item, paths);
     }
 
+    private static JsonArray Describe(Slice<Diagnostic> diagnostics) => Describe(diagnostics.AsSpan().ToArray());
+
     private static JsonArray Describe(IEnumerable<Diagnostic> diagnostics)
     {
         var result = new JsonArray();
@@ -165,8 +167,8 @@ public sealed class ProjectDiagnosticPolicyTests
                 ["Message"] = diagnostic.String(),
                 ["ByteStart"] = diagnostic.Pos(), ["ByteEnd"] = diagnostic.End(),
                 ["Line"] = line, ["Column"] = column,
-                ["Chain"] = diagnostic.MessageChain() is { } chain ? Describe(chain) : null,
-                ["Related"] = diagnostic.RelatedInformation() is { } related ? Describe(related) : null
+                ["Chain"] = !diagnostic.MessageChain().IsNil ? Describe(diagnostic.MessageChain()) : null,
+                ["Related"] = !diagnostic.RelatedInformation().IsNil ? Describe(diagnostic.RelatedInformation()) : null
             });
         }
         return result;

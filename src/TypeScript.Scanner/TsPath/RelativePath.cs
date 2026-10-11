@@ -6,104 +6,107 @@ namespace TypeScript.Scanner;
 /// <summary>Original Go byte-string identity. Use FromUnicode for a scalar Unicode boundary.</summary>
 public readonly partial record struct RelativePath
 {
-    private readonly string? value;
-    internal RelativePath(string bytes) => value = bytes.Length == 0 ? null : bytes;
-    public string AsString() => value ?? "";
+    private readonly ByteStringValue value;
+    internal RelativePath(string bytes) : this(ByteStringValue.FromString(bytes is null ? throw new NullReferenceException() : bytes))
+    {
+    }
+    internal RelativePath(ByteStringValue bytes) => value = bytes.IsNull ? throw new NullReferenceException() : bytes.Length == 0 ? default : bytes.Snapshot();
+    public ByteStringValue AsValue() => value;
+    public string AsString() => value.Materialize()!;
+    public static RelativePath FromValue(ByteStringValue bytes)
+    {
+        TsPath.validateGoPathValue(bytes);
+        return new(bytes);
+    }
+    public bool Equals(RelativePath other) => value.EqualsValue(other.value);
+    public override int GetHashCode() => ByteStringKey.FromValue(value).GetHashCode();
     public static RelativePath FromGoString(string bytes)
     {
         ArgumentNullException.ThrowIfNull(bytes);
-        if (bytes.Any(ch => ch > 255))
+        if (bytes.AsSpan().IndexOfAnyExceptInRange('\0', '\u00ff') >= 0)
+        {
             throw new ArgumentException("Go byte strings require one managed character per byte.", nameof(bytes));
+        }
         return new(bytes);
     }
 
-    public static RelativePath FromUnicode(string text) => FromGoString(PathByteText.FromUnicode(text));
-    public string ToUnicode() => PathByteText.ToUnicode(AsString());
+    public static RelativePath FromUnicode(string text) => FromValue(PathByteText.FromUnicodeValue(text));
+    public string ToUnicode() => PathByteText.ToUnicode(AsValue());
     public override string ToString() => AsString();
 }
 
 public readonly partial record struct RelativePath
 {
-    public ModuleSpecifier AsModuleSpecifier() => new(TsPath.EnsurePathIsNonModuleName(AsString()));
-    public RelativePath ChangeExtension(string extension)
+    public ModuleSpecifier AsModuleSpecifier() => new(TsPath.EnsurePathIsNonModuleName(value));
+    public RelativePath ChangeExtension(string extension) => ChangeExtension(ByteStringValue.FromString(extension));
+    public RelativePath ChangeExtension(ByteStringValue extension)
     {
         TsPath.validateFileExtension(extension);
-        return new(TsPath.ChangeExtension(AsString(), extension));
+        return new(TsPath.ChangeExtension(value, extension));
     }
-
-    public string BaseName() => TsPath.GetBaseFileName(AsString());
-    public bool IsParentRelative() => AsString() == ".." || AsString().StartsWith("../", StringComparison.Ordinal);
-    public bool HasTrailingDirectorySeparator() => TsPath.HasTrailingDirectorySeparator(AsString());
-    public RelativePath WithoutTrailingDirectorySeparator() => HasTrailingDirectorySeparator() ? new(TsPath.RemoveTrailingDirectorySeparator(AsString())) : this;
-    public RelativePath WithTrailingDirectorySeparator() => AsString() == "" || HasTrailingDirectorySeparator() ? this : new(AsString() + "/");
+    public string BaseName() => BaseNameValue().Materialize()!;
+    public ByteStringValue BaseNameValue() => TsPath.GetBaseFileName(value);
+    public bool IsParentRelative() => value.EqualsBytes(".."u8) || value.StartsWith("../"u8);
+    public bool HasTrailingDirectorySeparator() => TsPath.HasTrailingDirectorySeparator(value);
+    public RelativePath WithoutTrailingDirectorySeparator() => HasTrailingDirectorySeparator() ? new(TsPath.RemoveTrailingDirectorySeparator(value)) : this;
+    public RelativePath WithTrailingDirectorySeparator() => value.Length == 0 || HasTrailingDirectorySeparator() ? this : new(TsPath.pathConcat(value, ByteStringValue.FromString("/")));
     internal bool requiresResolution() => IsParentRelative() || HasTrailingDirectorySeparator();
 }
-
 public static partial class TsPath
 {
-    public static RelativePath ToRelativePath(string path)
+    public static RelativePath ToRelativePath(string path) => ToRelativePath(ByteStringValue.FromString(path));
+    public static RelativePath ToRelativePath(ByteStringValue path)
     {
         if (GetEncodedRootLength(path) != 0)
+        {
             throw new ArgumentException("relative path must not be rooted");
+        }
         return new(NormalizePath(path));
     }
-
-    public static RelativePath RelativePathFromNormalized(string path)
+    public static RelativePath RelativePathFromNormalized(string path) => RelativePathFromNormalized(ByteStringValue.FromString(path));
+    public static RelativePath RelativePathFromNormalized(ByteStringValue path)
     {
-        if (GetEncodedRootLength(path) != 0 || NormalizePath(path) != path)
-            throw new ArgumentException("relative path must be relative and normalized: " + path);
+        if (GetEncodedRootLength(path) != 0 || !NormalizePath(path).EqualsValue(path))
+        {
+            throw new ArgumentException("relative path must be relative and normalized: " + path.Materialize());
+        }
         return new(path);
     }
-
-    internal static void validateFileExtension(string extension)
+    internal static void validateFileExtension(string extension) => validateFileExtension(ByteStringValue.FromString(extension));
+    internal static void validateFileExtension(ByteStringValue extension)
     {
         if (extension.Contains('/') || extension.Contains('\\'))
+        {
             throw new ArgumentException("file extension must not contain a directory separator");
+        }
     }
-
-    internal static string relativePathFromNormalizedPaths(string from, string to, CaseSensitivity sensitivity)
+    internal static ByteStringValue relativePathFromNormalizedPaths(ByteStringValue from, ByteStringValue to, CaseSensitivity sensitivity)
     {
-        var first = GetPathComponents(from);
-        var second = GetPathComponents(to);
+        var first = pathComponents(from, GetRootLength(from));
+        var second = pathComponents(to, GetRootLength(to));
         if (IsEncodedDynamicFileName(from) || IsEncodedDynamicFileName(to))
         {
-            first[0] = first[0].TrimEnd('/');
-            second[0] = second[0].TrimEnd('/');
-            if (first[0] != second[0])
+            first[0] = trimDynamicRoot(first[0]);
+            second[0] = trimDynamicRoot(second[0]);
+            if (!first[0].EqualsValue(second[0]))
+            {
                 return to;
+            }
             sensitivity = CaseSensitivity.CaseSensitive;
         }
-
-        int start = 0, common = Math.Min(first.Count, second.Count);
-        for (; start < common; start++)
-        {
-            bool equal = start == 0 || sensitivity.IsCaseInsensitive() ? UnicodeCase.EqualFold(first[start], second[start]) : first[start] == second[start];
-            if (!equal)
-                break;
-        }
-
-        if (start == 0)
-            return GetPathFromPathComponents(second);
-        List<string> result = [""];
-        for (int i = start; i < first.Count; i++)
-            result.Add("..");
-        for (int i = start; i < second.Count; i++)
-            result.Add(second[i]);
-        return GetPathFromPathComponents(result);
+        return GetPathFromPathComponents(getPathComponentsRelativeTo(first, second, sensitivity));
     }
 }
-
 public static class RelativePathOperations
 {
-    public static RelativePath CanonicalRelativePath(this CaseSensitivity sensitivity, RelativePath path) => new(sensitivity.Canonicalize(path.AsString()));
-    public static (RelativePath Path, bool Ok) RelativePathFromDirectory(this CaseSensitivity sensitivity, RootedDirectoryPath directory, RootedFilePath fileName) => sensitivity.RelativePathFromPath(directory, fileName.AsPath());
+    public static RelativePath CanonicalRelativePath(this CaseSensitivity sensitivity, RelativePath path) => new(sensitivity.Canonicalize(path.AsValue()));
+    public static (RelativePath Path, bool Ok) RelativePathFromDirectory(this CaseSensitivity sensitivity, RootedDirectoryPath directory, RootedFilePath file) => sensitivity.RelativePathFromPath(directory, file.AsPath());
     public static (RelativePath Path, bool Ok) RelativePathFromPath(this CaseSensitivity sensitivity, RootedDirectoryPath directory, RootedPath path)
     {
-        string result = TsPath.relativePathFromNormalizedPaths(directory.AsString(), path.AsString(), sensitivity);
+        var result = TsPath.relativePathFromNormalizedPaths(directory.AsValue(), path.AsValue(), sensitivity);
         return TsPath.GetEncodedRootLength(result) != 0 ? (default, false) : (new(result), true);
     }
-
     public static (RelativePath Path, bool Ok) RelativePathFromFile(this CaseSensitivity sensitivity, RootedFilePath from, RootedFilePath to) => sensitivity.RelativePathFromFileToPath(from, to.AsPath());
     public static (RelativePath Path, bool Ok) RelativePathFromFileToPath(this CaseSensitivity sensitivity, RootedFilePath from, RootedPath to) => sensitivity.RelativePathFromPath(from.Directory(), to);
-    public static RelativePath RelativePathFromRelativeDirectory(this CaseSensitivity sensitivity, RelativePath directory, RelativePath fileName) => new(TsPath.relativePathFromNormalizedPaths(directory.AsString(), fileName.AsString(), sensitivity));
+    public static RelativePath RelativePathFromRelativeDirectory(this CaseSensitivity sensitivity, RelativePath directory, RelativePath file) => new(TsPath.relativePathFromNormalizedPaths(directory.AsValue(), file.AsValue(), sensitivity));
 }

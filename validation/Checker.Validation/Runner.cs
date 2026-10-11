@@ -52,10 +52,10 @@ public sealed partial class Graph
             Flags = (uint)symbol.Flags,
             CheckFlags = (uint)symbol.CheckFlags,
             NameBase64 = Encoder.Bytes(symbol.Name),
-            DeclarationsNull = symbol.Declarations is null
+            DeclarationsNull = symbol.Declarations.IsNil
         };
         result.Symbols.Add(value);
-        foreach (var declaration in symbol.Declarations ?? [])
+        foreach (var declaration in symbol.Declarations)
             value.Declarations.Add(Node(declaration)!.Value);
         value.ValueDeclaration = Node(symbol.ValueDeclaration);
         value.Parent = Symbol(symbol.Parent);
@@ -75,8 +75,8 @@ public sealed partial class Graph
         tables.Add(table, id);
         var value = new TableValue(id, []);
         result.Tables.Add(value);
-        foreach (string key in table.Keys.Order(StringComparer.Ordinal))
-            value.Entries.Add(new(Encoder.Bytes(key), Symbol(table[key])!.Value));
+        foreach (var key in table.Keys.OrderBy(key => key.ToString(), StringComparer.Ordinal))
+            value.Entries.Add(new(Encoder.Bytes(key.ToString()), Symbol(table[key])!.Value));
         return id;
     }
 
@@ -102,7 +102,7 @@ public sealed partial class Graph
         if (type.Alias()is { } alias)
         {
             value.AliasSymbol = Symbol(alias.Symbol());
-            foreach (var argument in alias.TypeArguments() ?? [])
+            foreach (var argument in alias.TypeArguments())
                 value.AliasTypeArguments.Add(Type(argument)!.Value);
         }
 
@@ -166,6 +166,8 @@ public sealed partial class Graph
 
 public static class Runner
 {
+    internal static List<DiagnosticValue> Diagnostics(Slice<Diagnostic> diagnostics) => Diagnostics(GoSlices.ToListOrNull(diagnostics));
+
     internal static List<DiagnosticValue> Diagnostics(IEnumerable<Diagnostic>? diagnostics) => (diagnostics ?? []).Select(d => new DiagnosticValue { Code = d.Code(), Category = (int)d.Category(), Pos = d.Pos(), End = d.End(), Key = d.MessageKey(), ArgsNull = d.MessageArgs()is null, ArgsBase64 = (d.MessageArgs() ?? []).Select(Encoder.Bytes).ToList(), Text = d.String(), FileNameBase64 = d.File()is { } file ? Convert.ToBase64String(Encoding.UTF8.GetBytes(file.FileName())) : null, ReportsUnnecessary = d.ReportsUnnecessary(), ReportsDeprecated = d.ReportsDeprecated(), SkippedOnNoEmit = d.SkippedOnNoEmit(), SourceBase64 = Encoder.Bytes(d.Source()), Related = Diagnostics(d.RelatedInformation()), Chain = Diagnostics(d.MessageChain()), }).ToList();
     public static AdmissionResult Admission(Request request)
     {
@@ -237,9 +239,9 @@ public static class Runner
         if (result.CallableGraph is { } cg)
         {
             var globals = checker.GetGlobalDiagnostics();
-            cg.BindDiagnosticsNull = file.BindDiagnostics()is null;
-            cg.FileDiagnosticsNull = fileDiagnostics is null;
-            cg.GlobalDiagnosticsNull = globals is null;
+            cg.BindDiagnosticsNull = file.BindDiagnostics().IsNil;
+            cg.FileDiagnosticsNull = fileDiagnostics.IsNil;
+            cg.GlobalDiagnosticsNull = globals.IsNil;
             cg.BindDiagnosticStates = DiagnosticStates(file.BindDiagnostics());
             cg.FileDiagnosticStates = DiagnosticStates(fileDiagnostics);
             cg.GlobalDiagnosticStates = DiagnosticStates(globals);
@@ -253,5 +255,7 @@ public static class Runner
         "" or "Legacy" => CheckerProfile.Legacy,
         "Callable" => CheckerProfile.Callable,
         _ => throw new InvalidDataException("Unknown checker profile")};
-    private static List<CallableDiagnosticState> DiagnosticStates(IEnumerable<Diagnostic>? values) => (values ?? []).Select(d => new CallableDiagnosticState(Diagnostics([d])[0], d.RelatedInformation()is null, d.MessageChain()is null, DiagnosticStates(d.RelatedInformation()), DiagnosticStates(d.MessageChain()))).ToList();
+    private static List<CallableDiagnosticState> DiagnosticStates(Slice<Diagnostic> values) => DiagnosticStates(GoSlices.ToListOrNull(values));
+
+    private static List<CallableDiagnosticState> DiagnosticStates(IEnumerable<Diagnostic>? values) => (values ?? []).Select(d => new CallableDiagnosticState(Diagnostics([d])[0], d.RelatedInformation().IsNil, d.MessageChain().IsNil, DiagnosticStates(d.RelatedInformation()), DiagnosticStates(d.MessageChain()))).ToList();
 }

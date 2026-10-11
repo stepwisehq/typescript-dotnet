@@ -936,7 +936,7 @@ public sealed partial class Checker
                         case ModuleKind.Node18:
                         case ModuleKind.Node20:
                         case ModuleKind.NodeNext:
-                            if (program.GetSourceFileMetaData(PathKey.FromGoString(sourceFile.PathKey())).ImpliedNodeFormat == ResolutionMode.CommonJS)
+                            if (program.GetSourceFileMetaData(PathKey.FromValue(sourceFile.PathKeyValue())).ImpliedNodeFormat == ResolutionMode.CommonJS)
                             {
                                 if (!spanCalculated) span = TypeScript.Scanner.Scanner.GetRangeOfTokenAtPosition(sourceFile, node.Pos());
                                 addDiagnostic(Ast.NewDiagnostic(sourceFile, span, Diagnostics.The_current_file_is_a_CommonJS_module_and_cannot_use_await_at_the_top_level));
@@ -2266,7 +2266,7 @@ public sealed partial class Checker
                             case ModuleKind.Node18:
                             case ModuleKind.Node20:
                             case ModuleKind.NodeNext:
-                                if (program.GetSourceFileMetaData(PathKey.FromGoString(sourceFile.PathKey())).ImpliedNodeFormat == ResolutionMode.CommonJS)
+                                if (program.GetSourceFileMetaData(PathKey.FromValue(sourceFile.PathKeyValue())).ImpliedNodeFormat == ResolutionMode.CommonJS)
                                 {
                                     addDiagnostic(createDiagnosticForNode(forInOrOfStatement.AwaitModifier, Diagnostics.The_current_file_is_a_CommonJS_module_and_cannot_use_await_at_the_top_level));
                                     break;

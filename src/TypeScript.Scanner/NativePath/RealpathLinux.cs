@@ -3,13 +3,14 @@
 // Original PathError objects are consumed only as failure by osvfs.Realpath;
 // this internal adapter returns null for that failure, preserving its fallback.
 using TypeScript.Vfs.OsVfs;
+using TypeScript.Scanner;
 
 namespace TypeScript.NativePath;
 internal static class NativePath
 {
     private const string procSelfFD = "/proc/self/fd/";
     private static readonly Lazy<bool> hasProcSelfFD = new(() => LinuxStat.PathMode(procSelfFD, true)is not null);
-    internal static string? Realpath(string bytes)
+    internal static ByteStringValue? Realpath(ByteStringValue bytes)
     {
         if (!hasProcSelfFD.Value)
             return GoFilePath.WalkSymlinks(bytes);

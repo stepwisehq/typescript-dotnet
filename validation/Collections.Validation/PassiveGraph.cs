@@ -34,7 +34,7 @@ public sealed class PassiveGraph
     {
         if (nameProjection?.Invoke(name, symbol) is { } projected)
             return projected;
-        foreach (var declaration in symbol.Declarations ?? [])
+        foreach (var declaration in symbol.Declarations)
         {
             if (declaration.Name()is { Kind: Kind.PrivateIdentifier } identifier && name.StartsWith("\u00fe#", StringComparison.Ordinal))
             {
@@ -97,11 +97,11 @@ public sealed class PassiveGraph
             Id = id,
             Flags = (uint)symbol.Flags,
             CheckFlags = (uint)symbol.CheckFlags,
-            DeclarationsNull = symbol.Declarations is null
+            DeclarationsNull = symbol.Declarations.IsNil
         };
         output.Symbols.Add(value);
         value.Name = Name(symbol.Name, symbol);
-        foreach (var declaration in symbol.Declarations ?? [])
+        foreach (var declaration in symbol.Declarations)
             value.Declarations.Add(AddNode(declaration)!.Value);
         value.ValueDeclaration = AddNode(symbol.ValueDeclaration);
         value.Parent = AddSymbol(symbol.Parent);
@@ -121,10 +121,10 @@ public sealed class PassiveGraph
         tableIds.Add(table, id);
         var value = new BoundTable(id, []);
         output.Tables.Add(value);
-        foreach (string key in table.Keys.OrderBy(key => SortKey(key, table[key]), StringComparer.Ordinal))
+        foreach (var key in table.Keys.OrderBy(key => SortKey(key.Value.Materialize()!, table[key]), StringComparer.Ordinal))
         {
             var symbol = table[key] ?? throw new InvalidOperationException("Nil symbol table entry");
-            value.Entries.Add(new(Name(key, symbol), AddSymbol(symbol)!.Value));
+            value.Entries.Add(new(Name(key.Value.Materialize()!, symbol), AddSymbol(symbol)!.Value));
         }
 
         return id;
@@ -132,7 +132,7 @@ public sealed class PassiveGraph
 
     private string SortKey(string name, Symbol symbol)
     {
-        foreach (var declaration in symbol.Declarations ?? [])
+        foreach (var declaration in symbol.Declarations)
         {
             if (declaration.Name()is { Kind: Kind.PrivateIdentifier } identifier && name.StartsWith("\u00fe#", StringComparison.Ordinal))
             {
@@ -243,6 +243,8 @@ public sealed class PassiveGraph
         SameIdentities(listIds, second.listIds);
     }
 
+    private static void ValidateDiagnostics(Slice<Diagnostic> items, SourceFile file) => ValidateDiagnostics(GoSlices.ToListOrNull(items), file);
+
     private static void ValidateDiagnostics(IEnumerable<Diagnostic>? items, SourceFile file)
     {
         foreach (var diagnostic in items ?? [])
@@ -266,8 +268,8 @@ public sealed class PassiveGraph
         while (output.Nodes.Count < syntax.RawNodes.Count)
             output.Nodes.Add(Fields(output.Nodes.Count));
         output.GlobalExports = AddTable(file.GlobalExports);
-        output.PatternsNull = file.PatternAmbientModules is null;
-        foreach (var pattern in file.PatternAmbientModules ?? [])
+        output.PatternsNull = file.PatternAmbientModules.IsNil;
+        foreach (var pattern in file.PatternAmbientModules)
             output.Patterns.Add(new(Encoder.Bytes(pattern.Pattern.Text), pattern.Pattern.StarIndex, AddSymbol(pattern.Symbol)!.Value));
         while (output.Nodes.Count < syntax.RawNodes.Count)
             output.Nodes.Add(Fields(output.Nodes.Count));

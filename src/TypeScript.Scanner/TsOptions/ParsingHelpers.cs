@@ -23,23 +23,25 @@ public static partial class TsOptions
 
     internal static RootedFilePath parseFileName(object? value)
     {
-        var path = ParseString(value);
-        return path == "" ? default : TsPath.RootedFilePathFromNormalized(path);
+        var path = parsePathText(value);
+        return path.Length == 0 ? default : TsPath.RootedFilePathFromNormalized(path);
     }
 
     internal static RootedDirectoryPath parseDirectoryName(object? value)
     {
-        var path = ParseString(value);
-        return path == "" ? default : TsPath.RootedDirectoryPathFromNormalized(path);
+        var path = parsePathText(value);
+        return path.Length == 0 ? default : TsPath.RootedDirectoryPathFromNormalized(path);
     }
 
     internal static RootedPath parseFileOrDirectoryName(object? value)
     {
-        var path = ParseString(value);
-        return path == "" ? default : TsPath.RootedPathFromNormalized(path);
+        var path = parsePathText(value);
+        return path.Length == 0 ? default : TsPath.RootedPathFromNormalized(path);
     }
 
-    internal static List<RootedDirectoryPath>? parseDirectoryNames(object? value) => ParseStringArray(value)?.Select(path => path == "" ? default : TsPath.RootedDirectoryPathFromNormalized(path)).ToList();
+    internal static ByteStringValue parsePathText(object? value) => value is ByteStringValue bytes ? bytes : ByteStringValue.FromString(value as string ?? "");
+    internal static List<ByteStringValue>? parsePathTexts(object? value) => value is List<object?> values ? values.Where(static item => item is string or ByteStringValue).Select(parsePathText).ToList() : null;
+    internal static List<RootedDirectoryPath>? parseDirectoryNames(object? value) => parsePathTexts(value)?.Select(static path => path.Length == 0 ? default : TsPath.RootedDirectoryPathFromNormalized(path)).ToList();
     internal static StrongBox<long>? parseNumber(object? value) => value switch
     {
         long integer => new(integer),
@@ -113,7 +115,7 @@ public static partial class TsOptions
             return null;
         foreach (var(key, value)in options.Entries())
         {
-            var(converted, ok) = ConvertOptionToAbsolutePath(key, value, optionMap, directory);
+            var(converted, ok) = convertOptionToAbsolutePath(key, value, optionMap, directory);
             if (ok)
                 options.Set(key, converted);
         }
@@ -123,6 +125,17 @@ public static partial class TsOptions
 
     public static (object? Value, bool Ok) ConvertOptionToAbsolutePath(string key, object? value, CommandLineOptionNameMap optionMap, RootedDirectoryPath directory)
     {
+        var (converted, ok) = convertOptionToAbsolutePath(key, value, optionMap, directory);
+        return (converted switch
+        {
+            ByteStringValue text => text.Materialize(),
+            List<ByteStringValue> texts => texts.Select(static text => text.Materialize()!).ToList(),
+            List<object?> values => values.Select(static item => item is ByteStringValue text ? (object?)text.Materialize() : item).ToList(),
+            _ => converted
+        }, ok);
+    }
+    private static (object? Value, bool Ok) convertOptionToAbsolutePath(string key, object? value, CommandLineOptionNameMap optionMap, RootedDirectoryPath directory)
+    {
         var option = optionMap.Get(key);
         if (option == null)
             return (null, false);
@@ -131,13 +144,13 @@ public static partial class TsOptions
             if (option.Elements()!.IsFilePath)
             {
                 if (value is List<string> strings)
-                    return (strings.Select(item => TsPath.GetNormalizedAbsolutePath(item, directory.AsString())).ToList(), true);
+                    return (strings.Select(item => TsPath.GetNormalizedAbsolutePath(ByteStringValue.FromString(item), directory.AsValue())).ToList(), true);
                 if (value is List<object?> values)
-                    return (values.Select(item => item is string text ? TsPath.GetNormalizedAbsolutePath(text, directory.AsString()) : item).ToList(), true);
+                    return (values.Select(item => item is string or ByteStringValue ? TsPath.GetNormalizedAbsolutePath(parsePathText(item), directory.AsValue()) : item).ToList(), true);
             }
         }
-        else if (option.IsFilePath && value is string text)
-            return (TsPath.GetNormalizedAbsolutePath(text, directory.AsString()), true);
+        else if (option.IsFilePath && value is string or ByteStringValue)
+            return (TsPath.GetNormalizedAbsolutePath(parsePathText(value), directory.AsValue()), true);
         return (null, false);
     }
 
@@ -220,7 +233,7 @@ public static partial class TsOptions
 
         if (!pathKind.IsRooted())
             return false;
-        return option.Kind == CommandLineOptionKind.List ? ParseStringArray(value)?.Any(startsWithConfigDirTemplate) == true : value is string path && startsWithConfigDirTemplate(path);
+        return option.Kind == CommandLineOptionKind.List ? parsePathTexts(value)?.Any(startsWithConfigDirTemplate) == true : value is string or ByteStringValue && startsWithConfigDirTemplate(parsePathText(value));
     }
 
     internal static CompilerOptions? mergeCompilerOptions(CompilerOptions? targetOptions, CompilerOptions? sourceOptions, object? rawSource)

@@ -55,13 +55,23 @@ internal static partial class UnicodeCase
         _ = a.Length;
         return EqualFold(a.AsSpan(), b is null ? throw new NullReferenceException() : b.AsSpan());
     }
-    public static bool EqualFold(ReadOnlySpan<char> a, ReadOnlySpan<char> b)
+    public static bool EqualFold(ReadOnlySpan<char> a, ReadOnlySpan<char> b) =>
+        equalFold(a, default, false, b, default, false);
+    public static bool EqualFold(ByteStringValue a, ByteStringValue b)
     {
+        if (a.IsNull || b.IsNull) throw new NullReferenceException();
+        return equalFold(a.IsBytes ? default : a.CharSpan, a.IsBytes ? a.ByteSpan : default, a.IsBytes,
+            b.IsBytes ? default : b.CharSpan, b.IsBytes ? b.ByteSpan : default, b.IsBytes);
+    }
+    private static bool equalFold(ReadOnlySpan<char> ac, ReadOnlySpan<byte> ab, bool aIsBytes,
+        ReadOnlySpan<char> bc, ReadOnlySpan<byte> bb, bool bIsBytes)
+    {
+        int aLength = aIsBytes ? ab.Length : ac.Length, bLength = bIsBytes ? bb.Length : bc.Length;
         int ai = 0, bi = 0;
-        while (ai < a.Length && bi < b.Length)
+        while (ai < aLength && bi < bLength)
         {
-            var(ar, aSize) = Utf8.DecodeRuneInString(a[ai..]);
-            var(br, bSize) = Utf8.DecodeRuneInString(b[bi..]);
+            var(ar, aSize) = aIsBytes ? Utf8.DecodeRuneInString(ab[ai..]) : Utf8.DecodeRuneInString(ac[ai..]);
+            var(br, bSize) = bIsBytes ? Utf8.DecodeRuneInString(bb[bi..]) : Utf8.DecodeRuneInString(bc[bi..]);
             ai += aSize;
             bi += bSize;
             if (ar == br)
@@ -75,6 +85,6 @@ internal static partial class UnicodeCase
                 return false;
         }
 
-        return ai == a.Length && bi == b.Length;
+        return ai == aLength && bi == bLength;
     }
 }

@@ -31,6 +31,12 @@ public static partial class ProgramRunner
 
     private static JsonNode? Value(object? value)
     {
+        if (value is ByteStringValue bytes) return Value(bytes.Materialize());
+        if (value is Slice<ByteStringValue> byteValues) return Value(GoSlices.ToListOrNull(byteValues));
+        if (value is Slice<FileReference> references) return Value(GoSlices.ToListOrNull(references));
+        if (value is Slice<object?> arguments) return Value(GoSlices.ToListOrNull(arguments));
+        if (value is Slice<RootedFilePath> paths) return Value(GoSlices.ToListOrNull(paths));
+        if (value is Slice<DuplicateSourceFile> duplicates) return Value(GoSlices.ToListOrNull(duplicates));
         if (value is null)
             return null;
         if (value is JsonNode node)
@@ -106,8 +112,8 @@ public static partial class ProgramRunner
             return Object(("HeaderFields", fields.HeaderFields), ("PathFields", fields.PathFields), ("DependencyFields", fields.DependencyFields), ("ContentMapper", fields.ContentMapper));
         if (value is HeaderFields header)
             return Object(("Name", header.Name), ("Version", header.Version), ("Type", header.Type));
-        if (value is PathFields paths)
-            return Object(("TSConfig", paths.TSConfig), ("Main", paths.Main), ("Types", paths.Types), ("Typings", paths.Typings), ("TypesVersions", paths.TypesVersions), ("Imports", paths.Imports), ("Exports", paths.Exports));
+        if (value is PathFields pathFields)
+            return Object(("TSConfig", pathFields.TSConfig), ("Main", pathFields.Main), ("Types", pathFields.Types), ("Typings", pathFields.Typings), ("TypesVersions", pathFields.TypesVersions), ("Imports", pathFields.Imports), ("Exports", pathFields.Exports));
         if (value is DependencyFields dependencies)
             return Object(("Dependencies", dependencies.Dependencies), ("DevDependencies", dependencies.DevDependencies), ("PeerDependencies", dependencies.PeerDependencies), ("OptionalDependencies", dependencies.OptionalDependencies));
         if (value is ContentMapperFields mapper)
@@ -139,7 +145,7 @@ public static partial class ProgramRunner
         {
             var entries = new List<(string, object? )>();
             foreach (DictionaryEntry entry in dictionary)
-                entries.Add((entry.Key as string ?? throw new InvalidOperationException("Unobserved stored map key"), entry.Value));
+                entries.Add((entry.Key is ByteStringKey entryKey ? entryKey.ToString() : entry.Key as string ?? throw new InvalidOperationException("Unobserved stored map key"), entry.Value));
             return Ordered(entries.OrderBy(entry => entry.Item1, StringComparer.Ordinal));
         }
 
@@ -181,6 +187,7 @@ public static partial class ProgramRunner
             return id;
         }
 
+        internal JsonNode? Diagnostics(Slice<Diagnostic> diagnostics) => Diagnostics(GoSlices.ToListOrNull(diagnostics));
         internal JsonNode? Diagnostics(IEnumerable<Diagnostic>? diagnostics)
         {
             if (diagnostics is null)
@@ -214,8 +221,8 @@ public static partial class ProgramRunner
                 ["mappedSource"] = MappedSource(observer, file)
             });
         JsonArray aliases = [];
-        foreach (var pair in program.FilesByPath().OrderBy(pair => pair.Key, StringComparer.Ordinal))
-            aliases.Add((JsonNode)new JsonObject { ["pathBase64"] = Bytes(pair.Key), ["file"] = observer.File(pair.Value) });
+        foreach (var pair in program.FilesByPath().OrderBy(pair => pair.Key.ToString(), StringComparer.Ordinal))
+            aliases.Add((JsonNode)new JsonObject { ["pathBase64"] = Bytes(pair.Key.ToString()), ["file"] = observer.File(pair.Value) });
 
         var modules = new List<(string Path, string Name, ResolutionMode Mode, JsonObject Row)>();
         program.ForEachResolvedModule((resolution, name, mode, path) => modules.Add((path.AsString(), name, mode,
@@ -234,7 +241,7 @@ public static partial class ProgramRunner
         }
 
         JsonArray references = [];
-        foreach (var config in program.GetResolvedProjectReferences() ?? [])
+        foreach (var config in program.GetResolvedProjectReferences())
             references.Add((JsonNode?)(config is null ? null : new JsonObject { ["configBase64"] = Bytes(config.ConfigFileName().AsString()),
                 ["roots"] = Value(config.FileNames()), ["options"] = Value(config.CompilerOptions()), ["references"] = Value(config.ProjectReferences()) }));
         JsonArray referenceTraversal = [];
@@ -254,10 +261,10 @@ public static partial class ProgramRunner
             ["syntacticDiagnostics"] = observer.Diagnostics(program.GetSyntacticDiagnostics()), ["bindDiagnostics"] = bind ? observer.Diagnostics(program.GetBindDiagnostics()) : null,
             ["modules"] = Associations(modules), ["typeDirectives"] = Associations(directives), ["references"] = references, ["referenceTraversal"] = referenceTraversal,
             ["commonSourceDirectory"] = Value(program.CommonSourceDirectory()),
-            ["unresolvedImports"] = Value(program.GetUnresolvedImports().OrderBy(value => value, StringComparer.Ordinal).ToList()),
-            ["resolvedPackages"] = Value(program.ResolvedPackageNames().OrderBy(value => value, StringComparer.Ordinal).ToList()),
-            ["unresolvedPackages"] = Value(program.UnresolvedPackageNames().OrderBy(value => value, StringComparer.Ordinal).ToList()),
-            ["deepImports"] = Value(program.DeepImportPackageNames().OrderBy(value => value, StringComparer.Ordinal).ToList()),
+            ["unresolvedImports"] = Value(program.GetUnresolvedImports().Select(value => value.ToString()).OrderBy(value => value, StringComparer.Ordinal).ToList()),
+            ["resolvedPackages"] = Value(program.ResolvedPackageNames().Select(value => value.ToString()).OrderBy(value => value, StringComparer.Ordinal).ToList()),
+            ["unresolvedPackages"] = Value(program.UnresolvedPackageNames().Select(value => value.ToString()).OrderBy(value => value, StringComparer.Ordinal).ToList()),
+            ["deepImports"] = Value(program.DeepImportPackageNames().Select(value => value.ToString()).OrderBy(value => value, StringComparer.Ordinal).ToList()),
             ["explainFilesBase64"] = Convert.ToBase64String(explain.ToArray()), ["moduleResolutionErrorBase64"] = program.ModuleResolutionError() is Exception error ? Bytes(error.Message) : null
         };
         if (semantic is not null) snapshot["semantic"] = ObserveSemantics(observer, program, semantic);

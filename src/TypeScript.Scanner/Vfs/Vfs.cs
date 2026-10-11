@@ -37,10 +37,10 @@ internal static class SourceTextReaders
 
 public struct Entries
 {
-    public Slice<string> Files;
-    public Slice<string> Directories;
+    public Slice<ByteStringValue> Files;
+    public Slice<ByteStringValue> Directories;
     // Null means unavailable metadata; allocated-empty means known no links.
-    public HashSet<string>? Symlinks;
+    public HashSet<ByteStringKey>? Symlinks;
 }
 
 [Flags]

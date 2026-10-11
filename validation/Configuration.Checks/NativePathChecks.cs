@@ -160,7 +160,7 @@ public static class NativePathChecks
         Check.True(Directory.Exists("/proc/self/fd"), "Native fastpath fixture requires proc descriptors");
         string path = root + "/link216"; // 41 links: kernel open limit differs from fallback's 255.
         Check.Equal(Walk(path), root + "/target", "Fallback resolves 41 links");
-        Check.Equal(NativePath.Realpath(GoString.ToUtf8(path)), null, "Original Linux O_PATH fastpath fails 41 links");
+        Check.Equal(NativePath.Realpath(ByteStringValue.FromString(GoString.ToUtf8(path))), null, "Original Linux O_PATH fastpath fails 41 links");
         var input = RootedPath.FromUnicode(path);
         Check.Equal(OsVfs.FS().Realpath(input), input, "Actual OS consumer retains input on native failure");
     }

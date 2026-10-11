@@ -120,31 +120,72 @@ internal static partial class GoStrings
         int index = s.IndexOf(separator, StringComparison.Ordinal);
         return index < 0 ? (s, "", false) : (s[..index], s[(index + separator.Length)..], true);
     }
-
+    public static (ByteStringValue Before, ByteStringValue After, bool Found) Cut(ByteStringValue value, ByteStringValue separator)
+    {
+        int index = value.IndexOf(separator);
+        return index < 0 ? (value, default, false) : (value.Slice(0, index), value.Slice(index + separator.Length), true);
+    }
     public static (string Before, string After, bool Found) CutLast(string s, string separator)
     {
         int index = s.LastIndexOf(separator, StringComparison.Ordinal);
         return index < 0 ? (s, "", false) : (s[..index], s[(index + separator.Length)..], true);
     }
-
-    public static int Count(string s, string separator)
+    public static (ByteStringValue Before, ByteStringValue After, bool Found) CutLast(ByteStringValue value, ByteStringValue separator)
     {
+        int index = value.LastIndexOf(separator);
+        return index < 0 ? (value, default, false) : (value.Slice(0, index), value.Slice(index + separator.Length), true);
+    }
+    public static int Count(string s, string separator) => Count(ByteStringValue.FromString(s), ByteStringValue.FromString(separator));
+    public static int Count(ByteStringValue value, string separator) => Count(value, ByteStringValue.FromString(separator));
+    public static int Count(ByteStringValue value, ByteStringValue separator)
+    {
+        if (separator.IsNull || value.IsNull) throw new NullReferenceException();
         if (separator.Length == 0)
         {
             int count = 1;
-            for (int index = 0; index < s.Length; count++)
-                index += Utf8.DecodeRuneInString(s.AsSpan(index)).Size;
+            for (int index = 0; index < value.Length; count++)
+                index += decodeStringRune(value, index).Size;
             return count;
         }
         int matches = 0;
         for (int start = 0; ;)
         {
-            int index = s.IndexOf(separator, start, StringComparison.Ordinal);
+            int index = value.IndexOf(separator, start);
             if (index < 0)
                 return matches;
             matches++;
             start = index + separator.Length;
         }
+    }
+    private static (int Rune, int Size) decodeStringRune(ByteStringValue value, int index)
+        => value.IsBytes ? Utf8.DecodeRuneInString(value.ByteSpan[index..]) : Utf8.DecodeRuneInString(value.CharSpan[index..]);
+    public static Slice<ByteStringValue> Split(ByteStringValue value, string separator)
+    {
+        var separatorValue = ByteStringValue.FromString(separator);
+        if (separatorValue.IsNull || value.IsNull) throw new NullReferenceException();
+        // strings.Split's empty separator explodes by decoded UTF8 runes.
+        if (separatorValue.Length == 0)
+        {
+            var result = Slice<ByteStringValue>.Make(Count(value, separatorValue) - 1);
+            int index = 0;
+            for (int i = 0; i < result.Length; i++)
+            {
+                int size = decodeStringRune(value, index).Size;
+                result[i] = value.Slice(index, index + size);
+                index += size;
+            }
+            return result;
+        }
+        var parts = Slice<ByteStringValue>.Make(Count(value, separatorValue) + 1);
+        int start = 0;
+        for (int i = 0; i < parts.Length - 1; i++)
+        {
+            int index = value.IndexOf(separatorValue, start);
+            parts[i] = value.Slice(start, index);
+            start = index + separatorValue.Length;
+        }
+        parts[parts.Length - 1] = value.Slice(start);
+        return parts;
     }
 
     public static List<string> Split(string s, string separator)
@@ -162,12 +203,16 @@ internal static partial class GoStrings
     }
 
     public static string Replace(string s, string oldValue, string newValue, int n)
+        => Replace(ByteStringValue.FromString(s), ByteStringValue.FromString(oldValue), ByteStringValue.FromString(newValue), n).Materialize()!;
+    public static ByteStringValue Replace(ByteStringValue value, string oldValue, ByteStringValue newValue, int n)
+        => Replace(value, ByteStringValue.FromString(oldValue), newValue, n);
+    public static ByteStringValue Replace(ByteStringValue value, ByteStringValue oldValue, ByteStringValue newValue, int n)
     {
-        if (oldValue == newValue || n == 0)
-            return s;
-        int count = Count(s, oldValue);
+        if (oldValue.EqualsValue(newValue) || n == 0)
+            return value;
+        int count = Count(value, oldValue);
         if (count == 0)
-            return s;
+            return value;
         if (n < 0 || count < n)
             n = count;
         var builder = new GoBuilder();
@@ -178,20 +223,22 @@ internal static partial class GoStrings
             if (oldValue.Length == 0)
             {
                 if (i > 0)
-                    index += Utf8.DecodeRuneInString(s.AsSpan(start)).Size;
+                    index += decodeStringRune(value, start).Size;
             }
             else
-                index += s.AsSpan(start).IndexOf(oldValue.AsSpan(), StringComparison.Ordinal);
-            builder.WriteString(s.AsSpan(start, index - start));
+                index = value.IndexOf(oldValue, start);
+            builder.WriteString(value.Slice(start, index));
             builder.WriteString(newValue);
             start = index + oldValue.Length;
         }
-        builder.WriteString(s.AsSpan(start));
-        return builder.String();
+        builder.WriteString(value.Slice(start));
+        return builder.Value();
     }
 
     public static int LastIndex(string value, string text) => value.LastIndexOf(text, StringComparison.Ordinal);
     public static string TrimSuffix(string value, string suffix) => HasSuffix(value, suffix) ? value[..^suffix.Length] : value;
+    public static ByteStringValue TrimSuffix(ByteStringValue value, ByteStringValue suffix)
+        => value.EndsWith(suffix) ? value.Slice(0, value.Length - suffix.Length) : value;
     public static string TrimRightFunc(string value, Func<int, bool> predicate)
     {
         int end = value.Length;

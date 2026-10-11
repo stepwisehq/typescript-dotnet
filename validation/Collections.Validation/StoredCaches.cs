@@ -36,7 +36,7 @@ public sealed partial class StoredGraph
                             seed += "/simple(" + Seed(m.source) + "," + Seed(m.target) + ")";
                             break;
                         case ArrayTypeMapper m:
-                            seed += "/array(" + string.Join(";", (m.sources ?? []).Select(Seed)) + "=>" + string.Join(";", (m.targets ?? []).Select(Seed)) + ")";
+                            seed += "/array(" + string.Join(";", GoSlices.Values(m.sources).Select(Seed)) + "=>" + string.Join(";", GoSlices.Values(m.targets).Select(Seed)) + ")";
                             break;
                         default:
                             throw new InvalidDataException("Unrooted signature cache mapper provenance");

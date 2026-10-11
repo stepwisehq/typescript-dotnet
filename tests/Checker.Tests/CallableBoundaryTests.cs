@@ -29,7 +29,7 @@ public sealed class CallableBoundaryTests
     {
         var file = Parser.ParseSourceFile(new SourceFileParseOptions { FileName = "/main.ts" }, "function f(x:number){return x;}const y=f(1);", ScriptKind.TS);
         Assert.Equal("statement", Assert.Throws<UnsupportedSemanticFeatureException>(() => Checker.Create(file)).Feature);
-        Assert.Null(Checker.Create(file, CheckerProfile.Callable).GetDiagnostics());
+        Assert.True(Checker.Create(file, CheckerProfile.Callable).GetDiagnostics().IsNil);
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public sealed class CallableBoundaryTests
             var file = Parser.ParseSourceFile(new("/signature-api.ts", "/signature-api.ts"),
                 "function f(value:number):number{return value;}const result=f(1);", ScriptKind.TS);
             var checker = Checker.Create(file, CheckerProfile.Callable);
-            Assert.Null(checker.GetDiagnostics());
+            Assert.True(checker.GetDiagnostics().IsNil);
             var call = file.Statements.Nodes[1].AsVariableStatement().DeclarationList
                 .AsVariableDeclarationList().Declarations.Nodes[0].Initializer();
             return (checker, checker.GetResolvedSignature(call));

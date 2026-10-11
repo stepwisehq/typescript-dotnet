@@ -59,7 +59,7 @@ public static class ConfigMapperChecks
         foreach (bool source in Apis)
         {
             var parsed = Parse(text, [("/src/app.ts", "export {}"), ("/src/Component.vue", "<template></template>"), ("/node_modules/vue-mapper/package.json", VueManifest)], source);
-            Check.Equal(parsed.Errors?.Count ?? 0, 0, "Mapper parse errors");
+            Check.Equal(GoSlices.ToListOrNull(parsed.Errors)?.Count ?? 0, 0, "Mapper parse errors");
             var mappers = parsed.ContentMappers();
             Check.Equal(mappers!.Count, 1, "Mapper count");
             var mapper = mappers[0];
@@ -98,7 +98,7 @@ public static class ConfigMapperChecks
         foreach (bool source in Apis)
         {
             var parsed = Parse("""{ "extends": "./base.json" }""", [("/project/base.json", """{ "contentMappers": [{ "package": "vue-mapper", "extensions": [".vue"] }], "include": ["src"] }"""), ("/project/src/index.ts", "export {};"), ("/project/src/component.vue", "<template></template>"), ("/project/node_modules/vue-mapper/package.json", """{ "name": "vue-mapper", "version": "1.2.3", "typescript": { "contentMapper": { "exec": ["node", "./mapper.js"] } } }""")], source, "/project");
-            Check.Equal(parsed.Errors?.Count ?? 0, 0, "Inherited mapper errors");
+            Check.Equal(GoSlices.ToListOrNull(parsed.Errors)?.Count ?? 0, 0, "Inherited mapper errors");
             Check.Equal(parsed.ContentMappers()!.Count, 1, "Inherited mapper count");
             Check.Equal(parsed.ContentMappers()![0].Package, "vue-mapper", "Inherited package");
             Check.Sequence(parsed.ContentMapperExtensions(), new[] { ".vue" }, "Inherited extensions");
@@ -111,7 +111,7 @@ public static class ConfigMapperChecks
         foreach (bool source in Apis)
         {
             var parsed = Parse("""{ "contentMappers": [{ "package": "vue-mapper", "extensions": [".vue"] }] }""", [("/app.ts", "export {}")], source, enabled: false);
-            Check.True(parsed.Errors?.Any(error => error.Code() == Diagnostics.Content_mappers_require_the_runExternalCode_command_line_flag_to_be_enabled.Code()) == true, "Missing runExternalCode diagnostic");
+            Check.True(GoSlices.ToListOrNull(parsed.Errors)?.Any(error => error.Code() == Diagnostics.Content_mappers_require_the_runExternalCode_command_line_flag_to_be_enabled.Code()) == true, "Missing runExternalCode diagnostic");
         }
     }
 
@@ -153,7 +153,7 @@ public static class ConfigMapperChecks
                 files.Add(("/node_modules/b/package.json", Manifest("b")));
             }
             var parsed = Parse("{ \"contentMappers\": " + row.Json + " }", files.ToArray(), source);
-            var diagnostic = parsed.Errors?.Find(error => error.Code() == row.Code);
+            var diagnostic = GoSlices.ToListOrNull(parsed.Errors)?.Find(error => error.Code() == row.Code);
             Check.True(diagnostic is not null, row.Name + " original diagnostic present");
             if (row.Name == "built-in extension")
             {
@@ -191,8 +191,8 @@ public static class ConfigMapperChecks
         foreach (var row in rows)
         {
             var parsed = Parse("{ \"contentMappers\": " + row.Json + " }", [("/app.ts", "export {};"), ("/node_modules/mapper/package.json", Manifest("mapper")), ("/node_modules/a/package.json", Manifest("a")), ("/node_modules/b/package.json", Manifest("b"))], true, sensitivity: row.Sensitivity);
-            if (row.Code == 0) Check.Equal(parsed.Errors?.Count ?? 0, 0, "Case-distinct mapper extensions no errors");
-            else Check.True(parsed.Errors?.Any(error => error.Code() == row.Code) == true, "Original host-case diagnostic present");
+            if (row.Code == 0) Check.Equal(GoSlices.ToListOrNull(parsed.Errors)?.Count ?? 0, 0, "Case-distinct mapper extensions no errors");
+            else Check.True(GoSlices.ToListOrNull(parsed.Errors)?.Any(error => error.Code() == row.Code) == true, "Original host-case diagnostic present");
         }
     }
 }

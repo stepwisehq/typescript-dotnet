@@ -20,7 +20,7 @@ internal static partial class ModuleSpecifiers
     internal sealed class NodeModulePathParts
     {
         internal RootedDirectoryPath TopLevelNodeModulesSearchRoot, TopLevelNodeModulesDirectory, PackageRootDirectory;
-        internal string PackageName = "";
+        internal ByteStringValue PackageName;
         internal RelativePath PackageRelativePath;
         internal bool HasNestedNodeModules, IsDirectNodeModulesFile;
     }
@@ -34,7 +34,8 @@ internal static partial class ModuleSpecifiers
     }
 
     // Empty exclusions retain source false; nonempty regex evaluation is an external auto-import service consumer.
-    private static bool IsExcludedByRegex(string name, List<string> excludes)
+    private static bool IsExcludedByRegex(string name, List<string> excludes) => IsExcludedByRegex(ByteStringValue.FromString(name), excludes);
+    private static bool IsExcludedByRegex(ByteStringValue name, List<string> excludes)
     {
         if (GoRuntime.Len(excludes) == 0)
         {
@@ -73,23 +74,24 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/util.go:125:1.
-    public static string GetJSExtensionForDeclarationFileExtension(string ext)
+    public static string GetJSExtensionForDeclarationFileExtension(string ext) => GetJSExtensionValueForDeclarationFileExtension(ByteStringValue.FromString(ext)).Materialize()!;
+    private static ByteStringValue GetJSExtensionValueForDeclarationFileExtension(ByteStringValue ext)
     {
         switch (ext)
         {
-            case TsPath.ExtensionDts:
+            case var _ when ext.EqualsString(TsPath.ExtensionDts):
             {
-                return TsPath.ExtensionJs;
+                return ByteStringValue.FromString(TsPath.ExtensionJs);
             }
 
-            case TsPath.ExtensionDmts:
+            case var _ when ext.EqualsString(TsPath.ExtensionDmts):
             {
-                return TsPath.ExtensionMjs;
+                return ByteStringValue.FromString(TsPath.ExtensionMjs);
             }
 
-            case TsPath.ExtensionDcts:
+            case var _ when ext.EqualsString(TsPath.ExtensionDcts):
             {
-                return TsPath.ExtensionCjs;
+                return ByteStringValue.FromString(TsPath.ExtensionCjs);
             }
 
             default:
@@ -102,29 +104,30 @@ internal static partial class ModuleSpecifiers
     // TryGetRealFileNameForNonJSDeclarationFileName remaps files like `foo.d.json.ts` or
     // `foo.ModuleFunctions.d.css.ts` back to their real non-JS names.
     // Upstream tsc/internal/modulespecifiers/util.go:141:1.
-    public static string TryGetRealFileNameForNonJSDeclarationFileName(string fileName)
+    public static string TryGetRealFileNameForNonJSDeclarationFileName(string fileName) => TryGetRealFileNameValueForNonJSDeclarationFileName(ByteStringValue.FromString(fileName)).Materialize()!;
+    private static ByteStringValue TryGetRealFileNameValueForNonJSDeclarationFileName(ByteStringValue fileName)
     {
         var baseName = TsPath.GetBaseFileName(fileName);
-        if (((!GoStrings.HasSuffix(fileName, TsPath.ExtensionTs) || !GoStrings.Contains(baseName, ".d.")) || GoStrings.HasSuffix(baseName, TsPath.ExtensionDts)))
+        if (((!fileName.EndsWith(".ts"u8) || !baseName.Contains(".d."u8)) || baseName.EndsWith(".d.ts"u8)))
         {
-            return "";
+            return default;
         }
 
         var noExtension = TsPath.RemoveExtension(fileName, TsPath.ExtensionTs);
-        var lastDotIndex = GoStrings.LastIndex(noExtension, ".");
+        var lastDotIndex = noExtension.LastIndexOf('.');
         var ext = GoRuntime.Slice(noExtension, lastDotIndex);
-        var tuple1 = GoStrings.Cut(noExtension, ".d.");
+        var tuple1 = GoStrings.Cut(noExtension, ByteStringValue.FromString(".d."));
         var before = tuple1.Item1;
-        return (before + ext);
+        return TsPath.pathConcat(before, ext);
     }
 
     // Upstream tsc/internal/modulespecifiers/util.go:156:1.
-    private static string getJSExtensionForFile(string fileName, CompilerOptions options)
+    private static string getJSExtensionForFile(ByteStringValue fileName, CompilerOptions options)
     {
         var result = ModuleFunctions.TryGetJSExtensionForFile(fileName, options);
         if ((GoRuntime.Len(result) == 0))
         {
-            throw new InvalidOperationException(($"Extension {extensionFromPath(fileName)} is unsupported:: FileName:: {fileName}"));
+            throw new InvalidOperationException(($"Extension {extensionFromPath(fileName).Materialize()} is unsupported:: FileName:: {fileName.Materialize()}"));
         }
 
         return result;
@@ -147,7 +150,7 @@ internal static partial class ModuleSpecifiers
     // * Path must have a valid extension.
     //
     // Upstream tsc/internal/modulespecifiers/util.go:176:1.
-    private static string extensionFromPath(string path)
+    private static ByteStringValue extensionFromPath(ByteStringValue path)
     {
         var ext = TsPath.TryGetExtensionFromPath(path);
         if ((GoRuntime.Len(ext) == 0))
@@ -183,16 +186,16 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/util.go:203:1.
-    private static List<RelativePath> getPathsRelativeToRootDirs(RootedFilePath path, List<RootedDirectoryPath> rootDirs, CaseSensitivity caseSensitivity)
+    private static Slice<RelativePath> getPathsRelativeToRootDirs(RootedFilePath path, List<RootedDirectoryPath> rootDirs, CaseSensitivity caseSensitivity)
     {
-        List<RelativePath> results = default;
+        Slice<RelativePath> results = default;
         {
             foreach (var rootDir in GoRuntime.RangeValues(rootDirs))
             {
                 var relativePath = getRelativePathIfInSameVolume(path, rootDir, caseSensitivity);
                 if (!isPathRelativeToParent(relativePath))
                 {
-                    results = GoRuntime.Append(results, relativePath);
+                    results = results.Append(relativePath);
                 }
             }
         }
@@ -221,12 +224,12 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/util.go:226:1.
-    private static string resolvePathPatternIfInSameVolume(string path, RootedDirectoryPath directoryPath, CaseSensitivity caseSensitivity)
+    private static ByteStringValue resolvePathPatternIfInSameVolume(ByteStringValue path, RootedDirectoryPath directoryPath, CaseSensitivity caseSensitivity)
     {
-        var relativePath = TsPath.ResolveRelativePathToDirectoryOrUrl(directoryPath.AsString(), path, false, directoryPath, caseSensitivity);
+        var relativePath = TsPath.ResolveRelativePathToDirectoryOrUrl(directoryPath.AsValue(), path, false, directoryPath, caseSensitivity);
         if (TsPath.IsRootedDiskPath(relativePath))
         {
-            return "";
+            return default;
         }
 
         return relativePath;
@@ -262,7 +265,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/util.go:260:1.
-    private static string replaceFirstStar(string s, string replacement)
+    private static ByteStringValue replaceFirstStar(ByteStringValue s, ByteStringValue replacement)
     {
         return GoStrings.Replace(s, "*", replacement, 1);
     }
@@ -270,7 +273,7 @@ internal static partial class ModuleSpecifiers
     // Upstream tsc/internal/modulespecifiers/util.go:283:1.
     public static NodeModulePathParts GetNodeModulePathParts(RootedFilePath fileName)
     {
-        var fullPath = fileName.AsString();
+        var fullPath = fileName.AsValue();
         var topLevelNodeModulesIndex = -1;
         var packageNameStart = -1;
         var packageRootIndex = -1;
@@ -280,12 +283,12 @@ internal static partial class ModuleSpecifiers
         while ((partEnd >= 0))
         {
             var partStart = partEnd;
-            partEnd = Core.IndexAfter(fullPath, "/", (partStart + 1));
+            partEnd = Core.IndexAfter(fullPath, ByteStringValue.FromString("/"), (partStart + 1));
             switch (state)
             {
                 case nodeModulesPathParseState.BeforeNodeModules:
                 {
-                    if (GoStrings.HasPrefix(GoRuntime.Slice(fullPath, partStart), "/node_modules/"))
+                    if (fullPath.Slice(partStart).StartsWith("/node_modules/"u8))
                     {
                         topLevelNodeModulesIndex = partStart;
                         state = nodeModulesPathParseState.NodeModules;
@@ -324,7 +327,7 @@ internal static partial class ModuleSpecifiers
 
                 case nodeModulesPathParseState.PackageContent:
                 {
-                    if (GoStrings.HasPrefix(GoRuntime.Slice(fullPath, partStart), "/node_modules/"))
+                    if (fullPath.Slice(partStart).StartsWith("/node_modules/"u8))
                     {
                         hasNestedNodeModules = true;
                         state = nodeModulesPathParseState.NodeModules;
@@ -371,14 +374,14 @@ internal static partial class ModuleSpecifiers
     // Upstream tsc/internal/modulespecifiers/util.go:353:1.
     public static ModuleSpecifier GetNodeModulesPackageName(CompilerOptions compilerOptions, SourceFile importingSourceFile, RootedFilePath nodeModulesFileName, IModuleSpecifierGenerationHost host, UserPreferences preferences, ModuleSpecifierOptions options)
     {
-        var info = getInfo(RootedFilePath.FromGoString(importingSourceFile.FileNameGoBytes()), host);
+        var info = getInfo(RootedFilePath.FromValue(importingSourceFile.FileNameGoValue()), host);
         var modulePaths = getAllModulePaths(info, nodeModulesFileName, host, compilerOptions, preferences, options);
         {
             foreach (var modulePath in GoRuntime.RangeValues(modulePaths))
             {
                 {
                     var result = tryGetModuleNameAsNodeModule(modulePath, info, importingSourceFile, host, compilerOptions, preferences, true, options.OverrideImportMode);
-                    if ((result.AsString().Length > 0))
+                    if ((result.AsValue().Length > 0))
                     {
                         return result;
                     }
@@ -406,23 +409,24 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/util.go:380:1.
-    public static string GetPackageNameFromDirectory(RootedPath path)
+    public static string GetPackageNameFromDirectory(RootedPath path) => GetPackageNameValueFromDirectory(path).Materialize()!;
+    internal static ByteStringValue GetPackageNameValueFromDirectory(RootedPath path)
     {
-        var fileOrDirectoryPath = path.AsString();
-        var tuple1 = GoStrings.CutLast(fileOrDirectoryPath, "/node_modules/");
+        var fileOrDirectoryPath = path.AsValue();
+        var tuple1 = GoStrings.CutLast(fileOrDirectoryPath, ByteStringValue.FromString("/node_modules/"));
         var basename = tuple1.Item2;
         var found = tuple1.Item3;
         if (!found)
         {
-            return "";
+            return default;
         }
 
         if ((basename[0] == '.'))
         {
-            return "";
+            return default;
         }
 
-        var nextSlash = GoStrings.Index(basename, "/");
+        var nextSlash = basename.IndexOf('/');
         if ((nextSlash == -1))
         {
             return basename;
@@ -433,7 +437,7 @@ internal static partial class ModuleSpecifiers
             return GoRuntime.Slice(basename, 0, nextSlash);
         }
 
-        var secondSlash = GoStrings.Index(GoRuntime.Slice(basename, (nextSlash + 1)), "/");
+        var secondSlash = basename.Slice(nextSlash + 1).IndexOf('/');
         if ((secondSlash == -1))
         {
             return basename;
@@ -447,7 +451,7 @@ internal static partial class ModuleSpecifiers
     // Upstream tsc/internal/modulespecifiers/util.go:410:1.
     public static ModuleSpecifier ProcessEntrypointEnding(ResolvedEntrypoint entrypoint, UserPreferences prefs, IModuleSpecifierGenerationHost host, CompilerOptions options, SourceFile importingSourceFile, List<ModuleSpecifierEnding> allowedEndings)
     {
-        var specifier = entrypoint.ModuleSpecifier.AsString();
+        var specifier = entrypoint.ModuleSpecifier.AsValue();
         if ((entrypoint.Ending == Ending.Fixed))
         {
             return entrypoint.ModuleSpecifier;
@@ -460,15 +464,15 @@ internal static partial class ModuleSpecifiers
 
         var preferredEnding = allowedEndings[0];
         var dtsExtension = TsPath.GetDeclarationFileExtension(specifier);
-        if ((dtsExtension != ""))
+        if ((dtsExtension.Length != 0))
         {
             switch (preferredEnding)
             {
                 case ModuleSpecifierEnding.TsExtension:
                 case ModuleSpecifierEnding.JsExtension:
                 {
-                    var jsExtension = GetJSExtensionForDeclarationFileExtension(dtsExtension);
-                    return TsPath.ToModuleSpecifier(TsPath.ChangeAnyExtension(specifier, jsExtension, new List<string> { dtsExtension }, CaseSensitivity.CaseSensitive));
+                    var jsExtension = GetJSExtensionValueForDeclarationFileExtension(dtsExtension);
+                    return TsPath.ToModuleSpecifier(TsPath.ChangeAnyExtension(specifier, jsExtension, Slice<ByteStringValue>.FromArray([dtsExtension]), CaseSensitivity.CaseSensitive));
                 }
 
                 case ModuleSpecifierEnding.Minimal:
@@ -476,23 +480,23 @@ internal static partial class ModuleSpecifiers
                 {
                     if ((entrypoint.Ending == Ending.Changeable))
                     {
-                        if ((dtsExtension == TsPath.ExtensionDts))
+                        if ((dtsExtension.EqualsString(TsPath.ExtensionDts)))
                         {
                             specifier = TsPath.RemoveExtension(specifier, dtsExtension);
                             if ((preferredEnding == ModuleSpecifierEnding.Minimal))
                             {
-                                specifier = GoStrings.TrimSuffix(specifier, "/index");
+                                specifier = GoStrings.TrimSuffix(specifier, ByteStringValue.FromString("/index"));
                             }
 
                             return TsPath.ToModuleSpecifier(specifier);
                         }
 
-                        var jsExtension2 = GetJSExtensionForDeclarationFileExtension(dtsExtension);
-                        return TsPath.ToModuleSpecifier(TsPath.ChangeAnyExtension(specifier, jsExtension2, new List<string> { dtsExtension }, CaseSensitivity.CaseSensitive));
+                        var jsExtension2 = GetJSExtensionValueForDeclarationFileExtension(dtsExtension);
+                        return TsPath.ToModuleSpecifier(TsPath.ChangeAnyExtension(specifier, jsExtension2, Slice<ByteStringValue>.FromArray([dtsExtension]), CaseSensitivity.CaseSensitive));
                     }
 
-                    var jsExtension3 = GetJSExtensionForDeclarationFileExtension(dtsExtension);
-                    return TsPath.ToModuleSpecifier(TsPath.ChangeAnyExtension(specifier, jsExtension3, new List<string> { dtsExtension }, CaseSensitivity.CaseSensitive));
+                    var jsExtension3 = GetJSExtensionValueForDeclarationFileExtension(dtsExtension);
+                    return TsPath.ToModuleSpecifier(TsPath.ChangeAnyExtension(specifier, jsExtension3, Slice<ByteStringValue>.FromArray([dtsExtension]), CaseSensitivity.CaseSensitive));
                 }
             }
 
@@ -514,7 +518,7 @@ internal static partial class ModuleSpecifiers
                         var jsExtension4 = ModuleFunctions.TryGetJSExtensionForFile(specifier, options);
                         if ((jsExtension4 != ""))
                         {
-                            return TsPath.ToModuleSpecifier((TsPath.RemoveFileExtension(specifier) + jsExtension4));
+                            return TsPath.ToModuleSpecifier(TsPath.pathConcat(TsPath.RemoveFileExtension(specifier), ByteStringValue.FromString(jsExtension4)));
                         }
                     }
 
@@ -529,7 +533,7 @@ internal static partial class ModuleSpecifiers
                         specifier = TsPath.RemoveFileExtension(specifier);
                         if ((preferredEnding == ModuleSpecifierEnding.Minimal))
                         {
-                            specifier = GoStrings.TrimSuffix(specifier, "/index");
+                            specifier = GoStrings.TrimSuffix(specifier, ByteStringValue.FromString("/index"));
                         }
 
                         return TsPath.ToModuleSpecifier(specifier);
@@ -539,7 +543,7 @@ internal static partial class ModuleSpecifiers
                         var jsExtension5 = ModuleFunctions.TryGetJSExtensionForFile(specifier, options);
                         if ((jsExtension5 != ""))
                         {
-                            return TsPath.ToModuleSpecifier((TsPath.RemoveFileExtension(specifier) + jsExtension5));
+                            return TsPath.ToModuleSpecifier(TsPath.pathConcat(TsPath.RemoveFileExtension(specifier), ByteStringValue.FromString(jsExtension5)));
                         }
                     }
 
@@ -568,7 +572,7 @@ internal static partial class ModuleSpecifiers
                         specifier = TsPath.RemoveFileExtension(specifier);
                         if ((preferredEnding == ModuleSpecifierEnding.Minimal))
                         {
-                            specifier = GoStrings.TrimSuffix(specifier, "/index");
+                            specifier = GoStrings.TrimSuffix(specifier, ByteStringValue.FromString("/index"));
                         }
 
                         return TsPath.ToModuleSpecifier(specifier);

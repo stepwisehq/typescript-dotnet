@@ -26,8 +26,8 @@ public static class CheckerPoolChecks
             {
                 PathKey path = PathKey.FromGoString("/resolved.ts");
                 SourceFile file = new();
-                // Existing compiler tables store canonical PathKey.AsString keys.
-                CompilerProgram program = new() { filesByPath = new() { [path.AsString()] = file } };
+                // Existing compiler tables retain canonical PathKey content keys.
+                CompilerProgram program = new() { filesByPath = new() { [ByteStringKey.FromValue(path.AsValue())] = file } };
                 ResolvedModule resolved = new()
                 {
                     ResolvedFileName = RootedFilePath.FromGoString("/different.ts"),

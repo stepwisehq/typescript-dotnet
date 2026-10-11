@@ -29,6 +29,10 @@ internal sealed class GoArena<T>
 {
     private Slice<T> data;
 
+    // An upstream owner reset drops its arena header. Published clipped regions
+    // keep their array owners; resetting must never clear or reuse those slots.
+    internal void Reset() => data = default;
+
     // core/arena.go:25–44. Allocate clipped regions from the current arena.
     // Advancing the arena leaves old regions valid through their array owner.
     // CLR allocation does not reproduce Go allocator size-class rounding; each
@@ -466,5 +470,5 @@ internal static class ParserPaths
 {
     public static string AsString(this string value) => value ?? "";
     // RootedFilePath.IsDeclarationFile forwards to the normalized-path extension algorithm.
-    public static bool IsDeclarationFile(this string value) => TsPath.getDeclarationFileExtensionFromNormalized(value ?? "") != "";
+    public static bool IsDeclarationFile(this string value) => TsPath.getDeclarationFileExtensionFromNormalized(ByteStringValue.FromString(value ?? "")).Length != 0;
 }

@@ -34,7 +34,7 @@ internal static class OsRawPathChecks
             var fs = OsVfs.FS();
             Reject(() => _ = fs.GetAccessibleEntries(Dir(Path.Combine(root, "collision"))), "Raw FF and U+FFFD filename collision");
             var valid = fs.GetAccessibleEntries(Dir(Path.Combine(root, "valid")));
-            Check.Sequence(valid.Files, new[] { GoString.ToUtf8("é😀.ts"), GoString.ToUtf8("�.ts") }, "Valid scalar filenames retain original byte order");
+            Check.Sequence(GoSlices.ToListOrNull(valid.Files)?.Select(static name => name.Materialize()!).ToArray(), new[] { GoString.ToUtf8("é😀.ts"), GoString.ToUtf8("�.ts") }, "Valid scalar filenames retain original byte order");
             foreach (string name in new[]
             {
                 "�.ts",

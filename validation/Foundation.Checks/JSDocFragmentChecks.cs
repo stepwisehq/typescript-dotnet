@@ -71,7 +71,7 @@ public static class JSDocFragmentChecks
     {
         bytes ??= "/** prose {@link target first} {@linkplain target second} {@linkcode target third} */\nfunction f() {}";
         var file = Parser.ParseSourceFile(new("/fragments.js", "/fragments.js"), GoString.Bytes(bytes), ScriptKind.JS);
-        Require((file.Diagnostics()?.Count ?? 0) == 0 && (file.JSDocDiagnostics()?.Count ?? 0) == 0, "Fragment source parses without diagnostics");
+        Require((file.Diagnostics().Length) == 0 && (file.JSDocDiagnostics().Length) == 0, "Fragment source parses without diagnostics");
         var found = new List<Node>();
         void Walk(Node node)
         {

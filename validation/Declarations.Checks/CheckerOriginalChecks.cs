@@ -35,7 +35,7 @@ public static class CheckerOriginalChecks
         var host = TypeScript.Compiler.CompilerHosts.NewCompilerHost(fs, Bundled.LibPath());
         var (parsed, errors) = ConfigParser.GetParsedCommandLineOfConfigFile(
             RootedFilePath.FromGoString("/tsconfig.json"), new CompilerOptions(), null, fs, null);
-        Check.Equal(errors?.Count ?? 0, 0, "Expected no errors in parsed command line");
+        Check.Equal(errors.Length, 0, "Expected no errors in parsed command line");
         var program = CompilerProgram.NewProgram(new() { Config = parsed!, Host = host });
         program.BindSourceFiles();
         return program;

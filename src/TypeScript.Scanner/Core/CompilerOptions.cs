@@ -56,6 +56,7 @@ public sealed partial class CompilerOptions
     public bool GetResolveJsonModule() => ResolveJsonModule != Tristate.Unknown ? ResolveJsonModule == Tristate.True : GetEmitModuleKind()is ModuleKind.Node20 or ModuleKind.NodeNext || GetModuleResolutionKind() == ModuleResolutionKind.Bundler;
     public bool ShouldPreserveConstEnums() => PreserveConstEnums == Tristate.True || GetIsolatedModules();
     public bool GetAllowJS() => AllowJs != Tristate.Unknown ? AllowJs == Tristate.True : CheckJs == Tristate.True;
+    internal bool AllowImportingTsExtensionsFrom(ByteStringValue fileName) => GetAllowImportingTsExtensions() || TsPath.IsDeclarationFileName(fileName);
     public bool AllowImportingTsExtensionsFrom(RootedFilePath fileName) => GetAllowImportingTsExtensions() || fileName.IsDeclarationFile();
     public ModuleDetectionKind GetEmitModuleDetectionKind()
     {

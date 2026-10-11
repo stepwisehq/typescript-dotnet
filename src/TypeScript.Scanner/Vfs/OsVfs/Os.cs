@@ -18,7 +18,7 @@ public static class OsVfs
     private sealed class OsFS : IFS, ISourceTextFileSystem
     {
         private readonly CaseSensitivity sensitivity = detectCaseSensitivity();
-        private static string Native(string bytes)
+        private static string Native(ByteStringValue bytes)
         {
             try
             {
@@ -26,7 +26,7 @@ public static class OsVfs
             }
             catch (System.Text.DecoderFallbackException error)
             {
-                throw new FileSystemPathEncodingException(bytes, error);
+                throw new FileSystemPathEncodingException(bytes.Materialize()!, error);
             }
         }
 
@@ -38,7 +38,7 @@ public static class OsVfs
             if (OperatingSystem.IsBrowser())
                 return global::TypeScript.Scanner.CaseSensitivity.CaseSensitive;
             string executable = Environment.ProcessPath ?? throw new IOException("vfs: failed to get executable path");
-            string raw = PathByteText.FromUnicode(executable);
+            var raw = PathByteText.FromUnicodeValue(executable);
             var swapped = new GoBuilder();
             foreach (int rune in GoString.EnumerateRunes(raw))
             {
@@ -50,7 +50,7 @@ public static class OsVfs
             // as detection failure, so stat the swapped path directly.
             try
             {
-                _ = System.IO.File.GetAttributes(Native(swapped.String()));
+                _ = System.IO.File.GetAttributes(Native(swapped.Value()));
                 return global::TypeScript.Scanner.CaseSensitivity.CaseInsensitive;
             }
             catch (FileNotFoundException)
@@ -73,7 +73,7 @@ public static class OsVfs
         }
         public (ByteStringView Contents, bool Ok) ReadSourceText(RootedFilePath path)
         {
-            string native = Native(path.AsString());
+            string native = Native(path.AsValue());
             if (native.Contains('\0'))
                 return (default, false);
             try
@@ -88,11 +88,11 @@ public static class OsVfs
 
         public FileInfo? Stat(RootedPath path)
         {
-            string native = Native(path.AsString());
+            string native = Native(path.AsValue());
             if (native.Contains('\0'))
                 return null;
             if (OperatingSystem.IsLinux())
-                return LinuxStat.Stat(native, path.BaseName());
+                return LinuxStat.Stat(native, path.BaseNameValue());
             try
             {
                 var attributes = System.IO.File.GetAttributes(native);
@@ -106,7 +106,7 @@ public static class OsVfs
 
                 if (!info.Exists)
                     return null;
-                return new osFileInfo(path.BaseName(), info);
+                return new osFileInfo(path.BaseNameValue(), info);
             }
             catch (Exception error)when (readFailure(error))
             {
@@ -116,10 +116,10 @@ public static class OsVfs
 
         public Entries GetAccessibleEntries(RootedDirectoryPath path)
         {
-            string native = Native(path.AsString());
+            string native = Native(path.AsValue());
             var result = new Entries
             {
-                Symlinks = new HashSet<string>(StringComparer.Ordinal)
+                Symlinks = new HashSet<ByteStringKey>(ByteStringKey.Comparer)
             };
             if (native.Contains('\0'))
                 return result;
@@ -139,7 +139,7 @@ public static class OsVfs
                     return result;
                 }
 
-                GoSlices.SortFunc(names, static (left, right) => string.CompareOrdinal(left.Name, right.Name));
+                GoSlices.SortFunc(names, static (left, right) => ByteStringKey.FromValue(left.Name).CompareTo(ByteStringKey.FromValue(right.Name)));
                 foreach (var entry in names)
                 {
                     FileInfo? info = Stat(path.ResolveFile(entry.Name).AsPath());
@@ -152,7 +152,7 @@ public static class OsVfs
                     else
                         continue;
                     if (entry.IsSymlink)
-                        result.Symlinks!.Add(entry.Name);
+                        result.Symlinks!.Add(ByteStringKey.FromValue(entry.Name));
                 }
 
                 return result;
@@ -168,9 +168,9 @@ public static class OsVfs
                 return result;
             }
 
-            foreach (var entry in entries.OrderBy(entry => PathByteText.FromUnicode(entry.Name), StringComparer.Ordinal))
+            var namedEntries = entries.Select(entry => (Entry: entry, Name: PathByteText.FromUnicodeValue(entry.Name))).ToList();
+            foreach (var (entry, name) in namedEntries.OrderBy(static value => value.Name, Comparer<ByteStringValue>.Create(static (left, right) => ByteStringKey.FromValue(left).CompareTo(ByteStringKey.FromValue(right)))))
             {
-                string name = PathByteText.FromUnicode(entry.Name);
                 bool link;
                 try
                 {
@@ -191,7 +191,7 @@ public static class OsVfs
                 else
                     continue;
                 if (link)
-                    result.Symlinks!.Add(name);
+                    result.Symlinks!.Add(ByteStringKey.FromValue(name));
             }
 
             return result;
@@ -199,13 +199,13 @@ public static class OsVfs
 
         public RootedPath Realpath(RootedPath path)
         {
-            string native = Native(path.AsString());
+            string native = Native(path.AsValue());
             if (native.Contains('\0'))
                 return path;
             if (OperatingSystem.IsLinux())
             {
-                string? resolved = LinuxReadPaths.Realpath(native);
-                return resolved is null ? path : TsPath.RootedPathFromAbsolute(resolved);
+                var resolved = LinuxReadPaths.Realpath(native);
+                return resolved is null ? path : TsPath.RootedPathFromAbsolute(resolved.Value);
             }
 
             try
@@ -235,7 +235,7 @@ public static class OsVfs
                         resolved = candidate;
                 }
 
-                return TsPath.RootedPathFromAbsolute(PathByteText.FromUnicode(resolved));
+                return TsPath.RootedPathFromAbsolute(PathByteText.FromUnicodeValue(resolved));
             }
             catch (Exception error)when (readFailure(error))
             {
@@ -244,9 +244,9 @@ public static class OsVfs
         }
     }
 
-    private sealed class osFileInfo(string name, System.IO.FileSystemInfo info) : FileInfo
+    private sealed class osFileInfo(ByteStringValue name, System.IO.FileSystemInfo info) : FileInfo
     {
-        public string Name() => name;
+        public string Name() => name.Materialize()!;
         public long Size() => info is System.IO.FileInfo file ? file.Length : 0;
         public FileMode Mode()
         {

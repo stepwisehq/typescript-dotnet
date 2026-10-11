@@ -10,7 +10,7 @@ public sealed partial class Checker
 {
     // Named cold boundaries retain standard Memory locations, never payload
     // snapshots. Default equality on boxed Memory still compares owner/offset/length.
-    internal static object VerificationLinkLocation<T>(Memory<T> location) where T : struct => location.IsEmpty ? null : location;
+    internal static object VerificationLinkLocation<T>(Memory<T> location) where T : struct => location.IsEmpty ? (object)null : location;
 
     internal static bool VerificationCollectionsTryLinkLocation(object value, out bool isEmpty)
     {

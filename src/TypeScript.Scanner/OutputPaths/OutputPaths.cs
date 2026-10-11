@@ -30,7 +30,7 @@ public static partial class OutputPaths
     // outputpaths.go:43–76. Enumeration computes names only; it never emits.
     public static OutputFilePaths GetOutputPathsFor(SourceFile sourceFile, CompilerOptions options, IOutputPathsHost host, ForceEmitPaths force)
     {
-        var fileName = RootedFilePath.FromGoString(sourceFile.FileNameGoBytes());
+        var fileName = RootedFilePath.FromValue(sourceFile.FileNameGoValue());
         var ownOutputFilePath = getOwnEmitOutputFilePathForFileName(fileName, options, host, GetOutputExtensionForFileName(fileName, options.Jsx));
         bool isJson = Ast.IsJsonSourceFile(sourceFile);
         bool sameLocation = isJson && host.CaseSensitivity().CompareFilePaths(fileName, ownOutputFilePath) == 0;
@@ -70,17 +70,18 @@ public static partial class OutputPaths
         return default;
     }
 
-    internal static bool isContentMappedFileName(RootedFilePath fileName, IOutputPathsHost host) => fileName.LongestExtension(host.ContentMapperExtensions(), host.CaseSensitivity()) != "";
+    internal static bool isContentMappedFileName(RootedFilePath fileName, IOutputPathsHost host) => fileName.LongestExtensionValue(host.ContentMapperExtensions(), host.CaseSensitivity()).Length != 0;
     public static RootedFilePath GetOutputJSFileNameWorker(RootedFilePath inputFileName, CompilerOptions options, IOutputPathsHost host) => getOutputFileNameWithoutChangingExtension(inputFileName, options.OutDir, host).ChangeExtension(GetOutputExtensionForFileName(inputFileName, options.Jsx));
     public static RootedFilePath GetOutputDeclarationFileNameWorker(RootedFilePath inputFileName, CompilerOptions options, IOutputPathsHost host)
     {
         var directory = options.DeclarationDir;
-        if (directory.AsString() == "")
+        if (directory.AsValue().Length == 0)
             directory = options.OutDir;
         return ChangeToDeclarationExtension(getOutputFileNameWithoutChangingExtension(inputFileName, directory, host), host);
     }
 
-    public static string GetOutputExtension(string fileName, JsxEmit jsx)
+    public static string GetOutputExtension(string fileName, JsxEmit jsx) => GetOutputExtension(ByteStringValue.FromString(fileName), jsx);
+    internal static string GetOutputExtension(ByteStringValue fileName, JsxEmit jsx)
     {
         if (TsPath.FileExtensionIs(fileName, TsPath.ExtensionJson))
             return TsPath.ExtensionJson;
@@ -93,32 +94,35 @@ public static partial class OutputPaths
         return TsPath.ExtensionJs;
     }
 
-    public static string GetOutputExtensionForFileName(RootedFilePath fileName, JsxEmit jsx) => GetOutputExtension(fileName.AsString(), jsx);
+    public static string GetOutputExtensionForFileName(RootedFilePath fileName, JsxEmit jsx) => GetOutputExtension(fileName.AsValue(), jsx);
     internal static RootedFilePath getDeclarationEmitOutputFilePathForFileName(RootedFilePath file, CompilerOptions options, IOutputPathsHost host)
     {
-        var outputDirectory = options.DeclarationDir.AsString() != "" ? options.DeclarationDir : options.OutDir;
-        return ChangeToDeclarationExtension(outputDirectory.AsString() != "" ? GetSourceFileNameInNewDir(file, outputDirectory, host.CommonSourceDirectory(), host.CaseSensitivity()) : file, host);
+        var outputDirectory = options.DeclarationDir.AsValue().Length != 0 ? options.DeclarationDir : options.OutDir;
+        return ChangeToDeclarationExtension(outputDirectory.AsValue().Length != 0 ? GetSourceFileNameInNewDir(file, outputDirectory, host.CommonSourceDirectory(), host.CaseSensitivity()) : file, host);
     }
 
     public static RootedFilePath ChangeToDeclarationExtension(RootedFilePath path, IOutputPathsHost host)
     {
-        var extension = path.LongestExtension(host.ContentMapperExtensions(), CaseSensitivity.CaseSensitive);
-        if (extension != "")
-            return path.RemoveExtension(extension).AppendSuffix(".d" + extension + ".ts");
-        var pathWithoutExtension = path.RemoveFileExtension();
-        if (pathWithoutExtension.AsString() == path.AsString())
+        var extension = path.LongestExtensionValue(host.ContentMapperExtensions(), CaseSensitivity.CaseSensitive);
+        if (extension.Length != 0)
         {
-            extension = path.AnyExtension(null, CaseSensitivity.CaseSensitive);
-            if (extension != "")
+            var suffix = new GoBuilder(); suffix.WriteString(".d"); suffix.WriteString(extension); suffix.WriteString(".ts");
+            return path.RemoveExtension(extension).AppendSuffix(suffix.Value());
+        }
+        var pathWithoutExtension = path.RemoveFileExtension();
+        if (pathWithoutExtension.AsValue().EqualsValue(path.AsValue()))
+        {
+            extension = path.AnyExtensionValue(null, CaseSensitivity.CaseSensitive);
+            if (extension.Length != 0)
                 pathWithoutExtension = path.RemoveExtension(extension);
         }
 
-        return pathWithoutExtension.AppendSuffix(path.DeclarationEmitExtension());
+        return pathWithoutExtension.AppendSuffix(path.DeclarationEmitExtensionValue());
     }
 
     internal static RootedFilePath getOutputFileNameWithoutChangingExtension(RootedFilePath inputFileName, RootedDirectoryPath outputDirectory, IOutputPathsHost host)
     {
-        if (outputDirectory.AsString() != "")
+        if (outputDirectory.AsValue().Length != 0)
         {
             var(relativePath, ok) = host.CaseSensitivity().RelativePathFromDirectory(host.CommonSourceDirectory(), inputFileName);
             if (!ok)
@@ -139,7 +143,7 @@ public static partial class OutputPaths
 
     internal static RootedFilePath getOwnEmitOutputFilePathForFileName(RootedFilePath fileName, CompilerOptions options, IOutputPathsHost host, string extension)
     {
-        var output = options.OutDir.AsString() != "" ? GetSourceFileNameInNewDir(fileName, options.OutDir, host.CommonSourceDirectory(), host.CaseSensitivity()) : fileName;
+        var output = options.OutDir.AsValue().Length != 0 ? GetSourceFileNameInNewDir(fileName, options.OutDir, host.CommonSourceDirectory(), host.CaseSensitivity()) : fileName;
         return output.RemoveFileExtension().AppendSuffix(extension);
     }
 
@@ -148,21 +152,21 @@ public static partial class OutputPaths
     {
         if (!options.IsIncremental() && options.Build != Tristate.True)
             return default;
-        if (options.TsBuildInfoFile.AsString() != "")
+        if (options.TsBuildInfoFile.AsValue().Length != 0)
             return options.TsBuildInfoFile;
-        if (options.ConfigFilePath.AsString() == "")
+        if (options.ConfigFilePath.AsValue().Length == 0)
             return default;
         var configFileName = options.ConfigFilePath;
         RootedFilePath buildInfoFileName;
-        if (options.OutDir.AsString() != "")
+        if (options.OutDir.AsValue().Length != 0)
         {
-            if (options.RootDir.AsString() != "")
+            if (options.RootDir.AsValue().Length != 0)
             {
                 var(relativePath, ok) = caseSensitivity.RelativePathFromDirectory(options.RootDir, configFileName);
                 buildInfoFileName = ok ? options.OutDir.ResolveRelativeFile(relativePath) : configFileName;
             }
             else
-                buildInfoFileName = options.OutDir.ResolveFile(configFileName.BaseName());
+                buildInfoFileName = options.OutDir.ResolveFile(configFileName.BaseNameValue());
         }
         else
             buildInfoFileName = configFileName;

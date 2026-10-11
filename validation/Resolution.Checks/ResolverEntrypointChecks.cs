@@ -157,7 +157,7 @@ public static class ResolverEntrypointChecks
     }
 
     private static ResolvedModule? Resolve(DefaultResolver resolver, string name, string source) => resolver.ResolveModuleName(name, RootedFilePath.FromUnicode(source), ResolutionMode.ESNext, null).Result;
-    private static List<ResolvedEntrypoint> Entrypoints(DefaultResolver resolver, string packageName, bool directorySearch)
+    private static Slice<ResolvedEntrypoint> Entrypoints(DefaultResolver resolver, string packageName, bool directorySearch)
     {
         InfoCacheEntry? package = null;
         resolver.PackageJsonCacheEntries((_, entry) =>
@@ -168,8 +168,8 @@ public static class ResolverEntrypointChecks
             return false;
         });
         Check.True(package is not null, "Original package JSON cache entry exists");
-        // len(nil) equals zero upstream; this local list is solely assertion input,
+        // len(nil) equals zero upstream; this local header is solely assertion input,
         // not an observer claim that nil and allocated-empty headers are identical.
-        return resolver.GetEntrypointsFromPackageJsonInfo(package!, packageName, directorySearch) ?? [];
+        return resolver.GetEntrypointsFromPackageJsonInfo(package!, packageName, directorySearch);
     }
 }

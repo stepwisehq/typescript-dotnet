@@ -248,7 +248,8 @@
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
-      "allocationRolloutAdaptation": "In-progress: Shared explicit-state slice helpers preserve source loops/storage; line-map construction uses borrowed byte decoding without source projection. Combined behavioral/Native AOT acceptance pending; source-reviewed snapshots and adaptations in docs/STATE.md."
+      "allocationRolloutAdaptation": "In-progress: Shared explicit-state slice helpers preserve source loops/storage; line-map construction uses borrowed byte decoding without source projection. Combined behavioral/Native AOT acceptance pending; source-reviewed snapshots and adaptations in docs/STATE.md.",
+      "sourceReuseRolloutAdaptation": "One source spelling-selection algorithm consumes borrowed names/candidates; standard ArrayPool<double> buffers leased across search with finally return and source growth/initialization/tie/limit semantics. Scanner/parser/checker receivers preserve real output projection only. Independently reviewed; integration15 Linux x64 Native AOT VS Code passed with ten exact complete diagnostics; broad regression qualification pending."
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
@@ -483,7 +484,8 @@
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
-      "allocationRolloutAdaptation": "In-progress: Source parser.go:516-610 uses explicit static callback state for diagnostic ranges; parser/source diagnostic headers and actual mark/rewind/append ownership retained. Combined behavioral/Native AOT acceptance pending; source review and remaining boundaries recorded in docs/STATE.md."
+      "allocationRolloutAdaptation": "In-progress: Source parser.go:516-610 uses explicit static callback state for diagnostic ranges; parser/source diagnostic headers and actual mark/rewind/append ownership retained. Combined behavioral/Native AOT acceptance pending; source review and remaining boundaries recorded in docs/STATE.md.",
+      "sourceReuseRolloutAdaptation": "Source parser.go119-133 parser pool restored with standard ConcurrentBag, all source/isolated/lazy-JSDoc leases return in finally; reset all per-parse state except scanner and cached visitor, reset embedded factory adaptation, detach arena headers without clearing published arrays. Unlike sync.Pool, idle owners and retained scanner source may persist across GC; no exact memory-policy parity claim. Independently reviewed; integration15 Linux x64 Native AOT VS Code passed with ten exact complete diagnostics; broad regression qualification pending."
     },
     {
       "upstream": "tsc/internal/parser/jsdoc.go",
@@ -977,7 +979,8 @@
       "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
       "astCandidateStackCheckpoint": "Declaration lookup borrows AST raw-text headers and reuses actual stored keys; insertion remains a string boundary. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
       "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate.",
-      "allocationRolloutAdaptation": "In-progress: Ambient/private/signed/external module-name construction retains byte descriptors until genuine owned concatenation. Three source factory boundaries allocate typed Symbol/FlowNode/FlowList directly; removed empty generic allocation adapter did not pack objects. Original identities, flags and counts retained. Source-reviewed and included in integration6 Native AOT VS Code proof; broader regression acceptance pending. Live successors and evidence in docs/STATE.md."
+      "allocationRolloutAdaptation": "In-progress: Ambient/private/signed/external module-name construction retains byte descriptors until genuine owned concatenation. Three source factory boundaries allocate typed Symbol/FlowNode/FlowList directly; removed empty generic allocation adapter did not pack objects. Original identities, flags and counts retained. Source-reviewed and included in integration6 Native AOT VS Code proof; broader regression acceptance pending. Live successors and evidence in docs/STATE.md.",
+      "sourceReuseRolloutAdaptation": "Source binder.go102-129 exclusive owner reuse restored with standard ConcurrentBag and finally; clear per-file state/drop arena header while retaining cached bind visitor. Published symbols/declaration arrays remain valid. Standard bag retains idle owners unlike Go GC-evictable pool. Independently reviewed; integration15 Linux x64 Native AOT VS Code passed with ten exact complete diagnostics; broad regression qualification pending."
     },
     {
       "upstream": "tsc/internal/ast/symbol.go",
@@ -1344,7 +1347,8 @@
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
       "allocationRolloutAdaptation": "In-progress: Embedded Type payloads share one managed object. Generic/member/tuple/variance owner fields use Go-shaped headers; target retention and allocated-empty distinctions preserved. Tuples retain actual transformation copies and returned element-flag buffers. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md.",
-      "arenaStorageRolloutAdaptation": "In progress: internal link records use arena-backed value payloads; MembersAndExports embeds two table slots. SourceFileLinks retains a lazy ordered-set carrier to preserve live iterator ownership, with lazy membership and Slice keys. Public Symbol/Node/Type identity unchanged. Combined build/Native AOT and regression qualification pending; see docs/STATE.md."
+      "arenaStorageRolloutAdaptation": "In progress: internal link records use arena-backed value payloads; MembersAndExports embeds two table slots. SourceFileLinks retains a lazy ordered-set carrier to preserve live iterator ownership, with lazy membership and Slice keys. Public Symbol/Node/Type identity unchanged. Combined build/Native AOT and regression qualification pending; see docs/STATE.md.",
+      "arenaStorageRolloutEvidence": "cae7ee5 / integration12: selected 26 map owners, value-symbol arena and inline symbol-node pages implemented and independently reviewed; actual Linux x64 Native AOT VS Code ten complete diagnostics exact. Wider Memory locations increase named arena/map allocation buckets despite lower combined sampled allocations. Cold observer execution and broader regression acceptance pending."
     },
     {
       "upstream": "tsc/internal/checker/links.go",
@@ -1365,7 +1369,8 @@
         "sourceEvidence": "artifacts/vscode-link-slots/build/source-ready.json",
         "profileEvidence": "artifacts/vscode-link-slots/allocation-comparison.json"
       },
-      "arenaStorageRolloutAdaptation": "ValueSymbolLinks arena chunks, sparse Memory locations and live ref consumers are implemented and independently source-reviewed; runtime acceptance pending. The remaining genuine SymbolNodeLinks node adapter is being converted to inline struct pages with page-presence Memory locations, including zero slots. Standard location descriptors preserve stable managed storage without a custom handle system; wider entries and chunk retention are unmeasured costs."
+      "arenaStorageRolloutAdaptation": "ValueSymbolLinks arena chunks, sparse Memory locations and live ref consumers are implemented and independently source-reviewed; runtime acceptance pending. The remaining genuine SymbolNodeLinks node adapter is being converted to inline struct pages with page-presence Memory locations, including zero slots. Standard location descriptors preserve stable managed storage without a custom handle system; wider entries and chunk retention are unmeasured costs.",
+      "arenaStorageRolloutEvidence": "cae7ee5 / integration12: selected 26 map owners, value-symbol arena and inline symbol-node pages implemented and independently reviewed; actual Linux x64 Native AOT VS Code ten complete diagnostics exact. Wider Memory locations increase named arena/map allocation buckets despite lower combined sampled allocations. Cold observer execution and broader regression acceptance pending."
     },
     {
       "upstream": "tsc/internal/checker/relater.go",
@@ -1693,7 +1698,8 @@
         "sourceEvidence": "artifacts/vscode-link-slots/build/source-ready.json",
         "profileEvidence": "artifacts/vscode-link-slots/allocation-comparison.json"
       },
-      "arenaStorageRolloutAdaptation": "In progress: map-backed LinkStore payloads move from individually allocated classes to zeroed GoArena struct chunks, standard Memory locations and live ref returns. Preserve lazy map allocation, key identity and missing entries. PagedLinkStore supports value locations while retaining existing class/page-presence behavior. Complete 26-owner consumer and existing observer conversion underway; execution pending."
+      "arenaStorageRolloutAdaptation": "In progress: map-backed LinkStore payloads move from individually allocated classes to zeroed GoArena struct chunks, standard Memory locations and live ref returns. Preserve lazy map allocation, key identity and missing entries. PagedLinkStore supports value locations while retaining existing class/page-presence behavior. Complete 26-owner consumer and existing observer conversion underway; execution pending.",
+      "arenaStorageRolloutEvidence": "cae7ee5 / integration12: selected 26 map owners, value-symbol arena and inline symbol-node pages implemented and independently reviewed; actual Linux x64 Native AOT VS Code ten complete diagnostics exact. Wider Memory locations increase named arena/map allocation buckets despite lower combined sampled allocations. Cold observer execution and broader regression acceptance pending."
     },
     {
       "upstream": null,
@@ -3321,7 +3327,8 @@
       "programSelectedDeclarations": 12,
       "programExternalDeclarations": [],
       "programCampaignEvidence": "validation/results/program-verified.json",
-      "allocationRolloutAdaptation": "In-progress: ParseTask includeReason starts nil as upstream; normal producers publish their real reason pointer, automatic-type task keeps nil. Original casing/diagnostic nullable consumer path retained; no eager placeholder record. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md."
+      "allocationRolloutAdaptation": "In-progress: ParseTask includeReason starts nil as upstream; normal producers publish their real reason pointer, automatic-type task keeps nil. Original casing/diagnostic nullable consumer path retained; no eager placeholder record. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md.",
+      "sourceReuseRolloutAdaptation": "Source filesparser.go239-282 reuses only losing LoadOrStore parseTaskData candidates, retaining capacity-one task map and clearing source-prescribed fields. Published winners are never recycled. Standard ConcurrentBag adaptation; independent review passed, integration15 Linux x64 Native AOT VS Code passed with ten exact complete diagnostics; broad regression qualification pending."
     },
     {
       "upstream": "tsc/internal/compiler/fileInclude.go",
@@ -3889,7 +3896,8 @@
         "verification": "Three authored managed controls pass for all256 bytes, malformed UTF8/WTF8, invalid scalar UTF16/null, explicit Unicode and case canonicalization. No separate native direct PathKey-test claim.",
         "snapshot": "artifacts/vscode-range-pathkey/build/snapshot-1/snapshot.json",
         "evidence": "artifacts/vscode-range-pathkey/independent-review.json"
-      }
+      },
+      "allocationRolloutAdaptation": "Implemented and independently reviewed: retained typed-path ownership uses borrowed byte descriptors with content equality/hash, derived path headers and key/cache/resolver/Program/VFS/configuration consumers. Actual changed normalization and external Unicode/display projection preserved. Integration14 Linux x64 Native AOT VS Code matches ten complete diagnostics; broad regression acceptance pending. See docs/STATE.md."
     },
     {
       "upstream": "tsc/internal/tspath/relative_path.go",
@@ -3899,7 +3907,8 @@
       "upstreamSha256": "dd1af738a7c3b6bc4553365f51592f0ec02dbf87d03925a05161e0521498f86e",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "allocationRolloutAdaptation": "Implemented and independently reviewed: retained typed-path ownership uses borrowed byte descriptors with content equality/hash, derived path headers and key/cache/resolver/Program/VFS/configuration consumers. Actual changed normalization and external Unicode/display projection preserved. Integration14 Linux x64 Native AOT VS Code matches ten complete diagnostics; broad regression acceptance pending. See docs/STATE.md."
     },
     {
       "upstream": "tsc/internal/tspath/rooted_path.go",
@@ -3919,7 +3928,8 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "allocationRolloutAdaptation": "Implemented and independently reviewed: retained typed-path ownership uses borrowed byte descriptors with content equality/hash, derived path headers and key/cache/resolver/Program/VFS/configuration consumers. Actual changed normalization and external Unicode/display projection preserved. Integration14 Linux x64 Native AOT VS Code matches ten complete diagnostics; broad regression acceptance pending. See docs/STATE.md."
     },
     {
       "upstream": "tsc/internal/tspath/source_map_location.go",
@@ -4012,7 +4022,8 @@
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted complete counterpart with documented language adaptations",
       "configurationCampaignBaselineScope": "Source translation staged; detailed function/scope review and verification pending. Modified C# port of tsc/internal/glob/glob.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "allocationRolloutAdaptation": "Integration14: original Glob algorithm retains borrowed byte literals and match ranges through configuration/VFS consumers, using source-shaped element/group headers and branch scratch reuse. Actual public/formatting outputs remain owned strings. Independently reviewed and actual Linux x64 Native AOT VS Code passed; broad regression qualification pending."
     },
     {
       "upstream": "tsc/internal/locale/locale.go",
@@ -5936,11 +5947,12 @@
     "name": "comprehensive-go-faithful-allocation-rollout",
     "baselineCommit": "b84b436",
     "procedureCommit": "7a3537e",
-    "status": "in progress; known allocation ownership families implemented and independently reviewed, integration8 production build and Linux x64 Native AOT VS Code passed; combined allocation profiling underway, broader regression acceptance pending",
+    "status": "In progress: comprehensive source ownership rollout through integration15 compiled and passed Linux x64 Native AOT VS Code (18.02s, ten diagnostics exact). Latest sampled profile14 is11.074105GiB and excludes successor pool/fixed-concat/callback work. All39 harness projects compile. Initial40,451 xUnit cases:39,788pass/663fail, all15,304original noemit records match; reviewed observer/comparer/bundled-init repairs pass integration16 Native AOT VS Code (22.12s, ten diagnostics exact), repaired comprehensive gates underway. No Go performance parity claim.",
     "state": "docs/STATE.md",
     "procedure": "START-HERE.md",
     "boundaries": "Preserve pinned algorithms and genuine Go Clip/Clone/copy/detach operations. Carry borrowed byte text and slice headers through complete internal ownership paths. Actual external output adapters remain explicit. No new emit or language-service functionality.",
-    "verificationTiming": "Coordinated production integration builds during comprehensive implementation; behavioral, Native AOT, regression and performance acceptance at the broader integrated boundary, not per local change."
+    "verificationTiming": "Coordinated production integration builds during comprehensive implementation; behavioral, Native AOT, regression and performance acceptance at the broader integrated boundary, not per local change.",
+    "lastIntegratedCheckpoint": "cae7ee5"
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",

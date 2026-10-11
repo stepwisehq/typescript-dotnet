@@ -5,21 +5,17 @@ using TypeScript.Scanner;
 namespace TypeScript.Compiler;
 internal sealed class ProjectDiskHost
 {
-    private static readonly UTF8Encoding scalarPathEncoding = new(false, true);
     internal string Root { get; }
 
     // Source JS strings can contain WTF-8 lone surrogates. The bounded .NET
     // filesystem host only represents Unicode scalar paths; never replace bytes
     // and resolve a different filename. General scanner/string values stay intact.
-    internal static string DecodeModuleReference(string bytes)
+    internal static string DecodeModuleReference(string bytes) => DecodeModuleReference(ByteStringValue.FromString(bytes));
+    internal static string DecodeModuleReference(ByteStringValue bytes)
     {
-        // This authored scalar-disk boundary needs no conversion for ASCII.
-        // Invalid/WTF-8 and all non-ASCII retain the original strict decoder.
-        if (bytes is not null && Ascii.IsValid(bytes.AsSpan()))
-            return bytes;
         try
         {
-            return scalarPathEncoding.GetString(GoString.Bytes(bytes!));
+            return PathByteText.ToUnicode(bytes);
         }
         catch (DecoderFallbackException)
         {
@@ -186,14 +182,16 @@ internal sealed class LegacyResolutionHost(ProjectDiskHost disk) : TypeScript.Mo
     // Authored named legacy admission surrounds the actual shared resolver.
     // Candidate search and publication remain exclusively Module responsibilities.
     internal TypeScript.Modules.ResolvedModule? ResolveModuleName(TypeScript.Modules.DefaultResolver resolver,
-        string moduleName, RootedFilePath containingFile, ResolutionMode mode)
+        string moduleName, RootedFilePath containingFile, ResolutionMode mode) => ResolveModuleName(resolver, ByteStringValue.FromString(moduleName), containingFile, mode);
+    internal TypeScript.Modules.ResolvedModule? ResolveModuleName(TypeScript.Modules.DefaultResolver resolver,
+        ByteStringValue moduleName, RootedFilePath containingFile, ResolutionMode mode)
     {
         string name = ProjectDiskHost.DecodeModuleReference(moduleName);
         if (!TsPath.PathIsRelative(name))
             throw new ProjectException("moduleSpecifier", "Only relative module specifiers are supported: " + name, containingFile.ToUnicode());
         if (mode is not (ResolutionMode.None or ResolutionMode.ESNext))
             throw new ProjectException("resolutionMode", "Only Bundler ES-module resolution is supported.", containingFile.ToUnicode());
-        string candidate = TsPath.ResolvePath(containingFile.Directory().ToUnicode(), name);
+        string candidate = PathByteText.ToUnicode(TsPath.ResolvePath(containingFile.Directory().AsValue(), moduleName));
         disk.EnsureBounded(candidate, inspectSymlinks: false);
         bool previous = resolvingModule;
         resolvingModule = true;
@@ -212,7 +210,7 @@ internal sealed class LegacyResolutionHost(ProjectDiskHost disk) : TypeScript.Mo
     public void ValidateDirectoryPackageJson(RootedDirectoryPath directory)
     {
         if (!resolvingModule) return;
-        string packageJson = TsPath.CombinePaths(directory.ToUnicode(), "package.json");
+        string packageJson = directory.ResolveFile(ByteStringValue.FromString("package.json")).ToUnicode();
         if (disk.FileExists(packageJson))
             throw new ProjectException("packageJsonResolution", "Resolution requires unsupported package metadata: " + packageJson, packageJson);
     }
@@ -223,7 +221,7 @@ internal sealed class LegacyResolutionHost(ProjectDiskHost disk) : TypeScript.Mo
     public bool FileExists(RootedFilePath path)
     {
         string text = path.ToUnicode();
-        if (path.BaseName() == "package.json") return disk.MetadataFileExists(text);
+        if (path.BaseNameValue().EqualsBytes("package.json"u8)) return disk.MetadataFileExists(text);
         bool exists = disk.FileExists(text);
         if (exists && resolvingModule && (!text.EndsWith(".ts", StringComparison.Ordinal) || TsPath.IsDeclarationFileName(text)))
             throw new ProjectException("resolvedFileForm", "Upstream resolution selects an unsupported user file: " + text, text);
@@ -232,7 +230,7 @@ internal sealed class LegacyResolutionHost(ProjectDiskHost disk) : TypeScript.Mo
     public (string Contents, bool Ok) ReadFile(RootedFilePath path)
     {
         string text = path.ToUnicode();
-        if (path.BaseName() == "package.json")
+        if (path.BaseNameValue().EqualsBytes("package.json"u8))
         {
             byte[] bytes = disk.ReadMetadata(text);
             return (GoString.FromBytes(bytes), bytes.Length != 0);

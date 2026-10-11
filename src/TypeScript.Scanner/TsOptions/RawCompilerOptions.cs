@@ -43,9 +43,9 @@ public sealed class RawCompilerOptions
             if (pathKind.IsRooted())
             {
                 if (option?.Kind == CommandLineOptionKind.List)
-                    value = TsOptions.ParseStringArray(value)?.Select(path => (object? )(TsOptions.startsWithConfigDirTemplate(path) ? TsOptions.getSubstitutedPathWithConfigDirTemplate(path, basePath) : TsPath.GetNormalizedAbsolutePath(path, basePath.AsString()))).ToList();
-                else if (value is string path && path != "")
-                    value = TsOptions.startsWithConfigDirTemplate(path) ? TsOptions.getSubstitutedPathWithConfigDirTemplate(path, basePath) : TsPath.GetNormalizedAbsolutePath(path, basePath.AsString());
+                    value = TsOptions.parsePathTexts(value)?.Select(path => (object? )(TsOptions.startsWithConfigDirTemplate(path) ? TsOptions.getSubstitutedPathWithConfigDirTemplate(path, basePath) : TsPath.GetNormalizedAbsolutePath(path, basePath.AsValue()))).ToList();
+                else if (value is string or ByteStringValue && TsOptions.parsePathText(value) is var path && path.Length != 0)
+                    value = TsOptions.startsWithConfigDirTemplate(path) ? TsOptions.getSubstitutedPathWithConfigDirTemplate(path, basePath) : TsPath.GetNormalizedAbsolutePath(path, basePath.AsValue());
             }
 
             TsOptions.ParseCompilerOptions(key, value, options);

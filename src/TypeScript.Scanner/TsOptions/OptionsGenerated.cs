@@ -142,7 +142,7 @@ public static partial class TsOptions
                 allOptions.Locale = ParseString(value);
                 break;
             case "mapRoot":
-                allOptions.MapRoot = TsPath.ToSourceMapLocation(ParseString(value));
+                allOptions.MapRoot = TsPath.ToSourceMapLocation(parsePathText(value));
                 break;
             case "module":
                 allOptions.Module = floatOrInt32ToFlag<ModuleKind>(value, static flag => (ModuleKind)flag);
@@ -287,7 +287,7 @@ public static partial class TsOptions
                 allOptions.SourceMap = ParseTristate(value);
                 break;
             case "sourceRoot":
-                allOptions.SourceRoot = TsPath.ToSourceMapLocation(ParseString(value));
+                allOptions.SourceRoot = TsPath.ToSourceMapLocation(parsePathText(value));
                 break;
             case "suppressOutputPathCheck":
                 allOptions.SuppressOutputPathCheck = ParseTristate(value);
@@ -419,11 +419,11 @@ public static partial class TsOptions
 
     internal static parsedCompilerOptions getDefaultCompilerOptions(RootedFilePath configFileName)
     {
-        var options = configFileName != default && configFileName.BaseName() == "jsconfig.json" ? new CompilerOptions { AllowJs = Tristate.True, NoEmit = Tristate.True, SkipLibCheck = Tristate.True, MaxNodeModuleJsDepth = new(2) } : new CompilerOptions();
+        var options = configFileName != default && configFileName.BaseNameValue().EqualsBytes("jsconfig.json"u8) ? new CompilerOptions { AllowJs = Tristate.True, NoEmit = Tristate.True, SkipLibCheck = Tristate.True, MaxNodeModuleJsDepth = new(2) } : new CompilerOptions();
         return new parsedCompilerOptions { CompilerOptions = options, unresolvedPaths = new() };
     }
 
-    internal static TypeAcquisition getDefaultTypeAcquisition(RootedFilePath configFileName) => new() { Enable = configFileName != default && configFileName.BaseName() == "jsconfig.json" ? Tristate.True : Tristate.Unknown };
+    internal static TypeAcquisition getDefaultTypeAcquisition(RootedFilePath configFileName) => new() { Enable = configFileName != default && configFileName.BaseNameValue().EqualsBytes("jsconfig.json"u8) ? Tristate.True : Tristate.Unknown };
 
     public static void ParseTypeAcquisition(string key, object? value, TypeAcquisition? allOptions)
     {
@@ -894,7 +894,7 @@ public static partial class TsOptions
         }
         if (compilerOptions.unresolvedPaths != null) foreach (var (key, item) in compilerOptions.unresolvedPaths)
         {
-            object? value = CommandLineCompilerOptionsMap.Get(key)!.Kind == CommandLineOptionKind.List ? ParseStringArray(item)?.Select(path => (object?)getSubstitutedPathWithConfigDirTemplate(path, basePath)).ToList() : getSubstitutedPathWithConfigDirTemplate(ParseString(item), basePath);
+            object? value = CommandLineCompilerOptionsMap.Get(key)!.Kind == CommandLineOptionKind.List ? parsePathTexts(item)?.Select(path => (object?)getSubstitutedPathWithConfigDirTemplate(path, basePath)).ToList() : getSubstitutedPathWithConfigDirTemplate(parsePathText(item), basePath);
             ParseCompilerOptions(key, value, compilerOptions.CompilerOptions);
         }
         compilerOptions.unresolvedPaths?.Clear();

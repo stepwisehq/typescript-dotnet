@@ -9,14 +9,14 @@ using TypeScript.Collections;
 namespace TypeScript.Compiler;
 internal sealed class FileIncludeData
 {
-    internal Dictionary<string, Slice<FileIncludeReason>> fileIncludeReasons = new(StringComparer.Ordinal);
+    internal Dictionary<ByteStringKey, Slice<FileIncludeReason>> fileIncludeReasons = new(ByteStringKey.Comparer);
     internal Slice<ProcessingDiagnostic> processingDiagnostics;
 }
 internal sealed class IncludeProcessor
 {
     private ProjectConfiguration? configurationValue;
     internal ProjectConfiguration configuration => configurationValue ??= new(program!.CommandLine());
-    internal readonly SyncMap<(FileIncludeReason Reason, bool RelativeFileName, string RelativeTo), Diagnostic> reasonDiagnostics = new();
+    internal readonly SyncMap<(FileIncludeReason Reason, bool RelativeFileName, ByteStringKey? RelativeTo), Diagnostic> reasonDiagnostics = new();
     internal readonly SyncMap<FileIncludeReason, ReferenceFileLocation> reasonToReferenceLocation = new();
     internal readonly SyncMap<FileIncludeReason, Diagnostic?> includeReasonToRelatedInfo = new();
     private readonly object compilerOptionsSyntaxGate = new();
@@ -45,7 +45,7 @@ internal sealed class IncludeProcessor
         return found ? location : reasonToReferenceLocation.LoadOrStore(reason, program is not null ? reason.GetReferencedLocation(program) : reason.LegacyReferencedLocation()).Actual;
     }
     internal FileIncludeData data = new();
-    internal Dictionary<string, Slice<FileIncludeReason>> fileIncludeReasons => data.fileIncludeReasons;
+    internal Dictionary<ByteStringKey, Slice<FileIncludeReason>> fileIncludeReasons => data.fileIncludeReasons;
     internal Slice<ProcessingDiagnostic> processingDiagnostics { get => data.processingDiagnostics; set => data.processingDiagnostics = value; }
     internal Program? program;
     private readonly object diagnosticsGate = new();
@@ -64,7 +64,7 @@ internal sealed class IncludeProcessor
     internal readonly bool pathValuesAreRaw;
     private ProcessedFiles? processed;
     private CompilerOptions? options;
-    private readonly SyncMap<string, Slice<Diagnostic>> redirectAndFileFormat = new();
+    private readonly SyncMap<ByteStringKey, Slice<Diagnostic>> redirectAndFileFormat = new();
     internal IncludeProcessor(ProjectConfiguration configuration, bool pathValuesAreRaw = false) => (configurationValue, this.pathValuesAreRaw) = (configuration, pathValuesAreRaw);
     internal void AddIncludeReason(ParseTask task, FileIncludeReason? reason)
     {
@@ -78,20 +78,21 @@ internal sealed class IncludeProcessor
 
     // includeprocessor.go:65. Preserve message direction, based on actual prior
     // referenced-file reasons rather than substitute a single casing diagnostic.
-    internal void AddProcessingDiagnosticsForFileCasing(string file, string existing, string current, FileIncludeReason? reason)
+    internal void AddProcessingDiagnosticsForFileCasing(ByteStringKey file, ByteStringKey existing, ByteStringKey current, FileIncludeReason? reason)
     {
         // fileInclude.go:85 allows a nil reason and reports it as non-referenced.
         bool already = reason?.IsReferencedFile() != true && fileIncludeReasons.TryGetValue(file, out var previous) && Core.Some(previous, static r => r?.IsReferencedFile() == true);
-        processingDiagnostics = processingDiagnostics.Append(new ProcessingDiagnostic() { file = file, diagnosticReason = reason, message = already ? Diagnostics.Already_included_file_name_0_differs_from_file_name_1_only_in_casing : Diagnostics.File_name_0_differs_from_already_included_file_name_1_only_in_casing, args = already ? [existing, current] : [current, existing] });
+        processingDiagnostics = processingDiagnostics.Append(new ProcessingDiagnostic() { file = file, diagnosticReason = reason, message = already ? Diagnostics.Already_included_file_name_0_differs_from_file_name_1_only_in_casing : Diagnostics.File_name_0_differs_from_already_included_file_name_1_only_in_casing, args = already ? [existing.ToString(), current.ToString()] : [current.ToString(), existing.ToString()] });
     }
 
     internal void SetProcessedFiles(ProcessedFiles files, CompilerOptions compilerOptions) => (processed, options) = (files, compilerOptions);
 
     // includeprocessor.go:129. Project-reference execution is external; actual
     // package dedup redirects and source metadata are already-produced state.
-    internal Slice<Diagnostic> ExplainRedirectAndImpliedFormat(Program program, PathKey path, Func<RootedFilePath, string> toFileName) => ExplainRedirectAndImpliedFormat(path.AsString(), toFileName);
-    internal Slice<Diagnostic> ExplainRedirectAndImpliedFormat(string path) => ExplainRedirectAndImpliedFormat(path, file => file.AsString());
-    private Slice<Diagnostic> ExplainRedirectAndImpliedFormat(string path, Func<RootedFilePath, string> toFileName)
+    internal Slice<Diagnostic> ExplainRedirectAndImpliedFormat(Program program, PathKey path, Func<RootedFilePath, string> toFileName) => ExplainRedirectAndImpliedFormat(ByteStringKey.FromValue(path.AsValue()), toFileName);
+    internal Slice<Diagnostic> ExplainRedirectAndImpliedFormat(string path) => ExplainRedirectAndImpliedFormat(ByteStringKey.FromString(path));
+    internal Slice<Diagnostic> ExplainRedirectAndImpliedFormat(ByteStringKey path) => ExplainRedirectAndImpliedFormat(path, static file => file.AsString());
+    private Slice<Diagnostic> ExplainRedirectAndImpliedFormat(ByteStringKey path, Func<RootedFilePath, string> toFileName)
     {
         var (cached, found) = redirectAndFileFormat.Load(path);
         if (found) return cached;
@@ -101,16 +102,16 @@ internal sealed class IncludeProcessor
         Slice<Diagnostic> result = default;
         SourceFile? source = null;
         if (processed.packageRedirects.TryGetValue(path, out var target))
-            result = result.Append(Ast.NewCompilerDiagnostic(Diagnostics.File_redirects_to_file_0, toFileName(RootedFilePath.FromGoString(target.FileNameGoBytes()))));
+            result = result.Append(Ast.NewCompilerDiagnostic(Diagnostics.File_redirects_to_file_0, toFileName(RootedFilePath.FromValue(target.FileNameGoValue()))));
         else
             processed.filesByPath.TryGetValue(path, out source);
-        RootedFilePath presentationName = source is not null ? RootedFilePath.FromGoString(source.FileNameGoBytes()) : processed.redirectFilesByPath?.GetValueOrDefault(path)?.fileName ?? default;
+        RootedFilePath presentationName = source is not null ? RootedFilePath.FromValue(source.FileNameGoValue()) : processed.redirectFilesByPath?.GetValueOrDefault(path)?.fileName ?? default;
         if (program is not null && presentationName != default && processed.outputFileToProjectReferenceSource.TryGetValue(path, out var referenceSource) && referenceSource != presentationName)
             result = result.Insert(0, Ast.NewCompilerDiagnostic(Diagnostics.File_is_output_of_project_reference_source_0, toFileName(referenceSource)));
         if (source is not null && Ast.IsExternalOrCommonJSModule(source))
         {
-            var metadata = processed.metadata[source.PathKey()];
-            var fileName = RootedFilePath.FromGoString(source.FileNameGoBytes());
+            var metadata = processed.metadata[source.PathKeyKey()];
+            var fileName = RootedFilePath.FromValue(source.FileNameGoValue());
             switch (program is not null ? program.GetImpliedNodeFormatForEmit(source) : Ast.GetImpliedNodeFormatForEmitWorker(fileName, options.GetEmitModuleKind(), metadata))
             {
                 case ResolutionMode.ESNext:

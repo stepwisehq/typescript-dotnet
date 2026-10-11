@@ -2158,7 +2158,7 @@ public sealed partial class Checker
                                 if (prop.ValueDeclaration != null && Ast.IsJsxAttribute(prop.ValueDeclaration) && Ast.GetSourceFileOfNode(errorNode) == Ast.GetSourceFileOfNode(prop.ValueDeclaration.Name()))
                                     errorNode = prop.ValueDeclaration.Name();
                                 var propName = c.symbolToString(prop);
-                                var suggestionSymbol = c.getSuggestedSymbolForNonexistentJSXAttribute(propName, errorTarget);
+                                var suggestionSymbol = c.getSuggestedSymbolForNonexistentJSXAttribute(ByteStringValue.FromString(propName), errorTarget);
                                 if (suggestionSymbol != null)
                                     reportError(Diagnostics.Property_0_does_not_exist_on_type_1_Did_you_mean_2, propName, c.typeToStringByteString(errorTarget), c.symbolToString(suggestionSymbol));
                                 else
@@ -2173,7 +2173,7 @@ public sealed partial class Checker
                                     var name = prop.ValueDeclaration.Name();
                                     errorNode = name;
                                     if (Ast.IsIdentifier(name))
-                                        suggestion = c.getSuggestionForNonexistentProperty(name.Text(), errorTarget);
+                                        suggestion = c.getSuggestionForNonexistentProperty(name.TextValue(), errorTarget);
                                 }
 
                                 if (suggestion != "")

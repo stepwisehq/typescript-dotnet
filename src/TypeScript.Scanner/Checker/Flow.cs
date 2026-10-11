@@ -2776,7 +2776,7 @@ public sealed partial class Checker
                         break;
                     }
 
-                case true when Core.Some(signatures, this.hasTypePredicateOrNeverReturnType):
+                case true when Core.Some(signatures, this, static (candidateSignature, checker) => checker.hasTypePredicateOrNeverReturnType(candidateSignature)):
                     {
                         signature = this.getResolvedSignature(node, null, CheckMode.Normal);
                         break;

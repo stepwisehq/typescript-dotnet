@@ -6,160 +6,208 @@ namespace TypeScript.Scanner;
 /// <summary>Original Go byte-string identity. Use FromUnicode for a scalar Unicode boundary.</summary>
 public readonly partial record struct PathKey
 {
-    private readonly string? value;
-    internal PathKey(string bytes) => value = bytes.Length == 0 ? null : bytes;
-    public string AsString() => value ?? "";
+    private readonly ByteStringValue value;
+    internal PathKey(string bytes) : this(ByteStringValue.FromString(bytes is null ? throw new NullReferenceException() : bytes))
+    {
+    }
+    internal PathKey(ByteStringValue bytes) => value = bytes.IsNull ? throw new NullReferenceException() : bytes.Length == 0 ? default : bytes.Snapshot();
+    public ByteStringValue AsValue() => value;
+    public string AsString() => value.Materialize()!;
+    public static PathKey FromValue(ByteStringValue bytes)
+    {
+        TsPath.validateGoPathValue(bytes);
+        return new(bytes);
+    }
+    public bool Equals(PathKey other) => value.EqualsValue(other.value);
+    public override int GetHashCode() => ByteStringKey.FromValue(value).GetHashCode();
     public static PathKey FromGoString(string bytes)
     {
         ArgumentNullException.ThrowIfNull(bytes);
         // pathkey.go's string key uses raw bytes; this managed ingress guard accepts all 256 byte values.
         if (bytes.AsSpan().IndexOfAnyExceptInRange('\0', '\u00ff') >= 0)
+        {
             throw new ArgumentException("Go byte strings require one managed character per byte.", nameof(bytes));
+        }
         return new(bytes);
     }
 
-    public static PathKey FromUnicode(string text) => FromGoString(PathByteText.FromUnicode(text));
-    public string ToUnicode() => PathByteText.ToUnicode(AsString());
+    public static PathKey FromUnicode(string text) => FromValue(PathByteText.FromUnicodeValue(text));
+    public string ToUnicode() => PathByteText.ToUnicode(AsValue());
     public override string ToString() => AsString();
-    public PathKey Parent() => new(TsPath.GetDirectoryPath(AsString()));
-    public string BaseName() => TsPath.GetBaseFileName(AsString());
-    public PathKey RemoveTrailingDirectorySeparator() => new(TsPath.RemoveTrailingDirectorySeparator(AsString()));
+    public PathKey Parent() => new(TsPath.GetDirectoryPath(value));
+    public string BaseName() => BaseNameValue().Materialize()!;
+    public ByteStringValue BaseNameValue() => TsPath.GetBaseFileName(value);
+    public PathKey RemoveTrailingDirectorySeparator() => new(TsPath.RemoveTrailingDirectorySeparator(value));
 }
-
 public static partial class TsPath
 {
-    public static (PathKey Key, bool Ok) TryPathKeyFromCanonical(string path)
+    public static (PathKey Key, bool Ok) TryPathKeyFromCanonical(string path) => TryPathKeyFromCanonical(ByteStringValue.FromString(path));
+    public static (PathKey Key, bool Ok) TryPathKeyFromCanonical(ByteStringValue path)
     {
-        if (path == "")
+        if (path.IsNull)
+        {
+            throw new NullReferenceException();
+        }
+        if (path.Length == 0)
+        {
             return (default, true);
+        }
         return TryRootedPathFromNormalized(path).Ok ? (new(path), true) : (default, false);
     }
-
-    public static PathKey PathKeyFromCanonical(string path)
+    public static PathKey PathKeyFromCanonical(string path) => PathKeyFromCanonical(ByteStringValue.FromString(path));
+    public static PathKey PathKeyFromCanonical(ByteStringValue path)
     {
-        var(key, ok) = TryPathKeyFromCanonical(path);
+        var (key, ok) = TryPathKeyFromCanonical(path);
         return ok ? key : throw new ArgumentException("path must be normalized");
     }
 }
-
 public static class PathKeyOperations
 {
     public static PathKey PathKey(this CaseSensitivity sensitivity, RootedPath path)
     {
-        string bytes = path.AsString();
-        if (bytes.StartsWith("^/~ts-uri~/", StringComparison.Ordinal))
+        var bytes = path.AsValue();
+        if (bytes.StartsWith("^/~ts-uri~/"u8))
         {
             if (TsPath.GetRootLength(bytes) == bytes.Length && !TsPath.HasTrailingDirectorySeparator(bytes))
-                bytes += "/";
+            {
+                bytes = TsPath.pathConcat(bytes, ByteStringValue.FromString("/"));
+            }
             return new(bytes);
         }
-
         return new(sensitivity.Canonicalize(bytes));
     }
-
     public static int ComparePaths(this CaseSensitivity sensitivity, RootedPath left, RootedPath right)
     {
-        string a = left.AsString(), b = right.AsString();
-        if (a == b)
+        var leftText = left.AsValue();
+        var rightText = right.AsValue();
+        if (leftText.EqualsValue(rightText))
+        {
             return 0;
-        if (a == "")
+        }
+        if (leftText.Length == 0)
+        {
             return -1;
-        if (b == "")
+        }
+        if (rightText.Length == 0)
+        {
             return 1;
-        if (a.StartsWith("^/~ts-uri~/", StringComparison.Ordinal) || b.StartsWith("^/~ts-uri~/", StringComparison.Ordinal))
-            return Math.Sign(string.CompareOrdinal(CaseSensitivity.CaseSensitive.PathKey(left).AsString(), CaseSensitivity.CaseSensitive.PathKey(right).AsString()));
-        int aRoot = TsPath.GetRootLength(a), bRoot = TsPath.GetRootLength(b);
-        int result = CaseSensitivity.CaseInsensitive.CompareStrings(a[..aRoot], b[..bRoot]);
-        return result != 0 ? result : sensitivity.CompareStrings(a[aRoot..], b[bRoot..]);
+        }
+        if (leftText.StartsWith("^/~ts-uri~/"u8) || rightText.StartsWith("^/~ts-uri~/"u8))
+        {
+            return CaseSensitivity.CaseSensitive.CompareValues(CaseSensitivity.CaseSensitive.PathKey(left).AsValue(), CaseSensitivity.CaseSensitive.PathKey(right).AsValue());
+        }
+        int leftRootLength = TsPath.GetRootLength(leftText), rightRootLength = TsPath.GetRootLength(rightText);
+        int result = CaseSensitivity.CaseInsensitive.CompareValues(leftText.Slice(0, leftRootLength), rightText.Slice(0, rightRootLength));
+        return result != 0 ? result : sensitivity.CompareValues(leftText.Slice(leftRootLength), rightText.Slice(rightRootLength));
     }
-
     public static int CompareFilePaths(this CaseSensitivity sensitivity, RootedFilePath left, RootedFilePath right) => sensitivity.ComparePaths(left.AsPath(), right.AsPath());
     public static bool ContainsPath(this CaseSensitivity sensitivity, RootedDirectoryPath parent, RootedPath child) => sensitivity.RelativePathWithinDirectory(parent, child).Ok;
     public static bool ContainsFilePath(this CaseSensitivity sensitivity, RootedDirectoryPath parent, RootedFilePath child) => sensitivity.ContainsPath(parent, child.AsPath());
     public static (RelativePath Path, bool Ok) RelativePathWithinDirectory(this CaseSensitivity sensitivity, RootedDirectoryPath parent, RootedPath child)
     {
-        string a = parent.AsString(), b = child.AsString();
-        if (a == "" || b == "")
+        var parentText = parent.AsValue();
+        var childText = child.AsValue();
+        if (parentText.Length == 0 || childText.Length == 0)
+        {
             return (default, false);
-        int aRoot = TsPath.GetRootLength(a), bRoot = TsPath.GetRootLength(b);
-        string leftRoot = a[..aRoot], rightRoot = b[..bRoot];
-        bool dynamic = a.StartsWith("^/~ts-uri~/", StringComparison.Ordinal) || b.StartsWith("^/~ts-uri~/", StringComparison.Ordinal);
+        }
+        int parentRootLength = TsPath.GetRootLength(parentText), childRootLength = TsPath.GetRootLength(childText);
+        var leftRoot = parentText.Slice(0, parentRootLength);
+        var rightRoot = childText.Slice(0, childRootLength);
+        bool dynamic = parentText.StartsWith("^/~ts-uri~/"u8) || childText.StartsWith("^/~ts-uri~/"u8);
         if (dynamic)
         {
-            leftRoot = leftRoot.TrimEnd('/');
-            rightRoot = rightRoot.TrimEnd('/');
+            leftRoot = TsPath.trimDynamicRoot(leftRoot);
+            rightRoot = TsPath.trimDynamicRoot(rightRoot);
             sensitivity = CaseSensitivity.CaseSensitive;
         }
-
-        if (!(dynamic ? leftRoot == rightRoot : UnicodeCase.EqualFold(leftRoot, rightRoot)))
+        if (!(dynamic ? leftRoot.EqualsValue(rightRoot) : UnicodeCase.EqualFold(leftRoot, rightRoot)))
+        {
             return (default, false);
-        var(relative, ok) = sensitivity.TrimPrefix(b[bRoot..], a[aRoot..]);
-        if (!ok || relative != "" && !TsPath.HasTrailingDirectorySeparator(a) && a.Length != aRoot && relative[0] != '/')
+        }
+        var (relative, ok) = sensitivity.TrimPrefix(childText.Slice(childRootLength), parentText.Slice(parentRootLength));
+        if (!ok || relative.Length != 0 && !TsPath.HasTrailingDirectorySeparator(parentText) && parentText.Length != parentRootLength && relative[0] != '/')
+        {
             return (default, false);
-        return (new(relative.StartsWith('/') ? relative[1..] : relative), true);
+        }
+        return (new(relative.StartsWith("/"u8) ? relative.Slice(1) : relative), true);
     }
 }
-
 public readonly partial record struct PathKey
 {
-    public string Extension() => TsPath.TryGetExtensionFromPath(AsString());
-    public bool ExtensionIsOneOf(IEnumerable<string> extensions) => TsPath.FileExtensionIsOneOf(AsString(), extensions);
-    public bool HasJSFileExtension() => TsPath.HasJSFileExtension(AsString());
-    public bool IsDynamic() => TsPath.IsDynamicFileName(AsString());
-    public PathKey CaseInsensitiveKey() => TsPath.IsEncodedDynamicFileName(AsString()) ? this : new(TsPath.ToFileNameLowerCaseGoBytes(AsString()));
-    public PathKey AppendCanonicalComponent(string component)
+    public string Extension() => ExtensionValue().Materialize()!;
+    public ByteStringValue ExtensionValue() => TsPath.TryGetExtensionFromPath(value);
+    public bool ExtensionIsOneOf(IEnumerable<string> extensions) => TsPath.FileExtensionIsOneOf(value, extensions);
+    public bool HasJSFileExtension() => TsPath.HasJSFileExtension(value);
+    public bool IsDynamic() => TsPath.IsDynamicFileName(value);
+    public PathKey CaseInsensitiveKey() => TsPath.IsEncodedDynamicFileName(value) ? this : new(TsPath.ToFileNameLowerCaseGoBytes(value));
+    public PathKey AppendCanonicalComponent(string component) => AppendCanonicalComponent(ByteStringValue.FromString(component));
+    public PathKey AppendCanonicalComponent(ByteStringValue component)
     {
-        if (AsString() == "")
+        if (value.Length == 0)
+        {
             throw new ArgumentException("cannot append a component to an empty path key");
+        }
         TsPath.validatePathComponent(component);
-        return TsPath.PathKeyFromCanonical(AsString() + (TsPath.HasTrailingDirectorySeparator(AsString()) ? "" : "/") + component);
+        return TsPath.PathKeyFromCanonical(TsPath.pathConcat(value, TsPath.HasTrailingDirectorySeparator(value) ? default : ByteStringValue.FromString("/"), component));
     }
-
-    public PathKey AppendCanonicalSuffix(string suffix)
+    public PathKey AppendCanonicalSuffix(string suffix) => AppendCanonicalSuffix(ByteStringValue.FromString(suffix));
+    public PathKey AppendCanonicalSuffix(ByteStringValue suffix)
     {
-        if (AsString() == "" && suffix != "" || suffix.Contains('/') || suffix.Contains('\\'))
+        if (value.Length == 0 && (suffix.IsNull || suffix.Length != 0) || suffix.Contains('/') || suffix.Contains('\\'))
+        {
             throw new ArgumentException("invalid path suffix");
-        return TsPath.PathKeyFromCanonical(AsString() + suffix);
+        }
+        return TsPath.PathKeyFromCanonical(TsPath.pathConcat(value, suffix));
     }
-
-    public (PathKey Before, PathKey Through, bool Ok) SplitAtCanonicalComponent(string component)
+    public (PathKey Before, PathKey Through, bool Ok) SplitAtCanonicalComponent(string component) => SplitAtCanonicalComponent(ByteStringValue.FromString(component));
+    public (PathKey Before, PathKey Through, bool Ok) SplitAtCanonicalComponent(ByteStringValue component)
     {
-        var(before, through, ok) = new RootedFilePath(AsString()).SplitAtComponent(component);
-        return (new(before.AsString()), new(through.AsString()), ok);
+        var (before, through, ok) = new RootedFilePath(value).SplitAtComponent(component);
+        return (new(before.AsValue()), new(through.AsValue()), ok);
     }
-
-    public bool ContainsLowercaseDirectorySequence(string sequence) => AsString().Contains(sequence, StringComparison.Ordinal);
+    public bool ContainsLowercaseDirectorySequence(string sequence) => ContainsLowercaseDirectorySequence(ByteStringValue.FromString(sequence));
+    public bool ContainsLowercaseDirectorySequence(ByteStringValue sequence) => value.IndexOf(sequence) >= 0;
     public bool ContainsPath(PathKey child)
     {
-        string parent = AsString(), text = child.AsString();
-        if (parent == "")
+        var parent = value;
+        var text = child.value;
+        if (parent.Length == 0)
+        {
             return false;
-        int parentRoot = TsPath.GetRootLength(parent), childRoot = TsPath.GetRootLength(text);
-        string a = parent[..parentRoot], b = text[..childRoot];
+        }
+        int parentRootLength = TsPath.GetRootLength(parent), childRootLength = TsPath.GetRootLength(text);
+        var parentRoot = parent.Slice(0, parentRootLength);
+        var childRoot = text.Slice(0, childRootLength);
         bool dynamic = TsPath.IsEncodedDynamicFileName(parent) || TsPath.IsEncodedDynamicFileName(text);
         if (dynamic)
         {
-            a = a.TrimEnd('/');
-            b = b.TrimEnd('/');
+            parentRoot = TsPath.trimDynamicRoot(parentRoot);
+            childRoot = TsPath.trimDynamicRoot(childRoot);
         }
-
-        if (!(dynamic ? a == b : UnicodeCase.EqualFold(a, b)))
+        if (!(dynamic ? parentRoot.EqualsValue(childRoot) : UnicodeCase.EqualFold(parentRoot, childRoot)))
+        {
             return false;
-        string rest = parent[parentRoot..], childRest = text[childRoot..];
-        return rest == childRest || childRest.Length > rest.Length && childRest.StartsWith(rest, StringComparison.Ordinal) && (rest == "" || rest[^1] == '/' || childRest[rest.Length] == '/');
+        }
+        var rest = parent.Slice(parentRootLength);
+        var childRest = text.Slice(childRootLength);
+        return rest.EqualsValue(childRest) || childRest.Length > rest.Length && childRest.StartsWith(rest) && (rest.Length == 0 || rest[rest.Length - 1] == '/' || childRest[rest.Length] == '/');
     }
-
     public (T Result, bool Ok) ForEachAncestorDirectory<T>(Func<PathKey, (T Result, bool Stop)> callback)
     {
         var current = this;
         for (;;)
         {
-            var(result, stop) = callback(current);
+            var (result, stop) = callback(current);
             if (stop)
+            {
                 return (result, true);
+            }
             var parent = current.Parent();
             if (parent == current)
+            {
                 return (typeof(T) == typeof(string) ? (T)(object)"" : default!, false);
+            }
             current = parent;
         }
     }

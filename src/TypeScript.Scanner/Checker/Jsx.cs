@@ -667,13 +667,13 @@ public sealed partial class Checker
     }
 
     // Upstream tsc/internal/checker/jsx.go:485:1.
-    private Symbol getSuggestedSymbolForNonexistentJSXAttribute(string name, Type containingType)
+    private Symbol getSuggestedSymbolForNonexistentJSXAttribute(ByteStringValue name, Type containingType)
     {
         var properties = this.getPropertiesOfType(containingType);
         Symbol jsxSpecific = default;
-        switch (name)
+        switch (true)
         {
-            case "for":
+            case true when name.EqualsBytes("for"u8):
             {
                 jsxSpecific = Core.Find(properties, (x) =>
                 {
@@ -682,7 +682,7 @@ public sealed partial class Checker
                 break;
             }
 
-            case "class":
+            case true when name.EqualsBytes("class"u8):
             {
                 jsxSpecific = Core.Find(properties, (x2) =>
                 {
@@ -2127,6 +2127,6 @@ public sealed partial class Checker
     // Upstream tsc/internal/checker/jsx.go:1486:1.
     private (ByteStringValue, Node) getJSXRuntimeImportSpecifier(SourceFile file)
     {
-        return this.program.GetJSXRuntimeImportSpecifierValue(PathKey.FromGoString(file.PathKey()));
+        return this.program.GetJSXRuntimeImportSpecifierValue(PathKey.FromValue(file.PathKeyValue()));
     }
 }

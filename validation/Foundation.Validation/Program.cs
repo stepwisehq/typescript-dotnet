@@ -2,6 +2,22 @@ using System.Diagnostics;
 using System.Text.Json;
 using TypeScript.Foundation;
 
+if (args.Length == 1 && args[0] == "--parser-pool")
+{
+    foreach (string name in ParserPoolChecks.Cases)
+    {
+        try { ParserPoolChecks.Run(name); }
+        catch (Exception error)
+        {
+            Console.Error.WriteLine(name + ": " + error);
+            Environment.ExitCode = 1;
+            return;
+        }
+    }
+    Console.WriteLine("parser-pool-checks: " + ParserPoolChecks.Cases.Count + " passed");
+    return;
+}
+
 if (args.Length == 1 && args[0] == "--ast-text-values")
 {
     foreach (string name in AstTextValueChecks.Cases)

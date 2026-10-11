@@ -2,15 +2,15 @@
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port of tsc/internal/compiler/filesparser.go at
 // fed0bf24149fb1ed36039212648bafdafc1ea10e. Source WorkGroup task scheduling,
-// actual Program publication and separate graph observations; fresh task/data
-// storage replaces source pools without changing acquire/release ownership.
+// actual Program publication and separate graph observations; parse-task data
+// candidates follow the source acquire/release ownership.
 using TypeScript.Modules;
 using TypeScript.Scanner;
 
 namespace TypeScript.Compiler;
 internal sealed class ParseTask
 {
-    internal string normalizedFilePath = "", path = "";
+    internal ByteStringKey normalizedFilePath, path;
     internal SourceFile? file;
     internal Slice<ParseTask> subTasks;
     internal bool loaded, startedSubTasks, failedLookup, increaseDepth, elideOnDepth;
@@ -32,8 +32,8 @@ internal sealed class ParseTask
     internal ResolvedProjectEdge? incomingEdge;
     // filesparser.go:31: a source pointer starts nil; normal producers assign it.
     internal FileIncludeReason? includeReason;
-    internal string FileName() => normalizedFilePath;
-    internal string PathKey() => path;
+    internal string FileName() => normalizedFilePath.ToString();
+    internal string PathKey() => path.ToString();
 
     // filesparser.go:59. Loading is published before parsing or child scheduling.
     internal void Load(FileLoader loader)
@@ -43,17 +43,17 @@ internal sealed class ParseTask
         if (failedLookup) return;
         if (loader.program)
         {
-            var (redirect, redirectPath) = loader.projectReferences!.GetParseFileRedirect(loader.TypedFile(normalizedFilePath), TypeScript.Scanner.PathKey.FromGoString(path));
+            var (redirect, redirectPath) = loader.projectReferences!.GetParseFileRedirect(loader.TypedFile(normalizedFilePath), TypeScript.Scanner.PathKey.FromValue(path.Value));
             if (redirect != default)
             {
-                redirectedParseTask = new() { normalizedFilePath = redirect.AsString(), path = redirectPath.AsString(), libFile = libFile, includeReason = includeReason };
+                redirectedParseTask = new() { normalizedFilePath = ByteStringKey.FromValue(redirect.AsValue()), path = ByteStringKey.FromValue(redirectPath.AsValue()), libFile = libFile, includeReason = includeReason };
                 subTasks = Slice<ParseTask>.FromArray([redirectedParseTask]);
                 return;
             }
         }
         if (loader.graph && !isContentMapperSupplemental && loader.TypedFile(normalizedFilePath).HasExtension() && loader.options.AllowNonTsExtensions != Tristate.True && !loader.IsSupportedExtension(path))
         {
-            Diagnostic diagnostic = loader.UnsupportedExtensionDiagnostic(normalizedFilePath, loader.TypedFile(normalizedFilePath));
+            Diagnostic diagnostic = loader.UnsupportedExtensionDiagnostic(normalizedFilePath.Value, loader.TypedFile(normalizedFilePath));
             processingDiagnostics = processingDiagnostics.Append(new ProcessingDiagnostic() { diagnosticReason = includeReason, message = diagnostic.message, args = diagnostic.MessageArgs()?.ToArray() ?? [] });
             if (incomingEdge is not null) incomingEdge.Scheduling = DependencyScheduling.UnsupportedExtension;
             return;
@@ -83,11 +83,11 @@ internal sealed class ParseTask
             foreach (var reference in file.LibReferenceDirectives)
             {
                 var reason = new FileIncludeReason { importingFile = file, reference = reference, kind = IncludeReferenceKind.Lib };
-                var (name, ok) = TypeScript.TsOptions.TsOptions.GetLibFileName(reference.FileName);
+                var (name, ok) = TypeScript.TsOptions.TsOptions.GetLibFileName(reference.FileNameValue);
                 if (ok)
                 {
                     var lib = loader.PathForLibFile(name);
-                    AddSubTask(lib.path.AsString(), lib.pathKey.AsString(), reason);
+                    AddSubTask(ByteStringKey.FromValue(lib.path.AsValue()), ByteStringKey.FromValue(lib.pathKey.AsValue()), reason);
                     subTasks[subTasks.Length - 1].libFile = lib;
                 }
                 else processingDiagnostics = processingDiagnostics.Append(new ProcessingDiagnostic() { kind = ProcessingDiagnosticKind.UnknownReference, diagnosticReason = reason });
@@ -96,11 +96,13 @@ internal sealed class ParseTask
         loader.ResolveImportsAndModuleAugmentations(this);
         if (loader.program)
             foreach (var supplemental in file.SupplementalSourceFiles())
-                subTasks = subTasks.Append(new ParseTask() { normalizedFilePath = supplemental.FileNameGoBytes(), path = loader.ToPath(RootedFilePath.FromGoString(supplemental.FileNameGoBytes()).AsPath()).AsString(), file = supplemental, isContentMapperSupplemental = true, includeReason = new() { canonicalSourceFile = path } });
+                subTasks = subTasks.Append(new ParseTask() { normalizedFilePath = ByteStringKey.FromValue(supplemental.FileNameGoValue()), path = ByteStringKey.FromValue(loader.ToPath(RootedFilePath.FromValue(supplemental.FileNameGoValue()).AsPath()).AsValue()), file = supplemental, isContentMapperSupplemental = true, includeReason = new() { canonicalSourceFile = path } });
     }
 
     // filesparser.go:217. Package identity and depth flags are actual resolver output.
     internal void AddSubTask(string fileName, string key, FileIncludeReason reason, bool increaseDepth = false,
+        bool elideOnDepth = false, PackageId packageId = default, ResolvedProjectEdge? incomingEdge = null) => AddSubTask(ByteStringKey.FromString(fileName), ByteStringKey.FromString(key), reason, increaseDepth, elideOnDepth, packageId, incomingEdge);
+    internal void AddSubTask(ByteStringKey fileName, ByteStringKey key, FileIncludeReason reason, bool increaseDepth = false,
         bool elideOnDepth = false, PackageId packageId = default, ResolvedProjectEdge? incomingEdge = null) => subTasks = subTasks.Append(new ParseTask
         {
             normalizedFilePath = fileName, path = key, includeReason = reason, increaseDepth = increaseDepth,
@@ -111,16 +113,15 @@ internal sealed class ParseTask
 internal sealed class ParseTaskData
 {
     internal readonly object gate = new();
-    internal readonly Dictionary<string, ParseTask> tasks = new(StringComparer.Ordinal);
+    internal readonly Dictionary<ByteStringKey, ParseTask> tasks = new(1, ByteStringKey.Comparer);
     internal bool startedSubTasks;
     internal long lowestDepth = long.MaxValue;
     internal PackageId packageId;
-    internal ParseTaskData(ParseTask task) => tasks.Add(task.normalizedFilePath, task);
+    internal ParseTaskData() { }
 }
 
-// filesparser.go/fileloader.go: source-owned publication tables. String keys
-// are canonical Go-byte PathKey.AsString() (legacy adapter uses its established
-// scalar keys); Program typed entrypoints adapt once at their lookup boundary.
+// filesparser.go/fileloader.go: source-owned publication tables retain raw path
+// content headers (or legacy scalar ingress), with content-based dictionary keys.
 public sealed class DuplicateSourceFile
 {
     public SourceFileParseOptions ParseOptions, ContentMapperParseOptions;
@@ -131,7 +132,8 @@ public sealed class DuplicateSourceFile
 }
 public sealed class LibFile
 {
-    public string Name = "";
+    internal ByteStringValue NameValue;
+    public string Name { get => NameValue.Materialize()!; set => NameValue = ByteStringValue.FromString(value); }
     internal RootedFilePath path;
     internal PathKey pathKey;
     public bool Replaced;
@@ -153,21 +155,21 @@ internal sealed class ProcessedFiles
 {
     internal Slice<SourceFile> files;
     internal Slice<DuplicateSourceFile> duplicateSourceFiles;
-    internal Dictionary<string, SourceFile> filesByPath = new(StringComparer.Ordinal);
+    internal Dictionary<ByteStringKey, SourceFile> filesByPath = new(ByteStringKey.Comparer);
     internal ProjectReferenceFileMapper projectReferenceFileMapper = null!;
-    internal HashSet<string> missingFiles = new(StringComparer.Ordinal);
-    internal Dictionary<string, ModeAwareCache<ResolvedModule?>> resolvedModules = new(StringComparer.Ordinal);
-    internal Dictionary<string, ModeAwareCache<ResolvedTypeReferenceDirective?>> typeResolutionsInFile = new(StringComparer.Ordinal);
-    internal Dictionary<string, SourceFileMetaData> sourceFileMetaDatas = new(StringComparer.Ordinal);
-    internal Dictionary<string, SourceFileMetaData> metadata => sourceFileMetaDatas;
-    internal Dictionary<string, JsxRuntimeImportSpecifier>? jsxRuntimeImportSpecifiers;
-    internal Dictionary<string, Node>? importHelpersImportSpecifiers;
-    internal Dictionary<string, LibFile> libFiles = new(StringComparer.Ordinal);
-    internal HashSet<string> sourceFilesFoundSearchingNodeModules = new(StringComparer.Ordinal);
+    internal HashSet<ByteStringKey> missingFiles = new(ByteStringKey.Comparer);
+    internal Dictionary<ByteStringKey, ModeAwareCache<ResolvedModule?>> resolvedModules = new(ByteStringKey.Comparer);
+    internal Dictionary<ByteStringKey, ModeAwareCache<ResolvedTypeReferenceDirective?>> typeResolutionsInFile = new(ByteStringKey.Comparer);
+    internal Dictionary<ByteStringKey, SourceFileMetaData> sourceFileMetaDatas = new(ByteStringKey.Comparer);
+    internal Dictionary<ByteStringKey, SourceFileMetaData> metadata => sourceFileMetaDatas;
+    internal Dictionary<ByteStringKey, JsxRuntimeImportSpecifier>? jsxRuntimeImportSpecifiers;
+    internal Dictionary<ByteStringKey, Node>? importHelpersImportSpecifiers;
+    internal Dictionary<ByteStringKey, LibFile> libFiles = new(ByteStringKey.Comparer);
+    internal HashSet<ByteStringKey> sourceFilesFoundSearchingNodeModules = new(ByteStringKey.Comparer);
     internal FileIncludeData fileIncludeData = new();
-    internal Dictionary<string, RootedFilePath> outputFileToProjectReferenceSource = new(StringComparer.Ordinal);
-    internal Dictionary<string, Slice<RootedFilePath>> redirectTargetsMap = new(StringComparer.Ordinal);
-    internal Dictionary<string, RedirectsFile>? redirectFilesByPath;
+    internal Dictionary<ByteStringKey, RootedFilePath> outputFileToProjectReferenceSource = new(ByteStringKey.Comparer);
+    internal Dictionary<ByteStringKey, Slice<RootedFilePath>> redirectTargetsMap = new(ByteStringKey.Comparer);
+    internal Dictionary<ByteStringKey, RedirectsFile>? redirectFilesByPath;
     internal Slice<Diagnostic> contentMapperDiagnostics;
     internal bool finishedProcessing;
     // Existing graph observation associations do not substitute Program tables.
@@ -175,15 +177,30 @@ internal sealed class ProcessedFiles
     internal List<ResolvedProjectEdge> graphEdges = [];
     internal List<ResolvedProjectReferenceEdge> pathReferences = [];
     internal List<ResolvedProjectTypeDirective> typeDirectives = [];
-    internal Dictionary<string, SourceFile> packageRedirects = new(StringComparer.Ordinal);
+    internal Dictionary<ByteStringKey, SourceFile> packageRedirects = new(ByteStringKey.Comparer);
     internal Slice<Diagnostic> processingDiagnostics;
     internal ProcessedFiles ShallowClone() => (ProcessedFiles)MemberwiseClone();
 }
 
 internal sealed class FilesParser
 {
-    private readonly TypeScript.Collections.SyncMap<string, ParseTaskData> taskDataByPath = new();
+    private readonly TypeScript.Collections.SyncMap<ByteStringKey, ParseTaskData> taskDataByPath = new();
     private readonly IWorkGroup work;
+    // filesparser.go:239-257. Only unpublished losing candidates are returned;
+    // installed data stays owned by taskDataByPath through processing.
+    private static readonly System.Collections.Concurrent.ConcurrentBag<ParseTaskData> parseTaskDataPool = new();
+    private static ParseTaskData getParseTaskData(ParseTask task)
+    {
+        var data = parseTaskDataPool.TryTake(out var candidate) ? candidate : new ParseTaskData();
+        data.tasks[task.normalizedFilePath] = task;
+        data.lowestDepth = long.MaxValue;
+        return data;
+    }
+    private static void putParseTaskData(ParseTaskData data)
+    {
+        data.tasks.Clear();
+        parseTaskDataPool.Add(data);
+    }
     internal FilesParser(bool singleThreaded = true) => work = Core.NewWorkGroup(singleThreaded);
     internal long maxDepth;
 
@@ -200,8 +217,10 @@ internal sealed class FilesParser
         {
             int slot = i;
             ParseTask task = tasks[i];
-            if (task.path == "") throw new InvalidOperationException("parse task must have a path key");
-            var (actual, loaded) = taskDataByPath.LoadOrStore(task.path, new(task));
+            if (task.path.Value.Length == 0) throw new InvalidOperationException("parse task must have a path key");
+            var candidate = getParseTaskData(task);
+            var (actual, loaded) = taskDataByPath.LoadOrStore(task.path, candidate);
+            if (loaded) putParseTaskData(candidate);
             work.Queue(() =>
             {
                 lock (actual.gate)
@@ -272,9 +291,9 @@ internal sealed class FilesParser
         result.files = Slice<SourceFile>.Make(0, totalFileCount - libFileCount);
         var libs = Slice<SourceFile>.Make(0, totalFileCount);
         void RecordDuplicate(SourceFile file) => result.duplicateSourceFiles = result.duplicateSourceFiles.Append(new DuplicateSourceFile() { ParseOptions = file.ParseOptions(), ContentMapperParseOptions = file.ContentMapperParseOptions(), Hash = file.Hash, ScriptKind = file.ScriptKind, ContentMapper = file.ContentMapper(), IsContentMapperFailureStub = file.IsContentMapperFailureStub() });
-        var seen = new Dictionary<ParseTaskData, string>(ReferenceEqualityComparer.Instance);
-        Dictionary<ParseTaskData, HashSet<string>>? recordedDuplicates = null;
-        var tasksSeenByNameIgnoreCase = new Dictionary<string, ParseTask>(StringComparer.Ordinal);
+        var seen = new Dictionary<ParseTaskData, ByteStringKey>(ReferenceEqualityComparer.Instance);
+        Dictionary<ParseTaskData, HashSet<ByteStringKey>>? recordedDuplicates = null;
+        var tasksSeenByNameIgnoreCase = new Dictionary<ByteStringKey, ParseTask>(ByteStringKey.Comparer);
         Dictionary<PackageId, SourceFile>? packageFiles = loader.graph && loader.options.DeduplicatePackages != Tristate.False ? new() : null;
         void CollectFiles(Slice<ParseTask> tasks)
         {
@@ -288,24 +307,24 @@ internal sealed class FilesParser
                 }
                 ParseTaskData data = taskDataByPath.Load(task.path).Value;
                 if (!task.loaded) continue;
-                if (seen.TryGetValue(data, out string? checkedName))
+                if (seen.TryGetValue(data, out ByteStringKey checkedName))
                 {
                     if (loader.program && task.file is not null && task.normalizedFilePath != checkedName)
                     {
                         recordedDuplicates ??= new(ReferenceEqualityComparer.Instance);
                         if (!recordedDuplicates.TryGetValue(data, out var duplicates))
-                            recordedDuplicates.Add(data, duplicates = new(StringComparer.Ordinal));
+                            recordedDuplicates.Add(data, duplicates = new(ByteStringKey.Comparer));
                         if (duplicates.Add(task.normalizedFilePath)) RecordDuplicate(task.file);
                     }
                     if (loader.options.ForceConsistentCasingInFileNames != Tristate.False &&
-                        loader.TypedFile(checkedName).WithoutRoot() != loader.TypedFile(task.normalizedFilePath).WithoutRoot())
+                        !loader.TypedFile(checkedName).WithoutRootValue().EqualsValue(loader.TypedFile(task.normalizedFilePath).WithoutRootValue()))
                         loader.includeProcessor.AddProcessingDiagnosticsForFileCasing(task.path, checkedName, task.normalizedFilePath, input.includeReason);
                     continue;
                 }
                 seen.Add(data, task.normalizedFilePath);
                 if (loader.host.FS().CaseSensitivity() == CaseSensitivity.CaseSensitive)
                 {
-                    string lower = loader.graph ? PathKey.FromGoString(task.path).CaseInsensitiveKey().AsString() : TsPath.ToFileNameLowerCase(task.path);
+                    var lower = ByteStringKey.FromValue(loader.graph ? PathKey.FromValue(task.path.Value).CaseInsensitiveKey().AsValue() : ByteStringValue.FromString(TsPath.ToFileNameLowerCase(task.path.ToString())));
                     if (tasksSeenByNameIgnoreCase.TryGetValue(lower, out ParseTask? existing))
                         loader.includeProcessor.AddProcessingDiagnosticsForFileCasing(existing.path, existing.normalizedFilePath, task.normalizedFilePath, input.includeReason);
                     else tasksSeenByNameIgnoreCase.Add(lower, task);
@@ -322,15 +341,15 @@ internal sealed class FilesParser
                         if (loader.program)
                         {
                             if (task.file is not null) RecordDuplicate(task.file);
-                            (result.redirectFilesByPath ??= new(StringComparer.Ordinal))[task.path] = new() { index = result.files.Count + (result.redirectFilesByPath?.Count ?? 0), fileName = loader.TypedFile(task.normalizedFilePath), path = PathKey.FromGoString(task.path), target = PathKey.FromGoString(packageFile.PathKey()) };
+                            (result.redirectFilesByPath ??= new(ByteStringKey.Comparer))[task.path] = new() { index = result.files.Count + (result.redirectFilesByPath?.Count ?? 0), fileName = loader.TypedFile(task.normalizedFilePath), path = PathKey.FromValue(task.path.Value), target = PathKey.FromValue(packageFile.PathKeyValue()) };
                             if (data.lowestDepth > 0) result.sourceFilesFoundSearchingNodeModules.Add(task.path);
                         }
                         result.filesByPath[task.path] = packageFile;
                         result.packageRedirects[task.path] = packageFile;
                         // filesparser.go:470. Keep the actual acquired spelling,
                         // not an inverse guess from a canonical dictionary key.
-                        var redirectTargets = result.redirectTargetsMap.GetValueOrDefault(packageFile.PathKey());
-                        result.redirectTargetsMap[packageFile.PathKey()] = redirectTargets.Append(loader.TypedFile(task.normalizedFilePath));
+                        var redirectTargets = result.redirectTargetsMap.GetValueOrDefault(packageFile.PathKeyKey());
+                        result.redirectTargetsMap[packageFile.PathKeyKey()] = redirectTargets.Append(loader.TypedFile(task.normalizedFilePath));
                         continue;
                     }
                     if (task.file is not null) packageFiles.Add(data.packageId, task.file);
@@ -359,8 +378,8 @@ internal sealed class FilesParser
                 result.metadata.Add(task.path, task.metadata);
                 if (loader.program || task.resolutionsInFile is not null) result.resolvedModules[task.path] = task.resolutionsInFile!;
                 if (loader.program || task.typeResolutionsInFile is not null) result.typeResolutionsInFile[task.path] = task.typeResolutionsInFile!;
-                if (task.importHelpersImportSpecifier is not null) (result.importHelpersImportSpecifiers ??= new(StringComparer.Ordinal))[task.path] = task.importHelpersImportSpecifier;
-                if (task.jsxRuntimeImportSpecifier is not null) (result.jsxRuntimeImportSpecifiers ??= new(StringComparer.Ordinal))[task.path] = new() { moduleReference = task.jsxRuntimeImportSpecifier.TextValue(), specifier = task.jsxRuntimeImportSpecifier };
+                if (task.importHelpersImportSpecifier is not null) (result.importHelpersImportSpecifiers ??= new(ByteStringKey.Comparer))[task.path] = task.importHelpersImportSpecifier;
+                if (task.jsxRuntimeImportSpecifier is not null) (result.jsxRuntimeImportSpecifiers ??= new(ByteStringKey.Comparer))[task.path] = new() { moduleReference = task.jsxRuntimeImportSpecifier.TextValue(), specifier = task.jsxRuntimeImportSpecifier };
                 if (data.lowestDepth > 0) result.sourceFilesFoundSearchingNodeModules.Add(task.path);
                 if (task.resolutionEdges is not null) result.resolutionEdges.AddRange(task.resolutionEdges);
                 if (task.graphEdges is not null) result.graphEdges.AddRange(task.graphEdges);
@@ -376,11 +395,11 @@ internal sealed class FilesParser
             libs = libs.Append(result.files);
             result.files = libs;
             var keys = loader.pathForLibFileResolutions.Keys().ToList();
-            keys.Sort((a, b) => string.CompareOrdinal(a.AsString(), b.AsString()));
+            keys.Sort(static (a, b) => ByteStringKey.FromValue(a.AsValue()).CompareTo(ByteStringKey.FromValue(b.AsValue())));
             foreach (var key in keys)
             {
                 var value = loader.pathForLibFileResolutions.Load(key).Value;
-                result.resolvedModules[key.AsString()] = new() { [new(value.libraryName, ResolutionMode.CommonJS)] = value.resolution };
+                result.resolvedModules[ByteStringKey.FromValue(key.AsValue())] = new() { [new(value.libraryName, ResolutionMode.CommonJS)] = value.resolution };
                 foreach (var trace in value.trace) loader.compilerHost!.Trace(trace.Message, traceArgs(trace.Args));
             }
             result.contentMapperDiagnostics = loader.ContentMapperDiagnostics();
@@ -389,21 +408,21 @@ internal sealed class FilesParser
         for (int i = 0; i < result.resolutionEdges.Count; i++)
         {
             ProjectResolutionEdge edge = result.resolutionEdges[i];
-            if (edge.Resolution.IsResolved() && result.filesByPath.TryGetValue(loader.KeyText(edge.Resolution.ResolvedPath), out SourceFile? target))
+            if (edge.Resolution.IsResolved() && result.filesByPath.TryGetValue(loader.KeyValue(edge.Resolution.ResolvedPath), out SourceFile? target))
                 result.resolutionEdges[i] = edge with { TargetFile = target };
         }
         foreach (var edge in result.graphEdges)
         {
-            if (edge.Resolution.IsResolved() && result.filesByPath.TryGetValue(loader.KeyText(edge.Resolution.ResolvedPath), out var target))
+            if (edge.Resolution.IsResolved() && result.filesByPath.TryGetValue(loader.KeyValue(edge.Resolution.ResolvedPath), out var target))
             {
                 edge.TargetFile = target;
                 if (edge.Scheduling == DependencyScheduling.ElidedJavaScriptDepth) edge.Scheduling = DependencyScheduling.Scheduled;
             }
         }
         foreach (var edge in result.pathReferences)
-            if (edge.ResolvedPath != default && result.filesByPath.TryGetValue(loader.KeyText(edge.ResolvedPath), out var target)) edge.TargetFile = target;
+            if (edge.ResolvedPath != default && result.filesByPath.TryGetValue(loader.KeyValue(edge.ResolvedPath), out var target)) edge.TargetFile = target;
         foreach (var edge in result.typeDirectives)
-            if (edge.Resolution?.IsResolved() == true && result.filesByPath.TryGetValue(loader.KeyText(edge.Resolution.ResolvedPath), out var target)) edge.TargetFile = target;
+            if (edge.Resolution?.IsResolved() == true && result.filesByPath.TryGetValue(loader.KeyValue(edge.Resolution.ResolvedPath), out var target)) edge.TargetFile = target;
         loader.includeProcessor.SetProcessedFiles(result, loader.options);
         if (!loader.program) result.processingDiagnostics = result.processingDiagnostics.Append(loader.includeProcessor.GetDiagnostics());
         foreach (var edge in result.pathReferences)

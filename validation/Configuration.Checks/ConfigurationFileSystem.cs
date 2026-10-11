@@ -94,7 +94,7 @@ public sealed class ConfigurationFileSystem : IFS
         string? resolved = Resolve(path.AsString());
         if (resolved is null || Lookup(resolved) is not { Directory: true }) return new Entries();
         PathKey parentKey = sensitivity.PathKey(RootedPath.FromGoString(resolved));
-        Entries result = new() { Files = [], Directories = [], Symlinks = [] };
+        Entries result = new() { Files = Slice<ByteStringValue>.Make(0), Directories = Slice<ByteStringValue>.Make(0), Symlinks = new(ByteStringKey.Comparer) };
         foreach (Entry entry in entries.Values)
         {
             if (sensitivity.PathKey(RootedPath.FromGoString(entry.Path)) == parentKey) continue;
@@ -102,11 +102,12 @@ public sealed class ConfigurationFileSystem : IFS
             Entry? target = Lookup(entry.Path);
             if (target is null) continue;
             string name = TsPath.GetBaseFileName(entry.Path);
-            (target.Directory ? result.Directories : result.Files).Add(name);
-            if (entry.Symlink is not null) result.Symlinks.Add(name);
+            if (target.Directory) result.Directories = result.Directories.Append(ByteStringValue.FromString(name));
+            else result.Files = result.Files.Append(ByteStringValue.FromString(name));
+            if (entry.Symlink is not null) result.Symlinks.Add(ByteStringKey.FromString(name));
         }
-        result.Files.Sort(StringComparer.Ordinal);
-        result.Directories.Sort(StringComparer.Ordinal);
+        GoSlices.SortFunc(result.Files, static (left, right) => ByteStringKey.FromValue(left).CompareTo(ByteStringKey.FromValue(right)));
+        GoSlices.SortFunc(result.Directories, static (left, right) => ByteStringKey.FromValue(left).CompareTo(ByteStringKey.FromValue(right)));
         return result;
     }
 

@@ -71,6 +71,13 @@ public static class ResolutionRunner
 
     private static JsonNode? Value(object? value)
     {
+        if (value is ByteStringValue bytes) return Value(bytes.Materialize());
+        if (value is Slice<ByteStringValue> byteValues) return Value(GoSlices.ToListOrNull(byteValues));
+        if (value is Slice<FileReference> references) return Value(GoSlices.ToListOrNull(references));
+        if (value is Slice<object?> arguments) return Value(GoSlices.ToListOrNull(arguments));
+        if (value is Slice<RootedFilePath> filePaths) return Value(GoSlices.ToListOrNull(filePaths));
+        if (value is Slice<string> texts) return Value(GoSlices.ToListOrNull(texts));
+        if (value is Slice<ResolvedEntrypoint> entrypoints) return Value(GoSlices.ToListOrNull(entrypoints));
         if (value is null)
             return null;
         if (value is JsonNode node)
@@ -167,7 +174,7 @@ public static class ResolutionRunner
         {
             var entries = new List<(string, object? )>();
             foreach (DictionaryEntry entry in dictionary)
-                entries.Add((entry.Key as string ?? throw new InvalidOperationException("Unobserved stored map key"), entry.Value));
+                entries.Add((entry.Key is ByteStringKey entryKey ? entryKey.ToString() : entry.Key as string ?? throw new InvalidOperationException("Unobserved stored map key"), entry.Value));
             return Ordered(entries.OrderBy(entry => entry.Item1, StringComparer.Ordinal));
         }
 
@@ -209,6 +216,7 @@ public static class ResolutionRunner
             return id;
         }
 
+        internal JsonNode? Diagnostics(Slice<Diagnostic> diagnostics) => Diagnostics(GoSlices.ToListOrNull(diagnostics));
         internal JsonNode? Diagnostics(IEnumerable<Diagnostic>? diagnostics)
         {
             if (diagnostics is null)
@@ -223,6 +231,7 @@ public static class ResolutionRunner
         internal JsonNode? Directive(ResolvedTypeReferenceDirective? result) => result is null ? null : Object(("ResolutionDiagnostics", Diagnostics(result.ResolutionDiagnostics)), ("Primary", result.Primary), ("ResolvedFileName", result.ResolvedFileName), ("ResolvedPath", result.ResolvedPath), ("OriginalPath", result.OriginalPath), ("PackageId", result.PackageId), ("IsExternalLibraryImport", result.IsExternalLibraryImport));
     }
 
+    private static JsonNode? Traces(Slice<DiagAndArgs> traces) => Traces(GoSlices.ToListOrNull(traces));
     private static JsonNode? Traces(List<DiagAndArgs>? traces)
     {
         if (traces is null)
@@ -339,11 +348,11 @@ public static class ResolutionRunner
         public Entries GetAccessibleEntries(RootedDirectoryPath path)
         {
             var result = ValidPath(path.AsString()) ? fileSystem.GetAccessibleEntries(path) : new Entries();
-            if (result.Files?.Count == 0)
-                result.Files = null;
-            if (result.Directories?.Count == 0)
-                result.Directories = null;
-            return Record("accessibleEntries", path.AsString(), result, Object(("files", result.Files), ("directories", result.Directories), ("symlinks", result.Symlinks?.OrderBy(name => name, StringComparer.Ordinal).ToList())));
+            if (result.Files.Count == 0)
+                result.Files = default;
+            if (result.Directories.Count == 0)
+                result.Directories = default;
+            return Record("accessibleEntries", path.AsString(), result, Object(("files", GoSlices.ToListOrNull(result.Files)?.Select(static name => name.Materialize()!).ToList()), ("directories", GoSlices.ToListOrNull(result.Directories)?.Select(static name => name.Materialize()!).ToList()), ("symlinks", result.Symlinks?.Select(static name => name.ToString()).OrderBy(name => name, StringComparer.Ordinal).ToList())));
         }
     }
 
@@ -424,15 +433,15 @@ public static class ResolutionRunner
                 resolutions.Add(edge.Resolution, id);
             }
 
-            edges.Add((JsonNode)new JsonObject { ["file"] = observer.File(edge.ImportingFile), ["specifier"] = new JsonObject { ["kind"] = (int)edge.ModuleSpecifier.Kind, ["pos"] = edge.ModuleSpecifier.Pos(), ["end"] = edge.ModuleSpecifier.End() }, ["reference"] = Value(edge.ModuleReference), ["mode"] = (int)edge.Mode, ["importIndex"] = edge.ImportIndex, ["syntheticKind"] = edge.SyntheticKind == "jsxRuntime" ? "jsx-runtime" : edge.SyntheticKind, ["identity"] = id, ["resolution"] = observer.Module(edge.Resolution), ["trace"] = Traces(edge.Traces?.ToList()), ["errorBase64"] = edge.Error is null ? null : Bytes(GoString.ToUtf8(edge.Error.Message)), ["scheduling"] = edge.Scheduling.ToString(), ["target"] = observer.File(edge.TargetFile) });
+            edges.Add((JsonNode)new JsonObject { ["file"] = observer.File(edge.ImportingFile), ["specifier"] = new JsonObject { ["kind"] = (int)edge.ModuleSpecifier.Kind, ["pos"] = edge.ModuleSpecifier.Pos(), ["end"] = edge.ModuleSpecifier.End() }, ["reference"] = Value(edge.ModuleReference), ["mode"] = (int)edge.Mode, ["importIndex"] = edge.ImportIndex, ["syntheticKind"] = edge.SyntheticKind == "jsxRuntime" ? "jsx-runtime" : edge.SyntheticKind, ["identity"] = id, ["resolution"] = observer.Module(edge.Resolution), ["trace"] = Traces(edge.Traces), ["errorBase64"] = edge.Error is null ? null : Bytes(GoString.ToUtf8(edge.Error.Message)), ["scheduling"] = edge.Scheduling.ToString(), ["target"] = observer.File(edge.TargetFile) });
         }
 
         foreach (var edge in graph.PathReferences.OrderBy(edge => ids[edge.ImportingFile]).ThenBy(edge => edge.Reference.Pos()))
             paths.Add((JsonNode)new JsonObject { ["file"] = observer.File(edge.ImportingFile), ["reference"] = Value(edge.Reference), ["resolvedFile"] = Value(edge.ResolvedFileName), ["resolvedPath"] = Value(edge.ResolvedPath), ["diagnostic"] = observer.Diagnostics(edge.Diagnostic is null ? null : new[] { edge.Diagnostic }), ["scheduling"] = edge.Scheduling.ToString(), ["target"] = observer.File(edge.TargetFile) });
         foreach (var edge in graph.TypeDirectives.OrderBy(edge => ids[edge.ImportingFile]).ThenBy(edge => edge.Reference.Pos()))
-            types.Add((JsonNode)new JsonObject { ["file"] = observer.File(edge.ImportingFile), ["reference"] = Value(edge.Reference), ["mode"] = (int)edge.Mode, ["resolution"] = observer.Directive(edge.Resolution), ["trace"] = Traces(edge.Traces?.ToList()), ["scheduling"] = edge.Scheduling.ToString(), ["target"] = observer.File(edge.TargetFile) });
+            types.Add((JsonNode)new JsonObject { ["file"] = observer.File(edge.ImportingFile), ["reference"] = Value(edge.Reference), ["mode"] = (int)edge.Mode, ["resolution"] = observer.Directive(edge.Resolution), ["trace"] = Traces(edge.Traces), ["scheduling"] = edge.Scheduling.ToString(), ["target"] = observer.File(edge.TargetFile) });
         foreach (SourceFile file in graph.SourceFiles)
-            foreach (var reference in file.LibReferenceDirectives ?? [])
+            foreach (var reference in file.LibReferenceDirectives)
                 externalLibs.Add((JsonNode)new JsonObject { ["file"] = observer.File(file), ["reference"] = Value(reference), ["scheduling"] = "ExternalLibraryEnvironment" });
         return new JsonObject
         {
@@ -495,7 +504,7 @@ public static class ResolutionRunner
         Host host = new(new Configuration.Checks.ConfigurationFileSystem(inputs, sensitivity), RootedDirectoryPath.FromGoString(Input(request, "Cwd")), inputs);
         RootedFilePath config = RootedFilePath.FromGoString(Input(request, "ConfigPath"));
         TypeScript.TsOptions.ParsedCommandLine? parsed = null;
-        List<Diagnostic>? errors = null, configErrors = null;
+        Slice<Diagnostic> errors = default, configErrors = default;
         CompilerOptions options;
         Exception? rawError = null;
         bool graphRequest = request["Graph"]?.GetValue<bool>() == true;
@@ -587,7 +596,7 @@ public static class ResolutionRunner
             var mode = (ResolutionMode)(query["Mode"]?.GetValue<int>() ?? 0);
             JsonNode? result;
             object? identity;
-            List<DiagAndArgs>? traces;
+            Slice<DiagAndArgs> traces;
             Exception? error = null;
             IResolvedProjectReference? redirect = query["RedirectId"] is JsonValue redirectId ? redirects[redirectId.GetValue<string>()] : null;
             switch (kind)
@@ -596,13 +605,13 @@ public static class ResolutionRunner
                     var configResult = DefaultResolver.ResolveConfig(name, RootedFilePath.FromGoString(containing), host);
                     result = observer.Module(configResult);
                     identity = configResult;
-                    traces = null;
+                    traces = default;
                     break;
                 case "package-directory":
                     var packageDirectory = resolver.ResolvePackageDirectory(name, RootedFilePath.FromGoString(containing), mode, redirect);
                     result = observer.Module(packageDirectory);
                     identity = packageDirectory;
-                    traces = null;
+                    traces = default;
                     break;
                 case "entrypoints":
                     InfoCacheEntry? packageEntry = null;
@@ -621,12 +630,12 @@ public static class ResolutionRunner
                         throw new InvalidOperationException("Unobserved actual package entry");
                     result = Value(resolver.GetEntrypointsFromPackageJsonInfo(packageEntry, name, query["EnableDirectorySearch"]?.GetValue<bool>() ?? false));
                     identity = null;
-                    traces = null;
+                    traces = default;
                     break;
                 case "utility":
                     result = Utility(name, containing, query, options, host, observer);
                     identity = null;
-                    traces = null;
+                    traces = default;
                     break;
                 case "module":
                     var module = active.ResolveModuleName(name, RootedFilePath.FromGoString(containing), mode, redirect);

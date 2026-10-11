@@ -28,7 +28,7 @@ internal static class ProgramOrderChecks
                 Host = CompilerHosts.NewCompilerHost(fs, Bundled.LibPath()),
             });
             string prefix = Bundled.LibPath().AsString() + "/";
-            string[] actual = program.GetSourceFiles().Select(file =>
+            string[] actual = GoSlices.Values(program.GetSourceFiles()).Select(file =>
             {
                 string name = file.FileNameGoBytes();
                 return name.StartsWith(prefix, StringComparison.Ordinal) ? name[prefix.Length..] : name;

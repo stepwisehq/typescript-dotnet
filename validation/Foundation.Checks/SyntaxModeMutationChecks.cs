@@ -28,7 +28,7 @@ public static partial class SyntaxServiceChecks
                 (int)file.ScriptKind,
                 (int)file.LanguageVariant,
                 Snap(file.AsNode()),
-                file.Diagnostics()?.Count ?? 0
+                file.Diagnostics().Length
             }
         };
     }).ToArray();

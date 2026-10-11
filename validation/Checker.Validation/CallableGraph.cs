@@ -51,7 +51,7 @@ public sealed partial class Graph
         callables.Signatures.Add(record);
         checker.GetReturnTypeOfSignature(signature);
         checker.GetTypePredicateOfSignature(signature);
-        foreach (var parameter in signature.parameters ?? [])
+        foreach (var parameter in signature.parameters)
             checker.getTypeOfSymbol(parameter);
         record.Fields.AddRange([F("flags", "number", signature.flags), F("minArgumentCount", "number", signature.minArgumentCount), F("resolvedMinArgumentCount", "number", signature.resolvedMinArgumentCount), F("declaration", "node", signature.declaration), F("typeParameters", "types", signature.typeParameters), F("parameters", "symbols", signature.parameters), F("thisParameter", "symbol", signature.thisParameter), F("resolvedReturnType", "type", signature.resolvedReturnType), F("resolvedTypePredicate", "predicate", signature.resolvedTypePredicate), F("target", "signature", signature.target), F("mapper", "mapper", signature.mapper), F("isolatedSignatureType", "type", signature.isolatedSignatureType), F("composite", "composite", signature.composite)]);
         return id;

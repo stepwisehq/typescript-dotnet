@@ -35,15 +35,15 @@ public sealed class FileIncludeReason
     internal string syntheticKind = "";
     internal int rootIndex = -1, libIndex;
     internal bool isLibFile, isDefaultLib;
-    internal string? automaticTypeDirective;
-    internal string canonicalSourceFile = "";
+    internal ByteStringValue automaticTypeDirective = ByteStringValue.FromString(null);
+    internal ByteStringKey canonicalSourceFile;
     internal bool IsReferencedFile() => importingFile is not null;
     // Program locates the referenced AST in its own generation. The legacy
     // direct pointer representation supplies only the original path and index.
     internal ReferenceFileLocation GetReferencedLocation(Program program)
     {
         var original = importingFile!;
-        var file = program.GetSourceFileByPath(PathKey.FromGoString(original.PathKey()))!;
+        var file = program.GetSourceFileByPath(PathKey.FromValue(original.PathKeyValue()))!;
         if (kind == IncludeReferenceKind.Import)
         {
             Node node;
@@ -66,19 +66,20 @@ public sealed class FileIncludeReason
         return new() { file = file, reference = currentRefs[GoSlices.Index(originalRefs, reference!)] };
     }
     internal ReferenceFileLocation LegacyReferencedLocation() => new() { file = importingFile!, node = specifier, reference = reference, packageId = packageId, isSynthetic = syntheticKind != "" };
-    internal Diagnostic ToDiagnostic(Program program, bool relativeFileName, RootedDirectoryPath relativeTo) => ToDiagnostic(program.includeProcessor, relativeFileName, relativeTo.AsString());
+    internal Diagnostic ToDiagnostic(Program program, bool relativeFileName, RootedDirectoryPath relativeTo) => ToDiagnostic(program.includeProcessor, relativeFileName, relativeTo.AsValue());
     internal Diagnostic ToDiagnostic(Program program, bool relativeFileName = false, string relativeTo = "") => ToDiagnostic(program.includeProcessor, relativeFileName, relativeTo);
-    internal Diagnostic ToDiagnostic(IncludeProcessor processor, bool relativeFileName = false, string relativeTo = "")
+    internal Diagnostic ToDiagnostic(IncludeProcessor processor, bool relativeFileName = false, string relativeTo = "") => ToDiagnostic(processor, relativeFileName, ByteStringValue.FromString(relativeTo));
+    private Diagnostic ToDiagnostic(IncludeProcessor processor, bool relativeFileName, ByteStringValue relativeTo)
     {
-        var key = (this, relativeFileName, relativeTo);
+        var key = (this, relativeFileName, relativeTo.IsNull ? (ByteStringKey?)null : ByteStringKey.FromValue(relativeTo));
         var (value, found) = processor.reasonDiagnostics.Load(key);
         if (found) return value;
         return processor.reasonDiagnostics.LoadOrStore(key, ComputeDiagnostic(processor, relativeFileName, relativeTo)).Actual;
     }
 
-    private Diagnostic ComputeDiagnostic(IncludeProcessor processor, bool relativeFileName, string relativeTo)
+    private Diagnostic ComputeDiagnostic(IncludeProcessor processor, bool relativeFileName, ByteStringValue relativeTo)
     {
-        if (!IsReferencedFile() && automaticTypeDirective is null && !isLibFile && canonicalSourceFile == "" && processor.program is { } program && program.CommandLine().ConfigFile is null)
+        if (!IsReferencedFile() && automaticTypeDirective.IsNull && !isLibFile && canonicalSourceFile.Value.Length == 0 && processor.program is { } program && program.CommandLine().ConfigFile is null)
             return Ast.NewCompilerDiagnostic(Diagnostics.Root_file_specified_for_compilation);
         if (IsReferencedFile())
         {
@@ -86,12 +87,12 @@ public sealed class FileIncludeReason
             var location = processor.GetReferenceLocation(this);
             SourceFile file = location.file;
             var referencePackageId = location.packageId;
-            string name = file.FileNameGoBytes();
+            var name = file.FileNameGoValue();
             if (relativeFileName)
             {
-                var directory = processor.pathValuesAreRaw ? RootedDirectoryPath.FromGoString(relativeTo) : RootedDirectoryPath.FromUnicode(relativeTo);
-                var (relative, ok) = (processor.program?.CaseSensitivity() ?? processor.configuration.Parsed?.CaseSensitivity())?.RelativePathFromDirectory(directory, RootedFilePath.FromGoString(name)) ?? (default, false);
-                if (ok) name = relative.AsString();
+                var directory = processor.pathValuesAreRaw ? RootedDirectoryPath.FromValue(relativeTo) : RootedDirectoryPath.FromUnicode(relativeTo.Materialize()!);
+                var (relative, ok) = (processor.program?.CaseSensitivity() ?? processor.configuration.Parsed?.CaseSensitivity())?.RelativePathFromDirectory(directory, RootedFilePath.FromValue(name)) ?? (default, false);
+                if (ok) name = relative.AsValue();
             }
             string text = location.Text();
             Message message = kind switch
@@ -107,7 +108,7 @@ public sealed class FileIncludeReason
                 Ast.NewCompilerDiagnostic(message, text, name, referencePackageId.ToString()) : Ast.NewCompilerDiagnostic(message, text, name);
         }
 
-        if (automaticTypeDirective is not null)
+        if (!automaticTypeDirective.IsNull)
         {
             bool wildcard = processor.configuration.Options.UsesWildcardTypes();
             Message message = wildcard ? packageId.Name != "" ? Diagnostics.Entry_point_for_implicit_type_library_0_with_packageId_1 : Diagnostics.Entry_point_for_implicit_type_library_0 :
@@ -120,15 +121,15 @@ public sealed class FileIncludeReason
             string target = ScriptTargetName(processor.configuration.Options.GetEmitScriptTarget());
             return target != "" ? Ast.NewCompilerDiagnostic(Diagnostics.Default_library_for_target_0, target) : Ast.NewCompilerDiagnostic(Diagnostics.Default_library);
         }
-        if (canonicalSourceFile != "")
+        if (canonicalSourceFile.Value.Length != 0)
         {
-            var canonical = processor.program!.GetSourceFileByPath(PathKey.FromGoString(canonicalSourceFile))!;
-            string name = canonical.FileNameGoBytes();
+            var canonical = processor.program!.GetSourceFileByPath(PathKey.FromValue(canonicalSourceFile.Value))!;
+            var name = canonical.FileNameGoValue();
             if (relativeFileName)
             {
-                var directory = processor.pathValuesAreRaw ? RootedDirectoryPath.FromGoString(relativeTo) : RootedDirectoryPath.FromUnicode(relativeTo);
-                var (relative, ok) = processor.program!.CaseSensitivity().RelativePathFromDirectory(directory, RootedFilePath.FromGoString(name));
-                if (ok) name = relative.AsString();
+                var directory = processor.pathValuesAreRaw ? RootedDirectoryPath.FromValue(relativeTo) : RootedDirectoryPath.FromUnicode(relativeTo.Materialize()!);
+                var (relative, ok) = processor.program!.CaseSensitivity().RelativePathFromDirectory(directory, RootedFilePath.FromValue(name));
+                if (ok) name = relative.AsValue();
             }
             return Ast.NewCompilerDiagnostic(Diagnostics.Supplemental_virtual_file_produced_by_the_content_mapper_for_file_0, name);
         }
@@ -139,7 +140,7 @@ public sealed class FileIncludeReason
                 var file = config.FileNames()![rootIndex];
                 string Name(RootedFilePath path)
                 {
-                    if (relativeFileName && (processor.program?.CaseSensitivity() ?? config.CaseSensitivity()).RelativePathFromDirectory((processor.pathValuesAreRaw ? RootedDirectoryPath.FromGoString(relativeTo) : RootedDirectoryPath.FromUnicode(relativeTo)), path)is var pair && pair.Ok)
+                    if (relativeFileName && (processor.program?.CaseSensitivity() ?? config.CaseSensitivity()).RelativePathFromDirectory((processor.pathValuesAreRaw ? RootedDirectoryPath.FromValue(relativeTo) : RootedDirectoryPath.FromUnicode(relativeTo.Materialize()!)), path)is var pair && pair.Ok)
                         return pair.Path.AsString();
                     return path.AsString();
                 }
@@ -158,7 +159,7 @@ public sealed class FileIncludeReason
             string matchedFileSpec = processor.configuration.Files[rootIndex];
             string fileName = TsPath.GetNormalizedAbsolutePath(matchedFileSpec, processor.configuration.Root);
             if (relativeFileName)
-                fileName = TsPath.GetRelativePathFromDirectory(relativeTo, fileName);
+                fileName = TsPath.GetRelativePathFromDirectory(relativeTo.Materialize()!, fileName);
             return Ast.NewCompilerDiagnostic(Diagnostics.Part_of_files_list_in_tsconfig_json, GoString.ToUtf8(matchedFileSpec), GoString.ToUtf8(fileName));
         }
 
@@ -183,12 +184,12 @@ public sealed class FileIncludeReason
                 _ => Diagnostics.File_is_included_via_import_here
             });
         }
-        if (processor.program is { } program && program.CommandLine().ConfigFile is { } configFile && (automaticTypeDirective is not null || isLibFile))
+        if (processor.program is { } program && program.CommandLine().ConfigFile is { } configFile && (!automaticTypeDirective.IsNull || isLibFile))
         {
             var syntax = processor.GetCompilerOptionsObjectLiteralSyntax();
             Node? node = null;
             Message? message = null;
-            if (automaticTypeDirective is not null && !program.Options().UsesWildcardTypes())
+            if (!automaticTypeDirective.IsNull && !program.Options().UsesWildcardTypes())
             {
                 node = ConfigParser.GetOptionsSyntaxByArrayElementValue(syntax, "types", automaticTypeDirective);
                 message = Diagnostics.File_is_entry_point_of_type_library_specified_here;

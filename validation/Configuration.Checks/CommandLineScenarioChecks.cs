@@ -128,7 +128,7 @@ public static partial class CommandLineChecks
         OrderedMap<string, object?> wrapped = new();
         wrapped.Set("compilerOptions", raw);
         var (parsed, errors) = T.GetParsedCommandLineOfConfigFile(RootedFilePath.FromGoString("/project/tsconfig.json"), command.CompilerOptions(), wrapped, fs, null);
-        Check.Equal(errors?.Count ?? 0, 0, "Config parse errors empty");
+        Check.Equal(errors.Count, 0, "Config parse errors empty");
         Check.True(parsed!.CompilerOptions().CustomConditions is null, "Command line null overrides config custom conditions");
     }
 }

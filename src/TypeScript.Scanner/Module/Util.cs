@@ -21,13 +21,13 @@ public static class ModuleUtilities
             return options.GetAllowJS() || noImplicitAny != Tristate.True ? null : Diagnostics.Could_not_find_a_declaration_file_for_module_0_1_implicitly_has_an_any_type;
         }
 
-        return resolvedModule.Extension switch
+        return resolvedModule.ExtensionValue switch
         {
-            TsPath.ExtensionTs or TsPath.ExtensionDts or TsPath.ExtensionMts or TsPath.ExtensionDmts or TsPath.ExtensionCts or TsPath.ExtensionDcts => null,
-            TsPath.ExtensionTsx => NeedJsx(),
-            TsPath.ExtensionJsx => NeedJsx() ?? NeedAllowJs(),
-            TsPath.ExtensionJs or TsPath.ExtensionMjs or TsPath.ExtensionCjs => NeedAllowJs(),
-            TsPath.ExtensionJson => options.GetResolveJsonModule() ? null : Diagnostics.Module_0_was_resolved_to_1_but_resolveJsonModule_is_not_used,
+            var ext when ext.EqualsString(TsPath.ExtensionTs) || ext.EqualsString(TsPath.ExtensionDts) || ext.EqualsString(TsPath.ExtensionMts) || ext.EqualsString(TsPath.ExtensionDmts) || ext.EqualsString(TsPath.ExtensionCts) || ext.EqualsString(TsPath.ExtensionDcts) => null,
+            var ext when ext.EqualsString(TsPath.ExtensionTsx) => NeedJsx(),
+            var ext when ext.EqualsString(TsPath.ExtensionJsx) => NeedJsx() ?? NeedAllowJs(),
+            var ext when ext.EqualsString(TsPath.ExtensionJs) || ext.EqualsString(TsPath.ExtensionMjs) || ext.EqualsString(TsPath.ExtensionCjs) => NeedAllowJs(),
+            var ext when ext.EqualsString(TsPath.ExtensionJson) => options.GetResolveJsonModule() ? null : Diagnostics.Module_0_was_resolved_to_1_but_resolveJsonModule_is_not_used,
             _ => file.IsDeclarationFile || options.AllowArbitraryExtensions == Tristate.True ? null : Diagnostics.Module_0_was_resolved_to_1_but_allowArbitraryExtensions_is_not_set
         };
     }
@@ -72,18 +72,18 @@ public static class ModuleUtilities
         return Math.Sign(b.Length - a.Length);
     }
 
-    public static RootedDirectoryPath NodeModulePackageRootForFile(RootedFilePath path) => parseNodeModulePackageRoot(path.AsString(), false);
-    public static RootedDirectoryPath NodeModulePackageRootForDirectory(RootedDirectoryPath path) => parseNodeModulePackageRoot(path.AsString(), true);
-    private static RootedDirectoryPath parseNodeModulePackageRoot(string path, bool isDirectory)
+    public static RootedDirectoryPath NodeModulePackageRootForFile(RootedFilePath path) => parseNodeModulePackageRoot(path.AsValue(), false);
+    public static RootedDirectoryPath NodeModulePackageRootForDirectory(RootedDirectoryPath path) => parseNodeModulePackageRoot(path.AsValue(), true);
+    private static RootedDirectoryPath parseNodeModulePackageRoot(ByteStringValue path, bool isDirectory)
     {
-        int index = path.LastIndexOf("/node_modules/", StringComparison.Ordinal);
+        int index = path.LastIndexOf(ByteStringValue.FromString("/node_modules/"));
         if (index < 0)
             return default;
         int start = index + "/node_modules/".Length;
         int end = DefaultResolver.MoveToNextDirectorySeparatorIfAvailable(path, start, isDirectory);
         if (path[start] == '@')
             end = DefaultResolver.MoveToNextDirectorySeparatorIfAvailable(path, end, isDirectory);
-        return TsPath.RootedDirectoryPathFromAbsolute(path[..end]);
+        return TsPath.RootedDirectoryPathFromAbsolute(path.Slice(0, end));
     }
 
     public static string MangleScopedPackageName(string name) => MangleScopedPackageName(ByteStringValue.FromString(name)).Materialize()!;
@@ -97,29 +97,33 @@ public static class ModuleUtilities
         return builder.Value();
     }
 
-    public static string UnmangleScopedPackageName(string name)
+    public static string UnmangleScopedPackageName(string name) => name is null ? throw new NullReferenceException() : UnmangleScopedPackageNameValue(ByteStringValue.FromString(name)).Materialize()!;
+    internal static ByteStringValue UnmangleScopedPackageNameValue(ByteStringValue name)
     {
-        int separator = name.IndexOf("__", StringComparison.Ordinal);
-        return separator < 0 ? name : "@" + name[..separator] + "/" + name[(separator + 2)..];
+        int separator = name.IndexOf("__"u8);
+        if (separator < 0) return name;
+        var builder = new GoBuilder(); builder.WriteByte((byte)'@'); builder.WriteString(name.Slice(0, separator)); builder.WriteByte((byte)'/'); builder.WriteString(name.Slice(separator + 2));
+        return builder.Value();
     }
-
     public static string GetTypesPackageName(string name) => "@types/" + MangleScopedPackageName(name);
-    public static string GetPackageNameFromTypesPackageName(string name) => name.StartsWith("@types/", StringComparison.Ordinal) ? UnmangleScopedPackageName(name[7..]) : name;
+    public static string GetPackageNameFromTypesPackageName(string name) => name is null ? throw new NullReferenceException() : GetPackageNameFromTypesPackageNameValue(ByteStringValue.FromString(name)).Materialize()!;
+    internal static ByteStringValue GetPackageNameFromTypesPackageNameValue(ByteStringValue name) => name.StartsWith("@types/"u8) ? UnmangleScopedPackageNameValue(name.Slice(7)) : name;
 
-    public static string TryGetJSExtensionForFile(string fileName, CompilerOptions options)
+    public static string TryGetJSExtensionForFile(string fileName, CompilerOptions options) => TryGetJSExtensionForFile(ByteStringValue.FromString(fileName), options);
+    internal static string TryGetJSExtensionForFile(ByteStringValue fileName, CompilerOptions options)
     {
         return TsPath.TryGetExtensionFromPath(fileName) switch
         {
-            TsPath.ExtensionTs or TsPath.ExtensionDts => TsPath.ExtensionJs,
-            TsPath.ExtensionTsx => options.Jsx == JsxEmit.Preserve ? TsPath.ExtensionJsx : TsPath.ExtensionJs,
-            TsPath.ExtensionJs => TsPath.ExtensionJs,
-            TsPath.ExtensionJsx => TsPath.ExtensionJsx,
-            TsPath.ExtensionJson => TsPath.ExtensionJson,
-            TsPath.ExtensionDmts or TsPath.ExtensionMts or TsPath.ExtensionMjs => TsPath.ExtensionMjs,
-            TsPath.ExtensionDcts or TsPath.ExtensionCts or TsPath.ExtensionCjs => TsPath.ExtensionCjs,
+            var ext when ext.EqualsString(TsPath.ExtensionTs) || ext.EqualsString(TsPath.ExtensionDts) => TsPath.ExtensionJs,
+            var ext when ext.EqualsString(TsPath.ExtensionTsx) => options.Jsx == JsxEmit.Preserve ? TsPath.ExtensionJsx : TsPath.ExtensionJs,
+            var ext when ext.EqualsString(TsPath.ExtensionJs) => TsPath.ExtensionJs,
+            var ext when ext.EqualsString(TsPath.ExtensionJsx) => TsPath.ExtensionJsx,
+            var ext when ext.EqualsString(TsPath.ExtensionJson) => TsPath.ExtensionJson,
+            var ext when ext.EqualsString(TsPath.ExtensionDmts) || ext.EqualsString(TsPath.ExtensionMts) || ext.EqualsString(TsPath.ExtensionMjs) => TsPath.ExtensionMjs,
+            var ext when ext.EqualsString(TsPath.ExtensionDcts) || ext.EqualsString(TsPath.ExtensionCts) || ext.EqualsString(TsPath.ExtensionCjs) => TsPath.ExtensionCjs,
             _ => ""
         };
     }
 
-    public static string TryGetJSExtensionForFileName(RootedFilePath fileName, CompilerOptions options) => TryGetJSExtensionForFile(fileName.AsString(), options);
+    public static string TryGetJSExtensionForFileName(RootedFilePath fileName, CompilerOptions options) => TryGetJSExtensionForFile(fileName.AsValue(), options);
 }

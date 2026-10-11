@@ -44,7 +44,7 @@ public static class IntegrationChecks
             Check.Equal(project.UserFiles.Single().FileName(), source, "Public checking user filename stays Unicode");
             Check.Equal(project.RootFiles[0].FileNameGoBytes(), inspection.Parsed.FileNames()!.Single().AsString(), "Source algorithms retain the exact original byte filename");
             var graph = Project.InspectResolvedGraph(config);
-            Check.Equal(graph.SourceFiles.Single().FileName(), inspection.Parsed.FileNames()!.Single().AsString(), "Independent graph inspection keeps its byte filename role");
+            Check.Equal(TypeScript.Scanner.GoSlices.ToListOrNull(graph.SourceFiles)!.Single().FileName(), inspection.Parsed.FileNames()!.Single().AsString(), "Independent graph inspection keeps its byte filename role");
             Check.Equal(project.Check().Count, 0, "Discovered absolute root checks successfully");
             File.WriteAllText(source, "export const value: number = \"bad\";\n");
             var assignment = Project.LoadConfiguration(config).Check().Single(diagnostic => diagnostic.Code() == 2322);

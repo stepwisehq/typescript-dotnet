@@ -12,7 +12,7 @@ namespace TypeScript.Vfs.OsVfs;
 internal static partial class LinuxReadPaths
 {
     private static readonly UTF8Encoding scalarEncoding = new(false, true);
-    internal readonly record struct Entry(string Name, bool IsSymlink);
+    internal readonly record struct Entry(ByteStringValue Name, bool IsSymlink);
     [LibraryImport("libc", EntryPoint = "opendir", StringMarshalling = StringMarshalling.Utf8, SetLastError = true)]
     private static partial nint OpenDirectory(string path);
     [LibraryImport("libc", EntryPoint = "readdir64", SetLastError = true)]
@@ -83,7 +83,7 @@ internal static partial class LinuxReadPaths
                 if (name.AsSpan().SequenceEqual("."u8) || name.AsSpan().SequenceEqual(".."u8))
                     continue;
                 Validate(name);
-                string rawName = GoString.FromBytes(name);
+                var rawName = ByteStringValue.FromView(ByteStringView.FromOwnedBytes(name));
                 byte type = Marshal.ReadByte(entry, 18);
                 bool link = type == 10;
                 if (type == 0)
@@ -97,7 +97,7 @@ internal static partial class LinuxReadPaths
         }
     }
 
-    internal static unsafe string? ReadLinkTarget(string path)
+    internal static unsafe ByteStringValue? ReadLinkTarget(string path)
     {
         // readlink does not terminate its result and can truncate. Grow until
         // the actual target fits; no guessed fixed path limit or lossy decoder.
@@ -115,20 +115,21 @@ internal static partial class LinuxReadPaths
                 return null; // Not a link or an ordinary inaccessible-path failure.
             if (count < size)
             {
-                byte[] target = bytes[..(int)count];
-                Validate(target);
-                return GoString.FromBytes(target);
+                var target = bytes.AsSpan(0, (int)count);
+                try { _ = scalarEncoding.GetCharCount(target); }
+                catch (DecoderFallbackException error) { throw new FileSystemPathEncodingException(GoString.FromBytes(target), error); }
+                return ByteStringValue.FromView(ByteStringView.FromOwnedBytes(bytes).Slice(0, (int)count));
             }
         }
     }
 
-    internal static string? Realpath(string path)
+    internal static ByteStringValue? Realpath(string path)
     {
         RequirePlatform(path);
-        return TypeScript.NativePath.NativePath.Realpath(GoString.ToUtf8(path));
+        return TypeScript.NativePath.NativePath.Realpath(PathByteText.FromUnicodeValue(path));
     }
 
-    internal static string Native(string bytes)
+    internal static string Native(ByteStringValue bytes)
     {
         try
         {
@@ -136,7 +137,7 @@ internal static partial class LinuxReadPaths
         }
         catch (DecoderFallbackException error)
         {
-            throw new FileSystemPathEncodingException(bytes, error);
+            throw new FileSystemPathEncodingException(bytes.Materialize()!, error);
         }
     }
 

@@ -5,14 +5,16 @@ namespace TypeScript.Scanner;
 public static partial class TsPath
 {
     private static readonly string[] ignoredPaths = ["/node_modules/.", "/.git", ".#"];
-    internal static bool containsIgnoredPath(string path)
+    internal static bool containsIgnoredPath(ByteStringValue path)
     {
         foreach (var pattern in ignoredPaths)
-            if (path.Contains(pattern, StringComparison.Ordinal))
-                return true;
+        if (path.IndexOf(ByteStringValue.FromString(pattern)) >= 0)
+        {
+            return true;
+        }
         return false;
     }
-    public static bool ContainsIgnoredPath(RootedPath path) => containsIgnoredPath(path.AsString());
-    public static bool ContainsIgnoredDirectory(RootedDirectoryPath directory) => containsIgnoredPath(directory.AsString());
-    public static bool ContainsIgnoredPathKey(PathKey path) => containsIgnoredPath(path.AsString());
+    public static bool ContainsIgnoredPath(RootedPath path) => containsIgnoredPath(path.AsValue());
+    public static bool ContainsIgnoredDirectory(RootedDirectoryPath directory) => containsIgnoredPath(directory.AsValue());
+    public static bool ContainsIgnoredPathKey(PathKey path) => containsIgnoredPath(path.AsValue());
 }

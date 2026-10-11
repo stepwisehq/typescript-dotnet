@@ -11,7 +11,7 @@ internal interface ICheckerProgramHost : TypeScript.ModuleSpecifiers.IModuleSpec
 
     CompilerOptions Options { get; }
     void BindSourceFiles();
-    Dictionary<string, ModeAwareCache<ResolvedModule?>> GetResolvedModules();
+    Dictionary<ByteStringKey, ModeAwareCache<ResolvedModule?>> GetResolvedModules();
     Dictionary<string, bool> GetPackagesMap();
     SourceFileMetaData GetSourceFileMetaData(PathKey path);
     (string ModuleReference, Node? Specifier) GetJSXRuntimeImportSpecifier(PathKey path);

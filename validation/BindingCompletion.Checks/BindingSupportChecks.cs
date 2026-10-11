@@ -268,9 +268,9 @@ public static class BindingSupportChecks
         file.Symbol is null,
         file.Locals is null,
         file.NextContainer is null,
-        file.BindDiagnostics()is null,
+        file.BindDiagnostics().IsNil,
         file.SymbolCount,
-        file.PatternAmbientModules is null,
+        file.PatternAmbientModules.IsNil,
         file.GlobalExports is null
     };
     private static object CloneBindingState()

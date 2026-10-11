@@ -65,17 +65,19 @@ public enum NodeResolutionFeatures : int
 // Copies retain Go value semantics. Default backing strings are normalized to Go's empty zero.
 public struct PackageId : IEquatable<PackageId>
 {
-    private string? name, subModuleName, version, peerDependencies;
+    private string? name, version, peerDependencies;
+    private ByteStringValue subModuleName;
     public string Name { readonly get => name ?? ""; set => name = value; }
-    public string SubModuleName { readonly get => subModuleName ?? ""; set => subModuleName = value; }
+    public string SubModuleName { readonly get => SubModuleNameValue.Materialize()!; set => subModuleName = ByteStringValue.FromString(value); }
+    internal ByteStringValue SubModuleNameValue { readonly get => subModuleName.IsNull ? default : subModuleName.Snapshot(); set => subModuleName = value.Snapshot(); }
     public string Version { readonly get => version ?? ""; set => version = value; }
     public string PeerDependencies { readonly get => peerDependencies ?? ""; set => peerDependencies = value; }
 
     public readonly string PackageName() => SubModuleName != "" ? Name + "/" + SubModuleName : Name;
     public override readonly string ToString() => PackageName() + "@" + Version + PeerDependencies;
-    public readonly bool Equals(PackageId other) => Name == other.Name && SubModuleName == other.SubModuleName && Version == other.Version && PeerDependencies == other.PeerDependencies;
+    public readonly bool Equals(PackageId other) => Name == other.Name && SubModuleNameValue.EqualsValue(other.SubModuleNameValue) && Version == other.Version && PeerDependencies == other.PeerDependencies;
     public override readonly bool Equals(object? obj) => obj is PackageId other && Equals(other);
-    public override readonly int GetHashCode() => HashCode.Combine(Name, SubModuleName, Version, PeerDependencies);
+    public override readonly int GetHashCode() => HashCode.Combine(Name, ByteStringKey.FromValue(SubModuleNameValue), Version, PeerDependencies);
     public static bool operator ==(PackageId left, PackageId right) => left.Equals(right);
     public static bool operator !=(PackageId left, PackageId right) => !left.Equals(right);
 }
@@ -86,7 +88,9 @@ public sealed class ResolvedModule
     public RootedFilePath ResolvedFileName;
     public PathKey ResolvedPath;
     public RootedFilePath OriginalPath;
-    public string Extension = "";
+    private ByteStringValue extension;
+    public string Extension { get => extension.Materialize()!; set => extension = ByteStringValue.FromString(value); }
+    internal ByteStringValue ExtensionValue { get => extension.Snapshot(); set => extension = value.Snapshot(); }
     public bool ResolvedUsingTsExtension, ResolvedUsingExtraExtensions, IsExternalLibraryImport, IsCustomResolution;
     public PackageId PackageId;
     public RootedFilePath AlternateResult;

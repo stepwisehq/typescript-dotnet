@@ -128,11 +128,11 @@ public static class ByteSpanComparisonChecks
     {
         var file = Parser.ParseSourceFile(new("/patterns.ts", "/patterns.ts"),
             "/** @jsx h */\n/// <reference path=\"café.ts\" />\nconst value = 1;", ScriptKind.TS);
-        Equal(0, file.Diagnostics()?.Count ?? 0, "Static pragma patterns parse without errors");
-        var jsx = file.Pragmas.Single(x => x.Name == "jsx");
-        Equal("h", jsx.Args["factory"].Value, "Multiline pragma search and suffix trim");
-        var reference = file.Pragmas.Single(x => x.Name == "reference");
-        Equal(GoString.ToUtf8("café.ts"), reference.Args["path"].Value, "Pragma attribute remains raw-byte text");
+        Equal(0, file.Diagnostics().Length, "Static pragma patterns parse without errors");
+        var jsx = GoSlices.Values(file.Pragmas).Single(x => x.Name == "jsx");
+        Equal("h", jsx.Args[ByteStringKey.FromString("factory")].Value, "Multiline pragma search and suffix trim");
+        var reference = GoSlices.Values(file.Pragmas).Single(x => x.Name == "reference");
+        Equal(GoString.ToUtf8("café.ts"), reference.Args[ByteStringKey.FromString("path")].Value, "Pragma attribute remains raw-byte text");
         var text = ByteStringView.CopyFrom("x import('a'); require('b');"u8);
         Equal((2, 6), Ast.findImportOrRequire(text, 0), "Import exact static pattern");
         Equal((15, 7), Ast.findImportOrRequire(text, 8), "Require exact static pattern");

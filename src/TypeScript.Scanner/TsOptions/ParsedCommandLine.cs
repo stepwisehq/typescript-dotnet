@@ -118,7 +118,7 @@ public sealed class ParsedCommandLine : TypeScript.OutputPaths.IOutputPathsHost,
     };
     internal configFileSpecs? getConfigFileSpecs() => configFileSpecs ?? ConfigFile?.configFileSpecs;
     public RootedFilePath ConfigName() => ConfigFile?.FileName() ?? default;
-    public RootedFilePath ConfigFileName() => ConfigName().AsString() != "" ? ConfigName() : CompilerOptions().ConfigFilePath;
+    public RootedFilePath ConfigFileName() => ConfigName().AsValue().Length != 0 ? ConfigName() : CompilerOptions().ConfigFilePath;
     public Dictionary<PathKey, SourceOutputAndProjectReference>? SourceToProjectReference() => sourceToProjectReference;
     public Dictionary<PathKey, SourceOutputAndProjectReference>? OutputDtsToProjectReference() => outputDtsToProjectReference;
     public void ParseInputOutputNames() => sourceAndOutputMapsOnce.Do(() =>
@@ -134,7 +134,7 @@ public sealed class ParsedCommandLine : TypeScript.OutputPaths.IOutputPathsHost,
                 OutputDts = output,
                 Resolved = this
             };
-            if (output.AsString() != "")
+            if (output.AsValue().Length != 0)
             {
                 reference.OutputDtsPath = caseSensitivity.PathKey(output.AsPath());
                 outputToSource[reference.OutputDtsPath] = reference;
@@ -185,13 +185,13 @@ public sealed class ParsedCommandLine : TypeScript.OutputPaths.IOutputPathsHost,
                     continue;
                 var js = Output.GetOutputJSFileName(file, CompilerOptions(), this);
                 bool isJson = file.ExtensionIs(TsPath.ExtensionJson);
-                if (js.AsString() != "")
+                if (js.AsValue().Length != 0)
                 {
                     yield return js;
                     if (!isJson)
                     {
                         var sourceMap = Output.GetSourceMapFilePath(js, CompilerOptions());
-                        if (sourceMap.AsString() != "")
+                        if (sourceMap.AsValue().Length != 0)
                             yield return sourceMap;
                     }
                 }
@@ -234,7 +234,7 @@ public sealed class ParsedCommandLine : TypeScript.OutputPaths.IOutputPathsHost,
             var globs = new List<GlobPattern>(directories.Count);
             foreach (var(directory, isRecursive)in directories)
             {
-                var(parsed, error) = GlobPattern.Parse(TsPath.CombinePaths(directory.AsString(), isRecursive ? recursive : pattern));
+                var(parsed, error) = GlobPattern.Parse(TsPath.CombinePaths(directory.AsValue(), ByteStringValue.FromString(isRecursive ? recursive : pattern)));
                 if (error == null)
                     globs.Add(parsed!);
             }
@@ -303,14 +303,14 @@ public sealed class ParsedCommandLine : TypeScript.OutputPaths.IOutputPathsHost,
         if (specs.validatedIncludeSpecs != null)
             foreach (var include in specs.validatedIncludeSpecs)
             {
-                string text = include.AsString();
-                if (text.IndexOfAny(['*', '?']) < 0 && !VfsMatch.IsImplicitGlob(text) && CaseSensitivity().PathKey(TsPath.ToRootedPath(text, BaseDirectory())) == path)
+                var text = include.AsValue();
+                if (text.IndexOfAny('*', '?') < 0 && !VfsMatch.IsImplicitGlob(text) && CaseSensitivity().PathKey(TsPath.ToRootedPath(text, BaseDirectory())) == path)
                     return true;
             }
 
         if (GetContentMapperForFileName(file) != null && PossiblyMatchesDirectoryName(path.Parent()))
             return true;
-        return WildcardDirectoryGlobs()?.Any(glob => glob.Match(file.AsString())) == true;
+        return WildcardDirectoryGlobs()?.Any(glob => glob.Match(file.AsValue())) == true;
     }
 
     public bool PossiblyMatchesDirectoryName(PathKey directory)

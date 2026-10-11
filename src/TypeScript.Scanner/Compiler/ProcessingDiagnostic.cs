@@ -8,7 +8,7 @@ internal enum ProcessingDiagnosticKind { UnknownReference, ExplainingFileInclude
 internal sealed class ProcessingDiagnostic
 {
     internal ProcessingDiagnosticKind kind = ProcessingDiagnosticKind.ExplainingFileInclude;
-    internal string file = "";
+    internal ByteStringKey file;
     internal FileIncludeReason? diagnosticReason;
     internal Message message = null!;
     internal string[] args = [];
@@ -50,7 +50,7 @@ internal sealed class ProcessingDiagnostic
                 relatedInfo = relatedInfo.Append(info);
         }
 
-        if (file != "")
+        if (file.Value.Length != 0)
         {
             includeDetails = Slice<Diagnostic>.Make(0);
             if (processor.fileIncludeReasons.TryGetValue(file, out Slice<FileIncludeReason> reasons))
@@ -61,7 +61,7 @@ internal sealed class ProcessingDiagnostic
         Slice<Diagnostic> chain = default;
         if (!includeDetails.IsNil && (preferred is null || seen.Count != 1))
             chain = chain.Append(Ast.NewCompilerDiagnostic(Diagnostics.The_file_is_in_the_program_because_Colon).SetMessageChain(includeDetails));
-        if (file != "" && processor.ExplainRedirectAndImpliedFormat(file) is { } redirectInfo)
+        if (file.Value.Length != 0 && processor.ExplainRedirectAndImpliedFormat(file) is { } redirectInfo)
             chain = chain.Append(redirectInfo);
         object[] values = args.Select(value => (object)(processor.pathValuesAreRaw ? value : GoString.ToUtf8(value))).ToArray();
         Diagnostic result = preferred is null ? Ast.NewCompilerDiagnostic(message, values) : preferred.DiagnosticAt(processor, message, values);

@@ -5,7 +5,35 @@
 #nullable disable
 namespace TypeScript.Scanner;
 public readonly record struct ExternalModuleIndicatorOptions(bool JSX = false, bool Force = false);
-public readonly record struct SourceFileParseOptions(string FileName = "", string PathKey = "", ExternalModuleIndicatorOptions ExternalModuleIndicatorOptions = default, bool FileNameIsGoBytes = false);
+public readonly record struct SourceFileParseOptions
+{
+    private readonly ByteStringValue fileNameValue, pathKeyValue;
+    // A default managed options struct historically has null public strings;
+    // preserve that external distinction while internal Go zero strings stay empty.
+    private readonly bool fileNameSet, pathKeySet;
+    public string FileName { get => FileNameValue.Materialize(); init { fileNameValue = ByteStringValue.FromString(value); fileNameSet = true; } }
+    public string PathKey { get => PathKeyValue.Materialize(); init { pathKeyValue = ByteStringValue.FromString(value); pathKeySet = true; } }
+    internal ByteStringValue FileNameValue { get => fileNameSet ? fileNameValue.Snapshot() : ByteStringValue.FromString(null); init { fileNameValue = value.Snapshot(); fileNameSet = true; } }
+    internal ByteStringValue PathKeyValue { get => pathKeySet ? pathKeyValue.Snapshot() : ByteStringValue.FromString(null); init { pathKeyValue = value.Snapshot(); pathKeySet = true; } }
+    public ExternalModuleIndicatorOptions ExternalModuleIndicatorOptions { get; init; }
+    public bool FileNameIsGoBytes { get; init; }
+    public SourceFileParseOptions(string FileName = "", string PathKey = "", ExternalModuleIndicatorOptions ExternalModuleIndicatorOptions = default, bool FileNameIsGoBytes = false)
+        : this(ByteStringValue.FromString(FileName), ByteStringValue.FromString(PathKey), ExternalModuleIndicatorOptions, FileNameIsGoBytes) { }
+    internal SourceFileParseOptions(ByteStringValue FileName, ByteStringValue PathKey, ExternalModuleIndicatorOptions ExternalModuleIndicatorOptions = default, bool FileNameIsGoBytes = false)
+    {
+        fileNameValue = FileName.Snapshot(); pathKeyValue = PathKey.Snapshot();
+        fileNameSet = pathKeySet = true;
+        this.ExternalModuleIndicatorOptions = ExternalModuleIndicatorOptions;
+        this.FileNameIsGoBytes = FileNameIsGoBytes;
+    }
+    public void Deconstruct(out string FileName, out string PathKey, out ExternalModuleIndicatorOptions ExternalModuleIndicatorOptions, out bool FileNameIsGoBytes)
+    {
+        FileName = this.FileName; PathKey = this.PathKey;
+        ExternalModuleIndicatorOptions = this.ExternalModuleIndicatorOptions; FileNameIsGoBytes = this.FileNameIsGoBytes;
+    }
+    public bool Equals(SourceFileParseOptions other) => FileNameValue.EqualsValue(other.FileNameValue) && PathKeyValue.EqualsValue(other.PathKeyValue) && ExternalModuleIndicatorOptions == other.ExternalModuleIndicatorOptions && FileNameIsGoBytes == other.FileNameIsGoBytes;
+    public override int GetHashCode() => HashCode.Combine(FileNameValue.IsNull ? 0 : ByteStringKey.FromValue(FileNameValue).GetHashCode(), PathKeyValue.IsNull ? 0 : ByteStringKey.FromValue(PathKeyValue).GetHashCode(), ExternalModuleIndicatorOptions, FileNameIsGoBytes);
+}
 public static partial class Ast
 {
     // parseoptions.go:21–62. Keep automatic package/extension force distinct from explicit syntax.

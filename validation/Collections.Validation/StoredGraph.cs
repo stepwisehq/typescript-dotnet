@@ -211,14 +211,15 @@ public sealed partial class StoredGraph
         {
             string One(Type? value) => TypeSeed(value, types);
             string List(List<Type>? values) => string.Join(";", (values ?? []).Select(One));
+            string Header(Slice<Type> values) => string.Join(";", GoSlices.Values(values).Select(One));
             return mapper.data switch
             {
                 SimpleTypeMapper m => "simple(" + One(m.source) + "," + One(m.target) + ")",
-                ArrayTypeMapper m => "array(" + List(m.sources) + "=>" + List(m.targets) + ")",
-                ArrayToSingleTypeMapper m => "array-single(" + List(m.sources) + "=>" + One(m.target) + ")",
+                ArrayTypeMapper m => "array(" + Header(m.sources) + "=>" + Header(m.targets) + ")",
+                ArrayToSingleTypeMapper m => "array-single(" + Header(m.sources) + "=>" + One(m.target) + ")",
                 MergedTypeMapper m => "MergedTypeMapper(" + MapperSeed(m.m1, types, seen) + "," + MapperSeed(m.m2, types, seen) + ")",
                 CompositeTypeMapper m => "CompositeTypeMapper(" + MapperSeed(m.m1, types, seen) + "," + MapperSeed(m.m2, types, seen) + ")",
-                DeferredTypeMapper m => "deferred(" + List(m.sources) + "=>" + string.Join(";", (m.targets ?? []).Select(fn =>
+                DeferredTypeMapper m => "deferred(" + Header(m.sources) + "=>" + string.Join(";", (m.targets ?? []).Select(fn =>
                 {
                     var t = checker.VerificationCollectionsDeferredTarget(fn);
                     return NodeSeed(t.Parent) + "/" + t.Index + "(" + List(t.TypeParameters) + ")";
@@ -247,7 +248,7 @@ public sealed partial class StoredGraph
             if (type.Symbol()is { } symbol)
                 seed += "|symbol:" + binding.ExistingSymbolId(symbol);
             if (type.alias is { } alias)
-                seed += "|alias:" + binding.ExistingSymbolId(alias.symbol) + "(" + string.Concat((alias.typeArguments ?? []).Select(arg => TypeSeed(arg, stack) + ";")) + ")";
+                seed += "|alias:" + binding.ExistingSymbolId(alias.symbol) + "(" + string.Concat(GoSlices.Values(alias.typeArguments).Select(arg => TypeSeed(arg, stack) + ";")) + ")";
             if (type.AsObjectType()is { } objectType)
             {
                 if (objectType.target != null)
@@ -302,12 +303,12 @@ public sealed partial class StoredGraph
                         seed += "/applicability(" + ApplicabilitySeed(origin.Applicability) + ")";
                     }
 
-                    foreach (var member in (type.AsStructuredType().members ?? []).OrderBy(entry => entry.Key, StringComparer.Ordinal))
+                    foreach (var member in (type.AsStructuredType().members ?? []).OrderBy(entry => entry.Key.Value.Materialize()!, StringComparer.Ordinal))
                     {
                         var propertySymbol = member.Value;
                         Memory<ValueSymbolLinks> location = propertySymbol.id == 0 ? default : checker.valueSymbolLinks.TryGet(propertySymbol);
                         Type? stored = location.IsEmpty ? null : location.Span[0].resolvedType;
-                        seed += "|member:" + Encoder.Bytes(member.Key) + "/" + (uint)propertySymbol.Flags + "/" + (uint)propertySymbol.CheckFlags + "/" + TypeSeed(stored, stack);
+                        seed += "|member:" + Encoder.Bytes(member.Key.Value.Materialize()!) + "/" + (uint)propertySymbol.Flags + "/" + (uint)propertySymbol.CheckFlags + "/" + TypeSeed(stored, stack);
                     }
 
                     break;
@@ -332,7 +333,7 @@ public sealed partial class StoredGraph
                 case "TypeReference":
                 case "InterfaceType":
                 case "TupleType":
-                    seed += "|args(" + string.Join(";", (type.AsTypeReference().resolvedTypeArguments ?? []).Select(t => TypeSeed(t, stack))) + ")";
+                    seed += "|args(" + string.Join(";", GoSlices.Values(type.AsTypeReference().resolvedTypeArguments).Select(t => TypeSeed(t, stack))) + ")";
                     break;
                 case "UnionType":
                 case "IntersectionType":
@@ -351,7 +352,7 @@ public sealed partial class StoredGraph
     private StoredValue ReferenceCache(Type owner)
     {
         var cache = checker.VerificationCollectionsObjectInstantiations(owner);
-        var rows = (cache.Entries ?? []).Select(entry => (Seed: entry.Family + "|" + string.Join(";", (entry.Arguments ?? []).Select(t => TypeSeed(t, new(ReferenceEqualityComparer.Instance)))) + "|single:" + (entry.SingleSignature ? "true" : "false") + (entry.Alias == null ? "" : "|alias:" + binding.ExistingSymbolId(entry.Alias.symbol) + "(" + string.Concat((entry.Alias.typeArguments ?? []).Select(t => TypeSeed(t, new(ReferenceEqualityComparer.Instance)) + ";")) + ")"), Entry: entry)).ToList();
+        var rows = (cache.Entries ?? []).Select(entry => (Seed: entry.Family + "|" + string.Join(";", (entry.Arguments ?? []).Select(t => TypeSeed(t, new(ReferenceEqualityComparer.Instance)))) + "|single:" + (entry.SingleSignature ? "true" : "false") + (entry.Alias == null ? "" : "|alias:" + binding.ExistingSymbolId(entry.Alias.symbol) + "(" + string.Concat(GoSlices.Values(entry.Alias.typeArguments).Select(t => TypeSeed(t, new(ReferenceEqualityComparer.Instance)) + ";")) + ")"), Entry: entry)).ToList();
         if (rows.Select(row => row.Seed).Distinct(StringComparer.Ordinal).Count() != rows.Count)
             throw new InvalidDataException("Reference argument descriptor collision");
         var result = new StoredValue

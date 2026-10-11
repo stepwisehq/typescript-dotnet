@@ -245,6 +245,15 @@ public sealed partial class NodeFactory : NodeFactoryCoercible
 
     public int NodeCount() => nodeCount;
     public int TextCount() => textCount;
+    // parser.go:129 zeroes its embedded NodeFactory on pool return. This managed
+    // factory object stays private to that parser; clear its value state in place.
+    internal void Reset()
+    {
+        nodeCount = textCount = 0;
+        hooks.OnCreate = null;
+        hooks.OnUpdate = null;
+        hooks.OnClone = null;
+    }
     internal Node newNode(Kind kind, NodeData data)
     {
         nodeCount++;
@@ -516,7 +525,7 @@ public sealed partial class SourceFile : NodeData, SourceFileLike, ISourceTextFi
     public UInt128 Hash;
     private ContentMapperSourceFileInfo? contentMapperInfo;
     public string OriginalText() => ContentMapper() != "" ? contentMapperInfo.Value.OriginalText : text;
-    public RootedFilePath OriginalFileName() => RootedFilePath.FromGoString((CanonicalSourceFile() ?? this).FileNameGoBytes());
+    public RootedFilePath OriginalFileName() => RootedFilePath.FromValue((CanonicalSourceFile() ?? this).FileNameGoValue());
     public TypeScript.SpanMap.SpanMap SpanMap() => contentMapperInfo?.SpanMap;
     public bool IsContentMapped() => contentMapperInfo.HasValue;
     public string ContentMapper() => contentMapperInfo?.ContentMapper ?? "";
@@ -538,6 +547,16 @@ public sealed partial class SourceFile : NodeData, SourceFileLike, ISourceTextFi
     public string FileName() => parseOptions.FileName;
     // Authored compatibility seam: legacy parser filenames are Unicode, typed
     // graph filenames are Go bytes. Source text is always a Go byte string.
+    internal ByteStringValue FileNameGoValue()
+    {
+        var name = parseOptions.FileNameValue;
+        if (name.IsNull) return default;
+        if (parseOptions.FileNameIsGoBytes || name.Length == 0) return name;
+        // The legacy scalar Unicode ingress is the actual encoding boundary.
+        return ByteStringValue.FromString(FileNameGoBytes());
+    }
+    internal ByteStringValue PathKeyValue() => parseOptions.PathKeyValue.IsNull ? default : parseOptions.PathKeyValue;
+    internal ByteStringKey PathKeyKey() => ByteStringKey.FromValue(PathKeyValue());
     public string FileNameGoBytes()
     {
         // A default managed parse-options struct has a null filename; the

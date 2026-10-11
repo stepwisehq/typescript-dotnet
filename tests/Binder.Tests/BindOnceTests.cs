@@ -70,7 +70,7 @@ public class BindOnceTests
         Assert.Same(exports, module.Exports);
         Assert.Same(declaration, exports["C"]);
         Assert.Same(members, declaration.Members);
-        Assert.True(file.BindDiagnostics()is null or { Count: 0 });
+        Assert.True(file.BindDiagnostics().IsNil || file.BindDiagnostics().Count == 0);
     }
 
     [Fact]

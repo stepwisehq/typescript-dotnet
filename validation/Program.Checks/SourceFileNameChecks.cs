@@ -133,12 +133,18 @@ public static class SourceFileNameChecks
                     Text = "export {};", VirtualExtension = ".ts", Mappings = SpanMaps.New(null!),
                     Supplemental = [new() { Text = "export {};", VirtualExtension = ".mts", Mappings = SpanMaps.New(null!) }]
                 });
-                Require(error is null && mapped.Canonical is not null && mapped.Supplemental?.Count == 1, "Mapper setup failed.");
+                Require(error is null && mapped.Canonical is not null && mapped.Supplemental.Length == 1, "Mapper setup failed.");
                 foreach (var file in new[] { mapped.Canonical!, mapped.Supplemental![0] })
                 {
+                    var retainedName = file.FileNameGoValue();
+                    var retainedOwner = retainedName.ByteView.Memory;
                     string raw = file.FileNameGoBytes(), path = file.PathKey(), virtualName = file.VirtualFileName().AsString();
                     file.SetFileNameToUnicode();
-                    Require(ReferenceEquals(raw, Cached(file, raw)), "Mapped filename bytes changed.");
+                    // Authored allocation control: byte-owned Go headers survive the
+                    // scalar promotion; separate public CLR projections need not share identity.
+                    Equal(Cached(file, raw), raw);
+                    Require(retainedName.ByteView.Memory.Equals(retainedOwner), "Promotion replaced retained raw owner.");
+                    Require(retainedName.EqualsValue(file.FileNameGoValue()), "Promotion changed retained raw bytes.");
                     Equal(file.PathKey(), path);
                     Equal(file.VirtualFileName().AsString(), virtualName);
                     Equal(file.OriginalFileName().AsString(), source);

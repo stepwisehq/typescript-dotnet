@@ -127,7 +127,7 @@ public static class CompilerNoEmitHarness
         IFS fs = TypeScript.Bundled.Bundled.WrapFS(new CompilerBaselineFileSystem(files.Values, sensitivity));
         var config = T.NewParsedCommandLine(options, programRoots, null, tsconfig is not null && tsconfig.BaseDirectory().AsString() != "" ? tsconfig.BaseDirectory() : cwd, sensitivity);
         config.ParsedConfig.ContentMappers = tsconfig?.ContentMappers();
-        config.ConfigFile = tsconfig?.ConfigFile; config.Errors = tsconfig?.Errors;
+        config.ConfigFile = tsconfig?.ConfigFile; config.Errors = tsconfig?.Errors ?? default;
         IProject mapperProject = options.RunExternalCode == Tristate.True && (config.ContentMappers()?.Count ?? 0) > 0
             ? new CompilerFixtureMapperProject(config.ContentMappers(), options) : null;
         var tracer = new BaselineTracer(cwd, sensitivity);
@@ -167,7 +167,7 @@ public static class CompilerNoEmitHarness
             case CommandLineOptionKind.ListOrElement:
                 var (list, errors) = T.ParseListTypeOption(option, value);
                 if (option.Elements().PathKind.IsRooted()) return list?.Select(item => (object)TsPath.GetNormalizedAbsolutePath((string)item, cwd.AsString())).ToList();
-                if ((errors?.Count ?? 0) > 0) throw new InvalidOperationException("Unknown value '" + value + "' for compiler option '" + option.Name + "'");
+                if (errors.Length > 0) throw new InvalidOperationException("Unknown value '" + value + "' for compiler option '" + option.Name + "'");
                 return list;
             case CommandLineOptionKind.Object: throw new InvalidOperationException("Object type options like '" + option.Name + "' are not supported");
             default: return null;

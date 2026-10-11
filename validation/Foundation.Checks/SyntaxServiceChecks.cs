@@ -86,7 +86,7 @@ public static partial class SyntaxServiceChecks
             "absent"
         }.Select(q => (object)new object[] { Bytes(Raw(q)), file.HasIdentifier(Raw(q)) }).ToArray();
         var table = file.GetNameTable();
-        var entries = table.OrderBy(p => p.Key, StringComparer.Ordinal).Select(p => (object)new object[] { Bytes(p.Key), p.Value }).ToArray();
+        var entries = table.OrderBy(p => p.Key.ToString(), StringComparer.Ordinal).Select(p => (object)new object[] { Bytes(p.Key.ToString()), p.Value }).ToArray();
         return Map(("source", s), ("has", has), ("table", entries), ("repeatIdentity", ReferenceEquals(table, file.GetNameTable())));
     }
 
@@ -111,7 +111,7 @@ public static partial class SyntaxServiceChecks
         const string s = "import d, {a,b as B} from 'mod'; export {x,y as Y}; function f(a:number):void; function f(a:number){}; const named=function inner(){}; const {x, p:q}=obj; class C {constructor(public z:number){} p=1;}";
         var file = Parse(s);
         var table = file.GetDeclarationMap();
-        var rows = table.OrderBy(p => p.Key, StringComparer.Ordinal).Select(p => (object)new object? [] { Bytes(p.Key), Nodes(p.Value) }).ToArray();
+        var rows = table.OrderBy(p => p.Key.ToString(), StringComparer.Ordinal).Select(p => (object)new object? [] { Bytes(p.Key.ToString()), Nodes(p.Value) }).ToArray();
         return Map(("source", s), ("entries", rows), ("repeatIdentity", ReferenceEquals(table, file.GetDeclarationMap())), ("bound", file.IsBound()));
     }
 

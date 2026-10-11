@@ -559,7 +559,7 @@ public static class ConfigurationRunner
         Observer observer = new();
         ExtendedCache cache = new();
         ParsedCommandLine? parsed = null;
-        List<Diagnostic>? readErrors = null;
+        Slice<Diagnostic> readErrors = default;
         switch (mode)
         {
             case "source":
@@ -653,6 +653,11 @@ public static class ConfigurationRunner
     private static JsonNode Value(object? value) => Value(value, "");
     private static JsonNode Value(object? value, string declaredType)
     {
+        if (value is ByteStringValue textValue) return Value(textValue.Materialize(), declaredType);
+        if (value is Slice<ByteStringValue> byteValues) return Value(GoSlices.ToListOrNull(byteValues), declaredType);
+        if (value is Slice<RootedFilePath> filePaths) return Value(GoSlices.ToListOrNull(filePaths), declaredType);
+        if (value is Slice<RootedDirectoryPath> directoryPaths) return Value(GoSlices.ToListOrNull(directoryPaths), declaredType);
+        if (value is Slice<PathKey> pathKeys) return Value(GoSlices.ToListOrNull(pathKeys), declaredType);
         if (value is null)
         {
             if (declaredType.StartsWith("[]", StringComparison.Ordinal) || declaredType == "jsontext.Value")
@@ -951,6 +956,8 @@ public static class ConfigurationRunner
 
             return result;
         }
+
+        public JsonArray? Diagnostics(Slice<Diagnostic> diagnostics) => Diagnostics(GoSlices.ToListOrNull(diagnostics));
 
         public JsonArray? Diagnostics(IReadOnlyList<Diagnostic>? diagnostics)
         {

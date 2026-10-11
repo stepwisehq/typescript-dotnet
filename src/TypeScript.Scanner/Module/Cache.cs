@@ -105,14 +105,14 @@ public sealed class ResolutionData
 {
     internal CompilerOptions compilerOptions = null!;
     internal RootedDirectoryPath typingsLocation;
-    internal string projectName = "";
+    internal ByteStringValue projectName;
     internal List<string>? extraExtensions;
     internal InfoCache packageJsonInfoCache = null!;
     internal static ResolutionData New(ResolverOptions options) => new()
     {
         compilerOptions = options.CompilerOptions,
         typingsLocation = options.TypingsLocation,
-        projectName = options.ProjectName,
+        projectName = options.ProjectNameValue,
         extraExtensions = options.ExtraExtensions,
         packageJsonInfoCache = options.PackageJsonCache ?? new InfoCache(options.Host.FS().CaseSensitivity()),
     };

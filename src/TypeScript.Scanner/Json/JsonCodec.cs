@@ -576,6 +576,10 @@ public static class JsonCodec
                 case string text:
                     quote(writer, text);
                     continue;
+                case ByteStringValue byteText:
+                    if (byteText.IsNull) writer.WriteString("null");
+                    else quote(writer, byteText.Materialize()!);
+                    continue;
                 case StrongBox<long> pointer:
                     PushValue(pointer.Value);
                     continue;
@@ -750,6 +754,7 @@ public static class JsonCodec
     {
         null => true,
         string text => text == "",
+        ByteStringValue text => text.IsNull || text.Length == 0,
         Tristate flag => flag == Tristate.Unknown,
         ScriptTarget flag => flag == 0,
         ModuleKind flag => flag == 0,

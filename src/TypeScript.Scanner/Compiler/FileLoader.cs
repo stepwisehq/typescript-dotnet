@@ -17,7 +17,7 @@ using ConfigParser = TypeScript.TsOptions.TsOptions;
 namespace TypeScript.Compiler;
 internal sealed class LibResolution
 {
-    internal string libraryName = "";
+    internal ByteStringValue libraryName;
     internal ResolvedModule? resolution;
     internal Slice<DiagAndArgs> trace;
 }
@@ -30,7 +30,7 @@ internal sealed class FileLoader
     internal Slice<Diagnostic> ContentMapperDiagnostics() => contentMapperDiagnostics;
     private SourceFile? ParseContentMappedFile(SourceFileParseOptions parseOptions)
     {
-        var mapper = opts.Config.GetContentMapperForFileName(TypedFile(parseOptions.FileName))!;
+        var mapper = opts.Config.GetContentMapperForFileName(TypedFile(parseOptions.FileNameValue))!;
         string label = mapper.DiagnosticName(), transformIdentity = GetContentMapperTransformIdentity(mapper);
         if (ContentMapperUnavailable(mapper)) return EmptyContentMappedFile(parseOptions, mapper.Identity(), transformIdentity);
         var (files, error) = compilerHost!.GetContentMappedSourceFiles(parseOptions, mapper);
@@ -68,9 +68,9 @@ internal sealed class FileLoader
     }
     private SourceFile EmptyContentMappedFile(SourceFileParseOptions parseOptions, string mapperIdentity, string transformIdentity)
     {
-        var (content, _) = compilerHost!.FS().ReadFile(TypedFile(parseOptions.FileName));
+        var (content, _) = compilerHost!.FS().ReadFile(TypedFile(parseOptions.FileNameValue));
         var source = Parser.ParseSourceFile(parseOptions, Array.Empty<byte>(), ScriptKind.TS);
-        source.SetContentMapperInfo(new() { ContentMapper = mapperIdentity, TransformIdentity = transformIdentity, ParseOptions = parseOptions, VirtualFileName = TypedFile(parseOptions.FileName).AppendSuffix(TsPath.ExtensionTs), OriginalText = content });
+        source.SetContentMapperInfo(new() { ContentMapper = mapperIdentity, TransformIdentity = transformIdentity, ParseOptions = parseOptions, VirtualFileName = TypedFile(parseOptions.FileNameValue).AppendSuffix(TsPath.ExtensionTs), OriginalText = content });
         return source;
     }
     internal static Message ContentMapperProjectErrorDiagnostic(Exception error) => FindError<ProjectError>(error)?.Kind switch
@@ -191,7 +191,7 @@ internal sealed class FileLoader
     internal ProjectReferenceFileMapperBuilder? projectReferences;
     internal RootedDirectoryPath defaultLibraryPath;
     private List<string>? contentMapperExtensions;
-    internal readonly TypeScript.Collections.SyncMap<string, LibFile> pathForLibFileCache = new();
+    internal readonly TypeScript.Collections.SyncMap<ByteStringKey, LibFile> pathForLibFileCache = new();
     internal readonly TypeScript.Collections.SyncMap<PathKey, LibResolution> pathForLibFileResolutions = new();
     private readonly object resolutionErrorGate = new();
     internal Exception? moduleResolutionError;
@@ -206,7 +206,7 @@ internal sealed class FileLoader
         defaultLibraryPath = compilerHost.DefaultLibraryPath();
         host = new CompilerResolutionHost(compilerHost, options.Config.BaseDirectory());
         includeProcessor = new(new ProjectConfiguration(options.Config), true);
-        embeddedFiles = new Dictionary<string, SourceFile>(StringComparer.Ordinal);
+        embeddedFiles = new Dictionary<ByteStringKey, SourceFile>(ByteStringKey.Comparer);
         contentMapperExtensions = options.Config.ContentMapperExtensions();
         supportedExtensions = ConfigParser.GetSupportedExtensions(this.options, contentMapperExtensions);
         supportedExtensionsWithJson = ConfigParser.GetSupportedExtensionsWithJsonIfResolveJsonModule(this.options, supportedExtensions);
@@ -224,7 +224,7 @@ internal sealed class FileLoader
         Action? done = options.Tracing?.Push(TypeScript.Tracing.Phase.Program, "processRootFiles", new() { ["count"] = roots?.Count ?? 0 }, false);
         try
         {
-            for (int i = 0; i < (roots?.Count ?? 0); i++) loader.AddRootFileTask(roots![i].AsString(), options.Config.RootFileNameForDiagnostic(i), new() { rootIndex = i });
+            for (int i = 0; i < (roots?.Count ?? 0); i++) loader.AddRootFileTask(ByteStringKey.FromValue(roots![i].AsValue()), ByteStringValue.FromString(options.Config.RootFileNameForDiagnostic(i)), new() { rootIndex = i });
             if (roots is { Count: > 0 } && loader.options.NoLib != Tristate.True)
             {
                 if (loader.options.Lib is null)
@@ -253,26 +253,26 @@ internal sealed class FileLoader
     private void AddRootTask(RootedFilePath file, LibFile lib, FileIncludeReason reason)
     {
         if (options.AllowNonTsExtensions == Tristate.True || file.HasExtension())
-            rootTasks = rootTasks.Append(new ParseTask() { normalizedFilePath = file.AsString(), path = ToPath(file.AsPath()).AsString(), libFile = lib, includeReason = reason });
+            rootTasks = rootTasks.Append(new ParseTask() { normalizedFilePath = FileValue(file), path = KeyValue(ToPath(file.AsPath())), libFile = lib, includeReason = reason });
     }
     private void AddAutomaticTypeDirectiveTasks()
     {
         var file = opts.Config.BaseDirectory().ResolveFile(ModuleUtilities.InferredTypesContainingFile);
-        rootTasks = rootTasks.Append(new ParseTask() { normalizedFilePath = file.AsString(), path = ToPath(file.AsPath()).AsString(), isForAutomaticTypeDirective = true });
+        rootTasks = rootTasks.Append(new ParseTask() { normalizedFilePath = FileValue(file), path = KeyValue(ToPath(file.AsPath())), isForAutomaticTypeDirective = true });
     }
     internal void ResolveAutomaticTypeDirectives(ParseTask task)
     {
-        var names = DefaultResolver.GetAutomaticTypeDirectiveNames(options, opts.Config.BaseDirectory(), compilerHost!.FS());
-        if (names is null || names.Count == 0) return;
+        var names = DefaultResolver.GetAutomaticTypeDirectiveNameValues(options, opts.Config.BaseDirectory(), compilerHost!.FS());
+        if (names.Length == 0) return;
         task.typeResolutionsInFile = new();
         foreach (var name in names)
         {
-            var (resolved, trace) = resolver.ResolveTypeReferenceDirective(name, TypedFile(task.normalizedFilePath), ResolutionMode.None);
-            task.typeResolutionsInFile![new(name, ResolutionMode.None)] = resolved;
+            var (resolved, trace) = ResolverText.ResolveTypeReferenceDirective(resolver, name.Value, TypedFile(task.normalizedFilePath), ResolutionMode.None);
+            task.typeResolutionsInFile![new(name.Value, ResolutionMode.None)] = resolved;
             task.typeResolutionsTrace = task.typeResolutionsTrace.Append(trace);
-            var reason = new FileIncludeReason { automaticTypeDirective = name, packageId = resolved?.PackageId ?? default };
-            if (resolved!.IsResolved()) task.AddSubTask(resolved.ResolvedFileName.AsString(), resolved.ResolvedPath.AsString(), reason, resolved.IsExternalLibraryImport, false, resolved!.PackageId);
-            else task.processingDiagnostics = task.processingDiagnostics.Append(new ProcessingDiagnostic() { diagnosticReason = reason, message = Diagnostics.Cannot_find_type_definition_file_for_0, args = [name] });
+            var reason = new FileIncludeReason { automaticTypeDirective = name.Value, packageId = resolved?.PackageId ?? default };
+            if (resolved!.IsResolved()) task.AddSubTask(FileValue(resolved.ResolvedFileName), KeyValue(resolved.ResolvedPath), reason, resolved.IsExternalLibraryImport, false, resolved!.PackageId);
+            else task.processingDiagnostics = task.processingDiagnostics.Append(new ProcessingDiagnostic() { diagnosticReason = reason, message = Diagnostics.Cannot_find_type_definition_file_for_0, args = [name.ToString()] });
         }
     }
     private void AddProjectReferenceTasks(bool singleThreaded)
@@ -285,38 +285,40 @@ internal sealed class FileLoader
     internal void SortLibs(Slice<SourceFile> files) => GoSlices.SortFunc(files, (a, b) => GetDefaultLibFilePriority(a).CompareTo(GetDefaultLibFilePriority(b)));
     private int GetDefaultLibFilePriority(SourceFile file)
     {
-        var (relative, ok) = TypedFile(file.FileNameGoBytes()).RelativeTo(defaultLibraryPath);
+        var (relative, ok) = RootedFilePath.FromValue(file.FileNameGoValue()).RelativeTo(defaultLibraryPath);
         if (ok && relative != default)
         {
-            string basename = relative.BaseName();
-            if (basename is "lib.d.ts" or "lib.es6.d.ts") return 0;
-            string name = basename.StartsWith("lib.", StringComparison.Ordinal) ? basename[4..] : basename;
-            if (name.EndsWith(".d.ts", StringComparison.Ordinal)) name = name[..^5];
-            int index = ConfigParser.Libs.IndexOf(name);
+            var basename = relative.BaseNameValue();
+            if (basename.EqualsBytes("lib.d.ts"u8) || basename.EqualsBytes("lib.es6.d.ts"u8)) return 0;
+            var name = basename.StartsWith("lib."u8) ? basename.Slice(4) : basename;
+            if (name.EndsWith(".d.ts"u8)) name = name.Slice(0, name.Length - 5);
+            int index = ConfigParser.Libs.FindIndex(lib => name.EqualsString(lib));
             if (index != -1) return index + 1;
         }
         return ConfigParser.Libs.Count + 2;
     }
-    internal LibFile PathForLibFile(string name)
+    internal LibFile PathForLibFile(string name) => PathForLibFile(ByteStringValue.FromString(name));
+    internal LibFile PathForLibFile(ByteStringValue name)
     {
-        var (cached, ok) = pathForLibFileCache.Load(name);
+        var nameKey = ByteStringKey.FromValue(name);
+        var (cached, ok) = pathForLibFileCache.Load(nameKey);
         if (ok) return cached;
         var path = defaultLibraryPath.ResolveFile(name);
         var key = ToPath(path.AsPath());
         bool replaced = false;
-        if (!opts.SkipModuleResolution && options.LibReplacement == Tristate.True && name != "lib.d.ts")
+        if (!opts.SkipModuleResolution && options.LibReplacement == Tristate.True && !name.EqualsBytes("lib.d.ts"u8))
         {
-            string libraryName = GetLibraryNameFromLibFileName(name);
+            var libraryName = GetLibraryNameValueFromLibFileName(name);
             var resolveFrom = GetInferredLibraryNameResolveFrom(opts.Config.BaseDirectory(), name);
             var (resolved, trace) = ResolveLibrary(libraryName, resolveFrom);
             if (resolved.IsResolved()) (path, key, replaced) = (resolved!.ResolvedFileName, resolved.ResolvedPath, true);
             pathForLibFileResolutions.LoadOrStore(ToPath(resolveFrom.AsPath()), new() { libraryName = libraryName, resolution = resolved, trace = trace });
         }
-        return pathForLibFileCache.LoadOrStore(name, new() { Name = name, path = path, pathKey = key, Replaced = replaced }).Actual;
+        return pathForLibFileCache.LoadOrStore(nameKey, new() { NameValue = name, path = path, pathKey = key, Replaced = replaced }).Actual;
     }
-    private (ResolvedModule? Resolution, Slice<DiagAndArgs> Trace) ResolveLibrary(string libraryName, RootedFilePath resolveFrom)
+    private (ResolvedModule? Resolution, Slice<DiagAndArgs> Trace) ResolveLibrary(ByteStringValue libraryName, RootedFilePath resolveFrom)
     {
-        var (resolved, trace, error) = resolver.ResolveModuleName(libraryName, resolveFrom, ResolutionMode.CommonJS);
+        var (resolved, trace, error) = ResolverText.ResolveModuleName(resolver, libraryName, resolveFrom, ResolutionMode.CommonJS);
         RecordModuleResolutionError(error);
         return (resolved, trace);
     }
@@ -324,23 +326,34 @@ internal sealed class FileLoader
     {
         if (error is not null) lock (resolutionErrorGate) moduleResolutionError ??= error;
     }
-    internal static string GetLibraryNameFromLibFileName(string libFileName)
+    internal static string GetLibraryNameFromLibFileName(string libFileName) => GetLibraryNameValueFromLibFileName(ByteStringValue.FromString(libFileName)).Materialize()!;
+    internal static ByteStringValue GetLibraryNameValueFromLibFileName(ByteStringValue libFileName)
     {
-        var components = libFileName.Split('.');
-        var path = new System.Text.StringBuilder("@typescript/lib-");
-        if (components.Length > 1) path.Append(components[1]);
-        for (int i = 2; i < components.Length && components[i] != "" && components[i] != "d"; i++)
-            path.Append(i == 2 ? '/' : '-').Append(components[i]);
-        return path.ToString();
+        var components = GoStrings.Split(libFileName, ".");
+        var path = new GoBuilder();
+        path.WriteString("@typescript/lib-");
+        if (components.Length > 1) path.WriteString(components[1]);
+        for (int i = 2; i < components.Length && components[i].Length != 0 && !components[i].EqualsBytes("d"u8); i++)
+        {
+            path.WriteByte((byte)(i == 2 ? '/' : '-'));
+            path.WriteString(components[i]);
+        }
+        return path.Value();
     }
-    internal static RootedFilePath GetInferredLibraryNameResolveFrom(RootedDirectoryPath baseDirectory, string fileName) => baseDirectory.ResolveFile("__lib_node_modules_lookup_" + fileName + "__.ts");
+    internal static RootedFilePath GetInferredLibraryNameResolveFrom(RootedDirectoryPath baseDirectory, string fileName) => GetInferredLibraryNameResolveFrom(baseDirectory, ByteStringValue.FromString(fileName));
+    internal static RootedFilePath GetInferredLibraryNameResolveFrom(RootedDirectoryPath baseDirectory, ByteStringValue fileName)
+    {
+        var path = new GoBuilder();
+        path.WriteString("__lib_node_modules_lookup_"); path.WriteString(fileName); path.WriteString("__.ts");
+        return baseDirectory.ResolveFile(path.Value());
+    }
     internal Slice<ParseTask> rootTasks;
     internal readonly ProjectDiskHost? legacyHost;
     internal IResolutionHost host;
     internal IResolver resolver;
     internal readonly CompilerOptions options;
     internal readonly bool graph;
-    private readonly IReadOnlyDictionary<string, SourceFile> embeddedFiles;
+    private readonly IReadOnlyDictionary<ByteStringKey, SourceFile> embeddedFiles;
     internal readonly FilesParser filesParser = new();
     internal readonly IncludeProcessor includeProcessor;
     private readonly List<List<string>> supportedExtensions, supportedExtensionsWithJson;
@@ -355,18 +368,25 @@ internal sealed class FileLoader
         this.graph = graph;
         this.legacyHost = legacyHost;
         includeProcessor = new(configuration, graph);
-        embeddedFiles = libraries.ToDictionary(file => file.PathKey(), StringComparer.Ordinal);
+        embeddedFiles = libraries.ToDictionary(file => file.PathKeyKey(), ByteStringKey.Comparer);
         supportedExtensions = ConfigParser.GetSupportedExtensions(options, null);
         supportedExtensionsWithJson = ConfigParser.GetSupportedExtensionsWithJsonIfResolveJsonModule(options, supportedExtensions);
         filesParser.maxDepth = options.MaxNodeModuleJsDepth?.Value ?? 0;
     }
 
-    internal RootedFilePath TypedFile(string file) => graph ? RootedFilePath.FromGoString(file) : RootedFilePath.FromUnicode(file);
-    internal string FileText(RootedFilePath file) => graph ? file.AsString() : file.ToUnicode();
-    internal string KeyText(PathKey path) => graph ? path.AsString() : PathByteText.ToUnicode(path.AsString());
+    internal RootedFilePath TypedFile(string file) => TypedFile(ByteStringValue.FromString(file));
+    internal RootedFilePath TypedFile(ByteStringKey file) => TypedFile(file.Value);
+    internal RootedFilePath TypedFile(ByteStringValue file) => graph ? RootedFilePath.FromValue(file) : RootedFilePath.FromUnicode(file.Materialize()!);
+    internal ByteStringKey FileValue(RootedFilePath file) => ByteStringKey.FromValue(graph ? file.AsValue() : ByteStringValue.FromString(file.ToUnicode()));
+    internal ByteStringKey KeyValue(PathKey path) => ByteStringKey.FromValue(graph ? path.AsValue() : ByteStringValue.FromString(PathByteText.ToUnicode(path.AsValue())));
+    internal string FileText(RootedFilePath file) => FileValue(file).ToString();
+    internal string KeyText(PathKey path) => KeyValue(path).ToString();
     internal string PathBytes(string path) => graph ? path : GoString.ToUtf8(path);
+    internal ByteStringValue PathBytes(ByteStringKey path) => graph ? path.Value : ByteStringValue.FromString(GoString.ToUtf8(path.ToString()));
     internal bool FileExists(string path) => host.FS().FileExists(TypedFile(path));
-    internal bool IsSupportedExtension(string key) => supportedExtensionsWithJson.Any(group => TypedFile(key).ExtensionIsOneOf(group));
+    internal bool FileExists(ByteStringKey path) => host.FS().FileExists(TypedFile(path));
+    internal bool IsSupportedExtension(string key) => IsSupportedExtension(ByteStringKey.FromString(key));
+    internal bool IsSupportedExtension(ByteStringKey key) => supportedExtensionsWithJson.Any(group => TypedFile(key).ExtensionIsOneOf(group));
 
     // fileloader.go:175. Neither graph inspection nor the legacy explicit-library
     // environment constructs the default/global library or automatic type universe.
@@ -391,37 +411,38 @@ internal sealed class FileLoader
     {
         var loader = new FileLoader(host, resolver, options, [], configuration, true);
         for (int i = 0; i < roots.Count; i++)
-            loader.AddRootFileTask(roots[i].AsString(), configuration.Parsed!.RootFileNameForDiagnostic(i), new() { rootIndex = i });
+            loader.AddRootFileTask(ByteStringKey.FromValue(roots[i].AsValue()), ByteStringValue.FromString(configuration.Parsed!.RootFileNameForDiagnostic(i)), new() { rootIndex = i });
         loader.filesParser.Parse(loader, loader.rootTasks);
         return loader.filesParser.GetProcessedFiles(loader);
     }
 
     // fileloader.go:253/682. Extension search is a source-loader responsibility,
     // distinct from Module's import candidate search.
-    internal void AddRootFileTask(string fileName, string referenceText, FileIncludeReason reason)
+    internal void AddRootFileTask(string fileName, string referenceText, FileIncludeReason reason) => AddRootFileTask(ByteStringKey.FromString(fileName), ByteStringValue.FromString(referenceText), reason);
+    internal void AddRootFileTask(ByteStringKey fileName, ByteStringValue referenceText, FileIncludeReason reason)
     {
-        var(result, key, diagnostic) = GetSourceFileFromReference(TypedFile(fileName), PathBytes(referenceText));
+        var(result, key, diagnostic) = GetSourceFileFromReference(TypedFile(fileName), graph ? referenceText : ByteStringValue.FromString(GoString.ToUtf8(referenceText.Materialize()!)));
         rootTasks = rootTasks.Append(new ParseTask
         {
-            normalizedFilePath = result != default ? FileText(result) : fileName,
-            path = key != default ? KeyText(key) : KeyText(host.FS().CaseSensitivity().PathKey(TypedFile(fileName).AsPath())),
+            normalizedFilePath = result != default ? FileValue(result) : fileName,
+            path = key != default ? KeyValue(key) : KeyValue(host.FS().CaseSensitivity().PathKey(TypedFile(fileName).AsPath())),
             file = embeddedFiles.GetValueOrDefault(fileName), failedLookup = diagnostic is not null, includeReason = reason,
             processingDiagnostics = diagnostic is null ? default : Slice<ProcessingDiagnostic>.FromArray([new() { diagnosticReason = reason, message = diagnostic.message, args = diagnostic.MessageArgs()?.Select(value => graph ? value : GoString.ToString(value)).ToArray() ?? [] }])
         });
     }
 
-    private (RootedFilePath File, PathKey Key, Diagnostic? Diagnostic) GetSourceFileFromReference(RootedFilePath fileName, string referenceText)
+    private (RootedFilePath File, PathKey Key, Diagnostic? Diagnostic) GetSourceFileFromReference(RootedFilePath fileName, ByteStringValue referenceText)
     {
-        string text = FileText(fileName);
+        var text = FileValue(fileName);
         if (embeddedFiles.TryGetValue(text, out SourceFile? library))
             return (fileName, host.FS().CaseSensitivity().PathKey(fileName.AsPath()), null);
-        if (!graph) Project.RequireImplementationFile(text);
+        if (!graph) Project.RequireImplementationFile(text.Value);
         bool allowNonTs = options.AllowNonTsExtensions == Tristate.True;
-        string diagnosticName = TsPath.NormalizeSlashes(referenceText);
+        var diagnosticName = TsPath.NormalizeSlashes(referenceText);
         if (fileName.HasExtension())
         {
             PathKey key = host.FS().CaseSensitivity().PathKey(fileName.AsPath());
-            if (!allowNonTs && !IsSupportedExtension(KeyText(key)))
+            if (!allowNonTs && !IsSupportedExtension(KeyValue(key)))
                 return (default, default, UnsupportedExtensionDiagnostic(diagnosticName, fileName));
             if (!(program ? compilerHost!.FS() : host.FS()).FileExists(fileName))
                 return (default, default, Ast.NewCompilerDiagnostic(Diagnostics.File_0_not_found, diagnosticName));
@@ -440,14 +461,14 @@ internal sealed class FileLoader
             diagnosticName, "'" + string.Join("', '", supportedExtensions.SelectMany(group => group)) + "'"));
     }
 
-    internal Diagnostic UnsupportedExtensionDiagnostic(string diagnosticName, RootedFilePath fileName) => fileName.HasJSFileExtension()
+    internal Diagnostic UnsupportedExtensionDiagnostic(ByteStringValue diagnosticName, RootedFilePath fileName) => fileName.HasJSFileExtension()
         ? Ast.NewCompilerDiagnostic(Diagnostics.File_0_is_a_JavaScript_file_Did_you_mean_to_enable_the_allowJs_option, diagnosticName)
         : Ast.NewCompilerDiagnostic(Diagnostics.File_0_has_an_unsupported_extension_The_only_supported_extensions_are_1,
             diagnosticName, "'" + string.Join("', '", supportedExtensions.SelectMany(group => group)) + "'");
 
     // fileloader.go:382. Preserve package-directory provenance even when its
     // type field does not affect the effective format for these options.
-    internal SourceFileMetaData LoadSourceFileMetaData(string text)
+    internal SourceFileMetaData LoadSourceFileMetaData(ByteStringKey text)
     {
         RootedFilePath file = TypedFile(text);
         if (program && opts.SkipModuleResolution) return new("", default, (ResolutionMode)Ast.GetImpliedNodeFormatForFile(file, ""));
@@ -472,16 +493,16 @@ internal sealed class FileLoader
     {
         if (program)
         {
-            var effectiveOptions = projectReferences!.GetCompilerOptionsForFile(TypedFile(task.normalizedFilePath), PathKey.FromGoString(task.path));
-            var programParseOptions = new SourceFileParseOptions(task.normalizedFilePath, task.path, Ast.GetExternalModuleIndicatorOptions(TypedFile(task.normalizedFilePath), effectiveOptions, task.metadata), FileNameIsGoBytes: true);
+            var effectiveOptions = projectReferences!.GetCompilerOptionsForFile(TypedFile(task.normalizedFilePath), PathKey.FromValue(task.path.Value));
+            var programParseOptions = new SourceFileParseOptions(task.normalizedFilePath.Value, task.path.Value, Ast.GetExternalModuleIndicatorOptions(TypedFile(task.normalizedFilePath), effectiveOptions, task.metadata), FileNameIsGoBytes: true);
             return TypedFile(task.normalizedFilePath).ExtensionIsOneOf(contentMapperExtensions ?? []) ? ParseContentMappedFile(programParseOptions) : compilerHost!.GetSourceFile(programParseOptions);
         }
-        if (!graph) Project.RequireImplementationFile(task.normalizedFilePath);
+        if (!graph) Project.RequireImplementationFile(task.normalizedFilePath.Value);
         var(text, ok) = SourceTextReaders.Read(host.FS(), TypedFile(task.normalizedFilePath));
         if (!ok) return null;
-        var parseOptions = new SourceFileParseOptions(task.normalizedFilePath, task.path,
+        var parseOptions = new SourceFileParseOptions(task.normalizedFilePath.Value, task.path.Value,
             graph ? Ast.GetExternalModuleIndicatorOptions(TypedFile(task.normalizedFilePath), options, task.metadata) : default, FileNameIsGoBytes: graph);
-        ScriptKind kind = graph ? Core.GetScriptKindFromFileName(task.normalizedFilePath) : ScriptKind.TS;
+        ScriptKind kind = graph ? Core.GetScriptKindFromFileName(task.normalizedFilePath.Value) : ScriptKind.TS;
         if (kind == ScriptKind.Unknown) kind = ScriptKind.TS;
         return Parser.ParseSourceFileOwned(parseOptions, text, kind);
     }
@@ -498,9 +519,9 @@ internal sealed class FileLoader
                 (task.pathReferences ??= []).Add(new() { ImportingFile = file, Reference = reference, Scheduling = DependencyScheduling.NoResolve });
                 continue;
             }
-            RootedFilePath normalized = TypedFile(file.FileName()).Directory().ResolveFile(reference.FileName);
-            var(resolved, key, diagnostic) = GetSourceFileFromReference(normalized, reference.FileName);
-            if (diagnostic is null && KeyText(key) == task.path)
+            RootedFilePath normalized = TypedFile(graph ? file.FileNameGoValue() : ByteStringValue.FromString(file.FileName())).Directory().ResolveFile(reference.FileNameValue);
+            var(resolved, key, diagnostic) = GetSourceFileFromReference(normalized, reference.FileNameValue);
+            if (diagnostic is null && KeyValue(key) == task.path)
                 diagnostic = Ast.NewCompilerDiagnostic(Diagnostics.A_file_cannot_have_a_reference_to_itself);
             ProcessingDiagnostic? processing = diagnostic is null ? null : new()
             {
@@ -515,7 +536,7 @@ internal sealed class FileLoader
             if (processing is not null)
                 task.processingDiagnostics = task.processingDiagnostics.Append(processing);
             else
-                task.AddSubTask(FileText(resolved), KeyText(key), reason);
+                task.AddSubTask(FileValue(resolved), KeyValue(key), reason);
         }
     }
 
@@ -531,9 +552,9 @@ internal sealed class FileLoader
                 (task.typeDirectives ??= []).Add(new() { ImportingFile = file, Reference = reference, Scheduling = DependencyScheduling.NoResolve });
                 continue;
             }
-            var (redirect, containingName) = program ? projectReferences!.GetRedirectForResolution(file) : (null, TypedFile(file.FileName()));
+            var (redirect, containingName) = program ? projectReferences!.GetRedirectForResolution(file) : (null, TypedFile(graph ? file.FileNameGoValue() : ByteStringValue.FromString(file.FileName())));
             var effectiveOptions = DefaultResolver.GetCompilerOptionsWithRedirect(options, redirect);
-            ResolutionMode mode = reference.ResolutionMode != ResolutionMode.None ? reference.ResolutionMode : GetDefaultResolutionModeForFile(TypedFile(file.FileName()), task.metadata, effectiveOptions);
+            ResolutionMode mode = reference.ResolutionMode != ResolutionMode.None ? reference.ResolutionMode : GetDefaultResolutionModeForFile(TypedFile(graph ? file.FileNameGoValue() : ByteStringValue.FromString(file.FileName())), task.metadata, effectiveOptions);
             var(result, trace) = resolver.ResolveTypeReferenceDirective(reference.FileNameValue, containingName, mode, redirect);
             if (program)
             {
@@ -547,7 +568,7 @@ internal sealed class FileLoader
             // zero; the task still retains the actual ID for package dedup.
             var reason = new FileIncludeReason { importingFile = file, reference = reference, kind = IncludeReferenceKind.Type };
             if (result?.IsResolved() == true)
-                task.AddSubTask(FileText(result.ResolvedFileName), KeyText(result.ResolvedPath), reason, result.IsExternalLibraryImport, false, result.PackageId);
+                task.AddSubTask(FileValue(result.ResolvedFileName), KeyValue(result.ResolvedPath), reason, result.IsExternalLibraryImport, false, result.PackageId);
             else
                 task.processingDiagnostics = task.processingDiagnostics.Append(new ProcessingDiagnostic() { kind = ProcessingDiagnosticKind.UnknownReference, diagnosticReason = reason });
         }
@@ -558,7 +579,7 @@ internal sealed class FileLoader
     internal void ResolveImportsAndModuleAugmentations(ParseTask task)
     {
         SourceFile file = task.file!;
-        var (redirect, containingName) = program ? projectReferences!.GetRedirectForResolution(file) : (null, TypedFile(file.FileName()));
+        var (redirect, containingName) = program ? projectReferences!.GetRedirectForResolution(file) : (null, TypedFile(graph ? file.FileNameGoValue() : ByteStringValue.FromString(file.FileName())));
         CompilerOptions options = DefaultResolver.GetCompilerOptionsWithRedirect(this.options, redirect);
         Slice<Node> names = default;
         bool js = Ast.IsSourceFileJS(file);
@@ -583,17 +604,17 @@ internal sealed class FileLoader
             if (name.Length == 0 || Ast.IsSourcePhaseImport(entry.Parent)) continue;
             if (!graph)
             {
-                string unicodeName = ProjectDiskHost.DecodeModuleReference(name.Materialize()!);
+                string unicodeName = ProjectDiskHost.DecodeModuleReference(name);
                 if (!TsPath.PathIsRelative(unicodeName))
                     throw new ProjectException("moduleSpecifier", "Only relative module specifiers are supported: " + unicodeName, file.FileName());
             }
-            ResolutionMode mode = graph ? GetModeForUsageLocation(TypedFile(file.FileName()), task.metadata, entry, options) : ResolutionMode.ESNext;
+            ResolutionMode mode = graph ? GetModeForUsageLocation(TypedFile(graph ? file.FileNameGoValue() : ByteStringValue.FromString(file.FileName())), task.metadata, entry, options) : ResolutionMode.ESNext;
             ResolvedModule? value;
             Slice<DiagAndArgs> trace;
             Exception? error;
             if (!graph)
             {
-                value = ((LegacyResolutionHost)host).ResolveModuleName((DefaultResolver)resolver, name.Materialize()!, TypedFile(file.FileName()), mode);
+                value = ((LegacyResolutionHost)host).ResolveModuleName((DefaultResolver)resolver, name, TypedFile(graph ? file.FileNameGoValue() : ByteStringValue.FromString(file.FileName())), mode);
                 trace = default;
                 error = null;
             }
@@ -611,7 +632,7 @@ internal sealed class FileLoader
                 Resolution = resolved, Traces = trace, Error = error, Scheduling = DependencyScheduling.Unresolved };
             (task.graphEdges ??= []).Add(edge);
             if (!graph)
-                (task.resolutionEdges ??= []).Add(new(file, entry, ProjectDiskHost.DecodeModuleReference(name.Materialize()!), mode, resolved, null));
+                (task.resolutionEdges ??= []).Add(new(file, entry, ProjectDiskHost.DecodeModuleReference(name), mode, resolved, null));
             if (!resolved.IsResolved()) continue;
             bool jsFile = !resolved.ResolvedUsingExtraExtensions && !resolved.ResolvedFileName.ExtensionIsOneOf(TsPath.SupportedTSExtensionsWithJsonFlat) && (!program || projectReferences!.GetRedirectForResolution(resolved.ResolvedFileName, resolved.ResolvedPath).Config is null);
             bool jsFromNodeModules = resolved.IsExternalLibraryImport && jsFile && resolved.ResolvedFileName.ContainsLowercaseDirectorySequence("/node_modules/");
@@ -622,7 +643,7 @@ internal sealed class FileLoader
                 importIndex >= file.Imports().Length ? DependencyScheduling.ModuleAugmentation :
                 importIndex >= 0 && !Ast.IsInJSFile(entry) && (entry.Flags & NodeFlags.JSDoc) != 0 ? DependencyScheduling.JSDocInTypeScript : DependencyScheduling.Scheduled;
             if (edge.Scheduling != DependencyScheduling.Scheduled) continue;
-            task.AddSubTask(FileText(resolved.ResolvedFileName), KeyText(resolved.ResolvedPath),
+            task.AddSubTask(FileValue(resolved.ResolvedFileName), KeyValue(resolved.ResolvedPath),
                 new() { importingFile = file, specifier = entry, packageId = resolved.PackageId, syntheticKind = edge.SyntheticKind },
                 resolved.IsExternalLibraryImport, jsFromNodeModules, resolved.PackageId, edge);
         }
@@ -678,7 +699,7 @@ internal sealed class FileLoader
 
     internal void ValidateParsedSource(SourceFile file)
     {
-        if (graph || embeddedFiles.ContainsKey(file.PathKey()) || file.Diagnostics() is { Count: > 0 }) return;
+        if (graph || embeddedFiles.ContainsKey(file.PathKeyKey()) || file.Diagnostics() is { Count: > 0 }) return;
         ProjectAdmission.Validate(file);
     }
 }

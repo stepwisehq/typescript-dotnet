@@ -11,12 +11,12 @@ public static partial class OutputPaths
     public static RootedDirectoryPath GetCommonSourceDirectory(CompilerOptions options, Func<List<RootedFilePath>?> files, RootedDirectoryPath currentDirectory, CaseSensitivity caseSensitivity, Func<List<RootedFilePath>?, RootedDirectoryPath, bool>? checkSourceFilesBelongToPath)
     {
         RootedDirectoryPath commonSourceDirectory;
-        if (options.RootDir.AsString() != "")
+        if (options.RootDir.AsValue().Length != 0)
         {
             commonSourceDirectory = options.RootDir;
             checkSourceFilesBelongToPath?.Invoke(files(), commonSourceDirectory);
         }
-        else if (options.ConfigFilePath.AsString() != "")
+        else if (options.ConfigFilePath.AsValue().Length != 0)
         {
             commonSourceDirectory = options.ConfigFilePath.Directory();
             checkSourceFilesBelongToPath?.Invoke(files(), commonSourceDirectory);

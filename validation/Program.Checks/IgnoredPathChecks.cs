@@ -44,6 +44,6 @@ public static class IgnoredPathChecks
             _ => throw new ArgumentException("Unknown original ignored-path test.", nameof(name)),
         };
         foreach (var row in rows)
-            Check.Equal(TsPath.containsIgnoredPath(row.Path), row.Want, name + " " + row.Path);
+            Check.Equal(TsPath.containsIgnoredPath(ByteStringValue.FromString(row.Path)), row.Want, name + " " + row.Path);
     }
 }

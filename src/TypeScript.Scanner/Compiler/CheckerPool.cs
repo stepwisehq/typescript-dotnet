@@ -242,7 +242,7 @@ internal sealed class CheckerPool : ICheckerPool
         var adjacency = Enumerable.Repeat<List<int>?>(null, program.files.Count).ToList();
         for (int i = 0; i < program.files.Count; i++)
         {
-            var modules = program.resolvedModules.GetValueOrDefault(program.files[i].PathKey());
+            var modules = program.resolvedModules.GetValueOrDefault(program.files[i].PathKeyKey());
             if (modules is null)
                 continue;
             foreach (var resolved in modules.Values)

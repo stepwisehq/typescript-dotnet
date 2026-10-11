@@ -26,7 +26,7 @@ public static partial class ParserAstChecks
     private static void Assert(bool value, string message) { if (!value) throw new InvalidOperationException(message); }
     private static void Equal<T>(T actual, T expected, string message) => Assert(EqualityComparer<T>.Default.Equals(actual, expected), $"{message}: actual={actual}, expected={expected}");
     private static SourceFile Parse(string source, ScriptKind kind = ScriptKind.TS) => Parser.ParseSourceFile(new(kind == ScriptKind.JS ? "/index.js" : "/main.ts", kind == ScriptKind.JS ? "/index.js" : "/main.ts"), source, kind);
-    private static void NoDiagnostics(SourceFile file) => Equal(file.Diagnostics()?.Count ?? 0, 0, "parse diagnostics");
+    private static void NoDiagnostics(SourceFile file) => Equal(file.Diagnostics().Length, 0, "parse diagnostics");
     public static void Run(string caseName)
     {
         if (caseName.StartsWith("TestDeepCloneNodeSanityCheck/", StringComparison.Ordinal))

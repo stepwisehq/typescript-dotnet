@@ -31,7 +31,7 @@ public static partial class ProgramRunner
         {
             var files = names.Select(name => program.GetSourceFile(RootedFilePath.FromGoString(
                 GoString.ToUtf8(name!.GetValue<string>()))) ?? throw new ArgumentException("Unknown incremental semantic fixture file")).ToList();
-            var actual = program.GetSemanticDiagnosticsForIncremental(default, files);
+            var actual = program.GetSemanticDiagnosticsForIncremental(default, Slice<SourceFile>.FromArray(files.ToArray()));
             JsonArray rows = [];
             foreach (var file in files)
                 rows.Add((JsonNode)new JsonObject { ["file"] = observer.File(file), ["diagnostics"] = observer.Diagnostics(actual[file]) });
@@ -154,8 +154,8 @@ public static partial class ProgramRunner
                 case "type": case "declared": break;
                 case "properties":
                     var properties = checker.GetPropertiesOfType(type);
-                    JsonArray? propertyRows = properties is null ? null : [];
-                    if (properties is not null)
+                    JsonArray? propertyRows = properties.IsNil ? null : [];
+                    if (!properties.IsNil)
                         foreach (var property in properties)
                             propertyRows!.Add((JsonNode)new JsonObject { ["displayNameBase64"] = Bytes(GoString.ToUtf8(checker.SymbolToString(property))),
                                 ["typeBase64"] = Display(checker.GetTypeOfSymbol(property)) });
@@ -163,8 +163,8 @@ public static partial class ProgramRunner
                     break;
                 case "base":
                     var bases = checker.GetBaseTypes(type);
-                    JsonArray? baseRows = bases is null ? null : [];
-                    if (bases is not null)
+                    JsonArray? baseRows = bases.IsNil ? null : [];
+                    if (!bases.IsNil)
                         foreach (var basis in bases) baseRows!.Add((JsonNode)JsonValue.Create(Display(basis))!);
                     result["bases"] = baseRows;
                     break;
@@ -175,8 +175,8 @@ public static partial class ProgramRunner
                         foreach (var signature in signatures)
                         {
                             var parameters = signature.Parameters();
-                            JsonArray? parameterRows = parameters is null ? null : [];
-                            if (parameters is not null)
+                            JsonArray? parameterRows = parameters.IsNil ? null : [];
+                            if (!parameters.IsNil)
                                 foreach (var parameter in parameters)
                                     parameterRows!.Add((JsonNode)new JsonObject { ["nameBase64"] = Bytes(parameter.Name),
                                         ["typeBase64"] = Display(checker.GetTypeOfSymbol(parameter)) });

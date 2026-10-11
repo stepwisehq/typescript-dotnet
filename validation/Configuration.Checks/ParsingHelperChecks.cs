@@ -146,7 +146,7 @@ public static partial class CompilerOptionChecks
             """;
         Check.True(raw.UnmarshalJSON(text) is null, "Raw options unmarshal succeeds");
         var (options, diagnostics) = raw.Finalize(RootedDirectoryPath.FromGoString("/project"));
-        Check.Equal(diagnostics?.Count ?? 0, 0, "Finalize diagnostics empty");
+        Check.Equal(diagnostics.Count, 0, "Finalize diagnostics empty");
         Check.Equal(options.OutDir, RootedDirectoryPath.FromGoString("/project/dist"), "Finalized outDir");
         Check.Sequence(options.RootDirs, new[] { RootedDirectoryPath.FromGoString("/project/src"), RootedDirectoryPath.FromGoString("/project/generated") }, "Finalized rootDirs");
         Check.Equal(options.TsBuildInfoFile, RootedFilePath.FromGoString("/project/cache/build.tsbuildinfo"), "Finalized build info");

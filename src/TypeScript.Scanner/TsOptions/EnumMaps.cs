@@ -8,11 +8,16 @@ public static partial class TsOptions
 {
     public static (string Value, bool Ok) GetLibFileName(string libName)
     {
+        var (value, ok) = GetLibFileName(ByteStringValue.FromString(libName));
+        return (value.Materialize()!, ok);
+    }
+    internal static (ByteStringValue Value, bool Ok) GetLibFileName(ByteStringValue libName)
+    {
         libName = CaseSensitivity.CaseInsensitive.Canonicalize(libName);
-        if (LibFilesSet.Contains(libName))
+        if (libName.ContainsIn(LibFilesSet))
             return (libName, true);
-        var(value, ok) = LibMap.Get(libName);
-        return ok ? ((string)value!, true) : ("", false);
+        var (value, ok) = LibMap.Get(libName);
+        return ok ? (ByteStringValue.FromString((string)value!), true) : (ByteStringValue.FromString(""), false);
     }
 
     public static Dictionary<ScriptTarget, string> TargetToLibMap() => targetToLibMap;

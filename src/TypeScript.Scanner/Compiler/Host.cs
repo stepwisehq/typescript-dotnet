@@ -33,14 +33,14 @@ internal sealed class CompilerHost(IFS fs, RootedDirectoryPath defaultLibraryPat
     public void Trace(Message message, params object[] args) => trace(message, args);
     public SourceFile? GetSourceFile(SourceFileParseOptions options)
     {
-        var fileName = options.FileNameIsGoBytes ? RootedFilePath.FromGoString(options.FileName) : RootedFilePath.FromUnicode(options.FileName);
+        var fileName = options.FileNameIsGoBytes ? RootedFilePath.FromValue(options.FileNameValue) : RootedFilePath.FromUnicode(options.FileName);
         var (text, ok) = SourceTextReaders.Read(fs, fileName);
         return ok ? Parser.ParseSourceFileOwned(options, text, Core.EnsureScriptKindFromFileName(fileName)) : null;
     }
     public (SourceFiles Files, Exception? Error) GetContentMappedSourceFiles(SourceFileParseOptions options, Mapper mapper)
     {
         if (contentMapperProject is null) return (default, ContentMappers.ErrProjectUnavailable);
-        var fileName = options.FileNameIsGoBytes ? RootedFilePath.FromGoString(options.FileName) : RootedFilePath.FromUnicode(options.FileName);
+        var fileName = options.FileNameIsGoBytes ? RootedFilePath.FromValue(options.FileNameValue) : RootedFilePath.FromUnicode(options.FileName);
         var (content, ok) = SourceTextReaders.Read(fs, fileName);
         if (!ok) return (default, null);
         // Content mapper transport retains its existing raw-string protocol boundary.

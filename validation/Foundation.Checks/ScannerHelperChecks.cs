@@ -8,10 +8,10 @@ using ScannerApi = TypeScript.Scanner.Scanner;
 namespace TypeScript.Foundation;
 public static partial class ScannerChecks
 {
-    private sealed class ByteSource(string text, List<int> lines) : SourceFileLike
+    private sealed class ByteSource(string text, Slice<int> lines) : SourceFileLike
     {
         public string Text() => text;
-        public List<int> ECMALineMap() => lines;
+        public Slice<int> ECMALineMap() => lines;
     }
 
     private static readonly Lazy<JsonDocument> helperFixtures = new(() => LoadFixture("TypeScript.Foundation.ScannerHelperFixtures.json"));
@@ -120,7 +120,7 @@ public static partial class ScannerChecks
             string text = GoString.FromBytes(bytes);
             List<int> lines = row.GetProperty("Lines").EnumerateArray().Select(value => value.GetInt32()).ToList();
             var source = new ByteSource(text, Core.ComputeECMALineStarts(text));
-            Equal(string.Join(",", lines), string.Join(",", source.ECMALineMap()), "ECMAScript line starts");
+            Equal(string.Join(",", lines), string.Join(",", GoSlices.ToListOrNull(source.ECMALineMap())!), "ECMAScript line starts");
             Equal(row.GetProperty("UTF16Length").GetInt32(), Core.UTF16Len(text), "UTF16Len including malformed byte sequences");
             foreach (var forward in row.GetProperty("Forward").EnumerateArray())
             {

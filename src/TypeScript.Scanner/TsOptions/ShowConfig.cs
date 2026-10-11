@@ -28,7 +28,7 @@ public static partial class TsOptions
     };
     public static TSConfig ConvertToTSConfig(ParsedCommandLine parsed, RootedFilePath fileName = default)
     {
-        if (fileName.AsString() == "")
+        if (fileName.AsValue().Length == 0)
             fileName = parsed.BaseDirectory().ResolveFile("tsconfig.json");
         var sensitivity = parsed.CaseSensitivity();
         List<string>? files = null;

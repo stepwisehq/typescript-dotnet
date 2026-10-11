@@ -13,7 +13,9 @@ public sealed class ResolverOptions
     public IResolutionHost Host = null!;
     public CompilerOptions CompilerOptions = null!;
     public RootedDirectoryPath TypingsLocation;
-    public string ProjectName = "";
+    private ByteStringValue projectNameValue;
+    public string ProjectName { get => projectNameValue.Materialize()!; set => projectNameValue = ByteStringValue.FromString(value); }
+    internal ByteStringValue ProjectNameValue { get => projectNameValue.Snapshot(); set => projectNameValue = value.Snapshot(); }
     public List<string>? ExtraExtensions;
     public InfoCache? PackageJsonCache;
 }
@@ -54,7 +56,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
     internal RootedDirectoryPath baseDirectory;
     internal CompilerOptions compilerOptions => resolutionData.compilerOptions;
     internal RootedDirectoryPath typingsLocation => resolutionData.typingsLocation;
-    internal string projectName => resolutionData.projectName;
+    internal ByteStringValue projectName => resolutionData.projectName;
     internal List<string>? extraExtensions => resolutionData.extraExtensions;
     internal InfoCache packageJsonInfoCache => resolutionData.packageJsonInfoCache;
 
@@ -101,7 +103,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
     internal sealed class ResolvedData
     {
         internal RootedFilePath path;
-        internal string extension = "";
+        internal ByteStringValue extension;
         internal PackageId packageId;
         internal RootedFilePath originalPath;
         internal bool resolvedUsingTsExtension, resolvedUsingExtraExtensions;
@@ -113,14 +115,17 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
     private static ResolvedData unresolved() => new();
     internal readonly record struct resolutionCandidate(RootedPath path, RootedDirectoryPath directoryPath = default, bool directoryOnly = false)
     {
-        internal string AsString() => directoryOnly ? TsPath.EnsureTrailingDirectorySeparator(path.AsString()) : path.AsString();
+        internal ByteStringValue AsValue() => directoryOnly ? TsPath.EnsureTrailingDirectorySeparator(path.AsValue()) : path.AsValue();
+        internal string AsString() => AsValue().Materialize()!;
         public override string ToString() => AsString();
         internal RootedDirectoryPath AsDirectoryPath() => directoryPath != default ? directoryPath : TsPath.RootedDirectoryPathFromPath(path);
         internal RootedDirectoryPath Directory() => path.Directory();
         internal bool HasTrailingDirectorySeparator() => directoryOnly;
         internal FileNameStem RemoveFileExtension() => TsPath.RootedFilePathFromPath(path).RemoveFileExtension();
-        internal FileNameStem RemoveExtension(string extension) => TsPath.RootedFilePathFromPath(path).RemoveExtension(extension);
-        internal resolutionCandidate Resolve(string text) => resolutionCandidateFromDirectoryPath(TsPath.RootedDirectoryPathFromPath(path), text);
+        internal FileNameStem RemoveExtension(string extension) => RemoveExtension(ByteStringValue.FromString(extension));
+        internal FileNameStem RemoveExtension(ByteStringValue extension) => TsPath.RootedFilePathFromPath(path).RemoveExtension(extension);
+        internal resolutionCandidate Resolve(string text) => Resolve(ByteStringValue.FromString(text));
+        internal resolutionCandidate Resolve(ByteStringValue text) => resolutionCandidateFromDirectoryPath(TsPath.RootedDirectoryPathFromPath(path), text);
         internal bool HasDirectoryPrefix(RootedDirectoryPath directory)
         {
             var(relative, ok) = path.RelativeTo(directory);
@@ -135,16 +140,16 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
             return directoryOnly ? relative.WithTrailingDirectorySeparator() : relative;
         }
 
-        internal (FileNameStem Stem, string Extension) SplitExtension(List<string>? extraExtensions)
+        internal (FileNameStem Stem, ByteStringValue Extension) SplitExtension(List<string>? extraExtensions)
         {
             var fileName = TsPath.RootedFilePathFromPath(path);
-            var extension = fileName.Extension();
+            var extension = fileName.ExtensionValue();
             var extensionless = RemoveFileExtension();
-            if (extensionless.AsString() == path.AsString())
+            if (extensionless.AsValue().EqualsValue(path.AsValue()))
             {
-                extension = fileName.LongestExtension(extraExtensions, CaseSensitivity.CaseSensitive);
-                if (extension == "")
-                    extension = path.AsString()[path.AsString().LastIndexOf('.')..];
+                extension = fileName.LongestExtensionValue(extraExtensions, CaseSensitivity.CaseSensitive);
+                if (extension.Length == 0)
+                    extension = path.AsValue().Slice(path.AsValue().LastIndexOf('.'));
                 extensionless = RemoveExtension(extension);
             }
 
@@ -152,7 +157,8 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
         }
     }
 
-    internal static resolutionCandidate resolutionCandidateFromNormalized(string path)
+    internal static resolutionCandidate resolutionCandidateFromNormalized(string path) => resolutionCandidateFromNormalized(ByteStringValue.FromString(path));
+    internal static resolutionCandidate resolutionCandidateFromNormalized(ByteStringValue path)
     {
         bool directoryOnly = TsPath.HasTrailingDirectorySeparator(path);
         if (directoryOnly && path.Length > TsPath.GetRootLength(path))
@@ -163,12 +169,13 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
     internal static resolutionCandidate resolveResolutionCandidate(string path, params string[] paths) => resolutionCandidateFromNormalized(TsPath.ResolvePath(path, paths));
     internal static resolutionCandidate resolutionCandidateFromDirectory(RootedDirectoryPath directory) => new(directory.AsPath());
     internal static resolutionCandidate resolutionCandidateFromFileName(RootedFilePath fileName) => new(fileName.AsPath());
-    internal static resolutionCandidate resolutionCandidateFromDirectoryPath(RootedDirectoryPath directory, string path) => resolutionCandidateFromEncodedPaths(directory, pathForDynamicResolution(directory, path, false), pathForDynamicResolution(directory, path, true), TsPath.HasTrailingDirectorySeparator(path));
+    internal static resolutionCandidate resolutionCandidateFromDirectoryPath(RootedDirectoryPath directory, string path) => resolutionCandidateFromDirectoryPath(directory, ByteStringValue.FromString(path));
     internal static resolutionCandidate resolutionCandidateFromDirectoryPath(RootedDirectoryPath directory, ByteStringValue path)
     {
         if (directory == default) throw new ArgumentException("cannot resolve from an empty directory name");
+        if (path.IsNull) throw new NullReferenceException();
         if (path.Length == 0) return new(directory.AsPath());
-        if (TsPath.IsEncodedDynamicFileName(directory.AsString()) && TsPath.GetEncodedRootLength(path) == 0)
+        if (TsPath.IsEncodedDynamicFileName(directory.AsValue()) && TsPath.GetEncodedRootLength(path) == 0)
         {
             var file = TsPath.ToRootedPath(TsPath.EncodeDynamicModuleSpecifier(path), directory);
             var folder = TsPath.ToRootedPath(TsPath.EncodeDynamicDirectorySpecifier(path), directory);
@@ -178,23 +185,28 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
         var resolved = TsPath.ToRootedPath(path, directory);
         return new(resolved, directoryOnly: TsPath.HasTrailingDirectorySeparator(path));
     }
-    internal static resolutionCandidate resolutionCandidateFromDynamicLogicalPath(RootedDirectoryPath directory, string path)
+    internal static resolutionCandidate resolutionCandidateFromDynamicLogicalPath(RootedDirectoryPath directory, string path) => resolutionCandidateFromDynamicLogicalPath(directory, ByteStringValue.FromString(path));
+    internal static resolutionCandidate resolutionCandidateFromDynamicLogicalPath(RootedDirectoryPath directory, ByteStringValue path)
     {
-        bool empty = path == "";
+        if (path.IsNull) throw new NullReferenceException();
+        bool empty = path.Length == 0;
         bool directoryOnly = empty || TsPath.HasTrailingDirectorySeparator(path);
-        if (path != "" && directoryOnly)
+        if (path.Length != 0 && directoryOnly)
             path = TsPath.RemoveTrailingDirectorySeparator(path);
         return empty ? new(directory.AsPath(), directoryOnly: true) : resolutionCandidateFromEncodedPaths(directory, TsPath.EncodeDynamicRelativeURIPath(path), TsPath.EncodeDynamicRelativeURIDirectoryPath(path), directoryOnly);
     }
 
-    internal static resolutionCandidate resolutionCandidateFromDiskLogicalPath(RootedDirectoryPath directory, string path, bool directoryOnly)
+    internal static resolutionCandidate resolutionCandidateFromDiskLogicalPath(RootedDirectoryPath directory, string path, bool directoryOnly) => resolutionCandidateFromDiskLogicalPath(directory, ByteStringValue.FromString(path), directoryOnly);
+    internal static resolutionCandidate resolutionCandidateFromDiskLogicalPath(RootedDirectoryPath directory, ByteStringValue path, bool directoryOnly)
     {
-        if (path != "" && directoryOnly)
+        if (path.IsNull) throw new NullReferenceException();
+        if (path.Length != 0 && directoryOnly)
             path = TsPath.RemoveTrailingDirectorySeparator(path);
-        return path == "" ? new(directory.AsPath(), directoryOnly: directoryOnly) : new(directory.ResolveFileFromNormalizedRelative(path).AsPath(), directoryOnly: directoryOnly);
+        return path.Length == 0 ? new(directory.AsPath(), directoryOnly: directoryOnly) : new(directory.ResolveFileFromNormalizedRelative(path).AsPath(), directoryOnly: directoryOnly);
     }
 
-    internal static resolutionCandidate resolutionCandidateFromEncodedPaths(RootedDirectoryPath directory, string filePath, string directoryPath, bool directoryOnly)
+    internal static resolutionCandidate resolutionCandidateFromEncodedPaths(RootedDirectoryPath directory, string filePath, string directoryPath, bool directoryOnly) => resolutionCandidateFromEncodedPaths(directory, ByteStringValue.FromString(filePath), ByteStringValue.FromString(directoryPath), directoryOnly);
+    internal static resolutionCandidate resolutionCandidateFromEncodedPaths(RootedDirectoryPath directory, ByteStringValue filePath, ByteStringValue directoryPath, bool directoryOnly)
     {
         var resolvedDirectoryPath = directory.ResolveDirectory(directoryPath);
         if (directoryOnly)
@@ -203,7 +215,8 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
         return new(path, resolvedDirectoryPath.AsPath() != path ? resolvedDirectoryPath : default);
     }
 
-    internal static string pathForDynamicResolution(RootedDirectoryPath directory, string path, bool directoryOnly) => TsPath.IsEncodedDynamicFileName(directory.AsString()) && !TsPath.PathIsAbsolute(path) ? directoryOnly ? TsPath.EncodeDynamicDirectorySpecifier(path) : TsPath.EncodeDynamicModuleSpecifier(path) : path;
+    internal static string pathForDynamicResolution(RootedDirectoryPath directory, string path, bool directoryOnly) => pathForDynamicResolution(directory, ByteStringValue.FromString(path), directoryOnly).Materialize()!;
+    internal static ByteStringValue pathForDynamicResolution(RootedDirectoryPath directory, ByteStringValue path, bool directoryOnly) => TsPath.IsEncodedDynamicFileName(directory.AsValue()) && !TsPath.PathIsAbsolute(path) ? directoryOnly ? TsPath.EncodeDynamicDirectorySpecifier(path) : TsPath.EncodeDynamicModuleSpecifier(path) : path;
 
     internal static resolutionCandidate resolutionCandidateFromRelativePath(RootedDirectoryPath directory, RelativePath path)
     {
@@ -247,7 +260,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
     {
         var directory = containingFile.Directory();
         var trace = newTraceBuilder();
-        bool inferred = containingFile.BaseName() == ModuleUtilities.InferredTypesContainingFile;
+        bool inferred = containingFile.BaseNameValue().EqualsString(ModuleUtilities.InferredTypesContainingFile);
         var key = new TypeRefDirectiveResolutionCacheKey(directory, new ModeAwareCacheKey(name, resolutionMode), ResolutionData.GetRedirectConfigName(reference), inferred);
         if (trace is null)
         {
@@ -342,7 +355,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
 
     private ResolvedModule tryResolveFromTypingsLocation(ByteStringValue name, RootedDirectoryPath directory, ResolvedModule original, Tracer? trace)
     {
-        if (typingsLocation == default || TsPath.IsExternalModuleNameRelative(name) || (original.ResolvedFileName != default && TsPath.ExtensionIsOneOf(original.Extension, TsPath.SupportedTSExtensionsWithJsonFlat)))
+        if (typingsLocation == default || TsPath.IsExternalModuleNameRelative(name) || (original.ResolvedFileName != default && TsPath.ExtensionIsOneOf(original.ExtensionValue, TsPath.SupportedTSExtensionsWithJsonFlat)))
             return original;
         var state = new resolutionState(name, directory, false, ResolutionMode.None, compilerOptions, null, this, trace);
         trace?.write(Diagnostics.Auto_discovery_for_typings_is_enabled_in_project_0_Running_extra_resolution_pass_for_module_1_using_cache_location_2, projectName, name, typingsLocation.AsString());
@@ -419,10 +432,11 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
         return features;
     }
 
-    internal static int MoveToNextDirectorySeparatorIfAvailable(string path, int previousSeparatorIndex, bool isFolder)
+    internal static int MoveToNextDirectorySeparatorIfAvailable(string path, int previousSeparatorIndex, bool isFolder) => MoveToNextDirectorySeparatorIfAvailable(ByteStringValue.FromString(path), previousSeparatorIndex, isFolder);
+    internal static int MoveToNextDirectorySeparatorIfAvailable(ByteStringValue path, int previousSeparatorIndex, bool isFolder)
     {
         int offset = previousSeparatorIndex + 1;
-        int nextSeparatorIndex = offset <= path.Length ? path.AsSpan(offset).IndexOf('/') : -1;
+        int nextSeparatorIndex = offset <= path.Length ? path.Slice(offset).IndexOf('/') : -1;
         return nextSeparatorIndex == -1 ? isFolder ? path.Length : previousSeparatorIndex : nextSeparatorIndex + offset;
     }
 
@@ -473,7 +487,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
             }
         }
 
-        internal string containingDirectoryPath() => containingDirectoryHasTrailingSeparator ? TsPath.EnsureTrailingDirectorySeparator(containingDirectory.AsString()) : containingDirectory.AsString();
+        internal ByteStringValue containingDirectoryPath() => containingDirectoryHasTrailingSeparator ? TsPath.EnsureTrailingDirectorySeparator(containingDirectory.AsValue()) : containingDirectory.AsValue();
         internal ResolvedTypeReferenceDirective resolveTypeReferenceDirective(List<RootedDirectoryPath>? roots, bool fromConfig, bool inferred)
         {
             if ((roots?.Count ?? 0) > 0)
@@ -520,7 +534,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
 
         internal resolutionCandidate getCandidateFromTypeRoot(RootedDirectoryPath root)
         {
-            ByteStringValue lookup = root.BaseName() == "@types" && root.AsPath().Directory().BaseName() == "node_modules" ? mangleScopedPackageName(name) : name;
+            ByteStringValue lookup = root.BaseNameValue().EqualsBytes("@types"u8) && root.AsPath().Directory().BaseNameValue().EqualsBytes("node_modules"u8) ? mangleScopedPackageName(name) : name;
             return resolutionCandidateFromDirectoryPath(root, lookup);
         }
 
@@ -575,7 +589,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
             if (tracer is not null)
                 tracer.write(Diagnostics.Resolving_in_0_mode_with_conditions_1, esmMode ? "ESM" : "CJS", string.Join(", ", Core.Map(conditions, static c => "'" + c + "'") ?? []));
             var result = resolveNodeLikeWorker();
-            if (resolvedPackageDirectory && !isConfigLookup && (features & NodeResolutionFeatures.Exports) != 0 && (extensions & (Extensions.TypeScript | Extensions.Declaration)) != 0 && !TsPath.IsExternalModuleNameRelative(name) && result.IsResolved() && result.IsExternalLibraryImport && !extensionIsOk(Extensions.TypeScript | Extensions.Declaration, result.Extension) && GoSlices.Contains(conditions, "import"))
+            if (resolvedPackageDirectory && !isConfigLookup && (features & NodeResolutionFeatures.Exports) != 0 && (extensions & (Extensions.TypeScript | Extensions.Declaration)) != 0 && !TsPath.IsExternalModuleNameRelative(name) && result.IsResolved() && result.IsExternalLibraryImport && !extensionIsOk(Extensions.TypeScript | Extensions.Declaration, result.ExtensionValue) && GoSlices.Contains(conditions, "import"))
             {
                 tracer?.write(Diagnostics.Resolution_of_non_relative_name_failed_trying_with_modern_Node_resolution_features_disabled_to_see_if_npm_library_needs_configuration_update);
                 features &= ~NodeResolutionFeatures.Exports;
@@ -783,7 +797,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
                                 return found.IsResolved() ? new ResolvedData
                                 {
                                     path = found.ResolvedFileName,
-                                    extension = found.Extension,
+                                    extension = found.ExtensionValue,
                                     packageId = found.PackageId,
                                     originalPath = found.OriginalPath,
                                     resolvedUsingTsExtension = found.ResolvedUsingTsExtension
@@ -963,7 +977,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
         {
             var(result, _) = containingDirectory.ForEachAncestorDirectory(directory =>
             {
-                if (directory.AsPath().BaseName() != "node_modules")
+                if (!directory.AsPath().BaseNameValue().EqualsBytes("node_modules"u8))
                 {
                     var found = loadModuleFromImmediateNodeModulesDirectory(ext, directory, typesScopeOnly);
                     return (found, found is not null);
@@ -1129,7 +1143,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
                 result.IsExternalLibraryImport = external;
                 result.ResolvedUsingTsExtension = found.resolvedUsingTsExtension;
                 result.ResolvedUsingExtraExtensions = found.resolvedUsingExtraExtensions;
-                result.Extension = found.extension;
+                result.ExtensionValue = found.extension;
                 result.PackageId = found.packageId;
             }
 
@@ -1202,8 +1216,8 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
                 var path = index < 0 ? ByteStringValue.FromString(substitution) : substituteTarget(substitution, star, true, replaceAll: false);
                 var candidate = resolutionCandidateFromDirectoryPath(containingDirectory, path);
                 tracer?.write(Diagnostics.Trying_substitution_0_candidate_module_location_Colon_1, substitution, path);
-                var extension = TsPath.TryGetExtensionFromPath(substitution);
-                if (extension != "")
+                var extension = TsPath.TryGetExtensionFromPath(ByteStringValue.FromString(substitution));
+                if (extension.Length != 0)
                 {
                     var(file, ok) = tryFile(candidate);
                     if (ok)
@@ -1215,7 +1229,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
                 }
 
                 var previous = candidateEndingIsFromConfig;
-                if (extension != "")
+                if (extension.Length != 0)
                     candidateEndingIsFromConfig = true;
                 ResolvedData? result;
                 try
@@ -1244,7 +1258,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
             RootedDirectoryPath matched = default;
             foreach (var root in roots)
             {
-                var longest = candidate.HasDirectoryPrefix(root) && (matched == default || matched.AsString().Length < root.AsString().Length);
+                var longest = candidate.HasDirectoryPrefix(root) && (matched == default || matched.AsValue().Length < root.AsValue().Length);
                 tracer?.write(Diagnostics.Checking_if_0_is_the_longest_matching_prefix_for_1_2, TsPath.EnsureTrailingDirectorySeparator(root.AsString()), candidate, longest);
                 if (longest)
                     matched = root;
@@ -1263,15 +1277,15 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
             {
                 if (root == matched)
                     continue;
-                var logical = suffix.AsString();
+                var logical = suffix.AsValue();
                 var directoryOnly = suffix == default || suffix.HasTrailingDirectorySeparator();
-                if (TsPath.IsEncodedDynamicFileName(root.AsString()))
+                if (TsPath.IsEncodedDynamicFileName(root.AsValue()))
                 {
-                    if (TsPath.IsEncodedDynamicFileName(matched.AsString()))
+                    if (TsPath.IsEncodedDynamicFileName(matched.AsValue()))
                         logical = TsPath.DecodeDynamicURIPath(logical);
                     candidate = resolutionCandidateFromDynamicLogicalPath(root, logical);
                 }
-                else if (TsPath.IsEncodedDynamicFileName(matched.AsString()))
+                else if (TsPath.IsEncodedDynamicFileName(matched.AsValue()))
                 {
                     var(decoded, ok) = TsPath.DecodeDynamicURIPathForDisk(logical);
                     if (!ok)
@@ -1342,14 +1356,15 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
 
         internal ResolvedData? loadModuleFromFileNoImplicitExtensions(Extensions ext, resolutionCandidate candidate)
         {
-            if (!candidate.path.BaseName().Contains('.'))
+            if (!candidate.path.BaseNameValue().Contains('.'))
                 return null;
             var(stem, extension) = candidate.SplitExtension(resolver.extraExtensions);
             tracer?.write(Diagnostics.File_name_0_has_a_1_extension_stripping_it, candidate, extension);
             return tryAddingExtensions(stem, candidate.Directory(), ext, extension);
         }
 
-        internal ResolvedData? tryAddingExtensions(FileNameStem stem, RootedDirectoryPath directory, Extensions ext, string original)
+        internal ResolvedData? tryAddingExtensions(FileNameStem stem, RootedDirectoryPath directory, Extensions ext, string original) => tryAddingExtensions(stem, directory, ext, ByteStringValue.FromString(original));
+        internal ResolvedData? tryAddingExtensions(FileNameStem stem, RootedDirectoryPath directory, Extensions ext, ByteStringValue original)
         {
             if (directory != default && !resolver.fs.DirectoryExists(directory))
                 return null;
@@ -1357,27 +1372,27 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
             ResolvedData? result;
             switch (original)
             {
-                case ".mjs":
-                case ".mts":
-                case ".d.mts":
-                    return Try(".mts", Extensions.TypeScript, original is ".mts" or ".d.mts") ?? Try(".d.mts", Extensions.Declaration, original is ".mts" or ".d.mts") ?? Try(".mjs", Extensions.JavaScript);
-                case ".cjs":
-                case ".cts":
-                case ".d.cts":
-                    return Try(".cts", Extensions.TypeScript, original is ".cts" or ".d.cts") ?? Try(".d.cts", Extensions.Declaration, original is ".cts" or ".d.cts") ?? Try(".cjs", Extensions.JavaScript);
-                case ".json":
+                case var _ when original.EqualsBytes(".mjs"u8):
+                case var _ when original.EqualsBytes(".mts"u8):
+                case var _ when original.EqualsBytes(".d.mts"u8):
+                    return Try(".mts", Extensions.TypeScript, (original.EqualsBytes(".mts"u8) || original.EqualsBytes(".d.mts"u8))) ?? Try(".d.mts", Extensions.Declaration, (original.EqualsBytes(".mts"u8) || original.EqualsBytes(".d.mts"u8))) ?? Try(".mjs", Extensions.JavaScript);
+                case var _ when original.EqualsBytes(".cjs"u8):
+                case var _ when original.EqualsBytes(".cts"u8):
+                case var _ when original.EqualsBytes(".d.cts"u8):
+                    return Try(".cts", Extensions.TypeScript, (original.EqualsBytes(".cts"u8) || original.EqualsBytes(".d.cts"u8))) ?? Try(".d.cts", Extensions.Declaration, (original.EqualsBytes(".cts"u8) || original.EqualsBytes(".d.cts"u8))) ?? Try(".cjs", Extensions.JavaScript);
+                case var _ when original.EqualsBytes(".json"u8):
                     return Try(".d.json.ts", Extensions.Declaration) ?? Try(".json", Extensions.Json);
-                case ".tsx":
-                case ".jsx":
-                    return Try(".tsx", Extensions.TypeScript, original == ".tsx") ?? Try(".ts", Extensions.TypeScript, original == ".tsx") ?? Try(".d.ts", Extensions.Declaration, original == ".tsx") ?? Try(".jsx", Extensions.JavaScript) ?? Try(".js", Extensions.JavaScript);
-                case ".ts":
-                case ".d.ts":
-                case ".js":
-                case "":
-                    result = Try(".ts", Extensions.TypeScript, original is ".ts" or ".d.ts") ?? Try(".tsx", Extensions.TypeScript, original is ".ts" or ".d.ts") ?? Try(".d.ts", Extensions.Declaration, original is ".ts" or ".d.ts") ?? Try(".js", Extensions.JavaScript) ?? Try(".jsx", Extensions.JavaScript);
+                case var _ when original.EqualsBytes(".tsx"u8):
+                case var _ when original.EqualsBytes(".jsx"u8):
+                    return Try(".tsx", Extensions.TypeScript, original.EqualsBytes(".tsx"u8)) ?? Try(".ts", Extensions.TypeScript, original.EqualsBytes(".tsx"u8)) ?? Try(".d.ts", Extensions.Declaration, original.EqualsBytes(".tsx"u8)) ?? Try(".jsx", Extensions.JavaScript) ?? Try(".js", Extensions.JavaScript);
+                case var _ when original.EqualsBytes(".ts"u8):
+                case var _ when original.EqualsBytes(".d.ts"u8):
+                case var _ when original.EqualsBytes(".js"u8):
+                case var _ when original.EqualsBytes(""u8):
+                    result = Try(".ts", Extensions.TypeScript, (original.EqualsBytes(".ts"u8) || original.EqualsBytes(".d.ts"u8))) ?? Try(".tsx", Extensions.TypeScript, (original.EqualsBytes(".ts"u8) || original.EqualsBytes(".d.ts"u8))) ?? Try(".d.ts", Extensions.Declaration, (original.EqualsBytes(".ts"u8) || original.EqualsBytes(".d.ts"u8))) ?? Try(".js", Extensions.JavaScript) ?? Try(".jsx", Extensions.JavaScript);
                     return result ?? (isConfigLookup ? tryExtension(".json", stem, false) : null);
                 default:
-                    if (resolver.extraExtensions?.Contains(original) == true)
+                    if (resolver.extraExtensions?.Exists(extension => original.EqualsString(extension)) == true)
                     {
                         result = tryExtension(original, stem, false);
                         if (result != null)
@@ -1387,21 +1402,28 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
                         }
                     }
 
-                    return (ext & Extensions.Declaration) != 0 && !stem.AppendSuffix(original).IsDeclarationFile() ? tryExtension(".d" + original + ".ts", stem, false) : null;
+                    return (ext & Extensions.Declaration) != 0 && !stem.AppendSuffix(original).IsDeclarationFile() ? tryExtension(declarationExtension(original), stem, false) : null;
             }
         }
 
-        internal ResolvedData? tryExtension(string extension, FileNameStem stem, bool usingTs)
+        internal ResolvedData? tryExtension(string extension, FileNameStem stem, bool usingTs) => tryExtension(ByteStringValue.FromString(extension), stem, usingTs);
+        internal ResolvedData? tryExtension(ByteStringValue extension, FileNameStem stem, bool usingTs)
         {
             var(path, ok) = tryFile(resolutionCandidateFromFileName(stem.AppendSuffix(extension)));
             return ok ? new ResolvedData
             {
                 path = path,
-                extension = extension,
+                extension = extension.Snapshot(),
                 resolvedUsingTsExtension = !candidateEndingIsFromConfig && usingTs
             }
 
             : null;
+        }
+
+        private static ByteStringValue declarationExtension(ByteStringValue original)
+        {
+            var builder = new GoBuilder(); builder.WriteString(".d"); builder.WriteString(original); builder.WriteString(".ts");
+            return builder.Value();
         }
 
         internal (RootedFilePath Path, bool Ok) tryFile(resolutionCandidate file)
@@ -1414,11 +1436,12 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
                 return tryFileLookup(candidate) ? (candidate, true) : (default, false);
             }
 
-            var extension = TsPath.RootedFilePathFromPath(file.path).Extension();
+            var extension = TsPath.RootedFilePathFromPath(file.path).ExtensionValue();
             var stem = file.RemoveExtension(extension);
             foreach (var suffix in compilerOptions.ModuleSuffixes)
             {
-                var path = stem.AppendSuffix(suffix + extension);
+                var builder = new GoBuilder(); builder.WriteString(suffix); builder.WriteString(extension);
+                var path = stem.AppendSuffix(builder.Value());
                 if (tryFileLookup(path))
                     return (path, true);
             }
@@ -1456,7 +1479,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
 
             ResolvedData? Loader(Extensions extensions, resolutionCandidate location)
             {
-                var fromFile = loadFileNameFromPackageJSONField(extensions, location, packageFile.AsString());
+                var fromFile = loadFileNameFromPackageJSONField(extensions, location, packageFile.AsValue());
                 if (fromFile != null)
                     return fromFile;
                 var expanded = extensions == Extensions.Declaration ? Extensions.TypeScript | Extensions.Declaration : extensions;
@@ -1483,11 +1506,11 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
                 var(relative, ok) = CaseSensitivity.CaseInsensitive.RelativePathFromDirectory(candidate, TsPath.RootedFilePathFromPath(modulePath));
                 if (!ok)
                     throw new InvalidOperationException("package module path must have the same root as its candidate directory");
-                var moduleName = relative.AsString();
-                if (TsPath.IsEncodedDynamicFileName(candidate.AsString()))
+                var moduleName = relative.AsValue();
+                if (TsPath.IsEncodedDynamicFileName(candidate.AsValue()))
                     moduleName = TsPath.DecodeDynamicURIPath(moduleName);
                 tracer?.write(Diagnostics.X_package_json_has_a_typesVersions_entry_0_that_matches_compiler_version_1_looking_for_a_pattern_to_match_module_name_2, versionPaths.Version, Core.Version(), moduleName);
-                var result = tryLoadModuleUsingPaths(ext, ByteStringValue.FromString(moduleName), candidate, versionPaths.GetPaths(), TryParsePatterns(versionPaths.GetPaths()), Loader);
+                var result = tryLoadModuleUsingPaths(ext, moduleName, candidate, versionPaths.GetPaths(), TryParsePatterns(versionPaths.GetPaths()), Loader);
                 if (result != null)
                 {
                     if (result.packageId.Name != "")
@@ -1512,7 +1535,8 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
             return null;
         }
 
-        internal ResolvedData? loadFileNameFromPackageJSONField(Extensions ext, resolutionCandidate candidate, string packageJSONValue)
+        internal ResolvedData? loadFileNameFromPackageJSONField(Extensions ext, resolutionCandidate candidate, string packageJSONValue) => loadFileNameFromPackageJSONField(ext, candidate, ByteStringValue.FromString(packageJSONValue));
+        internal ResolvedData? loadFileNameFromPackageJSONField(Extensions ext, resolutionCandidate candidate, ByteStringValue packageJSONValue)
         {
             if (candidate.directoryOnly)
                 return null;
@@ -1526,8 +1550,8 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
                 return new ResolvedData
                 {
                     path = path,
-                    extension = extension,
-                    resolvedUsingTsExtension = packageJSONValue.EndsWith('*') && extension != ""
+                    extension = ByteStringValue.FromString(extension),
+                    resolvedUsingTsExtension = packageJSONValue.EndsWith("*"u8) && extension != ""
                 };
             }
 
@@ -1538,7 +1562,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
                     return new ResolvedData
                     {
                         path = path,
-                        extension = ".json"
+                        extension = ByteStringValue.FromString(".json")
                     };
             }
 
@@ -1622,7 +1646,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
                     {
                         Name = name,
                         Version = version,
-                        SubModuleName = ok ? relative.AsString() : "",
+                        SubModuleNameValue = ok ? relative.AsValue() : default,
                         PeerDependencies = readPackageJsonPeerDependencies(info)
                     };
                 }
@@ -1695,34 +1719,35 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
 
         internal bool conditionMatches(string condition) => condition == "default" || GoSlices.Contains(conditions, condition) || GoSlices.Contains(conditions, "types") && ModuleUtilities.IsApplicableVersionedTypesKey(condition);
         internal Action<Message, object[]>? getTraceFunc() => tracer == null ? null : (message, args) => tracer.write(message, args);
-        internal Slice<ResolvedEntrypoint> loadEntrypointsFromExportMap(InfoCacheEntry package, string packageName, ExportsOrImports exports)
+        internal Slice<ResolvedEntrypoint> loadEntrypointsFromExportMap(InfoCacheEntry package, string packageName, ExportsOrImports exports) => loadEntrypointsFromExportMap(package, ByteStringValue.FromString(packageName), exports);
+        internal Slice<ResolvedEntrypoint> loadEntrypointsFromExportMap(InfoCacheEntry package, ByteStringValue packageName, ExportsOrImports exports)
         {
             Slice<ResolvedEntrypoint> entries = default;
-            void Load(string subpath, HashSet<string>? include, HashSet<string>? exclude, ExportsOrImports target)
+            void Load(ByteStringValue subpath, HashSet<string>? include, HashSet<string>? exclude, ExportsOrImports target)
             {
                 if (target.Type == JSONValueType.String && ((string)target.Value!).StartsWith("./", StringComparison.Ordinal))
                 {
-                    var text = (string)target.Value!;
+                    var text = ByteStringValue.FromString((string)target.Value!);
                     var star = text.IndexOf('*');
                     if (star >= 0)
                     {
                         if (star != text.LastIndexOf('*'))
                             return;
-                        var dynamicPackage = TsPath.IsEncodedDynamicFileName(package.PackageDirectory.String());
-                        List<string> patterns = [TsPath.ChangeFullExtension(text[..star] + "**/*" + text[(star + 1)..], ".*")];
+                        var dynamicPackage = TsPath.IsEncodedDynamicFileName(package.PackageDirectory.AsDirectoryPath().AsValue());
+                        Slice<ByteStringValue> patterns = Slice<ByteStringValue>.FromArray([TsPath.ChangeFullExtension(TsPath.pathConcat(text.Slice(0, star), ByteStringValue.FromString("**/*"), text.Slice(star + 1)), ".*")]);
                         if (dynamicPackage)
-                            patterns = ["**/*"];
-                        var pattern = text[2..];
+                            patterns = Slice<ByteStringValue>.FromArray([ByteStringValue.FromString("**/*")]);
+                        var pattern = text.Slice(2);
                         var split = pattern.IndexOf('*');
-                        var leading = pattern[..split];
-                        var trailing = pattern[(split + 1)..];
-                        var files = VfsMatch.ReadDirectory(resolver.fs, package.PackageDirectory.AsDirectoryPath(), extensions.Array(), (List<string>? )null, patterns, VfsMatch.UnlimitedDepth);
+                        var leading = pattern.Slice(0, split);
+                        var trailing = pattern.Slice(split + 1);
+                        var files = VfsMatch.ReadDirectory(resolver.fs, package.PackageDirectory.AsDirectoryPath(), extensions.Array(), default(Slice<ByteStringValue>), patterns, VfsMatch.UnlimitedDepth);
                         foreach (var file in files)
                         {
                             var(relative, ok) = resolver.fs.CaseSensitivity().RelativeFilePathFromDirectory(package.PackageDirectory.AsDirectoryPath(), file);
                             if (!ok)
                                 continue;
-                            var logical = relative.AsString();
+                            var logical = relative.AsValue();
                             if (dynamicPackage)
                                 logical = TsPath.DecodeDynamicURIPath(logical);
                             var(matched, matchedOk) = getMatchedStarForPatternEntrypoint(logical, leading, trailing, dynamicPackage);
@@ -1731,23 +1756,23 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
                             if (dynamicPackage)
                                 matched = TsPath.EncodeDynamicLogicalModuleSpecifier(matched);
                             var substar = subpath.IndexOf('*');
-                            var resolvedSubpath = substar < 0 ? subpath : subpath[..substar] + matched + subpath[(substar + 1)..];
-                            if (resolvedSubpath.StartsWith("./", StringComparison.Ordinal))
-                                resolvedSubpath = resolvedSubpath[2..];
-                            if (resolvedSubpath == "")
+                            var resolvedSubpath = substar < 0 ? subpath : TsPath.pathConcat(subpath.Slice(0, substar), matched, subpath.Slice(substar + 1));
+                            if (resolvedSubpath.StartsWith("./"u8))
+                                resolvedSubpath = resolvedSubpath.Slice(2);
+                            if (resolvedSubpath.Length == 0)
                                 continue;
-                            entries = entries.Append(resolver.createResolvedEntrypointHandlingSymlink(file, TsPath.ToModuleSpecifier(packageName + "/" + resolvedSubpath), include, exclude, text.EndsWith('*') ? Ending.ExtensionChangeable : Ending.Fixed));
+                            entries = entries.Append(resolver.createResolvedEntrypointHandlingSymlink(file, TsPath.ToModuleSpecifier(TsPath.pathConcat(packageName, ByteStringValue.FromString("/"), resolvedSubpath)), include, exclude, text.EndsWith("*"u8) ? Ending.ExtensionChangeable : Ending.Fixed));
                         }
                     }
                     else
                     {
-                        var components = TsPath.GetPathComponents(text).Skip(2);
-                        if (components.Any(part => part is ".." or "." or "node_modules"))
+                        var components = TsPath.GetPathComponents(text);
+                        if (Core.Some(components.Slice2(Math.Min(2, components.Length), components.Length), static part => part.EqualsBytes(".."u8) || part.EqualsBytes("."u8) || part.EqualsBytes("node_modules"u8)))
                             return;
                         var candidate = resolutionCandidateFromDirectoryPath(package.PackageDirectory.AsDirectoryPath(), text);
                         var result = loadFileNameFromPackageJSONField(extensions, candidate, text);
                         if (isResolved(result))
-                            entries = entries.Append(resolver.createResolvedEntrypointHandlingSymlink(result!.path, TsPath.ToModuleSpecifier(TsPath.ResolvePath(packageName, subpath)), include, exclude, text.EndsWith('*') ? Ending.ExtensionChangeable : Ending.Fixed));
+                            entries = entries.Append(resolver.createResolvedEntrypointHandlingSymlink(result!.path, TsPath.ToModuleSpecifier(TsPath.ResolvePath(packageName, Slice<ByteStringValue>.FromArray([subpath]))), include, exclude, text.EndsWith("*"u8) ? Ending.ExtensionChangeable : Ending.Fixed));
                     }
                 }
                 else if (target.Type == JSONValueType.Array)
@@ -1781,30 +1806,30 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
 
             if (exports.Type == JSONValueType.Array)
                 foreach (var element in exports.AsArray() ?? [])
-                    Load(".", null, null, element);
+                    Load(ByteStringValue.FromString("."), null, null, element);
             else if (exports.Type == JSONValueType.Object && exports.IsSubpaths())
                 foreach (var(subpath, export)in exports.AsObject().Entries())
-                    Load(subpath, null, null, export);
+                    Load(ByteStringValue.FromString(subpath), null, null, export);
             else
-                Load(".", null, null, exports);
+                Load(ByteStringValue.FromString("."), null, null, exports);
             return entries;
         }
 
-        internal (string Matched, bool Ok) getMatchedStarForPatternEntrypoint(string file, string leading, string trailing, bool forceCaseSensitive)
+        internal (ByteStringValue Matched, bool Ok) getMatchedStarForPatternEntrypoint(ByteStringValue file, ByteStringValue leading, ByteStringValue trailing, bool forceCaseSensitive)
         {
             var sensitive = forceCaseSensitive || resolver.fs.CaseSensitivity().IsCaseSensitive();
-            bool Matches(string value) => value.Length >= leading.Length + trailing.Length && (sensitive ? value.StartsWith(leading, StringComparison.Ordinal) && value.EndsWith(trailing, StringComparison.Ordinal) : UnicodeCase.EqualFold(value.AsSpan(0, leading.Length), leading.AsSpan()) && UnicodeCase.EqualFold(value.AsSpan(value.Length - trailing.Length), trailing.AsSpan()));
+            bool Matches(ByteStringValue value) => value.Length >= leading.Length + trailing.Length && (sensitive ? value.StartsWith(leading) && value.EndsWith(trailing) : UnicodeCase.EqualFold(value.Slice(0, leading.Length), leading) && UnicodeCase.EqualFold(value.Slice(value.Length - trailing.Length), trailing));
             if (Matches(file))
-                return (file[leading.Length..(file.Length - trailing.Length)], true);
+                return (file.Slice(leading.Length, file.Length - trailing.Length), true);
             var js = ModuleUtilities.TryGetJSExtensionForFile(file, compilerOptions);
             if (js != "")
             {
                 var swapped = TsPath.ChangeFullExtension(file, js);
                 if (Matches(swapped))
-                    return (swapped[leading.Length..(swapped.Length - trailing.Length)], true);
+                    return (swapped.Slice(leading.Length, swapped.Length - trailing.Length), true);
             }
 
-            return ("", false);
+            return (default, false);
         }
     }
 
@@ -1856,7 +1881,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
         int separator = trimmed.IsBytes ? trimmed.ByteSpan.LastIndexOfAny((byte)'/', (byte)'\\') : trimmed.CharSpan.LastIndexOfAny('/', '\\');
         var last = trimmed.Slice(separator + 1);
         var candidate = resolutionCandidateFromDirectoryPath(directory, name);
-        return candidate with { directoryOnly = end != name.Length || last.EqualsBytes("."u8) || last.EqualsBytes(".."u8) || TsPath.HasTrailingDirectorySeparator(candidate.path.AsString()) };
+        return candidate with { directoryOnly = end != name.Length || last.EqualsBytes("."u8) || last.EqualsBytes(".."u8) || TsPath.HasTrailingDirectorySeparator(candidate.path.AsValue()) };
     }
 
     internal static (RootedPath Path, string Text, bool DirectoryOnly, bool HasTrailingDirectorySeparator) VerificationNormalizePathForCJSResolution(RootedDirectoryPath directory, string name)
@@ -1892,12 +1917,30 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
         }
         output.WriteString(text.Slice(start)); return output.Value();
     }
-    internal static bool extensionIsOk(Extensions mask, string extension) => (mask & Extensions.JavaScript) != 0 && extension is ".js" or ".jsx" or ".mjs" or ".cjs" || (mask & Extensions.TypeScript) != 0 && extension is ".ts" or ".tsx" or ".mts" or ".cts" || (mask & Extensions.Declaration) != 0 && extension is ".d.ts" or ".d.mts" or ".d.cts" || (mask & Extensions.Json) != 0 && extension == ".json";
+    internal static bool extensionIsOk(Extensions mask, string extension) => extensionIsOk(mask, ByteStringValue.FromString(extension));
+    internal static bool extensionIsOk(Extensions mask, ByteStringValue extension) =>
+        (mask & Extensions.JavaScript) != 0 && (extension.EqualsBytes(".js"u8) || extension.EqualsBytes(".jsx"u8) || extension.EqualsBytes(".mjs"u8) || extension.EqualsBytes(".cjs"u8)) ||
+        (mask & Extensions.TypeScript) != 0 && (extension.EqualsBytes(".ts"u8) || extension.EqualsBytes(".tsx"u8) || extension.EqualsBytes(".mts"u8) || extension.EqualsBytes(".cts"u8)) ||
+        (mask & Extensions.Declaration) != 0 && (extension.EqualsBytes(".d.ts"u8) || extension.EqualsBytes(".d.mts"u8) || extension.EqualsBytes(".d.cts"u8)) ||
+        (mask & Extensions.Json) != 0 && extension.EqualsBytes(".json"u8);
     public static List<string>? GetAutomaticTypeDirectiveNames(CompilerOptions options, RootedDirectoryPath directory, IFS fs)
     {
+        if (!options.UsesWildcardTypes()) return options.Types ?? [];
+        var values = GetAutomaticTypeDirectiveNameValues(options, directory, fs);
+        if (values.IsNil) return null;
+        var output = new List<string>(values.Length);
+        foreach (var value in values) output.Add(value.Value.Materialize()!);
+        return output;
+    }
+    internal static Slice<ByteStringKey> GetAutomaticTypeDirectiveNameValues(CompilerOptions options, RootedDirectoryPath directory, IFS fs)
+    {
         if (!options.UsesWildcardTypes())
-            return options.Types ?? [];
-        List<string>? matches = null;
+        {
+            var explicitNames = Slice<ByteStringKey>.Make(options.Types?.Count ?? 0);
+            for (int i = 0; i < explicitNames.Length; i++) explicitNames[i] = ByteStringKey.FromString(options.Types![i]);
+            return explicitNames;
+        }
+        Slice<ByteStringKey> matches = default;
         var(roots, _) = options.GetEffectiveTypeRoots(directory);
         foreach (var root in roots ?? [])
         {
@@ -1917,23 +1960,23 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
 
                 if (!notNeeded)
                 {
-                    var name = typeDirectory.AsPath().BaseName();
-                    if (!name.StartsWith('.'))
-                        (matches ??= []).Add(name);
+                    var name = typeDirectory.AsPath().BaseNameValue();
+                    if (name.Length == 0 || name[0] != '.')
+                        matches = matches.Append(ByteStringKey.FromValue(name));
                 }
             }
         }
 
-        List<string>? result = null;
+        Slice<ByteStringKey> result = default;
         foreach (var type in options.Types ?? [])
         {
             if (type == "*")
             {
-                if (matches != null)
-                    (result ??= []).AddRange(matches);
+                if (!matches.IsNil)
+                    result = result.Append(matches);
             }
             else
-                (result ??= []).Add(type);
+                result = result.Append(ByteStringKey.FromString(type));
         }
 
         return Core.Deduplicate(result);
@@ -1949,8 +1992,8 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
             features = NodeResolutionFeatures.All,
             compilerOptions = compilerOptions
         };
-        var dynamicPackage = TsPath.IsEncodedDynamicFileName(package.PackageDirectory.String());
-        var sourceName = dynamicPackage ? TsPath.DynamicURIPathToModuleSpecifier(packageName) : packageName;
+        var dynamicPackage = TsPath.IsEncodedDynamicFileName(package.PackageDirectory.AsDirectoryPath().AsValue());
+        var sourceName = dynamicPackage ? TsPath.DynamicURIPathToModuleSpecifier(ByteStringValue.FromString(packageName)) : ByteStringValue.FromString(packageName);
         if (package.Exists() && package.Contents!.Exports.IsPresent())
             return state.loadEntrypointsFromExportMap(package, sourceName, package.Contents.Exports);
         Slice<ResolvedEntrypoint> result = default;
@@ -1965,10 +2008,10 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
                 if (isResolved(main) && fs.CaseSensitivity().CompareFilePaths(file, main!.path) == 0)
                     continue;
                 var(relative, _) = fs.CaseSensitivity().RelativeFilePathFromDirectory(package.PackageDirectory.AsDirectoryPath(), file);
-                var specifier = relative.AsString();
+                var specifier = relative.AsValue();
                 if (dynamicPackage)
                     specifier = TsPath.DynamicURIPathToModuleSpecifier(specifier);
-                result = result.Append(createResolvedEntrypointHandlingSymlink(file, TsPath.ToModuleSpecifier(sourceName + "/" + specifier), null, null, Ending.Changeable));
+                result = result.Append(createResolvedEntrypointHandlingSymlink(file, TsPath.ToModuleSpecifier(TsPath.pathConcat(sourceName, ByteStringValue.FromString("/"), specifier)), null, null, Ending.Changeable));
             }
         }
 

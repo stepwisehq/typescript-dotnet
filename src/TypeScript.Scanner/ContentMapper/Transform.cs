@@ -16,7 +16,7 @@ public static partial class ContentMappers
 {
     // Explicit managed parse-option filename role; the source API path remains bytes.
     private static RootedFilePath fileNameFromParseOptions(SourceFileParseOptions options) =>
-        options.FileNameIsGoBytes ? RootedFilePath.FromGoString(options.FileName ?? "") :
+        options.FileNameIsGoBytes ? RootedFilePath.FromValue(options.FileNameValue.IsNull ? default : options.FileNameValue) :
             RootedFilePath.FromUnicode(options.FileName ?? "");
     public static (SourceFiles Files, Exception? Error) TransformAndParse(SourceFileParseOptions parseOptions, string content, Mapper mapper, IProject project)
     {
@@ -75,8 +75,8 @@ public static partial class ContentMappers
             var supplementalName = fileNameFromParseOptions(baseOptions).AppendSuffix(suffix);
             var supplementalOptions = baseOptions with
             {
-                FileName = baseOptions.FileNameIsGoBytes ? supplementalName.AsString() : supplementalName.ToUnicode(),
-                PathKey = PathKey.FromGoString(parseOptions.PathKey).AppendCanonicalSuffix(suffix).AsString()
+                FileNameValue = baseOptions.FileNameIsGoBytes ? supplementalName.AsValue() : ByteStringValue.FromString(supplementalName.ToUnicode()),
+                PathKeyValue = PathKey.FromValue(parseOptions.PathKeyValue).AppendCanonicalSuffix(suffix).AsValue()
             };
             if (isModuleVirtualExtension(supplemental.VirtualExtension))
                 supplementalOptions = supplementalOptions with
@@ -95,7 +95,7 @@ public static partial class ContentMappers
         {
             var file = files.Supplemental[i];
             var supplemental = result.Supplemental![i];
-            file.SetContentMapperInfo(new() { ContentMapper = mapperIdentity, TransformIdentity = transformIdentity, ParseOptions = baseOptions, VirtualFileName = RootedFilePath.FromGoString(file.FileNameGoBytes()), OriginalText = content, SpanMap = supplemental.Mappings, DiagnosticDirectives = supplemental.DiagnosticDirectives is null ? default : Slice<MappedDiagnosticDirective>.FromArray(supplemental.DiagnosticDirectives.ToArray()), CanonicalSourceFile = source });
+            file.SetContentMapperInfo(new() { ContentMapper = mapperIdentity, TransformIdentity = transformIdentity, ParseOptions = baseOptions, VirtualFileName = RootedFilePath.FromValue(file.FileNameGoValue()), OriginalText = content, SpanMap = supplemental.Mappings, DiagnosticDirectives = supplemental.DiagnosticDirectives is null ? default : Slice<MappedDiagnosticDirective>.FromArray(supplemental.DiagnosticDirectives.ToArray()), CanonicalSourceFile = source });
         }
 
         return (files, null);
@@ -106,7 +106,7 @@ public static partial class ContentMappers
     {
         foreach (var file in files.Supplemental)
         {
-            var filename = RootedFilePath.FromGoString(file.FileNameGoBytes());
+            var filename = RootedFilePath.FromValue(file.FileNameGoValue());
             if (fileExists(filename))
                 return new SupplementalFileCollisionError
                 {

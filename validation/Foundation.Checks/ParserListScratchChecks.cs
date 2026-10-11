@@ -95,7 +95,7 @@ public static class ParserListScratchChecks
         string body = string.Join("", Enumerable.Range(0, count).Select(i => "const v" + i + "=[" + elements + "];"));
         string text = string.Join("", Enumerable.Range(0, count).Select(i => "function f" + i + "(" + parameters + "){" + body + "}"));
         var file = Parser.ParseSourceFile(new("/nested.ts", "/nested.ts"), text, ScriptKind.TS);
-        Require((file.Diagnostics()?.Count ?? 0) == 0, "Nested list parsing has no syntax diagnostics");
+        Require((file.Diagnostics().Length) == 0, "Nested list parsing has no syntax diagnostics");
         var functions = file.Statements.Nodes;
         Require(functions.Count == count, "Outer source-element list remains complete");
         var allStatementLists = new List<Slice<Node>>();

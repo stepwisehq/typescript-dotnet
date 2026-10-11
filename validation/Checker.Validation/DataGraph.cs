@@ -150,12 +150,12 @@ public sealed partial class Graph
         if (type.Symbol()is { } symbol)
         {
             parts.Add(symbol.Name);
-            foreach (var node in symbol.Declarations ?? [])
+            foreach (var node in symbol.Declarations)
                 parts.Add($"{(int)node.Kind}:{node.Pos()}:{node.End()}");
         }
 
         if (type.AsTypeReference()is { } reference)
-            foreach (var arg in reference.resolvedTypeArguments ?? [])
+            foreach (var arg in reference.resolvedTypeArguments)
             {
                 parts.Add($"arg:{(uint)arg.Flags()}:{(uint)arg.ObjectFlags()}:{checker.TypeToString(arg)}");
                 if (arg.Symbol()is { } s)
@@ -201,6 +201,12 @@ public sealed partial class Graph
                         field.Refs.Add(Type(item)!.Value);
                 break;
             case "symbols":
+                if (value is Slice<Symbol> symbolHeader)
+                {
+                    field.Null = symbolHeader.IsNil;
+                    foreach (var item in symbolHeader) field.Refs.Add(Symbol(item)!.Value);
+                }
+                else
                 foreach (var item in (List<Symbol>? )value ?? [])
                     field.Refs.Add(Symbol(item)!.Value);
                 break;
@@ -215,6 +221,12 @@ public sealed partial class Graph
                         field.Refs.Add(Node(item)!.Value);
                 break;
             case "indexes":
+                if (value is Slice<IndexInfo> indexHeader)
+                {
+                    field.Null = indexHeader.IsNil;
+                    foreach (var item in indexHeader) field.Refs.Add(Index(item)!.Value);
+                }
+                else
                 foreach (var item in (List<IndexInfo>? )value ?? [])
                     field.Refs.Add(Index(item)!.Value);
                 break;
@@ -243,6 +255,12 @@ public sealed partial class Graph
                 field.Refs = values.Select(t => Type(t)!.Value).Order().ToList();
                 break;
             case "node-map":
+                if (value is Dictionary<ByteStringKey, Node> nodeMap)
+                {
+                    foreach (var pair in nodeMap.OrderBy(p => p.Key))
+                        field.NamedEntries.Add(new(Encoder.Bytes(pair.Key.ToString()), Node(pair.Value)));
+                }
+                else
                 foreach (var pair in ((Dictionary<string, Node>? )value ?? []).OrderBy(p => p.Key, StringComparer.Ordinal))
                     field.NamedEntries.Add(new(Encoder.Bytes(pair.Key), Node(pair.Value)));
                 break;
@@ -258,7 +276,10 @@ public sealed partial class Graph
 
                 break;
             case "bytes":
-                field.Bytes = Encoder.Bytes((string)value!);
+                if (value is ByteStringValue byteValue)
+                    field.Bytes = Encoder.Bytes(byteValue.Materialize());
+                else
+                    field.Bytes = Encoder.Bytes((string)value!);
                 field.Null = false;
                 break;
             case "bool":
@@ -316,7 +337,7 @@ public sealed partial class Graph
     private List<(string Name, object? Data)> SymbolLinks(Symbol symbol)
     {
         var location = checker.valueSymbolLinks.TryGet(symbol);
-        object? valueLinks = location.IsEmpty ? null : location;
+        object? valueLinks = Checker.VerificationLinkLocation(location);
         return [("valueSymbolLinks", valueLinks), ("typeAliasLinks", Checker.VerificationLinkLocation(checker.typeAliasLinks.TryGet(symbol))), ("declaredTypeLinks", Checker.VerificationLinkLocation(checker.declaredTypeLinks.TryGet(symbol))), ("deferredSymbolLinks", Checker.VerificationLinkLocation(checker.deferredSymbolLinks.TryGet(symbol))), ("mappedSymbolLinks", Checker.VerificationLinkLocation(checker.mappedSymbolLinks.TryGet(symbol))), ("symbolReferenceLinks", Checker.VerificationLinkLocation(checker.symbolReferenceLinks.TryGet(symbol))), ("moduleSymbolLinks", checker.VerificationDataModuleSymbolLinks(symbol))];
     }
 
@@ -422,9 +443,9 @@ public sealed partial class Graph
                 if ((type.Flags() & TypeFlags.StructuredType) != 0)
                 {
                     var props = checker.GetPropertiesOfType(type);
-                    record.PropertiesNull = props is null;
-                    foreach (var symbol in props ?? [])
-                        record.Properties.Add(new(Symbol(symbol)!.Value, Type(checker.GetTypeOfSymbol(symbol))!.Value, (uint)Checker.GetDeclarationModifierFlagsFromSymbol(symbol), (symbol.Declarations ?? []).Select(n => Symbol(n.Symbol())).ToList()));
+                    record.PropertiesNull = props.IsNil;
+                    foreach (var symbol in props)
+                        record.Properties.Add(new(Symbol(symbol)!.Value, Type(checker.GetTypeOfSymbol(symbol))!.Value, (uint)Checker.GetDeclarationModifierFlagsFromSymbol(symbol), GoSlices.Values(symbol.Declarations).Select(n => Symbol(n.Symbol())).ToList()));
                 }
 
                 record.Fields = Fields(type.data);

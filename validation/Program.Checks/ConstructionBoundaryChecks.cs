@@ -80,8 +80,8 @@ public static class ConstructionBoundaryChecks
         }
         finally { declarationChecker.Done(); }
         var missingGlobals = declarations.GetGlobalDiagnostics();
-        Check.Equal(missingGlobals?.Count ?? 0, 10, "actual noLib environment reports missing globals");
-        Check.True(missingGlobals!.All(diagnostic => diagnostic.Code() == Diagnostics.Cannot_find_global_type_0.Code()),
+        Check.Equal(missingGlobals.Length, 10, "actual noLib environment reports missing globals");
+        Check.True(GoSlices.Values(missingGlobals).All(diagnostic => diagnostic.Code() == Diagnostics.Cannot_find_global_type_0.Code()),
             "missing globals are real source diagnostics, not acquisition rejection");
 
         var fullEnvironment = Construct(new Dictionary<string, string>
@@ -100,7 +100,7 @@ public static class ConstructionBoundaryChecks
                 "actual later-library environment supports public source symbol query");
         }
         finally { fullChecker.Done(); }
-        Check.Equal(fullEnvironment.GetGlobalDiagnostics()?.Count ?? 0, 0, "actual later library globals initialize");
+        Check.Equal(fullEnvironment.GetGlobalDiagnostics().Length, 0, "actual later library globals initialize");
 
         var libraries = FixedLibraryEnvironment.Load();
         var inputs = new Dictionary<string, string>
@@ -120,7 +120,7 @@ public static class ConstructionBoundaryChecks
         var acquired = admitted.GetTypeChecker();
         Check.True(acquired.Checker is not null, "supported profile acquires the existing checker");
         acquired.Done();
-        Check.Equal(admitted.GetSemanticDiagnostics()?.Count ?? 0, 0, "supported simple program semantic diagnostics");
+        Check.Equal(admitted.GetSemanticDiagnostics().Length, 0, "supported simple program semantic diagnostics");
     }
 
     private static CompilerProgram Construct(Dictionary<string, string> inputs, bool bundled = false)

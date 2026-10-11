@@ -25,4 +25,18 @@ internal static partial class StringUtil
 
     public static bool HasPrefixAndSuffixWithoutOverlap(string s, string prefix, string suffix, bool caseSensitive) =>
         prefix.Length + suffix.Length <= s.Length && HasPrefix(s, prefix, caseSensitive) && HasSuffix(s, suffix, caseSensitive);
+    public static bool HasPrefix(ByteStringValue s, ByteStringValue prefix, bool caseSensitive)
+    {
+        if (caseSensitive) return s.StartsWith(prefix);
+        if (prefix.Length > s.Length) return false;
+        return UnicodeCase.EqualFold(s.Slice(0, prefix.Length), prefix);
+    }
+    public static bool HasSuffix(ByteStringValue s, ByteStringValue suffix, bool caseSensitive)
+    {
+        if (caseSensitive) return s.EndsWith(suffix);
+        if (suffix.Length > s.Length) return false;
+        return UnicodeCase.EqualFold(s.Slice(s.Length - suffix.Length), suffix);
+    }
+    public static bool HasPrefixAndSuffixWithoutOverlap(ByteStringValue s, ByteStringValue prefix, ByteStringValue suffix, bool caseSensitive) =>
+        prefix.Length + suffix.Length <= s.Length && HasPrefix(s, prefix, caseSensitive) && HasSuffix(s, suffix, caseSensitive);
 }

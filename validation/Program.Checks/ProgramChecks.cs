@@ -61,7 +61,7 @@ public static class ProgramChecks
     internal static ParsedCommandLine Parse(IFS fs, CompilerOptions? existing = null)
     {
         var(config, diagnostics) = ConfigParser.GetParsedCommandLineOfConfigFile(File("/src/tsconfig.json"), existing, null, fs, null);
-        Check.Equal(diagnostics?.Count ?? 0, 0, "original config diagnostics");
+        Check.Equal(diagnostics.Length, 0, "original config diagnostics");
         return config!;
     }
 
@@ -249,7 +249,7 @@ public static class ProgramChecks
             var program = CompilerProgram.NewProgram(new() { Config = config, Host = Host(fs) });
             var file = program.GetSourceFile(File("/src/index.ts"))!;
             Check.True(program.GetSourceFile(File("/src/a.ts"))is null, "source phase does not load imported source");
-            Check.Equal(program.GetResolvedModules()[fs.CaseSensitivity().PathKey(File(file.FileNameGoBytes()).AsPath()).AsString()]?.Count ?? 0, 0, "source phase module cache empty");
+            Check.Equal(program.GetResolvedModules()[ByteStringKey.FromValue(fs.CaseSensitivity().PathKey(File(file.FileNameGoBytes()).AsPath()).AsValue())]?.Count ?? 0, 0, "source phase module cache empty");
             Check.Equal(program.GetUnresolvedImports().Count, 0, "source phase unresolved imports empty");
             Check.Equal(program.collectPackageNames().unresolved.Count, 0, "source phase unresolved packages empty");
             files["/src/index.ts"] = row.Evaluation + tail;

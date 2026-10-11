@@ -17,15 +17,15 @@ public static partial class TsOptions
         List<PathKey>? recursiveKeys = null;
         foreach (var file in include!)
         {
-            string spec = TsPath.NormalizePath(TsPath.CombinePaths(currentDirectory.AsString(), file.AsString()));
-            if (excludeMatcher?.MatchString(spec) == true)
+            var spec = TsPath.NormalizePath(TsPath.CombinePaths(currentDirectory.AsValue(), file.AsValue()));
+            if (excludeMatcher?.MatchValue(spec) == true)
                 continue;
             var match = getWildcardDirectoryFromSpec(spec);
             if (match != null)
             {
                 var path = match.Path;
-                if (path.AsString() == "")
-                    path = TsPath.RootedDirectoryPathFromNormalized(spec[..TsPath.GetRootLength(spec)]);
+                if (path.AsValue().Length == 0)
+                    path = TsPath.RootedDirectoryPathFromNormalized(spec.Slice(0, TsPath.GetRootLength(spec)));
                 var key = caseSensitivity.PathKey(path.AsPath());
                 bool exists = keyToPath.TryGetValue(key, out var existingPath);
                 bool existingRecursive = exists && directories.TryGetValue(existingPath, out var oldRecursive) && oldRecursive;
@@ -58,22 +58,23 @@ public static partial class TsOptions
         internal bool Recursive;
     }
 
-    internal static wildcardDirectoryMatch? getWildcardDirectoryFromSpec(string spec)
+    internal static wildcardDirectoryMatch? getWildcardDirectoryFromSpec(string spec) => getWildcardDirectoryFromSpec(ByteStringValue.FromString(spec));
+    internal static wildcardDirectoryMatch? getWildcardDirectoryFromSpec(ByteStringValue spec)
     {
-        int firstWildcard = spec.IndexOfAny(['*', '?']);
+        int firstWildcard = spec.IndexOfAny('*', '?');
         if (firstWildcard >= 0)
         {
-            int separator = spec[..firstWildcard].LastIndexOf('/');
+            int separator = spec.Slice(0, firstWildcard).LastIndexOf('/');
             if (separator >= 0)
                 return new()
                 {
-                    Path = separator > 0 ? TsPath.RootedDirectoryPathFromAbsolute(spec[..separator]) : default,
+                    Path = separator > 0 ? TsPath.RootedDirectoryPathFromAbsolute(spec.Slice(0, separator)) : default,
                     Recursive = firstWildcard < spec.LastIndexOf('/')
                 };
         }
 
         int lastSeparator = spec.LastIndexOf('/');
-        return lastSeparator >= 0 && VfsMatch.IsImplicitGlob(spec[(lastSeparator + 1)..]) ? new()
+        return lastSeparator >= 0 && VfsMatch.IsImplicitGlob(spec.Slice(lastSeparator + 1)) ? new()
         {
             Path = TsPath.RootedDirectoryPathFromAbsolute(TsPath.RemoveTrailingDirectorySeparator(spec)),
             Recursive = true

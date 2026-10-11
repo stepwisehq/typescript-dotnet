@@ -74,7 +74,7 @@ public static class ByteSourceChecks
         Bytes(original, file.TextView().AsSpan(), "Parser immutable source survives caller mutation");
         Bytes(original, file.TextBytes(), "Public source bytes preserve encoded source");
         Equal("const café = \"🦀\";", file.DecodedText(), "Public decoded source is Unicode");
-        Equal(0, file.Diagnostics()?.Count ?? 0, "Parser diagnostics unchanged by mutation");
+        Equal(0, file.Diagnostics().Length, "Parser diagnostics unchanged by mutation");
         byte[] returned = file.TextBytes(); Array.Fill(returned, (byte)'?');
         Bytes(original, file.TextView().AsSpan(), "Public TextBytes cannot mutate source");
         string raw = file.Text();
@@ -186,7 +186,7 @@ public static class ByteSourceChecks
         Equal(5, memory.Count, "UTF8 BOM view byte length");
         var file = Parse([0xef, 0xbb, 0xbf, 0x63, 0x6f, 0x6e, 0x73, 0x74, 0x20, 0x78, 0x3d, 0x31, 0x3b]);
         Bytes([0xef, 0xbb, 0xbf, 0x63, 0x6f, 0x6e, 0x73, 0x74, 0x20, 0x78, 0x3d, 0x31, 0x3b], file.TextView().AsSpan(), "Direct parser input preserves BOM and byte positions");
-        Equal(0, file.Diagnostics()?.Count ?? 0, "Scanner recognizes BOM as whitespace");
+        Equal(0, file.Diagnostics().Length, "Scanner recognizes BOM as whitespace");
         byte[] partial = [0xef, 0xbb];
         Bytes(partial, VfsInternal.DecodeSourceBytes(partial).Contents.AsSpan(), "Incomplete BOM is ordinary raw input");
         Require(VfsInternal.DecodeSourceBytes([]).Contents.AsSpan().IsEmpty, "Empty filesystem source is successful empty text");
@@ -219,7 +219,7 @@ public static class ByteSourceChecks
         public (string Contents, bool Ok) ReadFile(RootedFilePath path)
         { Reads++; return FileExists(path) ? (Contents, true) : ("", false); }
         public bool DirectoryExists(RootedDirectoryPath path) => path.AsString() == "/";
-        public Entries GetAccessibleEntries(RootedDirectoryPath path) => new() { Files = ["source.ts"], Directories = [] };
+        public Entries GetAccessibleEntries(RootedDirectoryPath path) => new() { Files = Slice<ByteStringValue>.FromArray([ByteStringValue.FromString("source.ts")]), Directories = Slice<ByteStringValue>.Make(0) };
         public TypeScript.Vfs.FileInfo? Stat(RootedPath path) => null;
         public RootedPath Realpath(RootedPath path) => path;
     }

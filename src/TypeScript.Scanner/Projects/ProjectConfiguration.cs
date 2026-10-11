@@ -7,10 +7,13 @@ using TypeScript.Scanner;
 namespace TypeScript.Compiler;
 internal sealed class ProjectConfiguration
 {
-    internal string FileName { get; }
-    internal string Root { get; }
+    private ByteStringValue fileName, rootDirectory;
+    internal string FileName { get => fileName.Materialize()!; private init => fileName = ByteStringValue.FromString(value); }
+    internal string Root { get => rootDirectory.Materialize()!; private init => rootDirectory = ByteStringValue.FromString(value); }
     internal SourceFile SourceFile { get; }
-    internal IReadOnlyList<string> Files { get; }
+    private IReadOnlyList<string>? files;
+    private List<RootedFilePath>? rawFileNames;
+    internal IReadOnlyList<string> Files => files ??= rawFileNames!.Select(static path => path.AsString()).ToArray();
     internal CompilerOptions Options { get; } = CreateOptions();
     internal ParsedCommandLine? Parsed { get; }
 
@@ -100,7 +103,7 @@ internal sealed class ProjectConfiguration
             paths.Add(text);
         }
 
-        Files = paths;
+        this.files = paths;
     }
 
     internal ProjectConfiguration(ConfigurationInspection inspection)
@@ -112,7 +115,7 @@ internal sealed class ProjectConfiguration
         Options = Parsed.CompilerOptions().Clone();
         try
         {
-            Files = (Parsed.FileNames() ?? []).Select(path => path.ToUnicode()).ToArray();
+            files = (Parsed.FileNames() ?? []).Select(path => path.ToUnicode()).ToArray();
         }
         catch (System.Text.DecoderFallbackException ex)
         {
@@ -125,11 +128,11 @@ internal sealed class ProjectConfiguration
     internal ProjectConfiguration(TypeScript.TsOptions.ParsedCommandLine parsed)
     {
         Parsed = parsed;
-        FileName = parsed.ConfigName().AsString();
-        Root = parsed.BaseDirectory().AsString();
+        fileName = parsed.ConfigName().AsValue();
+        rootDirectory = parsed.BaseDirectory().AsValue();
         SourceFile = parsed.ConfigFile?.SourceFile!;
         Options = parsed.CompilerOptions();
-        Files = (parsed.FileNames() ?? []).Select(path => path.AsString()).ToArray();
+        rawFileNames = new(parsed.FileNames() ?? []);
     }
 
     internal Node? GetFileLiteral(int index)
@@ -138,7 +141,7 @@ internal sealed class ProjectConfiguration
         Node? result = null;
         void Visit(Node node)
         {
-            if (node.Kind == Kind.PropertyAssignment && node.AsPropertyAssignment().Name().Text() == "files")
+            if (node.Kind == Kind.PropertyAssignment && node.AsPropertyAssignment().Name().TextValue().EqualsBytes("files"u8))
             {
                 Node initializer = node.AsPropertyAssignment().Initializer;
                 if (initializer.Kind == Kind.ArrayLiteralExpression && initializer.Elements()is { } elements && index < elements.Count)
@@ -158,7 +161,8 @@ internal sealed class ProjectConfiguration
     }
 
     private ProjectException Error(string message) => new("configuration", message, FileName);
-    private string Decode(string raw)
+    private string Decode(string raw) => Decode(ByteStringValue.FromString(raw));
+    private string Decode(ByteStringValue raw)
     {
         try
         {
@@ -173,7 +177,7 @@ internal sealed class ProjectConfiguration
     private void ValidateCompatibilityStrings(Node node)
     {
         if (Ast.IsStringLiteral(node))
-            Decode(node.Text());
+            Decode(node.TextValue());
         node.ForEachChild(child =>
         {
             ValidateCompatibilityStrings(child);
@@ -185,10 +189,10 @@ internal sealed class ProjectConfiguration
     {
         if (node.Kind == Kind.ObjectLiteralExpression)
         {
-            var seen = new HashSet<string>(StringComparer.Ordinal);
+            var seen = new HashSet<ByteStringKey>(ByteStringKey.Comparer);
             foreach (Node property in node.AsObjectLiteralExpression().Properties?.Nodes ?? default)
-                if (property.Kind == Kind.PropertyAssignment && !seen.Add(property.AsPropertyAssignment().Name().Text()))
-                    throw Error("Duplicate configuration property: " + Decode(property.AsPropertyAssignment().Name().Text()));
+                if (property.Kind == Kind.PropertyAssignment && !seen.Add(ByteStringKey.FromValue(property.AsPropertyAssignment().Name().TextValue())))
+                    throw Error("Duplicate configuration property: " + Decode(property.AsPropertyAssignment().Name().TextValue()));
         }
 
         node.ForEachChild(child =>

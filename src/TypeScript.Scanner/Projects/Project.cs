@@ -15,7 +15,7 @@ public sealed class Project : ICheckerProgramHost
     private ICheckerProgramHost ActualHost => genuineProgram ?? throw MissingProgramService("genuine Program");
 
     private readonly DefaultResolver resolver = null!;
-    private readonly Dictionary<string, SourceFile> filesByPath = new(StringComparer.Ordinal);
+    private readonly Dictionary<ByteStringKey, SourceFile> filesByPath = new(ByteStringKey.Comparer);
     private Slice<SourceFile> sourceFiles;
     private readonly List<SourceFile> roots = [], users = [];
     private readonly List<ProjectResolutionEdge> edges = [];
@@ -52,10 +52,11 @@ public sealed class Project : ICheckerProgramHost
                 Binder.BindSourceFile(file);
     }
 
-    Dictionary<string, ModeAwareCache<ResolvedModule?>> ICheckerProgramHost.GetResolvedModules() => ActualHost.GetResolvedModules();
+    Dictionary<ByteStringKey, ModeAwareCache<ResolvedModule?>> ICheckerProgramHost.GetResolvedModules() => ActualHost.GetResolvedModules();
     Dictionary<string, bool> ICheckerProgramHost.GetPackagesMap() => ActualHost.GetPackagesMap();
     SourceFileMetaData ICheckerProgramHost.GetSourceFileMetaData(PathKey path) => ActualHost.GetSourceFileMetaData(path);
     (string ModuleReference, Node? Specifier) ICheckerProgramHost.GetJSXRuntimeImportSpecifier(PathKey path) => ActualHost.GetJSXRuntimeImportSpecifier(path);
+    (ByteStringValue ModuleReference, Node? Specifier) ICheckerProgramHost.GetJSXRuntimeImportSpecifierValue(PathKey path) => ActualHost.GetJSXRuntimeImportSpecifierValue(path);
     Node? ICheckerProgramHost.GetImportHelpersImportSpecifier(PathKey path) => ActualHost.GetImportHelpersImportSpecifier(path);
     bool ICheckerProgramHost.SourceFileMayBeEmitted(SourceFile file, bool forceDtsEmit) => ActualHost.SourceFileMayBeEmitted(file, forceDtsEmit);
     SourceOutputAndProjectReference? ICheckerProgramHost.GetProjectReferenceFromOutputDts(PathKey path) => ActualHost.GetProjectReferenceFromOutputDts(path);
@@ -126,7 +127,7 @@ public sealed class Project : ICheckerProgramHost
             filesByPath.Add(pair.Key, pair.Value);
         var libraries = new List<SourceFile>();
         foreach (var file in sourceFiles)
-            if (program.IsSourceFileDefaultLibrary(PathKey.FromGoString(file.PathKey()))) libraries.Add(file);
+            if (program.IsSourceFileDefaultLibrary(PathKey.FromValue(file.PathKeyValue()))) libraries.Add(file);
         LibraryFiles = libraries.ToArray();
         foreach (var file in sourceFiles)
             if (!LibraryFiles.Contains(file, ReferenceEqualityComparer.Instance)) users.Add(file);
@@ -139,7 +140,7 @@ public sealed class Project : ICheckerProgramHost
         foreach (var file in sourceFiles)
             foreach (var import in file.Imports())
                 if (program.GetResolvedModuleFromModuleSpecifier(file, import) is { } resolved)
-                    edges.Add(new(file, import, ProjectDiskHost.DecodeModuleReference(import.Text()),
+                    edges.Add(new(file, import, ProjectDiskHost.DecodeModuleReference(import.TextValue()),
                         program.GetModeForUsageLocation(file, import), resolved, program.GetSourceFileForResolvedModule(resolved)));
     }
 
@@ -148,7 +149,7 @@ public sealed class Project : ICheckerProgramHost
         this.configuration = configuration;
         disk = new(configuration.Root);
         var resolutionHost = new LegacyResolutionHost(disk);
-        resolver = DefaultResolver.NewResolver(new ResolverOptions { Host = resolutionHost, CompilerOptions = Options, ProjectName = GoString.ToUtf8(configuration.FileName) });
+        resolver = DefaultResolver.NewResolver(new ResolverOptions { Host = resolutionHost, CompilerOptions = Options, ProjectNameValue = PathByteText.FromUnicodeValue(configuration.FileName) });
         LibraryFiles = FixedLibraryEnvironment.Load();
         var rootNames = new List<string>();
         foreach (string root in configuration.Files)
@@ -191,14 +192,18 @@ public sealed class Project : ICheckerProgramHost
         }
 
         foreach (string name in rootNames)
-            if (filesByPath.TryGetValue(name, out SourceFile? source) && !roots.Contains(source, ReferenceEqualityComparer.Instance))
+            if (filesByPath.TryGetValue(ByteStringKey.FromString(name), out SourceFile? source) && !roots.Contains(source, ReferenceEqualityComparer.Instance))
                 roots.Add(source);
     }
 
-    internal static void RequireImplementationFile(string path)
+    internal static void RequireImplementationFile(string path) => RequireImplementationFile(ByteStringValue.FromString(path));
+    internal static void RequireImplementationFile(ByteStringValue path)
     {
-        if (!path.EndsWith(".ts", StringComparison.Ordinal) || TsPath.IsDeclarationFileName(path))
-            throw new ProjectException("sourceFileForm", "Only user .ts implementations are supported: " + path, path);
+        if (!path.EndsWith(".ts"u8) || TsPath.IsDeclarationFileName(path))
+        {
+            string text = path.Materialize()!;
+            throw new ProjectException("sourceFileForm", "Only user .ts implementations are supported: " + text, text);
+        }
     }
 
     public IReadOnlyList<Diagnostic> Check()
@@ -248,7 +253,7 @@ public sealed class Project : ICheckerProgramHost
     {
         ValidateOwned(importingFile);
         if (genuineProgram is not null)
-            return genuineProgram.GetResolvedModule(importingFile, GoString.ToUtf8(moduleReference), mode);
+            return genuineProgram.GetResolvedModule(importingFile, ByteStringValue.FromView(ByteStringView.FromOwnedBytes(System.Text.Encoding.UTF8.GetBytes(moduleReference))), mode);
         // Cached only: checker queries cannot discover different files after loading.
         foreach (ProjectResolutionEdge edge in edges)
             if (ReferenceEquals(edge.ImportingFile, importingFile) && edge.ModuleReference == moduleReference && edge.Mode == mode)
@@ -256,7 +261,14 @@ public sealed class Project : ICheckerProgramHost
         return null;
     }
 
-    ResolvedModule? ICheckerProgramHost.GetResolvedModule(SourceFile importingFile, string moduleReference, ResolutionMode mode) => GetResolvedModule(importingFile, ProjectDiskHost.DecodeModuleReference(moduleReference), mode);
+    ResolvedModule? ICheckerProgramHost.GetResolvedModule(SourceFile importingFile, string moduleReference, ResolutionMode mode) => GetResolvedModuleValue(importingFile, ByteStringValue.FromString(moduleReference), mode);
+    ResolvedModule? ICheckerProgramHost.GetResolvedModule(SourceFile importingFile, ByteStringValue moduleReference, ResolutionMode mode) => GetResolvedModuleValue(importingFile, moduleReference, mode);
+    private ResolvedModule? GetResolvedModuleValue(SourceFile importingFile, ByteStringValue moduleReference, ResolutionMode mode)
+    {
+        ValidateOwned(importingFile);
+        return genuineProgram is not null ? genuineProgram.GetResolvedModule(importingFile, moduleReference, mode)
+            : GetResolvedModule(importingFile, ProjectDiskHost.DecodeModuleReference(moduleReference), mode);
+    }
     string ICheckerProgramHost.GetSourceFileNameGoBytes(SourceFile file)
     {
         ValidateOwned(file);
@@ -265,7 +277,7 @@ public sealed class Project : ICheckerProgramHost
 
     public SourceFile? GetSourceFileForResolvedModule(ResolvedModule module) => genuineProgram is not null
         ? genuineProgram.GetSourceFileForResolvedModule(module)
-        : module.IsResolved() && filesByPath.TryGetValue(module.ResolvedPath.ToUnicode(), out var file) ? file : null;
+        : module.IsResolved() && filesByPath.TryGetValue(ByteStringKey.FromString(module.ResolvedPath.ToUnicode()), out var file) ? file : null;
     public ModuleKind GetEmitModuleFormatOfFile(SourceFile file)
     {
         ValidateOwned(file);
@@ -294,7 +306,7 @@ public sealed class Project : ICheckerProgramHost
     public bool IsSourceFileDefaultLibrary(SourceFile file)
     {
         ValidateOwned(file);
-        return genuineProgram?.IsSourceFileDefaultLibrary(PathKey.FromGoString(file.PathKey())) ?? false;
+        return genuineProgram?.IsSourceFileDefaultLibrary(PathKey.FromValue(file.PathKeyValue())) ?? false;
     }
 
     public ResolutionMode GetDefaultResolutionModeForFile(SourceFile file)
@@ -317,7 +329,7 @@ public sealed class Project : ICheckerProgramHost
     RootedFilePath TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file)
     {
         ValidateOwned(file);
-        return genuineProgram is null ? RootedFilePath.FromGoString(file.FileNameGoBytes()) : ActualSpecifierHost.GetSourceOfProjectReferenceIfOutputIncluded(file);
+        return genuineProgram is null ? RootedFilePath.FromValue(file.FileNameGoValue()) : ActualSpecifierHost.GetSourceOfProjectReferenceIfOutputIncluded(file);
     }
 
     bool TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.FileExists(RootedFilePath path) => genuineProgram is null ? disk!.ModuleSpecifierFileExists(path.ToUnicode()) : ActualSpecifierHost.FileExists(path);
@@ -338,10 +350,10 @@ public sealed class Project : ICheckerProgramHost
         return scoped.Exists() && scoped!.PackageDirectory.AsDirectoryPath() == directory ? scoped : null;
     }
 
-    ResolvedModule? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetResolvedModuleFromModuleSpecifier(SourceFile file, Node specifier) => genuineProgram is not null ? ActualSpecifierHost.GetResolvedModuleFromModuleSpecifier(file, specifier) : GetResolvedModule(file, ProjectDiskHost.DecodeModuleReference(specifier.Text()), GetModeForUsageLocation(file, specifier));
+    ResolvedModule? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetResolvedModuleFromModuleSpecifier(SourceFile file, Node specifier) => genuineProgram is not null ? ActualSpecifierHost.GetResolvedModuleFromModuleSpecifier(file, specifier) : GetResolvedModuleValue(file, specifier.TextValue(), GetModeForUsageLocation(file, specifier));
     private void ValidateOwned(SourceFile sourceFile)
     {
-        if (!filesByPath.TryGetValue(sourceFile.PathKey(), out SourceFile? owned) || !ReferenceEquals(owned, sourceFile))
+        if (!filesByPath.TryGetValue(sourceFile.PathKeyKey(), out SourceFile? owned) || !ReferenceEquals(owned, sourceFile))
             throw new ArgumentException("SourceFile belongs to a different project.", nameof(sourceFile));
     }
 }

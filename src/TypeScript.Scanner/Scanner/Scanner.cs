@@ -327,7 +327,13 @@ public partial class Scanner
             if (onErrorUsesByteStrings)
                 this.onError(diagnostic, pos, length, args);
             else
-                this.onError(diagnostic, pos, length, args.Select(arg => arg is string value ? (object)ScannerString.ToUtf8String(value) : arg).ToArray());
+                this.onError(diagnostic, pos, length, args.Select(static arg => arg switch
+                {
+                    string value => (object)ScannerString.ToUtf8String(value),
+                    ByteStringValue value => ScannerString.ToUtf8String(value),
+                    ByteStringKey value => ScannerString.ToUtf8String(value.Value),
+                    _ => arg,
+                }).ToArray());
         }
     }
 

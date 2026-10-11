@@ -6,9 +6,11 @@ namespace TypeScript.Scanner;
 internal static partial class Core
 {
     // core.go:714. The source caller supplies a valid byte offset.
-    public static int IndexAfter(string s, string pattern, int startIndex)
+    public static int IndexAfter(string s, string pattern, int startIndex) =>
+        IndexAfter(ByteStringValue.FromString(s ?? ""), ByteStringValue.FromString(pattern ?? ""), startIndex);
+    public static int IndexAfter(ByteStringValue s, ByteStringValue pattern, int startIndex)
     {
-        int matched = s.AsSpan(startIndex).IndexOf(pattern.AsSpan(), StringComparison.Ordinal);
+        int matched = s.Slice(startIndex).IndexOf(pattern);
         return matched == -1 ? -1 : matched + startIndex;
     }
 
@@ -70,46 +72,25 @@ internal static partial class Core
     }
 
     public static T IfElse<T>(bool condition, T a, T b) => condition ? a : b;
-    public static string GetSpellingSuggestionForStrings(string name, IEnumerable<string> candidates)
-    {
-        int[] runeName = GoString.Runes(name);
-        int maximumLengthDifference = Math.Max(2, (int)(runeName.Length * 0.34));
-        double bestDistance = Math.Floor(runeName.Length * 0.4) + 0.9;
-        string bestCandidate = "";
-        bool hasBest = false;
-        foreach (string candidateName in candidates)
-        {
-            int maxLen = Math.Max(candidateName.Length, runeName.Length);
-            int minLen = Math.Min(candidateName.Length, runeName.Length);
-            if (candidateName != "" && maxLen - minLen <= maximumLengthDifference)
-            {
-                if (candidateName == name)
-                    continue;
-                if (candidateName.Length < 3 && !UnicodeCase.EqualFold(candidateName, name))
-                    continue;
-                double distance = levenshteinWithMax(runeName, GoString.Runes(candidateName), bestDistance);
-                if (distance < 0)
-                    continue;
-                if (distance < bestDistance)
-                {
-                    bestDistance = distance;
-                    bestCandidate = candidateName;
-                    hasBest = true;
-                }
-                else if (!hasBest || StringComparer.Ordinal.Compare(candidateName, bestCandidate) < 0)
-                {
-                    bestCandidate = candidateName;
-                    hasBest = true;
-                }
-            }
-        }
+    public static string GetSpellingSuggestionForStrings(string name, IEnumerable<string> candidates) =>
+        GetSpellingSuggestion(name, candidates, static candidate => candidate, static (left, right) => StringComparer.Ordinal.Compare(left, right))!;
 
-        return bestCandidate;
-    }
+    public static ByteStringValue GetSpellingSuggestionForStrings(ByteStringValue name, IEnumerable<string> candidates) =>
+        ByteStringValue.FromString(GetSpellingSuggestion(name, candidates, static candidate => ByteStringValue.FromString(candidate),
+            static (left, right) => StringComparer.Ordinal.Compare(left, right)));
 
-    private static double levenshteinWithMax(int[] s1, int[] s2, double maxValue)
+    public static ByteStringValue GetSpellingSuggestionForKeys(ByteStringValue name, IEnumerable<ByteStringKey> candidates) =>
+        GetSpellingSuggestion(name, candidates, static candidate => candidate.Value, static (left, right) => left.CompareTo(right)).Value;
+
+    // core.go:638-655 retains a pair of scratch buffers across candidates.
+    // Standard ArrayPool leases implement that ownership without a custom pool.
+    private static double levenshteinWithMax(ref double[] previousBuffer, ref double[] currentBuffer, int[] s1, int[] s2, double maxValue)
     {
-        double[] previous = new double[s2.Length + 1], current = new double[s2.Length + 1];
+        int bufferSize = s2.Length + 1;
+        growLevenshteinBuffer(ref previousBuffer, bufferSize);
+        growLevenshteinBuffer(ref currentBuffer, bufferSize);
+        var previous = previousBuffer.AsSpan(0, bufferSize);
+        var current = currentBuffer.AsSpan(0, bufferSize);
         double big = maxValue + 0.01;
         for (int i = 0; i < previous.Length; i++)
             previous[i] = i;
@@ -134,12 +115,23 @@ internal static partial class Core
                 current[j] = big;
             if (colMin > maxValue)
                 return -1;
-            (previous, current) = (current, previous);
+            var temporary = previous;
+            previous = current;
+            current = temporary;
         }
 
         double res = previous[s2.Length];
         return res > maxValue ? -1 : res;
     }
+
+    private static void growLevenshteinBuffer(ref double[] buffer, int size)
+    {
+        if (buffer.Length >= size) return;
+        var grown = System.Buffers.ArrayPool<double>.Shared.Rent(size);
+        if (buffer.Length != 0) System.Buffers.ArrayPool<double>.Shared.Return(buffer);
+        buffer = grown;
+    }
+
 }
 
 internal static partial class Core
@@ -445,9 +437,10 @@ internal static partial class Core
 
     // core.go:525/561. Typed Go-byte paths use the pinned path extension rule;
     // the legacy Unicode overload below retains its established public role.
-    public static ScriptKind GetScriptKindFromFileName(RootedFilePath fileName)
+    public static ScriptKind GetScriptKindFromFileName(RootedFilePath fileName) => GetScriptKindFromFileName(fileName.AsValue());
+    internal static ScriptKind GetScriptKindFromFileName(ByteStringValue fileName)
     {
-        var extension = ByteStringValue.FromString(fileName.AnyExtension(null, CaseSensitivity.CaseSensitive));
+        var extension = TsPath.GetAnyExtensionFromPath(fileName, null, CaseSensitivity.CaseSensitive);
         if (extension.Length == 0) return ScriptKind.Unknown;
         extension = GoStrings.ToLower(extension);
         if (extension.EqualsBytes(".js"u8) || extension.EqualsBytes(".cjs"u8) || extension.EqualsBytes(".mjs"u8)) return ScriptKind.JS;
@@ -600,9 +593,19 @@ internal static partial class Core
 // Exact generic spelling-selection control flow from core/core.go:581-632.
 internal static partial class Core
 {
-    public static T? GetSpellingSuggestion<T>(string name, IEnumerable<T> candidates, Func<T, string> getName, Func<T, T, int> compare) => getSpellingSuggestion(name, candidates, getName, compare, 0);
-    public static T? GetSpellingSuggestionWithMaxCandidateCount<T>(string name, IEnumerable<T> candidates, Func<T, string> getName, Func<T, T, int> compare, int maxCandidates) => getSpellingSuggestion(name, candidates, getName, compare, maxCandidates);
-    private static T? getSpellingSuggestion<T>(string name, IEnumerable<T> candidates, Func<T, string> getName, Func<T, T, int> compare, int maxCandidates)
+    public static T? GetSpellingSuggestion<T>(string name, IEnumerable<T> candidates, Func<T, string> getName, Func<T, T, int> compare) =>
+        getSpellingSuggestion(ByteStringValue.FromString(name), candidates, getName, static (candidate, callback) => ByteStringValue.FromString(callback(candidate)), compare, 0);
+    public static T? GetSpellingSuggestionWithMaxCandidateCount<T>(string name, IEnumerable<T> candidates, Func<T, string> getName, Func<T, T, int> compare, int maxCandidates) =>
+        getSpellingSuggestion(ByteStringValue.FromString(name), candidates, getName, static (candidate, callback) => ByteStringValue.FromString(callback(candidate)), compare, maxCandidates);
+    public static T? GetSpellingSuggestion<T>(ByteStringValue name, IEnumerable<T> candidates, Func<T, ByteStringValue> getName, Func<T, T, int> compare) =>
+        getSpellingSuggestion(name, candidates, getName, static (candidate, callback) => callback(candidate), compare, 0);
+    public static T? GetSpellingSuggestion<T, TState>(ByteStringValue name, IEnumerable<T> candidates, TState state,
+        Func<T, TState, ByteStringValue> getName, Func<T, T, int> compare) =>
+        getSpellingSuggestion(name, candidates, state, getName, compare, 0);
+    public static T? GetSpellingSuggestionWithMaxCandidateCount<T>(ByteStringValue name, IEnumerable<T> candidates, Func<T, ByteStringValue> getName, Func<T, T, int> compare, int maxCandidates) =>
+        getSpellingSuggestion(name, candidates, getName, static (candidate, callback) => callback(candidate), compare, maxCandidates);
+    private static T? getSpellingSuggestion<T, TState>(ByteStringValue name, IEnumerable<T> candidates, TState state,
+        Func<T, TState, ByteStringValue> getName, Func<T, T, int> compare, int maxCandidates)
     {
         int[] runeName = GoString.Runes(name);
         int maximumLengthDifference = Math.Max(2, (int)(runeName.Length * 0.34));
@@ -612,39 +615,49 @@ internal static partial class Core
         T? bestCandidate = zero;
         bool hasBest = false;
         int checkedCandidates = 0;
-        foreach (T candidate in candidates)
+        double[] previousBuffer = Array.Empty<double>();
+        double[] currentBuffer = Array.Empty<double>();
+        try
         {
-            checkedCandidates++;
-            if (maxCandidates > 0 && checkedCandidates > maxCandidates)
-                return zero;
-            string candidateName = getName(candidate);
-            int maxLen = Math.Max(candidateName.Length, runeName.Length);
-            int minLen = Math.Min(candidateName.Length, runeName.Length);
-            if (candidateName != "" && maxLen - minLen <= maximumLengthDifference)
+            foreach (T candidate in candidates)
             {
-                if (candidateName == name)
-                    continue;
-                if (candidateName.Length < 3 && !UnicodeCase.EqualFold(candidateName, name))
-                    continue;
-                double distance = levenshteinWithMax(runeName, GoString.Runes(candidateName), bestDistance);
-                if (distance < 0)
-                    continue;
-                Debug.Assert(distance <= bestDistance);
-                if (distance < bestDistance)
+                checkedCandidates++;
+                if (maxCandidates > 0 && checkedCandidates > maxCandidates)
+                    return zero;
+                var candidateName = getName(candidate, state);
+                if (candidateName.IsNull) throw new NullReferenceException();
+                int maxLen = Math.Max(candidateName.Length, runeName.Length);
+                int minLen = Math.Min(candidateName.Length, runeName.Length);
+                if (candidateName.Length != 0 && maxLen - minLen <= maximumLengthDifference)
                 {
-                    bestDistance = distance;
-                    bestCandidate = candidate;
-                    hasBest = true;
-                }
-                else if (!hasBest || compare(candidate, bestCandidate!) < 0)
-                {
-                    bestCandidate = candidate;
-                    hasBest = true;
+                    if (candidateName.EqualsValue(name))
+                        continue;
+                    if (candidateName.Length < 3 && !UnicodeCase.EqualFold(candidateName, name))
+                        continue;
+                    double distance = levenshteinWithMax(ref previousBuffer, ref currentBuffer, runeName, GoString.Runes(candidateName), bestDistance);
+                    if (distance < 0)
+                        continue;
+                    Debug.Assert(distance <= bestDistance);
+                    if (distance < bestDistance)
+                    {
+                        bestDistance = distance;
+                        bestCandidate = candidate;
+                        hasBest = true;
+                    }
+                    else if (!hasBest || compare(candidate, bestCandidate!) < 0)
+                    {
+                        bestCandidate = candidate;
+                        hasBest = true;
+                    }
                 }
             }
+            return bestCandidate;
         }
-
-        return bestCandidate;
+        finally
+        {
+            if (previousBuffer.Length != 0) System.Buffers.ArrayPool<double>.Shared.Return(previousBuffer);
+            if (currentBuffer.Length != 0) System.Buffers.ArrayPool<double>.Shared.Return(currentBuffer);
+        }
     }
 }
 

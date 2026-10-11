@@ -19,7 +19,7 @@ public static class ConfigDirectChecks
         {
             case "TestParseJsonConfigFileContentAcceptsJsonRepresentations":
                 var(ordered, errors) = Options.ParseConfigFileTextToJson(File("/project/tsconfig.json"), PathKey.FromGoString("/project/tsconfig.json"), """{"compilerOptions":{"strict":true},"files":["index.ts"]}""");
-                Check.Equal(errors?.Count ?? 0, 0, "Representation source parse errors");
+                Check.Equal(errors.Count, 0, "Representation source parse errors");
                 OrderedMap<string, object?> typedOrdered = new();
                 typedOrdered.Set("compilerOptions", new Dictionary<string, object?> { ["strict"] = true });
                 typedOrdered.Set("files", new List<string> { "index.ts" });
@@ -51,13 +51,13 @@ public static class ConfigDirectChecks
                     var parsed = Json(form, fs);
                     Check.Sequence(parsed.FileNames(), new[] { File("/project/index.ts") }, "All original JSON representations file list");
                     Check.True(parsed.CompilerOptions().Strict == Tristate.True, "All original JSON representations strict");
-                    Check.Equal(parsed.Errors?.Count ?? 0, 0, "All original JSON representations errors");
+                    Check.Equal(GoSlices.ToListOrNull(parsed.Errors)?.Count ?? 0, 0, "All original JSON representations errors");
                 }
 
                 break;
             case "TestParseJsonConfigFileContentPreservesRaw":
                 var rawParsed = Json(new Dictionary<string, object?> { ["files"] = new List<object?> { "index.ts" }, ["customSetting"] = new Dictionary<string, object?> { ["enabled"] = true }, ["compileOnSave"] = true }, fs);
-                Check.Equal(rawParsed.Errors?.Count ?? 0, 0, "Raw preservation errors");
+                Check.Equal(GoSlices.ToListOrNull(rawParsed.Errors)?.Count ?? 0, 0, "Raw preservation errors");
                 Check.True(rawParsed.CompileOnSave?.Value == true, "Actual compileOnSave pointer true");
                 Check.True(rawParsed.Raw is OrderedMap<string, object?>, "Raw is original normalized ordered map");
                 var raw = (OrderedMap<string, object?>)rawParsed.Raw!;
@@ -75,7 +75,7 @@ public static class ConfigDirectChecks
                 )
                 {
                     var parsed = Json(new Dictionary<string, object?> { [property] = new List<object?> { null } }, fs);
-                    Check.True(parsed.Errors?.Count > 0, property + " null element diagnostic present");
+                    Check.True(GoSlices.ToListOrNull(parsed.Errors)?.Count > 0, property + " null element diagnostic present");
                     Check.Equal(parsed.Errors![0].Code(), Diagnostics.Compiler_option_0_requires_a_value_of_type_1.Code(), property + " null element diagnostic code");
                 }
 
@@ -88,7 +88,7 @@ public static class ConfigDirectChecks
             case "TestParseJsonSourceFileConfigFileContentReportsInvalidExtendedConfig":
                 var invalidFiles = new ConfigurationFileSystem([new("/project/tsconfig.json", "{\n  \"extends\": \"./bad.json\"\n}"), new("/project/bad.json", "{ this is not json"), new("/project/main.ts", "export const x = 1;")]);
                 var invalid = Source(invalidFiles, "/project/tsconfig.json", "/project");
-                var parseErrors = (invalid.Errors ?? []).Where(error => error.Code() == Diagnostics.X_0_expected.Code()).ToList();
+                var parseErrors = (GoSlices.ToListOrNull(invalid.Errors) ?? []).Where(error => error.Code() == Diagnostics.X_0_expected.Code()).ToList();
                 Check.Equal(parseErrors.Count, 4, "Extended config recovered parse error count");
                 Check.Sequence(parseErrors.Select(error => error.MessageArgs()[0]).ToList(), new[] { ":", ",", ",", "}" }, "Extended config token arguments");
                 Check.Sequence(parseErrors.Select(error => error.Pos()).ToList(), new[] { 7, 10, 14, 18 }, "Extended config token positions");
@@ -113,8 +113,8 @@ public static class ConfigDirectChecks
                 var source = Source(nullFiles, "/tsconfig.json", "/");
                 var(value, _) = Options.ParseConfigFileTextToJson(File("/tsconfig.json"), PathKey.FromGoString("/tsconfig.json"), text);
                 var json = Options.ParseJsonConfigFileContent(value, nullFiles, Dir("/"), null, File("/tsconfig.json"));
-                Check.Equal(source.Errors?.Count ?? 0, 0, "Source null enum errors");
-                Check.Equal(json.Errors?.Count ?? 0, 0, "JSON null enum errors");
+                Check.Equal(GoSlices.ToListOrNull(source.Errors)?.Count ?? 0, 0, "Source null enum errors");
+                Check.Equal(GoSlices.ToListOrNull(json.Errors)?.Count ?? 0, 0, "JSON null enum errors");
                 break;
             case "TestExtendedConfigErrorsAppearOnCacheHit":
                 CacheErrors();
@@ -142,7 +142,7 @@ public static class ConfigDirectChecks
         Check.True(ok, "Original compiler fixture config read");
         var source = Options.NewTsconfigSourceFileFromFilePath(config, fs.CaseSensitivity().PathKey(config.AsPath()), text);
         var parsed = Options.ParseJsonSourceFileConfigFileContent(source, fs, directory);
-        Check.Equal(parsed.Errors?.Count ?? 0, 0, "Original compiler fixture errors");
+        Check.Equal(GoSlices.ToListOrNull(parsed.Errors)?.Count ?? 0, 0, "Original compiler fixture errors");
         var options = parsed.CompilerOptions();
         Check.Sequence(options.Types, Array.Empty<string>(), "Original compiler fixture types allocated empty");
         Check.Equal(options.Module, ModuleKind.NodeNext, "Original compiler fixture module");
@@ -168,7 +168,7 @@ public static class ConfigDirectChecks
     {
         var fs = new ConfigurationFileSystem([new("/main.ts", "export const x = 1;"), new("/tsconfig.json", text)]);
         var parsed = Source(fs, "/tsconfig.json", "/");
-        var diagnostics = parsed.GetConfigFileParsingDiagnostics() ?? [];
+        var diagnostics = GoSlices.ToListOrNull(parsed.GetConfigFileParsingDiagnostics()) ?? [];
         if (filtered)
             diagnostics = diagnostics.Where(error => error.Code() == code).ToList();
         Check.Equal(diagnostics.Count, 2, "Original property diagnostic count");
@@ -200,12 +200,12 @@ public static class ConfigDirectChecks
     {
         var same = new ConfigurationFileSystem([new("/tsconfig.json", "{\n  \"extends\": \"./base.json\"\n}"), new("/base.json", "{\n  \"excludes\": [\"**/*.ts\"]\n}"), new("/app.ts", "export {}")]);
         var cache = new MemoCache();
-        Check.True(Source(same, "/tsconfig.json", "/", cache).Errors?.Count > 0, "First base diagnostics");
-        Check.True(Source(same, "/tsconfig.json", "/", cache).Errors?.Count > 0, "Repeated cached base diagnostics");
+        Check.True(GoSlices.ToListOrNull(Source(same, "/tsconfig.json", "/", cache).Errors)?.Count > 0, "First base diagnostics");
+        Check.True(GoSlices.ToListOrNull(Source(same, "/tsconfig.json", "/", cache).Errors)?.Count > 0, "Repeated cached base diagnostics");
         var shared = new ConfigurationFileSystem([new("/base.json", "{\n  \"excludes\": [\"**/*.ts\"]\n}"), new("/projA/tsconfig.json", "{\n  \"extends\": \"../base.json\"\n}"), new("/projB/tsconfig.json", "{\n  \"extends\": \"../base.json\"\n}"), new("/projA/app.ts", "export {}"), new("/projB/app.ts", "export {}")]);
         cache = new();
-        Check.True(Source(shared, "/projA/tsconfig.json", "/", cache).Errors?.Count > 0, "First project base diagnostics");
-        Check.True(Source(shared, "/projB/tsconfig.json", "/", cache).Errors?.Count > 0, "Second project cached base diagnostics");
+        Check.True(GoSlices.ToListOrNull(Source(shared, "/projA/tsconfig.json", "/", cache).Errors)?.Count > 0, "First project base diagnostics");
+        Check.True(GoSlices.ToListOrNull(Source(shared, "/projB/tsconfig.json", "/", cache).Errors)?.Count > 0, "Second project cached base diagnostics");
     }
 
     private static void CachePaths()
@@ -213,9 +213,9 @@ public static class ConfigDirectChecks
         var fs = new ConfigurationFileSystem([new("/tsconfig.base.json", "{\n  \"compilerOptions\": {\n    \"paths\": {\n      \"@pkg/*\": [\"${configDir}/src/*\"]\n    }\n  }\n}"), new("/packages/a/tsconfig.json", "{\n  \"extends\": \"../../tsconfig.base.json\"\n}"), new("/packages/b/tsconfig.json", "{\n  \"extends\": \"../../tsconfig.base.json\"\n}"), new("/packages/a/index.ts", "export {}"), new("/packages/b/index.ts", "export {}")]);
         var cache = new MemoCache();
         var(first, firstErrors) = Options.GetParsedCommandLineOfConfigFile(File("/packages/a/tsconfig.json"), null, null, fs, cache);
-        Check.Equal(firstErrors?.Count ?? 0, 0, "First cache path read errors");
+        Check.Equal(firstErrors.Count, 0, "First cache path read errors");
         var(second, secondErrors) = Options.GetParsedCommandLineOfConfigFile(File("/packages/b/tsconfig.json"), null, null, fs, cache);
-        Check.Equal(secondErrors?.Count ?? 0, 0, "Second cache path read errors");
+        Check.Equal(secondErrors.Count, 0, "Second cache path read errors");
         Check.Sequence(second!.CompilerOptions().Paths!.GetOrZero("@pkg/*"), new[] { "/packages/b/src/*" }, "configDir expansion not cached across projects");
     }
 }

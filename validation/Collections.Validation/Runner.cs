@@ -7,6 +7,7 @@ using Encoder = TypeScript.Scanner.ParserValidation.Encoder;
 namespace TypeScript.Checking.CollectionsValidation;
 public static class Runner
 {
+    private static List<FullDiagnostic>? Diagnostics(Slice<Diagnostic> values, Dictionary<SourceFile, int> fileIds) => Diagnostics(GoSlices.ToListOrNull(values), fileIds);
     private static List<FullDiagnostic>? Diagnostics(IEnumerable<Diagnostic>? values, Dictionary<SourceFile, int> fileIds) => values?.Select(d => new FullDiagnostic { Code = d.Code(), Category = (int)d.Category(), Pos = d.Pos(), End = d.End(), Key = d.MessageKey(), ArgsBase64 = d.MessageArgs()?.Select(Encoder.Bytes).ToList(), Text = d.String(), FileIndex = d.File()is { } f ? fileIds.TryGetValue(f, out int index) ? index : throw new InvalidDataException("Diagnostic outside fixed files") : null, SourceBase64 = Encoder.Bytes(d.Source()), ReportsUnnecessary = d.ReportsUnnecessary(), ReportsDeprecated = d.ReportsDeprecated(), SkippedOnNoEmit = d.SkippedOnNoEmit(), Chain = Diagnostics(d.MessageChain(), fileIds), Related = Diagnostics(d.RelatedInformation(), fileIds) }).ToList();
     public static Result Run(Request request)
     {

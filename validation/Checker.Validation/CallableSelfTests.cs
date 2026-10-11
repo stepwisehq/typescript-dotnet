@@ -37,7 +37,7 @@ public static class CallableSelfTests
         }
 
         var checker = Checker.Create(file, CheckerProfile.Callable);
-        Check("callable.diagnostics-repeated", checker.GetDiagnostics()is null && checker.GetDiagnostics()is null);
+        Check("callable.diagnostics-repeated", checker.GetDiagnostics().IsNil && checker.GetDiagnostics().IsNil);
         var name = file.Statements.Nodes[0].Name();
         Check("callable.type-query-identity", ReferenceEquals(checker.GetTypeAtLocation(name), checker.GetTypeAtLocation(name)));
         Check("callable.symbol-query-identity", ReferenceEquals(checker.GetSymbolAtLocation(name), checker.GetSymbolAtLocation(name)));
@@ -73,7 +73,7 @@ public static class CallableSelfTests
         }
 
         var ownUnion = UnionParameter();
-        Check("callable.owned-synthetic-parameter", ownUnion.Parameter.Declarations is null && (ownUnion.Checker.GetTypeOfSymbol(ownUnion.Parameter).Flags() & TypeFlags.Never) != 0);
+        Check("callable.owned-synthetic-parameter", ownUnion.Parameter.Declarations.IsNil && (ownUnion.Checker.GetTypeOfSymbol(ownUnion.Parameter).Flags() & TypeFlags.Never) != 0);
         var foreignUnion = UnionParameter();
         try
         {

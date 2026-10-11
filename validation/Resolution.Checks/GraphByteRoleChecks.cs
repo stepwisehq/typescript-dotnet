@@ -20,15 +20,15 @@ public static class GraphByteRoleChecks
         const string source = "export const value = 1;";
         var fs = ResolutionFixtures.Fs(("/repo/tsconfig.json", "{\"compilerOptions\":{\"module\":\"esnext\",\"moduleResolution\":\"bundler\"},\"files\":[\"é-𝄞.ts\",\"子-invalid.ts\"]}"), (validName, source), (invalidName, "export const broken = ;"));
         var(parsed, errors) = OptionsAPI.GetParsedCommandLineOfConfigFile(RootedFilePath.FromUnicode("/repo/tsconfig.json"), null, null, fs);
-        Check.True(parsed is not null && (errors?.Count ?? 0) == 0 && (parsed.Errors?.Count ?? 0) == 0, "Actual parsed Unicode graph configuration");
+        Check.True(parsed is not null && errors.Length == 0 && parsed.Errors.Length == 0, "Actual parsed Unicode graph configuration");
         var graph = ResolvedProjectGraph.FromParsedConfiguration(parsed!, fs);
-        SourceFile file = graph.SourceFiles.Single(file => file.FileName() == GoString.ToUtf8(validName));
+        SourceFile file = GoSlices.Values(graph.SourceFiles).Single(file => file.FileName() == GoString.ToUtf8(validName));
         Binder.BindSourceFile(file);
         string expectedSymbol = GoString.ToUtf8("\"/repo/é-𝄞\"");
         Check.Equal(file.Symbol.Name, expectedSymbol, "Actual graph binder external-module byte name");
         Check.Equal(file.FileNameGoBytes(), GoString.ToUtf8(validName), "Graph byte role avoids a second UTF8 conversion");
         Check.Equal(file.PathKey(), GoString.ToUtf8(validName), "Actual graph path key retains source bytes");
-        SourceFile invalid = graph.SourceFiles.Single(file => file.FileName() == GoString.ToUtf8(invalidName));
+        SourceFile invalid = GoSlices.Values(graph.SourceFiles).Single(file => file.FileName() == GoString.ToUtf8(invalidName));
         Diagnostic diagnostic = graph.ParseDiagnostics.First(diagnostic => diagnostic.Code() == 1109 && ReferenceEquals(diagnostic.File(), invalid));
         Check.True(ReferenceEquals(diagnostic.File(), invalid), "Actual graph parse diagnostic owner identity");
         Check.Equal(diagnostic.File().FileName(), GoString.ToUtf8(invalidName), "Actual diagnostic byte filename");

@@ -23,6 +23,7 @@ public static partial class ProgramRunner
             }
             return id;
         }
+        internal JsonNode? Diagnostics(Slice<Diagnostic> diagnostics) => Diagnostics(GoSlices.ToListOrNull(diagnostics));
         internal JsonNode? Diagnostics(IEnumerable<Diagnostic>? diagnostics)
         {
             if (diagnostics is null) return null;
@@ -42,9 +43,9 @@ public static partial class ProgramRunner
             return result;
         }
     }
-    private sealed record NoEmitChannels(List<Diagnostic>? Config, List<Diagnostic>? Program,
-        List<Diagnostic>? Syntactic, List<Diagnostic>? Semantic, List<Diagnostic>? Global,
-        List<Diagnostic>? Suggestions, List<Diagnostic>? Sorted);
+    private sealed record NoEmitChannels(Slice<Diagnostic> Config, Slice<Diagnostic> Program,
+        Slice<Diagnostic> Syntactic, Slice<Diagnostic> Semantic, Slice<Diagnostic> Global,
+        Slice<Diagnostic> Suggestions, Slice<Diagnostic> Sorted);
     private static NoEmitChannels CollectNoEmit(CP program, CompilerNoEmitHarness.HarnessOptions harness)
     {
         var config = program.GetConfigFileParsingDiagnostics();
@@ -52,10 +53,10 @@ public static partial class ProgramRunner
         var syntactic = program.GetSyntacticDiagnostics();
         var semantic = program.GetSemanticDiagnostics();
         var global = program.GetGlobalDiagnostics();
-        var suggestions = harness.CaptureSuggestions ? program.GetSuggestionDiagnostics() : null;
-        List<Diagnostic>? all = null;
+        var suggestions = harness.CaptureSuggestions ? program.GetSuggestionDiagnostics() : default;
+        Slice<Diagnostic> all = default;
         foreach (var channel in new[] { config, construction, syntactic, semantic, global, suggestions })
-            if (channel is { Count: > 0 }) (all ??= []).AddRange(channel);
+            if (channel is { Count: > 0 }) all = all.Append(channel);
         return new(config, construction, syntactic, semantic, global, suggestions, CP.SortAndDeduplicateDiagnostics(all));
     }
     private static JsonObject ObserveNoEmitChannels(NoEmitObserver observer, NoEmitChannels channels) => new()
@@ -88,7 +89,7 @@ public static partial class ProgramRunner
             var sf = compilation.Program.GetSourceFile(RootedFilePath.FromGoString(files[i].UnitName));
             if (sf!.ContentMapper() != "") files[i] = files[i] with { Content = sf.Text() };
         }
-        var baselines = compilation.Harness.NoTypesAndSymbols ? null : CompilerBaselineWalker.Observe(compilation.Program, files, compilation.Header, (checking.Sorted?.Count ?? 0) > 0);
+        var baselines = compilation.Harness.NoTypesAndSymbols ? null : CompilerBaselineWalker.Observe(compilation.Program, files, compilation.Header, checking.Sorted.Length > 0);
         result["typesBase64"] = baselines is null ? null : Bytes(baselines.Types);
         result["symbolsBase64"] = baselines is null ? null : Bytes(baselines.Symbols);
         result["traceBase64"] = Bytes(compilation.Trace);

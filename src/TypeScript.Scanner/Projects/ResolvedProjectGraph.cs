@@ -70,17 +70,17 @@ public sealed class ResolvedProjectGraph
     public IReadOnlyList<ResolvedProjectTypeDirective> TypeDirectives => processed.typeDirectives.AsReadOnly();
     public IReadOnlyList<Diagnostic> ParseDiagnostics { get; }
     public IReadOnlyList<Diagnostic> InclusionDiagnostics => processed.processingDiagnostics.AsSpan().ToArray();
-    public IReadOnlyList<RootedFilePath> MissingFiles => processed.missingFiles.Select(RootedFilePath.FromGoString).ToArray();
+    public IReadOnlyList<RootedFilePath> MissingFiles => processed.missingFiles.Select(static key => RootedFilePath.FromValue(key.Value)).ToArray();
     public SourceFileMetaData GetSourceFileMetaData(SourceFile file)
     {
-        if (!processed.filesByPath.TryGetValue(file.PathKey(), out var owner) || !ReferenceEquals(owner, file))
+        if (!processed.filesByPath.TryGetValue(file.PathKeyKey(), out var owner) || !ReferenceEquals(owner, file))
             throw new ArgumentException("SourceFile belongs to a different graph.", nameof(file));
-        return processed.metadata[file.PathKey()];
+        return processed.metadata[file.PathKeyKey()];
     }
 
-    internal IReadOnlyDictionary<string, SourceFile> FilesByPath => processed.filesByPath;
+    internal IReadOnlyDictionary<ByteStringKey, SourceFile> FilesByPath => processed.filesByPath;
     internal Slice<RootedFilePath> GetRedirectTargets(PathKey path) =>
-        processed.redirectTargetsMap.GetValueOrDefault(path.AsString());
+        processed.redirectTargetsMap.GetValueOrDefault(ByteStringKey.FromValue(path.AsValue()));
     internal static ResolvedProjectGraph FromParsedConfiguration(ParsedCommandLine parsed, IFS fileSystem) =>
         new(new ConfigurationInspection(parsed), fileSystem);
 
@@ -95,7 +95,7 @@ public sealed class ResolvedProjectGraph
             throw new ProjectException("contentMapperExecution", "Project graph loading does not execute content mappers.", inspection.ConfigurationPath);
         RootFileNames = (parsed.FileNames() ?? []).AsReadOnly();
         host = new ResolutionDiskHost(fileSystem ?? TypeScript.Vfs.OsVfs.OsVfs.FS(), parsed.BaseDirectory());
-        resolver = DefaultResolver.NewResolver(new ResolverOptions { Host = host, CompilerOptions = parsed.CompilerOptions(), ProjectName = parsed.ConfigName().AsString() });
+        resolver = DefaultResolver.NewResolver(new ResolverOptions { Host = host, CompilerOptions = parsed.CompilerOptions(), ProjectNameValue = parsed.ConfigName().AsValue() });
         processed = FileLoader.ProcessResolvedProjectFiles(host, resolver, parsed.CompilerOptions(), RootFileNames, new ProjectConfiguration(parsed));
         var parseDiagnostics = new List<Diagnostic>();
         foreach (var file in processed.files)

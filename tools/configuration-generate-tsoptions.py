@@ -62,14 +62,14 @@ def generate():
             m=re.fullmatch(r'floatOrInt32ToFlag\[core\.(\w+)\]\(value\)',value)
             if m:
                 typ=m.group(1);value=f'floatOrInt32ToFlag<{typ}>(value, static flag => ({typ})flag)'
-            elif value=='tspath.ToSourceMapLocation(ParseString(value))':value='TsPath.ToSourceMapLocation(ParseString(value))'
+            elif value=='tspath.ToSourceMapLocation(ParseString(value))':value='TsPath.ToSourceMapLocation(parsePathText(value))'
             emit('            allOptions.'+field+' = '+value+';')
         emit('            break;')
     emit('        default: return false;');emit('    }');emit('    return true;');emit('}');emit()
     emit('internal static parsedCompilerOptions getDefaultCompilerOptions(RootedFilePath configFileName)')
-    emit('{');emit('    var options = configFileName != default && configFileName.BaseName() == "jsconfig.json" ? new CompilerOptions { AllowJs = Tristate.True, NoEmit = Tristate.True, SkipLibCheck = Tristate.True, MaxNodeModuleJsDepth = new(2) } : new CompilerOptions();')
+    emit('{');emit('    var options = configFileName != default && configFileName.BaseNameValue().EqualsBytes("jsconfig.json"u8) ? new CompilerOptions { AllowJs = Tristate.True, NoEmit = Tristate.True, SkipLibCheck = Tristate.True, MaxNodeModuleJsDepth = new(2) } : new CompilerOptions();')
     emit('    return new parsedCompilerOptions { CompilerOptions = options, unresolvedPaths = new() };');emit('}');emit()
-    emit('internal static TypeAcquisition getDefaultTypeAcquisition(RootedFilePath configFileName) => new() { Enable = configFileName != default && configFileName.BaseName() == "jsconfig.json" ? Tristate.True : Tristate.Unknown };');emit()
+    emit('internal static TypeAcquisition getDefaultTypeAcquisition(RootedFilePath configFileName) => new() { Enable = configFileName != default && configFileName.BaseNameValue().EqualsBytes("jsconfig.json"u8) ? Tristate.True : Tristate.Unknown };');emit()
     for function,cls,mapname in [('ParseTypeAcquisition','TypeAcquisition',None),('ParseBuildOptions','BuildOptions','BuildNameMap')]:
         emit(f'public static void {function}(string key, object? value, {cls}? allOptions)');emit('{')
         emit('    if (value == null || allOptions == null) return;')
@@ -103,7 +103,7 @@ def generate():
     emit('        var substitution = getSubstitutedStringArrayWithConfigDirTemplate(value, basePath);');emit('        if (substitution != null)');emit('        {')
     emit('            if (paths == null) compilerOptions.CompilerOptions.Paths = paths = compilerOptions.CompilerOptions.Paths.Clone();');emit('            paths.Set(key, substitution);');emit('        }');emit('    }')
     emit('    if (compilerOptions.unresolvedPaths != null) foreach (var (key, item) in compilerOptions.unresolvedPaths)');emit('    {')
-    emit('        object? value = CommandLineCompilerOptionsMap.Get(key)!.Kind == CommandLineOptionKind.List ? ParseStringArray(item)?.Select(path => (object?)getSubstitutedPathWithConfigDirTemplate(path, basePath)).ToList() : getSubstitutedPathWithConfigDirTemplate(ParseString(item), basePath);')
+    emit('        object? value = CommandLineCompilerOptionsMap.Get(key)!.Kind == CommandLineOptionKind.List ? parsePathTexts(item)?.Select(path => (object?)getSubstitutedPathWithConfigDirTemplate(path, basePath)).ToList() : getSubstitutedPathWithConfigDirTemplate(parsePathText(item), basePath);')
     emit('        ParseCompilerOptions(key, value, compilerOptions.CompilerOptions);');emit('    }');emit('    compilerOptions.unresolvedPaths?.Clear();');emit('}');emit()
     emit('internal static OrderedMap<string, object?> serializeCompilerOptions(CompilerOptions options, RootedFilePath configFilePath, CaseSensitivity caseSensitivity)');emit('{');emit('    var result = new OrderedMap<string, object?>(32);')
     body=fs['serializeCompilerOptions'];pos=body.index('\tif ');end=body.index('\treturn result')

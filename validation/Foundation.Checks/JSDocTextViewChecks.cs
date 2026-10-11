@@ -270,8 +270,8 @@ public static class JSDocTextViewChecks
 
     private static void NoDiagnostics(SourceFile file)
     {
-        Equal(0, file.Diagnostics()?.Count ?? 0, "Syntax diagnostics");
-        Equal(0, file.JSDocDiagnostics()?.Count ?? 0, "JSDoc diagnostics");
+        Equal(0, file.Diagnostics().Length, "Syntax diagnostics");
+        Equal(0, file.JSDocDiagnostics().Length, "JSDoc diagnostics");
     }
 
     private static void TrailingStatement(SourceFile file, string source)

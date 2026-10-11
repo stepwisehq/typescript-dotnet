@@ -58,7 +58,9 @@ public static class ResolutionDataChecks
             [typeof(PluginImport)] = typeof(PluginImport).GetFields(Fields),
             [typeof(OrderedMap<string, List<string>?>)] = typeof(OrderedMap<string, List<string>?>).GetFields(Fields)
         };
-        HashSet<Type> seen = [typeof(Diagnostic), typeof(PackageJson)]; // Exact original allowed leaves.
+        // Immutable byte descriptors are the known Go string representation:
+        // their object-backed immutable string/byte owner is not a resolver host.
+        HashSet<Type> seen = [typeof(Diagnostic), typeof(PackageJson), typeof(ByteStringValue), typeof(ByteStringKey)]; // Original leaves plus represented strings.
         Queue<(Type Type, string Path)> pending = new();
         pending.Enqueue((typeof(ResolutionData), nameof(ResolutionData)));
         while (pending.TryDequeue(out var item))
@@ -93,7 +95,7 @@ public static class ResolutionDataChecks
                 // BCL collection internals replace source slice/map/SyncMap. Their
                 // K/V domains are inspected; their implementation locks/comparers
                 // are not a claim about Go runtime or .NET collection topology.
-                bool container = definition == typeof(List<>) || definition == typeof(Dictionary<, >) || definition == typeof(StrongBox<>) || definition == typeof(Nullable<>);
+                bool container = definition == typeof(List<>) || definition == typeof(Dictionary<, >) || definition == typeof(StrongBox<>) || definition == typeof(Nullable<>) || definition == typeof(Slice<>);
                 Check.True(container, item.Path + " has an unknown represented generic type " + type);
                 foreach (Type argument in type.GetGenericArguments())
                     pending.Enqueue((argument, item.Path + "[]"));

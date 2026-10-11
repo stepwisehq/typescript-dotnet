@@ -96,14 +96,14 @@ public static class OsFileSystemChecks
         }
         var fs = OsVfs.FS();
         var entries = fs.GetAccessibleEntries(DirectoryPath(link));
-        Check.Sequence(entries.Directories, new[] { "dir1", "dir2" }, "Original symlink directories");
-        Check.Sequence(entries.Files, new[] { "file1", "file2" }, "Original symlink files");
+        Check.Sequence(GoSlices.ToListOrNull(entries.Directories)?.Select(static name => name.Materialize()!).ToArray(), new[] { "dir1", "dir2" }, "Original symlink directories");
+        Check.Sequence(GoSlices.ToListOrNull(entries.Files)?.Select(static name => name.Materialize()!).ToArray(), new[] { "file1", "file2" }, "Original symlink files");
         Check.True(entries.Symlinks is not null, "Original symlink metadata available");
         Check.Equal(entries.Symlinks!.Count, 4, "Original four symlink entries");
-        foreach (string name in new[] { "file1", "file2", "dir1", "dir2" }) Check.True(entries.Symlinks.Contains(name), "Original symlink membership " + name);
+        foreach (string name in new[] { "file1", "file2", "dir1", "dir2" }) Check.True(entries.Symlinks!.Contains(ByteStringKey.FromString(name)), "Original symlink membership " + name);
         entries = fs.GetAccessibleEntries(DirectoryPath(target));
-        Check.Sequence(entries.Directories, new[] { "dir1", "dir2" }, "Original target directories");
-        Check.Sequence(entries.Files, new[] { "file1", "file2" }, "Original target files");
+        Check.Sequence(GoSlices.ToListOrNull(entries.Directories)?.Select(static name => name.Materialize()!).ToArray(), new[] { "dir1", "dir2" }, "Original target directories");
+        Check.Sequence(GoSlices.ToListOrNull(entries.Files)?.Select(static name => name.Materialize()!).ToArray(), new[] { "file1", "file2" }, "Original target files");
         Check.True(entries.Symlinks is not null, "Original target symlink metadata available");
         Check.Equal(entries.Symlinks!.Count, 0, "Original target no symlinks");
     }
@@ -154,7 +154,7 @@ public static class OsFileSystemChecks
         Check.Equal(fs.Realpath(nul.AsPath()), nul.AsPath(), "Authored NUL realpath unchanged");
         var nulDirectory = RootedDirectoryPath.FromGoString(DirectoryPath(fixture.Directory).AsString() + "\0ignored");
         var nulEntries = fs.GetAccessibleEntries(nulDirectory);
-        Check.True(!fs.DirectoryExists(nulDirectory) && nulEntries.Files is null && nulEntries.Directories is null, "Authored NUL directory lookup fails");
+        Check.True(!fs.DirectoryExists(nulDirectory) && nulEntries.Files.IsNil && nulEntries.Directories.IsNil, "Authored NUL directory lookup fails");
         Check.True(nulEntries.Symlinks is { Count: 0 }, "Authored NUL directory known empty link metadata");
         string fifo = fixture.PathFor("fifo");
         ProcessStartInfo setup = new("mkfifo") { UseShellExecute = false, RedirectStandardError = true };
@@ -181,8 +181,8 @@ public static class OsFileSystemChecks
         Check.Equal(fs.Realpath(FilePath(loop).AsPath()), FilePath(loop).AsPath(), "Authored loop realpath unchanged");
         Check.Equal(fs.Stat(FilePath(good).AsPath())!.Mode() & Mode.Type, Mode.Regular, "Authored symlink stat follows regular leaf");
         var entries = fs.GetAccessibleEntries(DirectoryPath(fixture.Directory));
-        Check.True(entries.Files is not null && entries.Files.Contains("good") && entries.Files.Contains(GoString.ToUtf8("é😀.txt")), "Authored regular entry discovery");
-        Check.True(!entries.Files!.Contains("fifo") && !entries.Files.Contains("socket") && !entries.Files.Contains("broken") && !entries.Files.Contains("loop"), "Authored special/broken entry exclusion");
-        Check.True(entries.Symlinks is { Count: 1 } && entries.Symlinks.Contains("good"), "Authored only accessible symlinks retained");
+        Check.True(!entries.Files.IsNil && Core.Some(entries.Files, static name => name.EqualsValue(ByteStringValue.FromString("good"))) && Core.Some(entries.Files, static name => name.EqualsValue(ByteStringValue.FromString(GoString.ToUtf8("é😀.txt")))), "Authored regular entry discovery");
+        Check.True(!Core.Some(entries.Files, static name => name.EqualsValue(ByteStringValue.FromString("fifo"))) && !Core.Some(entries.Files, static name => name.EqualsValue(ByteStringValue.FromString("socket"))) && !Core.Some(entries.Files, static name => name.EqualsValue(ByteStringValue.FromString("broken"))) && !Core.Some(entries.Files, static name => name.EqualsValue(ByteStringValue.FromString("loop"))), "Authored special/broken entry exclusion");
+        Check.True(entries.Symlinks is { Count: 1 } && entries.Symlinks!.Contains(ByteStringKey.FromString("good")), "Authored only accessible symlinks retained");
     }
 }

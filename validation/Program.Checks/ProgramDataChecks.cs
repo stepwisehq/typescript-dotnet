@@ -84,7 +84,7 @@ internal static class ProgramDataChecks
             typeof(ProgramConfig),
             typeof(ResolutionData),
             typeof(ProcessedFiles),
-            typeof(ProgramLazyValue<HashSet<string>>),
+            typeof(ProgramLazyValue<HashSet<ByteStringKey>>),
             typeof(ProgramLazyValue<KnownSymlinks>),
             typeof(ProgramLazyValue<PackageNamesInfo>)
         }
@@ -139,13 +139,19 @@ internal static class ProgramDataChecks
                 continue;
             }
 
+            // These exact raw string carriers contain only immutable string/byte-array
+            // owners. Their CLR object storage is the Go string representation,
+            // not permission for arbitrary object fields or hosts.
+            if (type == typeof(ByteStringValue) || type == typeof(ByteStringKey))
+                continue;
+
             Type definition = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
             if (type.IsGenericType)
                 foreach (Type argument in type.GetGenericArguments())
                     pending.Enqueue(argument);
             // These are explicit slice/map/pointer/tuple representation adapters,
             // never generic permission for arbitrary interfaces or host objects.
-            if (definition == typeof(List<>) || definition == typeof(Dictionary<, >) || definition == typeof(HashSet<>) || definition == typeof(Nullable<>) || definition == typeof(StrongBox<>) || definition == typeof(IReadOnlyList<>) || definition == typeof(KeyValuePair<, >) || definition == typeof(ValueTuple<, >) || definition == typeof(ValueTuple<,, >) || definition == typeof(ValueTuple<,,, >))
+            if (definition == typeof(Slice<>) || definition == typeof(List<>) || definition == typeof(Dictionary<, >) || definition == typeof(HashSet<>) || definition == typeof(Nullable<>) || definition == typeof(StrongBox<>) || definition == typeof(IReadOnlyList<>) || definition == typeof(KeyValuePair<, >) || definition == typeof(ValueTuple<, >) || definition == typeof(ValueTuple<,, >) || definition == typeof(ValueTuple<,,, >))
                 continue;
             if (type.IsInterface || type.IsPointer || typeof(Delegate).IsAssignableFrom(type))
                 return false;

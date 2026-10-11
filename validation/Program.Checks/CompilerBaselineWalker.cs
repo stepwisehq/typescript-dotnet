@@ -175,7 +175,7 @@ public static class CompilerBaselineWalker
                 var text = new StringBuilder("Symbol(");
                 text.Append(Ast.EscapeAllInternalSymbolNames(GoString.ToUtf8(checker.SymbolToStringEx(symbol, node.Parent, SymbolFlags.None, SymbolFormatFlags.AllowAnyNodeKind))));
                 int count = 0;
-                foreach (Node declaration in symbol.Declarations ?? [])
+                foreach (Node declaration in symbol.Declarations)
                 {
                     if (count >= 5) { text.Append(" ... and ").Append(symbol.Declarations.Count - count).Append(" more"); break; }
                     count++; text.Append(", ");

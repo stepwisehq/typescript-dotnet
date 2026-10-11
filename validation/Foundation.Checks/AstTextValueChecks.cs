@@ -127,7 +127,7 @@ public static class AstTextValueChecks
     {
         const string text = "const borrowed = 'value'; const template = `head${borrowed}tail`;";
         var file = Parser.ParseSourceFile(new("/text.ts", "/text.ts"), GoString.Bytes(text), ScriptKind.TS);
-        Require((file.Diagnostics()?.Count ?? 0) == 0, "Source parses without diagnostics");
+        Require((file.Diagnostics().Length) == 0, "Source parses without diagnostics");
         var found = new List<Node>();
         void Walk(Node node)
         {
@@ -176,10 +176,26 @@ public static class AstTextValueChecks
             var symbol = new Symbol { Name = "mutated public name" };
             table.Add(key, symbol);
             var value = ByteStringValue.FromView(ByteStringView.FromOwnedBytes(bytes));
-            Require(table.TryGetValue(value, out var actualKey, out var actual) && ReferenceEquals(actual, symbol) && ReferenceEquals(actualKey, key), "Borrowed lookup returns the stored key, independent of Symbol.Name");
+            Require(table.TryGetValue(value, out var actualKey, out var actual) && ReferenceEquals(actual, symbol) && ReferenceEquals(actualKey.Materialize(), key), "Borrowed lookup returns the stored key, independent of Symbol.Name");
             Require(table.ContainsKey(value) && ReferenceEquals(table[value], symbol), "Borrowed read APIs agree");
             Require(ByteStringValue.FromString(key).TryGetValue(table, out actual) && ReferenceEquals(actual, symbol), "Owned raw string follows the same ordinal lookup");
         }
+        var stored = new string("Stored".ToCharArray());
+        var storedKey = ByteStringKey.FromString(stored);
+        var borrowed = ByteStringValue.FromView(ByteStringView.CopyFrom("Stored"u8));
+        var defaultKeys = new Dictionary<ByteStringKey, int> { [storedKey] = 7 };
+        Require(borrowed.TryGetValue(defaultKeys, out var actualStored, out var number) && number == 7 && ReferenceEquals(actualStored.Materialize(), stored), "Default key comparer retains canonical stored owner");
+        Require(borrowed.TryGetValue(defaultKeys, out number) && number == 7, "Default key comparer value-only lookup");
+        Require(!ByteStringValue.FromString("absent").TryGetValue(defaultKeys, out number) && number == 0, "Default key comparer miss returns zero value");
+        Require(borrowed.ContainsIn(new HashSet<ByteStringKey> { storedKey }), "Default key set membership");
+        var customComparer = EqualityComparer<string>.Create(
+            static (left, right) => StringComparer.OrdinalIgnoreCase.Equals(left, right),
+            static value => StringComparer.OrdinalIgnoreCase.GetHashCode(value));
+        var strings = new Dictionary<string, int>(customComparer) { [stored] = 9 };
+        var folded = ByteStringValue.FromView(ByteStringView.CopyFrom("stored"u8));
+        Require(folded.TryGetValue(strings, out var actualString, out number) && number == 9 && ReferenceEquals(actualString, stored), "Caller comparer is honored and returns actual stored key");
+        Require(folded.TryGetValue(strings, out number) && number == 9, "Caller comparer value-only lookup");
+        Require(folded.ContainsIn(new HashSet<string>(customComparer) { stored }), "Caller string-set comparer is honored");
         Require(!table.ContainsKey(ByteStringValue.FromString("missing")), "Miss preserves false");
         try { table.ContainsKey(ByteStringValue.FromString(null)); }
         catch (ArgumentNullException) { return; }

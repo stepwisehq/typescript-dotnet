@@ -1950,9 +1950,9 @@ public sealed partial class Checker
 
     private static DiagnosticDetails CreateModeMismatchDetails(TypeScript.Compiler.ICheckerProgramHost program, SourceFile file)
     {
-        var extension = RootedFilePath.FromGoString(file.FileNameGoBytes()).Extension();
+        var extension = RootedFilePath.FromValue(file.FileNameGoValue()).Extension();
         var target = extension == TsPath.ExtensionTs ? TsPath.ExtensionMts : extension == TsPath.ExtensionJs ? TsPath.ExtensionMjs : "";
-        var metadata = program.GetSourceFileMetaData(PathKey.FromGoString(file.PathKey()));
+        var metadata = program.GetSourceFileMetaData(PathKey.FromValue(file.PathKeyValue()));
         if (metadata.PackageJsonDirectory != default && metadata.PackageJsonType == "")
         {
             string package = metadata.PackageJsonDirectory.ResolveFile("package.json").AsString();

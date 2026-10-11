@@ -77,9 +77,9 @@ public static class CompilerMapperChecks
         // Original collectContentMapperDiagnostics: preserve all three actual
         // producers and their order. No additional raw inclusion channel.
         List<Diagnostic> diagnostics = [];
-        diagnostics.AddRange(program.GetSyntacticDiagnostics() ?? []);
-        diagnostics.AddRange(program.GetSemanticDiagnostics() ?? []);
-        diagnostics.AddRange(program.GetProgramDiagnostics() ?? []);
+        diagnostics.AddRange(GoSlices.Values(program.GetSyntacticDiagnostics()));
+        diagnostics.AddRange(GoSlices.Values(program.GetSemanticDiagnostics()));
+        diagnostics.AddRange(GoSlices.Values(program.GetProgramDiagnostics()));
         return diagnostics;
     }
 
@@ -109,12 +109,12 @@ public static class CompilerMapperChecks
                 }]
             }, null)), new() { ["/src/Component.vue"] = text }, ["/src/Component.vue"],
                 new() { Lib = ["lib.es5.d.ts"], SkipLibCheck = Tristate.True, Module = ModuleKind.ESNext, ModuleResolution = ModuleResolutionKind.Bundler });
-            Check.Equal(program.GetGlobalDiagnostics()?.Count ?? 0, 0, "original pre-incremental global count");
+            Check.Equal(program.GetGlobalDiagnostics().Length, 0, "original pre-incremental global count");
             var file = program.GetSourceFile(RootedFilePath.FromGoString("/src/Component.vue"));
             Check.True(file is not null, "original mapped file exists");
-            var diagnostics = program.GetSemanticDiagnosticsForIncremental(default, [file!])[file!];
+            var diagnostics = program.GetSemanticDiagnosticsForIncremental(default, Slice<SourceFile>.FromArray([file!]))[file!];
             int globals = 0, unused = 0;
-            foreach (var diagnostic in diagnostics ?? [])
+            foreach (var diagnostic in diagnostics)
             {
                 if (diagnostic.File() is null)
                 {
@@ -174,7 +174,7 @@ public static class CompilerMapperChecks
         Check.Equal(file.ContentMapper(), "vue-mapper@1.0.0", "failed mapper");
         Check.True(file.IsContentMapperFailureStub(), "failed transform retains stub");
         var localized = NewProgram(new((_, _) => (default, TransformError.NewTransformError(TransformErrorKind.Project, new ProjectError { Kind = ProjectErrorKind.MalformedResponse }))), new() { ["/src/fail.vue"] = "original" }, ["/src/fail.vue"]);
-        Check.True(CollectContentMapperDiagnostics(localized).Any(diagnostic => diagnostic.MessageChain()?.Any(message => message.Code() == Diagnostics.The_content_mapper_returned_a_project_response_that_could_not_be_decoded.Code()) == true), "localized project response diagnostic");
+        Check.True(CollectContentMapperDiagnostics(localized).Any(diagnostic => GoSlices.Values(diagnostic.MessageChain()).Any(message => message.Code() == Diagnostics.The_content_mapper_returned_a_project_response_that_could_not_be_decoded.Code())), "localized project response diagnostic");
     }
 
     private static void TestContentMapperProjectErrorDiagnostics()

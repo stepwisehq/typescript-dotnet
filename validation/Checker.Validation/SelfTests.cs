@@ -42,14 +42,14 @@ public static class SelfTests
         Check("api.global-table-alias", ReferenceEquals(checker.Globals, checker.GlobalThisSymbol.Exports));
         Check("api.global-readonly", (checker.GlobalThisSymbol.CheckFlags & CheckFlags.Readonly) != 0);
         var globals = checker.GetGlobalDiagnostics();
-        Check("api.no-library-errors-visible", globals.Count == 8 && globals.All(d => d.Code() == 2318));
-        Check("api.repeat-diagnostics", checker.GetDiagnostics()is null && checker.GetDiagnostics()is null);
+        Check("api.no-library-errors-visible", globals.Count == 8 && GoSlices.Values(globals).All(d => d.Code() == 2318));
+        Check("api.repeat-diagnostics", checker.GetDiagnostics().IsNil && checker.GetDiagnostics().IsNil);
         Check("api.repeat-type-identity", ReferenceEquals(checker.GetTypeAtLocation(Name(file)), checker.GetTypeAtLocation(Name(file))));
         var objectFile = Parse("const x=globalThis;");
         var objectChecker = Checker.Create(objectFile);
-        Check("api.builtin-object-read-admitted", objectChecker.GetDiagnostics() is null);
+        Check("api.builtin-object-read-admitted", objectChecker.GetDiagnostics().IsNil);
         var objectGlobals = objectChecker.GetGlobalDiagnostics();
-        Check("api.builtin-object-missing-globals-visible", objectGlobals.Count == 8 && objectGlobals.All(d => d.Code() == 2318));
+        Check("api.builtin-object-missing-globals-visible", objectGlobals.Count == 8 && GoSlices.Values(objectGlobals).All(d => d.Code() == 2318));
         var objectDeclaration = objectFile.Statements.Nodes[0].AsVariableStatement().DeclarationList
             .AsVariableDeclarationList().Declarations.Nodes[0].AsVariableDeclaration();
         Check("api.builtin-object-symbol", ReferenceEquals(objectChecker.GetSymbolAtLocation(objectDeclaration.Initializer), objectChecker.GlobalThisSymbol));

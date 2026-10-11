@@ -11,32 +11,38 @@ public partial class Parser
     private static Slice<Node> parseJSDocForNode(SourceFile sourceFile, Node node)
     {
         var p = getParser();
-        // Go parser-pool return omitted: this port creates an isolated managed parser.
-        p.initializeState(sourceFile.ParseOptions(), sourceFile.TextView(), sourceFile.ScriptKind);
-        var ranges = GetJSDocCommentRanges(p.factory, default, node, sourceFile.TextView());
-        if ((GoRuntime.Len(ranges) == 0))
+        try
         {
-            return default;
-        }
-
-        var jsdoc = Slice<Node>.Make(0);
-        var pos = node.Pos();
-        {
-            foreach (var comment in GoRuntime.RangeValues(ranges))
+            p.initializeState(sourceFile.ParseOptions(), sourceFile.TextView(), sourceFile.ScriptKind);
+            var ranges = GetJSDocCommentRanges(p.factory, default, node, sourceFile.TextView());
+            if ((GoRuntime.Len(ranges) == 0))
             {
+                return default;
+            }
+
+            var jsdoc = Slice<Node>.Make(0, ranges.Length);
+            var pos = node.Pos();
+            {
+                foreach (var comment in GoRuntime.RangeValues(ranges))
                 {
-                    var parsed = p.parseJSDocComment(node, comment.Pos, comment.End, pos);
-                    if ((parsed != null))
                     {
-                        parsed.Parent = node;
-                        jsdoc = GoRuntime.Append(jsdoc, parsed);
-                        pos = parsed.End();
+                        var parsed = p.parseJSDocComment(node, comment.Pos, comment.End, pos);
+                        if ((parsed != null))
+                        {
+                            parsed.Parent = node;
+                            jsdoc = GoRuntime.Append(jsdoc, parsed);
+                            pos = parsed.End();
+                        }
                     }
                 }
             }
-        }
 
-        return jsdoc;
+            return jsdoc;
+        }
+        finally
+        {
+            putParser(p);
+        }
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:56:1.

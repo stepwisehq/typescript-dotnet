@@ -40,21 +40,21 @@ public static partial class ProgramRunner
                 ? Ast.NewCompilerDiagnostic(Diagnostics.File_0_not_found, "authored-factory-" + kind)
                 : Ast.NewDiagnostic(file, new(0, 1), Diagnostics.File_0_not_found, "authored-factory-" + kind);
         }
-        public (ResolvedModule? Result, List<DiagAndArgs>? Traces, Exception? Error) ResolveModuleName(string name, RootedFilePath file, ResolutionMode mode, IResolvedProjectReference? reference = null)
+        public (ResolvedModule? Result, Slice<DiagAndArgs> Traces, Exception? Error) ResolveModuleName(string name, RootedFilePath file, ResolutionMode mode, IResolvedProjectReference? reference = null)
         {
             var result = inner.ResolveModuleName(name, file, mode, reference);
             if (input["Error"]?.GetValue<bool>() == true)
                 return (result.Result, result.Traces, new InvalidOperationException("authored resolver factory failure"));
             if (result.Result is not null && input["ModuleDiagnostics"]?.GetValue<bool>() == true)
-                result.Result.ResolutionDiagnostics = [SuppliedDiagnostic(file, "module")];
+                result.Result.ResolutionDiagnostics = Slice<Diagnostic>.FromArray([SuppliedDiagnostic(file, "module")]);
             return result;
         }
-        public (ResolvedModule? Result, List<DiagAndArgs>? Traces, Exception? Error) ResolveModuleNameFromDirectory(string name, RootedDirectoryPath directory, ResolutionMode mode) => inner.ResolveModuleNameFromDirectory(name, directory, mode);
-        public (ResolvedTypeReferenceDirective? Result, List<DiagAndArgs>? Traces) ResolveTypeReferenceDirective(string name, RootedFilePath file, ResolutionMode mode, IResolvedProjectReference? reference = null)
+        public (ResolvedModule? Result, Slice<DiagAndArgs> Traces, Exception? Error) ResolveModuleNameFromDirectory(string name, RootedDirectoryPath directory, ResolutionMode mode) => inner.ResolveModuleNameFromDirectory(name, directory, mode);
+        public (ResolvedTypeReferenceDirective? Result, Slice<DiagAndArgs> Traces) ResolveTypeReferenceDirective(string name, RootedFilePath file, ResolutionMode mode, IResolvedProjectReference? reference = null)
         {
             var result = inner.ResolveTypeReferenceDirective(name, file, mode, reference);
             if (result.Result is not null && input["TypeDiagnostics"]?.GetValue<bool>() == true)
-                result.Result.ResolutionDiagnostics = [SuppliedDiagnostic(file, "type")];
+                result.Result.ResolutionDiagnostics = Slice<Diagnostic>.FromArray([SuppliedDiagnostic(file, "type")]);
             return result;
         }
     }

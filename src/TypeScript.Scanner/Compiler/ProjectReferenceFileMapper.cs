@@ -33,7 +33,7 @@ internal class ProjectReferenceFileMapper
         realpathDtsToSource = realpathDtsToSource
     };
     internal IResolutionHost ResolutionHost(IResolutionHost host) => useSourceOfProjectReference && outputDtsToProjectReference.Count != 0 ? new ProjectReferenceDtsFakingHost(host, this) : host;
-    internal PathKey RootConfigPath() => config.ConfigFile is null ? default : PathKey.FromGoString(config.ConfigFile.SourceFile.PathKey());
+    internal PathKey RootConfigPath() => config.ConfigFile is null ? default : PathKey.FromValue(config.ConfigFile.SourceFile.PathKeyValue());
     internal virtual (RootedFilePath File, PathKey Path) GetParseFileRedirect(RootedFilePath file, PathKey path)
     {
         if (useSourceOfProjectReference)
@@ -58,10 +58,10 @@ internal class ProjectReferenceFileMapper
     internal SourceOutputAndProjectReference? GetProjectReferenceFromSource(PathKey path) => sourceToProjectReference.GetValueOrDefault(path);
     internal SourceOutputAndProjectReference? GetProjectReferenceFromOutputDts(PathKey path) => outputDtsToProjectReference.GetValueOrDefault(path);
     internal bool IsSourceFromProjectReference(PathKey path) => useSourceOfProjectReference && GetProjectReferenceFromSource(path) is not null;
-    internal CompilerOptions GetCompilerOptionsForFile(SourceFile file) => GetCompilerOptionsForFile(RootedFilePath.FromGoString(file.FileNameGoBytes()), PathKey.FromGoString(file.PathKey()));
+    internal CompilerOptions GetCompilerOptionsForFile(SourceFile file) => GetCompilerOptionsForFile(RootedFilePath.FromValue(file.FileNameGoValue()), PathKey.FromValue(file.PathKeyValue()));
     internal virtual CompilerOptions GetCompilerOptionsForFile(RootedFilePath file, PathKey path) => DefaultResolver.GetCompilerOptionsWithRedirect(config.CompilerOptions(), GetRedirectForResolution(file, path).Config);
     internal ParsedCommandLine? GetRedirectParsedCommandLineForResolution(SourceFile file) => GetRedirectForResolution(file).Config;
-    internal (ParsedCommandLine? Config, RootedFilePath Path) GetRedirectForResolution(SourceFile file) => GetRedirectForResolution(RootedFilePath.FromGoString(file.FileNameGoBytes()), PathKey.FromGoString(file.PathKey()));
+    internal (ParsedCommandLine? Config, RootedFilePath Path) GetRedirectForResolution(SourceFile file) => GetRedirectForResolution(RootedFilePath.FromValue(file.FileNameGoValue()), PathKey.FromValue(file.PathKeyValue()));
     internal virtual (ParsedCommandLine? Config, RootedFilePath Path) GetRedirectForResolution(RootedFilePath file, PathKey path)
     {
         var output = GetProjectReferenceFromSource(path);
@@ -97,7 +97,7 @@ internal class ProjectReferenceFileMapper
     internal bool RangeResolvedProjectReferenceInChildConfig(ParsedCommandLine? childConfig, Func<PathKey, ParsedCommandLine?, ParsedCommandLine, int, bool> callback)
     {
         if (childConfig?.ConfigFile is null) return false;
-        var path = PathKey.FromGoString(childConfig.ConfigFile.SourceFile.PathKey());
+        var path = PathKey.FromValue(childConfig.ConfigFile.SourceFile.PathKeyValue());
         return RangeResolvedReferenceWorker(referencesInConfigFile.GetValueOrDefault(path), callback, config, new() { path });
     }
 }

@@ -82,12 +82,9 @@ internal static class Evaluator
                     {
                         if (left.Value is JsNum.Number n1) leftText = ByteStringValue.FromString(n1.String());
                         if (right.Value is JsNum.Number n2) rightText = ByteStringValue.FromString(n2.String());
-                        // evaluator.go:102: concatenation owns its result; string
-                        // inputs themselves retain their existing byte headers.
-                        var joined = new GoBuilder();
-                        joined.WriteString(leftText);
-                        joined.WriteString(rightText);
-                        return new(joined.Value(), isSyntacticallyString, resolvedOtherFiles, hasExternalReferences);
+                        // evaluator.go:102: fixed concatenation owns changed output
+                        // and can reuse an operand when the other one is empty.
+                        return new(ByteStringValue.Concat(leftText, rightText), isSyntacticallyString, resolvedOtherFiles, hasExternalReferences);
                     }
 
                     break;

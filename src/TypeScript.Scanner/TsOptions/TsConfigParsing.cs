@@ -38,12 +38,12 @@ public static partial class TsOptions
     {
         if ((json == null) == (sourceFile == null))
             throw new InvalidOperationException("Expected exactly one configuration input");
-        var namesBase = configFileName.AsString() != "" ? configFileName.Directory() : basePath;
+        var namesBase = configFileName.AsValue().Length != 0 ? configFileName.Directory() : basePath;
         var(parsed, errors) = parseConfig(json, sourceFile, fs, basePath, configFileName, resolutionStack, cache);
         mergeParsedCompilerOptions(parsed.options, new() { CompilerOptions = existingOptions! }, existingOptionsRaw);
         handleOptionConfigDirTemplateSubstitution(parsed.options, namesBase);
         var raw = parseJsonToStringKey(parsed.raw);
-        if (configFileName.AsString() != "" && parsed.options != null)
+        if (configFileName.AsValue().Length != 0 && parsed.options != null)
             parsed.options.CompilerOptions.ConfigFilePath = configFileName;
         propOfRaw getPropFromRaw(string name, Func<object?, bool> validateElement, string elementType)
         {
@@ -76,7 +76,7 @@ public static partial class TsOptions
             {
                 if (sourceFile != null)
                 {
-                    string name = configFileName.AsString() != "" ? configFileName.AsString() : "tsconfig.json";
+                    string name = configFileName.AsValue().Length != 0 ? configFileName.AsString() : "tsconfig.json";
                     var node = ForEachTsConfigPropArray(sourceFile.SourceFile, "files", property => property.Initializer);
                     errors = errors.Append(CreateDiagnosticForNodeInSourceFile(sourceFile.SourceFile, node!, Diagnostics.The_files_list_in_config_file_0_is_empty, name));
                 }
@@ -92,13 +92,13 @@ public static partial class TsOptions
         {
             var outDirectory = parsed.options.CompilerOptions.OutDir;
             var declarationDirectory = parsed.options.CompilerOptions.DeclarationDir;
-            if (outDirectory.AsString() != "" || declarationDirectory.AsString() != "")
+            if (outDirectory.AsValue().Length != 0 || declarationDirectory.AsValue().Length != 0)
             {
                 var values = new List<object?>();
-                if (outDirectory.AsString() != "")
-                    values.Add(outDirectory.AsString());
-                if (declarationDirectory.AsString() != "")
-                    values.Add(declarationDirectory.AsString());
+                if (outDirectory.AsValue().Length != 0)
+                    values.Add(outDirectory.AsValue());
+                if (declarationDirectory.AsValue().Length != 0)
+                    values.Add(declarationDirectory.AsValue());
                 excludesOfRaw = new(values);
             }
         }
@@ -132,8 +132,7 @@ public static partial class TsOptions
         if (filesOfRaw.sliceValue != null)
         {
             foreach (var value in Core.Filter(filesOfRaw.sliceValue, isStringValue)!)
-                if (value is string text)
-                    (filesBefore ??= new()).Add(TsPath.ToFileSpec(text));
+                (filesBefore ??= new()).Add(TsPath.ToFileSpec(parsePathText(value)));
             files = substituteFileSpecs(filesBefore, namesBase) ?? filesBefore;
         }
 
@@ -142,7 +141,7 @@ public static partial class TsOptions
         var specByPath = new Dictionary<PathKey, FileSpec>(files?.Count ?? 0);
         for (int i = 0; i < (files?.Count ?? 0); i++)
         {
-            var name = files![i].AsString() == "" ? TsPath.RootedFilePathFromPath(namesBase.AsPath()) : TsPath.ToRootedFilePath(files[i].AsString(), namesBase);
+            var name = files![i].AsValue().Length == 0 ? TsPath.RootedFilePathFromPath(namesBase.AsPath()) : TsPath.ToRootedFilePath(files[i].AsValue(), namesBase);
             validatedNames.Add(name);
             specByPath.TryAdd(sensitivity.PathKey(name.AsPath()), filesBefore![i]);
         }
@@ -216,7 +215,7 @@ public static partial class TsOptions
         }
         else if ((mappers?.Count ?? 0) > 0)
         {
-            var containing = configFileName.AsString() != "" ? configFileName : namesBase.ResolveFile("tsconfig.json");
+            var containing = configFileName.AsValue().Length != 0 ? configFileName : namesBase.ResolveFile("tsconfig.json");
             var resolved = new List<TypeScript.ContentMapper.Mapper>(mappers!.Count);
             for (int i = 0; i < mappers.Count; i++)
             {
@@ -311,10 +310,10 @@ public static partial class TsOptions
     {
         List<PathPattern>? result = null;
         for (int i = 0; i < (values?.Count ?? 0); i++)
-            if (startsWithConfigDirTemplate(values![i].AsString()))
+            if (startsWithConfigDirTemplate(values![i].AsValue()))
             {
                 result ??= new(values);
-                result[i] = PathPattern.FromGoString(getSubstitutedPathWithConfigDirTemplate(values[i].AsString(), directory));
+                result[i] = PathPattern.FromValue(getSubstitutedPathWithConfigDirTemplate(values[i].AsValue(), directory));
             }
 
         return result;
@@ -324,10 +323,10 @@ public static partial class TsOptions
     {
         List<FileSpec>? result = null;
         for (int i = 0; i < (values?.Count ?? 0); i++)
-            if (startsWithConfigDirTemplate(values![i].AsString()))
+            if (startsWithConfigDirTemplate(values![i].AsValue()))
             {
                 result ??= new(values);
-                result[i] = FileSpec.FromGoString(getSubstitutedPathWithConfigDirTemplate(values[i].AsString(), directory));
+                result[i] = FileSpec.FromValue(getSubstitutedPathWithConfigDirTemplate(values[i].AsValue(), directory));
             }
 
         return result;
@@ -341,8 +340,8 @@ public static partial class TsOptions
             {
                 if (!Ast.IsPropertyAssignment(property))
                     continue;
-                var(name, ok) = Ast.TryGetTextOfPropertyName(property.Name());
-                if (ok && (name == key || alternateKeys.Length > 0 && alternateKeys[0] == name))
+                var(name, ok) = Ast.TryGetTextValueOfPropertyName(property.Name());
+                if (ok && (name.EqualsValue(ByteStringValue.FromString(key)) || alternateKeys.Length > 0 && name.EqualsValue(ByteStringValue.FromString(alternateKeys[0]))))
                     return callback(property.AsPropertyAssignment());
             }
 
@@ -357,14 +356,22 @@ public static partial class TsOptions
 
     public static T? ForEachTsConfigPropArray<T>(SourceFile? sourceFile, string propertyKey, Func<PropertyAssignment, T?> callback)
         where T : class => sourceFile != null ? ForEachPropertyAssignment(getTsConfigObjectLiteralExpression(sourceFile), propertyKey, callback) : null;
-    public static Func<PropertyAssignment, Node?> GetCallbackForFindingPropertyAssignmentByValue(string value) => property => Ast.IsArrayLiteralExpression(property.Initializer) ? Core.Find(property.Initializer.Elements(), element => Ast.IsStringLiteral(element) && element.Text() == value) : null;
+    public static Func<PropertyAssignment, Node?> GetCallbackForFindingPropertyAssignmentByValue(string value) => property => Ast.IsArrayLiteralExpression(property.Initializer) ? Core.Find(property.Initializer.Elements(), element => Ast.IsStringLiteral(element) && element.TextValue().EqualsValue(ByteStringValue.FromString(value))) : null;
     public static StringLiteral? GetTsConfigPropArrayElementValue(SourceFile? sourceFile, string key, string value)
     {
         var callback = GetCallbackForFindingPropertyAssignmentByValue(value);
         return ForEachTsConfigPropArray(sourceFile, key, property => callback(property)?.AsStringLiteral());
     }
 
+    internal static StringLiteral? GetTsConfigPropArrayElementValue(SourceFile? sourceFile, string key, ByteStringValue value) =>
+        ForEachTsConfigPropArray(sourceFile, key, property => Ast.IsArrayLiteralExpression(property.Initializer)
+            ? Core.Find(property.Initializer.Elements(), value, static (element, value) => Ast.IsStringLiteral(element) && element.TextValue().EqualsValue(value))?.AsStringLiteral() : null);
+
     public static Node? GetOptionsSyntaxByArrayElementValue(ObjectLiteralExpression? objectLiteral, string key, string value) => ForEachPropertyAssignment(objectLiteral, key, GetCallbackForFindingPropertyAssignmentByValue(value));
+    internal static Node? GetOptionsSyntaxByArrayElementValue(ObjectLiteralExpression? objectLiteral, string key, ByteStringValue value) =>
+        ForEachPropertyAssignment(objectLiteral, key, property => Ast.IsArrayLiteralExpression(property.Initializer)
+            ? Core.Find(property.Initializer.Elements(), value, static (element, value) => Ast.IsStringLiteral(element) && element.TextValue().EqualsValue(value)) : null);
+
     public static Diagnostic? CreateDiagnosticAtReferenceSyntax(ParsedCommandLine config, int index, Message message, params object[] args) => config.ConfigFile == null ? null : ForEachTsConfigPropArray(config.ConfigFile.SourceFile, "references", property => Ast.IsArrayLiteralExpression(property.Initializer) && property.Initializer.Elements().Count > index ? CreateDiagnosticForNodeInSourceFile(config.ConfigFile.SourceFile, property.Initializer.Elements()[index], message, args) : null);
     internal static Diagnostic createDiagnosticAtProjectReferenceProperty(TsConfigSourceFile? sourceFile, int index, string propertyName, Message message, params object[] args)
     {
@@ -394,7 +401,7 @@ public static partial class TsOptions
     internal static Node? getContentMapperExtensionSyntax(SourceFile? sourceFile, int index, string extension)
     {
         var node = getContentMapperSyntax(sourceFile, index, "extensions");
-        return node != null && Ast.IsArrayLiteralExpression(node) ? Core.Find(node.Elements(), element => Ast.IsStringLiteral(element) && element.Text() == extension) ?? node : node;
+        return node != null && Ast.IsArrayLiteralExpression(node) ? Core.Find(node.Elements(), element => Ast.IsStringLiteral(element) && element.TextValue().EqualsValue(ByteStringValue.FromString(extension))) ?? node : node;
     }
 
     internal static Diagnostic setContentMapperDiagnosticLocation(Diagnostic diagnostic, SourceFile? sourceFile, Node? node)
@@ -432,33 +439,37 @@ public static partial class TsOptions
                 node = next;
             }
 
-        return node == null ? (null, Core.UndefinedTextRange()) : (config.ConfigFile.SourceFile, new(global::TypeScript.Scanner.Scanner.SkipTriviaByteString(config.ConfigFile.SourceFile.Text(), node.Pos()), node.End()));
+        return node == null ? (null, Core.UndefinedTextRange()) : (config.ConfigFile.SourceFile, new(global::TypeScript.Scanner.Scanner.SkipTriviaByteString(config.ConfigFile.SourceFile.TextView(), node.Pos()), node.End()));
     }
 
-    internal static bool invalidTrailingRecursion(string spec)
+    internal static bool invalidTrailingRecursion(string spec) => invalidTrailingRecursion(ByteStringValue.FromString(spec));
+    internal static bool invalidTrailingRecursion(ByteStringValue spec)
     {
-        string value = spec.EndsWith('/') ? spec[..^1] : spec;
-        return value == "**" || value.EndsWith("/**", StringComparison.Ordinal);
+        var value = spec.EndsWith("/"u8) ? spec.Slice(0, spec.Length - 1) : spec;
+        return value.EqualsBytes("**"u8) || value.EndsWith("/**"u8);
     }
 
-    internal static bool invalidDotDotAfterRecursiveWildcard(string value)
+    internal static bool invalidDotDotAfterRecursiveWildcard(string value) => invalidDotDotAfterRecursiveWildcard(ByteStringValue.FromString(value));
+    internal static bool invalidDotDotAfterRecursiveWildcard(ByteStringValue value)
     {
-        int wildcard = value.StartsWith("**/", StringComparison.Ordinal) ? 0 : value.IndexOf("/**/", StringComparison.Ordinal);
+        int wildcard = value.StartsWith("**/"u8) ? 0 : value.IndexOf("/**/"u8);
         if (wildcard == -1)
             return false;
-        int lastDot = value.EndsWith("/..", StringComparison.Ordinal) ? value.Length : value.LastIndexOf("/../", StringComparison.Ordinal);
+        int lastDot = value.EndsWith("/.."u8) ? value.Length : value.LastIndexOf(ByteStringValue.FromString("/../"));
         return lastDot > wildcard;
     }
 
-    internal static Message? specToDiagnostic(string spec, bool disallowTrailingRecursion) => disallowTrailingRecursion && invalidTrailingRecursion(spec) ? Diagnostics.File_specification_cannot_end_in_a_recursive_directory_wildcard_Asterisk_Asterisk_Colon_0 : invalidDotDotAfterRecursiveWildcard(spec) ? Diagnostics.File_specification_cannot_contain_a_parent_directory_that_appears_after_a_recursive_directory_wildcard_Asterisk_Asterisk_Colon_0 : null;
+    internal static Message? specToDiagnostic(string spec, bool disallowTrailingRecursion) => specToDiagnostic(ByteStringValue.FromString(spec), disallowTrailingRecursion);
+    internal static Message? specToDiagnostic(ByteStringValue spec, bool disallowTrailingRecursion) => disallowTrailingRecursion && invalidTrailingRecursion(spec) ? Diagnostics.File_specification_cannot_end_in_a_recursive_directory_wildcard_Asterisk_Asterisk_Colon_0 : invalidDotDotAfterRecursiveWildcard(spec) ? Diagnostics.File_specification_cannot_contain_a_parent_directory_that_appears_after_a_recursive_directory_wildcard_Asterisk_Asterisk_Colon_0 : null;
     internal static (List<PathPattern>? Specs, Slice<Diagnostic> Errors) validateSpecs(object specs, bool disallowTrailingRecursion, SourceFile? sourceFile, string key)
     {
         List<PathPattern>? final = null;
         Slice<Diagnostic> errors = default;
         foreach (var value in (List<object?>)specs)
         {
-            if (value is not string spec)
+            if (value is not (string or ByteStringValue))
                 continue;
+            var spec = parsePathText(value);
             var message = specToDiagnostic(spec, disallowTrailingRecursion);
             if (message != null)
                 errors = errors.Append(CreateDiagnosticForNodeInSourceFileOrCompilerDiagnostic(sourceFile, GetTsConfigPropArrayElementValue(sourceFile, key, spec)?.AsNode(), message, spec));
@@ -471,7 +482,7 @@ public static partial class TsOptions
 
     internal static bool canJsonReportNoInputFiles(OrderedMap<string, object?> raw) => !raw.Has("files") && !raw.Has("references");
     internal static bool shouldReportNoInputFiles(List<RootedFilePath>? files, bool canReport, List<PathKey>? stack) => (files?.Count ?? 0) == 0 && canReport && (stack?.Count ?? 0) == 0;
-    internal static bool isStringValue(object? value) => value is string;
+    internal static bool isStringValue(object? value) => value is string or ByteStringValue;
     internal static (parsedTsconfig Config, Slice<Diagnostic> Errors) parseOwnConfigOfJsonSourceFile(SourceFile sourceFile, IFS fs, RootedDirectoryPath basePath, RootedFilePath configFileName)
     {
         var compilerOptions = getDefaultCompilerOptions(configFileName);
@@ -538,7 +549,7 @@ public static partial class TsOptions
         var factory = new NodeFactory();
         var source = new TsConfigSourceFile
         {
-            SourceFile = factory.NewSourceFile(new SourceFileParseOptions(fileName.AsString(), path.AsString(), FileNameIsGoBytes: true), "", factory.NewNodeList(Slice<Node>.Make(0)), factory.NewToken(Kind.EndOfFile)).AsSourceFile()
+            SourceFile = factory.NewSourceFile(new SourceFileParseOptions(fileName.AsValue(), path.AsValue(), FileNameIsGoBytes: true), "", factory.NewNodeList(Slice<Node>.Make(0)), factory.NewToken(Kind.EndOfFile)).AsSourceFile()
         };
         source.SourceFile.SetDiagnostics(errors!);
         return (source, errors);
@@ -587,7 +598,7 @@ public static partial class TsOptions
     internal static (parsedTsconfig Config, Slice<Diagnostic> Errors) parseConfig(OrderedMap<string, object?>? json, TsConfigSourceFile? sourceFile, IFS fs, RootedDirectoryPath basePath, RootedFilePath fileName, List<PathKey>? stack, IExtendedConfigCache? cache)
     {
         var sensitivity = fs.CaseSensitivity();
-        var path = sensitivity.PathKey(fileName.AsString() != "" ? fileName.AsPath() : basePath.AsPath());
+        var path = sensitivity.PathKey(fileName.AsValue().Length != 0 ? fileName.AsPath() : basePath.AsPath());
         Slice<Diagnostic> errors = default;
         if (stack?.Contains(path) == true)
         {
@@ -613,7 +624,7 @@ public static partial class TsOptions
             if (extended?.options == null)
                 return;
             var extendedRaw = extended.raw;
-            string relativeDifference = "";
+            ByteStringValue relativeDifference = ByteStringValue.FromString("");
             void setPropertyValue(string name)
             {
                 if (ownConfig.raw is OrderedMap<string, object?> ownMap && ownMap.Has(name))
@@ -622,12 +633,13 @@ public static partial class TsOptions
                     return;
                 var converted = Core.Map(values, value =>
                 {
-                    if (value is not string text)
+                    if (value is not (string or ByteStringValue))
                         return value;
+                    var text = parsePathText(value);
                     if (startsWithConfigDirTemplate(text) || TsPath.IsRootedDiskPath(text))
-                        return text;
-                    if (relativeDifference == "")
-                        relativeDifference = TsPath.ConvertToRelativePath(extendedPath.Directory().AsString(), basePath, sensitivity);
+                        return value;
+                    if (relativeDifference.Length == 0)
+                        relativeDifference = TsPath.ConvertToRelativePath(extendedPath.Directory().AsValue(), basePath, sensitivity);
                     return TsPath.CombinePaths(relativeDifference, text);
                 });
                 switch (name)
@@ -696,7 +708,7 @@ public static partial class TsOptions
                 foreach (var extendedFile in result.extendedSourceFiles)
                 {
                     sourceFile.ExtendedSourceFiles ??= new();
-                    int index = sourceFile.ExtendedSourceFiles.BinarySearch(extendedFile, Comparer<RootedFilePath>.Create((left, right) => string.CompareOrdinal(left.AsString(), right.AsString())));
+                    int index = sourceFile.ExtendedSourceFiles.BinarySearch(extendedFile, Comparer<RootedFilePath>.Create((left, right) => left.AsPath().Compare(right.AsPath())));
                     if (index < 0)
                         sourceFile.ExtendedSourceFiles.Insert(~index, extendedFile);
                 }
@@ -718,7 +730,7 @@ public static partial class TsOptions
         {
             CommandLineOptionKind.List => value is System.Collections.IList,
             CommandLineOptionKind.ListOrElement => value is System.Collections.IList || isCompilerOptionsValue(option.Elements(), value),
-            CommandLineOptionKind.String or CommandLineOptionKind.Enum => value is string,
+            CommandLineOptionKind.String or CommandLineOptionKind.Enum => value is string || option.PathKind.IsRooted() && value is ByteStringValue,
             CommandLineOptionKind.Boolean => value is bool,
             CommandLineOptionKind.Number => value is double,
             CommandLineOptionKind.Object => value is OrderedMap<string, object?>,
@@ -730,10 +742,10 @@ public static partial class TsOptions
     {
         if (!option.PathKind.IsRooted())
             return value;
-        string path = TsPath.NormalizeSlashes((string)value);
+        var path = TsPath.NormalizeSlashes(parsePathText(value));
         if (!startsWithConfigDirTemplate(path))
-            path = TsPath.GetNormalizedAbsolutePath(path, basePath.AsString());
-        return path == "" ? "." : path;
+            path = TsPath.GetNormalizedAbsolutePath(path, basePath.AsValue());
+        return path.Length == 0 ? ByteStringValue.FromString(".") : path;
     }
 
     internal static (List<object?>? Value, Slice<Diagnostic> Errors) convertJsonOptionOfListType(CommandLineOption option, object? value, RootedDirectoryPath basePath, PropertyAssignment? assignment, Node? expression, SourceFile? sourceFile)
@@ -838,7 +850,7 @@ public static partial class TsOptions
     {
         var options = getDefaultCompilerOptions(configFileName);
         var(_, errors) = convertOptionsFromJson(CommandLineCompilerOptionsMap, jsonOptions, basePath, new compilerOptionsParser { CompilerOptions = options.CompilerOptions, unresolvedPaths = options.unresolvedPaths });
-        if (configFileName.AsString() != "")
+        if (configFileName.AsValue().Length != 0)
             options.CompilerOptions.ConfigFilePath = configFileName;
         return (options, errors);
     }
@@ -886,7 +898,7 @@ public static partial class TsOptions
     internal static (List<RootedFilePath>? Paths, Slice<Diagnostic> Errors) getExtendsConfigPathOrArray(object? value, IFS fs, RootedDirectoryPath basePath, RootedFilePath fileName, PropertyAssignment? assignment, Node? expression, SourceFile? sourceFile)
     {
         List<RootedFilePath>? paths = null;
-        var newBase = fileName.AsString() != "" ? fileName.Directory() : basePath;
+        var newBase = fileName.AsValue().Length != 0 ? fileName.Directory() : basePath;
         if (value == null)
         {
             var(_, errors) = convertJsonOption(extendsOptionDeclaration!, value, basePath, assignment, expression, sourceFile);
@@ -896,7 +908,7 @@ public static partial class TsOptions
         if (value is string path)
         {
             var(resolved, errors) = getExtendsConfigPath(path, fs, newBase, expression, sourceFile);
-            if (resolved.AsString() != "")
+            if (resolved.AsValue().Length != 0)
                 (paths ??= new()).Add(resolved);
             return (paths, errors);
         }
@@ -911,7 +923,7 @@ public static partial class TsOptions
                 if (values[index] is string text)
                 {
                     var(resolved, resolutionErrors) = getExtendsConfigPath(text, fs, newBase, element, sourceFile);
-                    if (resolved.AsString() != "")
+                    if (resolved.AsValue().Length != 0)
                         (paths ??= new()).Add(resolved);
                     errors = resolutionErrors;
                 }
@@ -1007,7 +1019,7 @@ public static partial class TsOptions
                     {
                         if (jsonMatchers == null)
                         {
-                            var includes = Core.Filter(specs.validatedIncludeSpecs, include => include.AsString().EndsWith(TsPath.ExtensionJson, StringComparison.Ordinal));
+                            var includes = Core.Filter(specs.validatedIncludeSpecs, include => include.AsValue().EndsWith(".json"u8));
                             jsonMatchers = VfsMatch.NewSpecMatcher(includes, basePath, Usage.Files, host.CaseSensitivity());
                         }
 
@@ -1065,7 +1077,7 @@ public static partial class TsOptions
     internal static SourceFile? tsconfigToSourceFile(TsConfigSourceFile? source) => source?.SourceFile;
     public static TsConfigSourceFile NewTsconfigSourceFileFromFilePath(RootedFilePath fileName, PathKey path, string text) => new()
     {
-        SourceFile = Parser.ParseSourceFile(new SourceFileParseOptions(fileName.AsString(), path.AsString(), FileNameIsGoBytes: true), GoString.Bytes(text), ScriptKind.JSON),
+        SourceFile = Parser.ParseSourceFile(new SourceFileParseOptions(fileName.AsValue(), path.AsValue(), FileNameIsGoBytes: true), GoString.Bytes(text), ScriptKind.JSON),
     };
     public static (object? Value, Slice<Diagnostic> Errors) ParseConfigFileTextToJson(RootedFilePath fileName, PathKey path, string text)
     {
@@ -1239,14 +1251,23 @@ public static partial class TsOptions
     }
 
     internal const string configDirTemplate = "${configDir}";
-    internal static bool startsWithConfigDirTemplate(string value) => goLower(value).StartsWith(goLower(configDirTemplate), StringComparison.Ordinal);
-    internal static string getSubstitutedPathWithConfigDirTemplate(string value, RootedDirectoryPath basePath)
+    internal static bool startsWithConfigDirTemplate(string value) => startsWithConfigDirTemplate(ByteStringValue.FromString(value));
+    internal static bool startsWithConfigDirTemplate(ByteStringValue value) => GoStrings.ToLower(value).StartsWith("${configdir}"u8);
+    internal static string getSubstitutedPathWithConfigDirTemplate(string value, RootedDirectoryPath basePath) => getSubstitutedPathWithConfigDirTemplate(ByteStringValue.FromString(value), basePath).Materialize()!;
+    internal static ByteStringValue getSubstitutedPathWithConfigDirTemplate(ByteStringValue value, RootedDirectoryPath basePath)
     {
-        // Preserve original first-match, case-sensitive substitution after the case-insensitive prefix check.
-        int index = value.IndexOf(configDirTemplate, StringComparison.Ordinal);
+        // Preserve first-match, case-sensitive replacement after prefix validation.
+        int index = value.IndexOf("${configDir}"u8);
         if (index >= 0)
-            value = value[..index] + "./" + value[(index + configDirTemplate.Length)..];
-        return TsPath.GetNormalizedAbsolutePath(value, basePath.AsString());
+        {
+            var builder = new GoBuilder();
+            builder.Grow(value.Length - configDirTemplate.Length + 2);
+            builder.WriteString(value.Slice(0, index));
+            builder.WriteString("./");
+            builder.WriteString(value.Slice(index + configDirTemplate.Length));
+            value = builder.Value();
+        }
+        return TsPath.GetNormalizedAbsolutePath(value, basePath.AsValue());
     }
 
     internal static List<string>? getSubstitutedStringArrayWithConfigDirTemplate(List<string>? list, RootedDirectoryPath basePath)
@@ -1313,8 +1334,8 @@ public sealed class TsConfigSourceFile
     public List<RootedFilePath>? ExtendedSourceFiles;
     internal configFileSpecs? configFileSpecs;
     public SourceFile SourceFile = null!;
-    public RootedFilePath FileName() => RootedFilePath.FromGoString(SourceFile.FileName());
-    public PathKey Path() => PathKey.FromGoString(SourceFile.ParseOptions().PathKey);
+    public RootedFilePath FileName() => RootedFilePath.FromValue(SourceFile.FileNameGoValue());
+    public PathKey Path() => PathKey.FromValue(SourceFile.PathKeyValue());
 }
 
 internal sealed class jsonConversionNotifier

@@ -20,12 +20,18 @@ public partial class Binder
         file.BindOnce(() =>
         {
             var b = getBinder();
-            // Go binder-pool return omitted: this port creates an isolated managed binder.
-            b.file = file;
-            b.unreachableFlow = b.newFlowNode(FlowFlags.Unreachable);
-            b.bind(file.AsNode());
-            b.bindDeferredExpandoAssignments();
-            file.SymbolCount = b.symbolCount;
+            try
+            {
+                b.file = file;
+                b.unreachableFlow = b.newFlowNode(FlowFlags.Unreachable);
+                b.bind(file.AsNode());
+                b.bindDeferredExpandoAssignments();
+                file.SymbolCount = b.symbolCount;
+            }
+            finally
+            {
+                putBinder(b);
+            }
         });
     }
 
@@ -1147,7 +1153,7 @@ public partial class Binder
     {
         var moduleName = new GoBuilder();
         moduleName.WriteString("\""u8);
-        moduleName.WriteString(TsPath.RemoveFileExtension(this.file.FileNameGoBytes()));
+        moduleName.WriteString(TsPath.RemoveFileExtension(this.file.FileNameGoValue()));
         moduleName.WriteString("\""u8);
         this.bindAnonymousDeclaration(this.file.AsNode(), SymbolFlags.ValueModule, moduleName.Value());
     }
@@ -1202,7 +1208,7 @@ public partial class Binder
             if ((state != ModuleInstanceState.NonInstantiated))
             {
                 var symbol2 = node.Symbol();
-                var constEnumOnlyModule = (((((symbol2.Flags & (((SymbolFlags.Function | SymbolFlags.Class) | SymbolFlags.RegularEnum))) == 0)) && (state == ModuleInstanceState.ConstEnumOnly)) && !this.notConstEnumOnlyModules.Contains(symbol2));
+                var constEnumOnlyModule = (((((symbol2.Flags & (((SymbolFlags.Function | SymbolFlags.Class) | SymbolFlags.RegularEnum))) == 0)) && (state == ModuleInstanceState.ConstEnumOnly)) && !(this.notConstEnumOnlyModules?.Contains(symbol2) == true));
                 if (constEnumOnlyModule)
                 {
                     symbol2.Flags |= SymbolFlags.ConstEnumOnlyModule;
@@ -1210,7 +1216,7 @@ public partial class Binder
                 else
                 {
                     symbol2.Flags &= ~(SymbolFlags.ConstEnumOnlyModule);
-                    this.notConstEnumOnlyModules.Add(symbol2);
+                    (this.notConstEnumOnlyModules ??= new()).Add(symbol2);
                 }
             }
         }
@@ -3755,7 +3761,7 @@ public partial class Binder
         if ((((symbol.Flags & SymbolFlags.ConstEnumOnlyModule) != 0) && ((symbol.Flags & (((SymbolFlags.Function | SymbolFlags.Class) | SymbolFlags.RegularEnum))) != 0)))
         {
             symbol.Flags &= ~(SymbolFlags.ConstEnumOnlyModule);
-            this.notConstEnumOnlyModules.Add(symbol);
+            (this.notConstEnumOnlyModules ??= new()).Add(symbol);
         }
 
         if (((symbolFlags & SymbolFlags.Value) != 0))
@@ -4263,11 +4269,28 @@ public partial class Binder
     private NodeFlags emitFlags;
     private bool seenThisKeyword, hasExplicitReturn, hasFlowEffects, inAssignmentPattern, seenParseError;
     private int symbolCount;
-    private readonly HashSet<Symbol> notConstEnumOnlyModules = new();
+    private HashSet<Symbol> notConstEnumOnlyModules;
     private readonly GoArena<Node> singleDeclarationsArena = new();
     private Slice<ExpandoAssignmentInfo> expandoAssignments;
     private Binder() => bindFunc = bind;
-    // getBinder/putBinder adaptation: preserve isolated binding state and arena-owned identity,
-    // replacing sync.Pool with one fresh managed Binder per file. No checker state is imported.
-    private static Binder getBinder() => new();
+    // binder.go:102-117. Reuse only the Binder and its once-created bindFunc.
+    // Published symbols/flow nodes and declaration slices retain their own owners.
+    private static readonly System.Collections.Concurrent.ConcurrentBag<Binder> binderPool = new();
+    private static Binder getBinder() => binderPool.TryTake(out var binder) ? binder : new();
+    private static void putBinder(Binder binder)
+    {
+        binder.file = null;
+        binder.unreachableFlow = null;
+        binder.container = binder.thisContainer = binder.blockScopeContainer = binder.lastContainer = null;
+        binder.currentFlow = binder.currentBreakTarget = binder.currentContinueTarget = binder.currentReturnTarget = null;
+        binder.currentTrueTarget = binder.currentFalseTarget = binder.currentExceptionTarget = binder.preSwitchCaseFlow = null;
+        binder.activeLabelList = null;
+        binder.emitFlags = default;
+        binder.seenThisKeyword = binder.hasExplicitReturn = binder.hasFlowEffects = binder.inAssignmentPattern = binder.seenParseError = false;
+        binder.symbolCount = 0;
+        binder.notConstEnumOnlyModules = null;
+        binder.singleDeclarationsArena.Reset();
+        binder.expandoAssignments = default;
+        binderPool.Add(binder);
+    }
 }

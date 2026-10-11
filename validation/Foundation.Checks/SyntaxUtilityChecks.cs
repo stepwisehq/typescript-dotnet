@@ -42,7 +42,7 @@ public static partial class ScannerChecks
             var expected = syntaxFixtures.Value.RootElement.GetProperty("PragmaArguments");
             Equal(expected[0].GetString(), Ast.GetPragmaArgument(null, "factory"), "Nil pragma");
             Equal(expected[1].GetString(), Ast.GetPragmaArgument(new Pragma(), "factory"), "Nil pragma argument map");
-            Equal(expected[2].GetString(), Ast.GetPragmaArgument(new Pragma { Args = new() { ["factory"] = new PragmaArgument { Value = "react" } } }, "factory"), "Pragma argument value");
+            Equal(expected[2].GetString(), Ast.GetPragmaArgument(new Pragma { Args = new() { [ByteStringKey.FromString("factory")] = new PragmaArgument { Value = "react" } } }, "factory"), "Pragma argument value");
         });
         using var registrationFixture = LoadFixture("TypeScript.Foundation.SyntaxHelperFixtures.json");
         for (int i = 0; i < registrationFixture.RootElement.GetProperty("Parsed").GetArrayLength(); i++)
@@ -117,7 +117,7 @@ public static partial class ScannerChecks
                 CompareIds(row.GetProperty("Leftmost"), [Id(Ast.GetLeftmostExpression(node, false)), Id(Ast.GetLeftmostExpression(node, true))], context + " leftmost expression");
             }
 
-            CompareIds(row.GetProperty("Ancestors"), Ast.FindManyAncestors(node, Ast.IsSourceFile, Ast.IsClassLike, Ast.IsFunctionLike, Ast.IsSourceFile).Select(Id), context + " ordered ancestor callbacks");
+            CompareIds(row.GetProperty("Ancestors"), GoSlices.Values(Ast.FindManyAncestors(node, Ast.IsSourceFile, Ast.IsClassLike, Ast.IsFunctionLike, Ast.IsSourceFile)).Select(Id), context + " ordered ancestor callbacks");
             Equal(row.GetProperty("AncestorOrQuit").GetInt32(), Id(Ast.FindAncestorOrQuit(node, current => Ast.IsBlock(current) ? FindAncestorResult.Quit : Ast.ToFindAncestorResult(Ast.IsSourceFile(current)))), context + " ancestor quit");
             if (Ast.IsBlock(node))
             {

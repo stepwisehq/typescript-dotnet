@@ -30,7 +30,7 @@ broader rollout. Combined changes cannot establish isolated per-technique gains.
 | Managed List wrappers and copied subranges replace Go slice headers | Slice storage through owners, caches and consumers; standard Span.CopyTo, source Clip/Clone/detachment and captured range semantics. Inference/signature/node/constituent families qualified earlier; generic/member/program/diagnostic families continue in the combined rollout. | [Slice semantics](#implemented-follow-up-slice-support-and-inference-stacks), [AST slices](#ast-child-slices-and-arena-publication), [constituent results](#type-constituent-slices-and-parser-scratch) |
 | Capturing delegates and LINQ introduce transient objects | Explicit state plus cached static callbacks, source-shaped loops and retained Go lazy/scratch boundaries. Earlier families qualified; apply throughout remaining connected consumers. Retained closures are not removed when upstream lifetime requires them. | [Checker/flow callbacks](#checker-and-flow-callback-state), [local mapper/parser scratch](#local-mapper-and-parser-scratch) |
 | Go embedded records became separately allocated wrapper/payload pairs | Direct inheritance preserves one object and source identity/dispatch. AST and checker Type merges are in the integration5 workload proof; mapper header/payload merging is included in integration6. FlowNode/FlowList are genuinely separate Go records and remain separate. | [Live state and review boundaries](./STATE.md), [source mapping](../source-map.json) |
-| Go packs records into stable arena chunks; C# currently allocates records separately | AST/Type/Mapper wrapper merging is implemented. Internal ValueSymbolLinks chunked storage and live ref consumers are implemented/source-reviewed, pending execution. The remaining 26 map-backed link stores are being converted as one connected family. Public Symbol packing remains excluded; no measured arena benefit yet. | [Arena assessment](../artifacts/vscode-allocation-rollout/integration-8/managed-profile/arena-assessment.json), [live state](./STATE.md) |
+| Go packs records into stable arena chunks; C# currently allocates records separately | AST/Type/Mapper wrapper merging is implemented. Internal ValueSymbolLinks, 26 map-backed link stores and inline node pages are implemented/reviewed and exercised in Native AOT integration12. Wider location storage has measured costs; aggregate allocation reduction is not an isolated arena benefit. Public Symbol packing remains excluded. | [Arena assessment](../artifacts/vscode-allocation-rollout/integration-8/managed-profile/arena-assessment.json), [live state](./STATE.md) |
 | Link/reference ownership adds per-record wrapper objects | Direct reference slots and opaque ownership tokens with preserved source lifetime/identity. Earlier qualified changes; no unrelated private-observer redesign. | [Link storage](#fixed-link-store-reference-slots), [ownership/reporters](#opaque-ownership-tokens-and-unbound-reporters) |
 | Scratch copies, general path work and singleton growth add avoidable work | Retain source scratch/header reuse, ASCII/path fast paths and source initial capacities. Required persistent snapshots remain detached. Broader canonical resolver/path receivers are included in the combined workload proof. | [Path/capacity work](#path-fast-paths-and-singleton-capacity), [parser scratch](#type-constituent-slices-and-parser-scratch) |
 
@@ -161,6 +161,76 @@ reductions contribute to the latter. Wider standard Memory entries offset elimin
 object headers. This does not establish either a throughput win or loss for packing.
 See the [complete profile comparison](../artifacts/vscode-allocation-rollout/integration-12/managed-profile/comparison.json).
 Broad regression and cold-observer execution remain pending.
+
+Integration14 closes the borrowed typed-path ownership family through resolver,
+Program, configuration, VFS directory entries and the Glob matcher. Rooted/relative
+paths and retained keys use immutable byte descriptors with content equality/hash;
+unchanged subpaths borrow backing storage. Actual concatenation/normalization and
+native-directory-buffer ownership transfers still copy as upstream requires.
+Public display, JSON and OS text boundaries remain explicit. The previous temporary
+borrowed-path overlay is removed in favor of the directly mapped source counterparts.
+Remaining identified synchronous contextual-object/awaited/declaration callbacks use
+explicit state in this same integration. Independent source review covered the owner
+and consumer families, including existing cold adapters without weakening observations.
+
+Production build and actual Linux x64 Native AOT VS Code comparison passed:
+**19.23s wall,80.76s CPU,9,242,060KiB peak RSS**, expected exit1 and all ten complete
+diagnostics/available pinned chains exact. Source/config/binary guards passed.
+This single observation is not proof of a throughput improvement. Integration13's
+four API-binding failures and the reviewed descriptor/Glob repair are retained;
+no behavioral expectation changed. [Integration14 evidence](../artifacts/vscode-allocation-rollout/integration-14/boundary-summary.json)
+binds the exact binaries and source snapshot. The [matched allocation capture](../artifacts/vscode-allocation-rollout/integration-14/managed-profile/comparison.json)
+reports **11.074105GiB**, −1.675614% versus12 and −68.510575% versus the original
+matched Server GC capture. Strings fall349.8→61.2MB while byte arrays rise246.0→337.2MB;
+required source buffers and newly byte-backed owned outputs remain. All101,566 allocation
+ticks have types/stacks, with zero loss/truncation/overflow and exact diagnostics.
+Named link-storage buckets are essentially unchanged. These sampled CoreCLR weights
+are not exact Native AOT totals or isolated technique savings. Broader regression
+and cold-observer execution remain pending. The rollout
+continues through remaining actual source omissions rather than treating this checkpoint
+as completion.
+
+Integration15 closes the source-prescribed parser/binder/file-task reuse and spelling
+search family, plus the remaining identified immediate checker callbacks and shared
+known-size byte concatenation. Parser and binder returns drop arena headers without
+clearing published storage; all parser acquire paths return in finally. Losing file
+parse candidates alone return to the task pool. Spelling uses one borrowed-name
+selection algorithm and standard ArrayPool distance-buffer leases across candidates.
+Fixed concatenation allocates its known-size result once and copies with .NET spans;
+genuine incremental builders and required detached outputs remain.
+
+Standard ConcurrentBag owner reuse is a documented adaptation: unlike Go sync.Pool,
+it does not evict idle owners at GC. An idle parser retains its scanner and last source,
+token and error-callback references, not merely an empty small wrapper. No public AST
+or Symbol reference-model redesign or custom pool framework was introduced.
+
+Production build and actual Linux x64 Native AOT VS Code pass with all ten complete
+diagnostics and available pinned chains exact: **18.02s wall,74.72s CPU,
+10,049,996KiB peak RSS**. Source/config/binary guards passed; this single observation
+does not isolate a throughput effect. Integration14 remains the latest allocation
+profile and excludes these successor changes. Comprehensive retained regression
+qualification is now underway, with public parser reuse/lifetime controls added to
+existing xUnit/native harnesses; no broader acceptance claim is made yet.
+
+The consolidated first xUnit pass completed **40,451 cases:39,788passed/663failed**.
+All **15,304 original no-emit corpus records** matched their complete expected outputs.
+The failures exposed outdated shared observers plus two production defects: optional
+alternate dictionary lookup assumed every comparer supported it, and bundled-directory
+headers captured a generated name table before its static initialization. Both are
+fixed without changing the original failing assertions. Standard collection fallback
+preserves comparer semantics; an explicit static constructor initializes the bundled
+header after generated field initialization. Remaining adapters preserve existing
+schemas and nil/empty/order behavior. Authored ownership controls now observe Go slice
+backing/range and immutable filename content across scalar promotion rather than boxed
+or cross-projection CLR reference identity; a detached required shared slice still fails.
+
+Integration16 builds and publishes actual Linux x64 Native AOT with the reviewed fixes.
+VS Code again matches ten complete diagnostics and available pinned chains:
+**22.12s wall,77.65s CPU,9,976,960KiB peak RSS**, empty stderr and all guards unchanged.
+Previous15 was18.02s; these individual runs do not establish a causal performance change.
+The repaired comprehensive xUnit/native gates are proceeding; initial failures and
+outputs are retained. This checkpoint is implementation progress, not final regression
+acceptance or Go performance parity.
 
 ## Workload and compiler identity
 

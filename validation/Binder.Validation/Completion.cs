@@ -65,20 +65,21 @@ public static class CompletionRunner
 
     private static Dictionary<string, bool> MetadataNulls(SourceFile file) => new()
     {
-        ["imports"] = file.Imports()is null,
-        ["moduleAugmentations"] = file.ModuleAugmentations is null,
-        ["ambientModuleNames"] = file.AmbientModuleNames is null,
-        ["commentDirectives"] = file.CommentDirectives is null,
+        ["imports"] = file.Imports().IsNil,
+        ["moduleAugmentations"] = file.ModuleAugmentations.IsNil,
+        ["ambientModuleNames"] = file.AmbientModuleNames.IsNil,
+        ["commentDirectives"] = file.CommentDirectives.IsNil,
         ["reparsedClones"] = file.ReparsedClones.IsNil,
-        ["pragmas"] = file.Pragmas is null,
-        ["referencedFiles"] = file.ReferencedFiles is null,
-        ["typeReferenceDirectives"] = file.TypeReferenceDirectives is null,
-        ["libReferenceDirectives"] = file.LibReferenceDirectives is null,
-        ["parseDiagnostics"] = file.Diagnostics()is null,
-        ["jsDiagnostics"] = file.JSDiagnostics()is null,
-        ["jsDocDiagnostics"] = file.JSDocDiagnostics()is null,
+        ["pragmas"] = file.Pragmas.IsNil,
+        ["referencedFiles"] = file.ReferencedFiles.IsNil,
+        ["typeReferenceDirectives"] = file.TypeReferenceDirectives.IsNil,
+        ["libReferenceDirectives"] = file.LibReferenceDirectives.IsNil,
+        ["parseDiagnostics"] = file.Diagnostics().IsNil,
+        ["jsDiagnostics"] = file.JSDiagnostics().IsNil,
+        ["jsDocDiagnostics"] = file.JSDocDiagnostics().IsNil,
     };
-    private static List<CanonicalDiagnosticState> States(IEnumerable<Diagnostic>? diagnostics, SourceFile file) => diagnostics?.Select(d => new CanonicalDiagnosticState { FileNameBase64 = d.File()is { } diagnosticFile ? Convert.ToBase64String(Encoding.UTF8.GetBytes(diagnosticFile.FileName())) : null, FileMatchesSource = ReferenceEquals(d.File(), file), SourceBase64 = Encoder.Bytes(d.Source()), MessageTextBase64 = Encoder.Bytes(d.MessageText()), ArgsNull = d.MessageArgs()is null, ChainNull = d.MessageChain()is null, RelatedNull = d.RelatedInformation()is null, ReportsUnnecessary = d.ReportsUnnecessary(), ReportsDeprecated = d.ReportsDeprecated(), SkippedOnNoEmit = d.SkippedOnNoEmit(), Chain = States(d.MessageChain(), file), Related = States(d.RelatedInformation(), file), }).ToList() ?? [];
+    private static List<CanonicalDiagnosticState> States(Slice<Diagnostic> diagnostics, SourceFile file) => States(diagnostics.IsNil ? null : diagnostics.AsSpan().ToArray(), file);
+    private static List<CanonicalDiagnosticState> States(IEnumerable<Diagnostic>? diagnostics, SourceFile file) => diagnostics?.Select(d => new CanonicalDiagnosticState { FileNameBase64 = d.File()is { } diagnosticFile ? Convert.ToBase64String(Encoding.UTF8.GetBytes(diagnosticFile.FileName())) : null, FileMatchesSource = ReferenceEquals(d.File(), file), SourceBase64 = Encoder.Bytes(d.Source()), MessageTextBase64 = Encoder.Bytes(d.MessageText()), ArgsNull = d.MessageArgs()is null, ChainNull = d.MessageChain().IsNil, RelatedNull = d.RelatedInformation().IsNil, ReportsUnnecessary = d.ReportsUnnecessary(), ReportsDeprecated = d.ReportsDeprecated(), SkippedOnNoEmit = d.SkippedOnNoEmit(), Chain = States(d.MessageChain(), file), Related = States(d.RelatedInformation(), file), }).ToList() ?? [];
     public static CompletionResult Run(CompletionRequest request)
     {
         var cold = Cold(request.Parse);
@@ -100,11 +101,11 @@ public static class CompletionRunner
         order.AddRange(["bind", "readonly-cold-graph-snapshot"]);
         var first = Snapshot(file, cold);
         var firstNulls = MetadataNulls(file);
-        byte[] firstBytes = JsonSerializer.SerializeToUtf8Bytes(new CompletionSnapshot(first.After, first.Binding, firstNulls, file.BindDiagnostics()is null, States(file.BindDiagnostics(), file)), CompletionJson.Default.CompletionSnapshot);
+        byte[] firstBytes = JsonSerializer.SerializeToUtf8Bytes(new CompletionSnapshot(first.After, first.Binding, firstNulls, file.BindDiagnostics().IsNil, States(file.BindDiagnostics(), file)), CompletionJson.Default.CompletionSnapshot);
         Binder.BindSourceFile(file);
         var second = Snapshot(file, cold);
         first.Graph.AssertSameIdentities(second.Graph);
-        byte[] secondBytes = JsonSerializer.SerializeToUtf8Bytes(new CompletionSnapshot(second.After, second.Binding, MetadataNulls(file), file.BindDiagnostics()is null, States(file.BindDiagnostics(), file)), CompletionJson.Default.CompletionSnapshot);
+        byte[] secondBytes = JsonSerializer.SerializeToUtf8Bytes(new CompletionSnapshot(second.After, second.Binding, MetadataNulls(file), file.BindDiagnostics().IsNil, States(file.BindDiagnostics(), file)), CompletionJson.Default.CompletionSnapshot);
         if (!firstBytes.AsSpan().SequenceEqual(secondBytes))
             throw new InvalidOperationException("Cold repeated bind changed published graph");
         order.Add("repeat-bind-identities-and-values-before-helper-observations");
@@ -113,7 +114,7 @@ public static class CompletionRunner
             Graph = new(before, first.After, first.Binding, true),
             MetadataNulls = firstNulls,
             ObservationOrder = order,
-            BindDiagnosticsNull = file.BindDiagnostics()is null,
+            BindDiagnosticsNull = file.BindDiagnostics().IsNil,
             BindDiagnosticStates = States(file.BindDiagnostics(), file),
             SymbolHelpers = first.Graph.SymbolObservations(file),
             ContainerHelpers = first.Graph.ContainerObservations(),

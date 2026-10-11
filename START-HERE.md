@@ -36,10 +36,19 @@ cycle of one or two local changes followed by targeted tests and benchmarks.
   and actual allocation/ownership rules. Required copies, Clip/Clone operations and
   detachments stay. Use standard .NET operations where their semantics fit. Do not
   introduce a different compiler design or assume every upstream allocation can go.
+  Preserve explicit upstream pooling/reuse with proportionate standard .NET facilities
+  where lifetimes match; avoiding speculative pooling is not a reason to omit Go pools.
 - The main Astra coordinator owns decisions and integration; GPT-6.1 Sol agents own
   substantive implementation and independent review. Assign coherent, disjoint
   source ownership, coordinate shared APIs and continue between internal families
   without seeking another assignment. Current lanes and files are in STATE.md.
+  Use `followup_task` for actionable handoffs: it starts completed agents and also
+  delivers to running agents. Reserve `send_message` for information, since it does
+  not start an idle agent. Check live status before waiting with no active writer.
+- Assign independent review coverage by source family. One complete independent
+  review per changed file is sufficient; require another only for a concrete risk
+  or unresolved finding. For example, split owner and consumer coverage rather
+  than making every agent re-review the entire rollout before integration.
 - **Do not restart per-small-change targeted tests, repeated VS Code benchmarks,
   allocation captures or full gates after compaction.** Use coordinated integration
   builds as the larger rollout comes together. Run behavioral and performance

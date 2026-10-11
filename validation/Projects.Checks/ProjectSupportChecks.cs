@@ -163,7 +163,7 @@ public static partial class ProjectSupportChecks
         disk.Config("{\"files\":[\"main.ts\"],\"compilerOptions\":{\"target\":\"ESNext\",\"module\":\"ESNext\",\"moduleResolution\":\"Bundler\",\"noEmit\":true,\"types\":[]}}");
         Project valid = Project.Load(disk.ConfigPath);
         Require(valid.Options.NoEmit == Tristate.True && valid.Options.DownlevelIteration == Tristate.Unknown && valid.Options.Types?.Count == 0, "Fixed options must preserve omitted removed-option state.");
-        Require(!valid.SourceFiles.Contains(valid.ConfigSourceFile), "Config AST is not a Program source root.");
+        Require(!GoSlices.Contains(valid.SourceFiles, valid.ConfigSourceFile), "Config AST is not a Program source root.");
         disk.Config("{\"files\":[\"missing.ts\"]}");
         Equal(Project.Load(disk.ConfigPath).Check().Single().Code(), 6053);
         disk.Config("{\"files\":[\"../escape.ts\"]}");
@@ -341,24 +341,17 @@ public static partial class ProjectSupportChecks
         Diagnostic skipped = Ast.NewCompilerDiagnostic(Diagnostics.File_0_not_found, "skipped.ts");
         skipped.SetSkippedOnNoEmit();
         Diagnostic retained = Ast.NewCompilerDiagnostic(Diagnostics.File_0_not_found, "retained.ts");
-        var input = new List<Diagnostic>
-        {
-            skipped,
-            retained
-        };
+        var input = Slice<Diagnostic>.FromArray([skipped, retained]);
         var options = new CompilerOptions
         {
             NoEmit = Tristate.True
         };
-        Sequence(TypeScript.Compiler.Program.FilterNoEmitSemanticDiagnostics(input, options)!, new[] { retained });
+        Sequence(GoSlices.Values(TypeScript.Compiler.Program.FilterNoEmitSemanticDiagnostics(input, options)), new[] { retained });
         Equal(input.Count, 2);
-        var allRetained = new List<Diagnostic>
-        {
-            retained
-        };
-        Require(ReferenceEquals(TypeScript.Compiler.Program.FilterNoEmitSemanticDiagnostics(allRetained, options), allRetained), "Original all-match noEmit filter preserves list identity.");
+        var allRetained = Slice<Diagnostic>.FromArray([retained]);
+        Require(Core.Same(TypeScript.Compiler.Program.FilterNoEmitSemanticDiagnostics(allRetained, options), allRetained), "Original all-match noEmit filter preserves header length and shared first-slot identity.");
         options.NoEmit = Tristate.False;
-        Require(ReferenceEquals(TypeScript.Compiler.Program.FilterNoEmitSemanticDiagnostics(input, options), input), "NoEmit=false retains original diagnostic slice/list.");
+        Require(Core.Same(TypeScript.Compiler.Program.FilterNoEmitSemanticDiagnostics(input, options), input), "NoEmit=false retains original diagnostic header length and shared first-slot identity.");
     }
 
     private static void ParseFailureAndFreshIdentity()
@@ -452,7 +445,7 @@ public static partial class ProjectSupportChecks
             TypeScript.ModuleSpecifiers.ModuleSpecifiersResult Run() => TypeScript.ModuleSpecifiers.ModuleSpecifiers.GetModuleSpecifiers(target.AsNode().Symbol(), checker, project.Options, context, project, new TypeScript.ModuleSpecifiers.UserPreferences { ImportModuleSpecifierPreference = TypeScript.ModuleSpecifiers.ImportModuleSpecifierPreference.ProjectRelative }, new TypeScript.ModuleSpecifiers.ModuleSpecifierOptions(), false);
             var result = Run();
             Equal(result.Kind, TypeScript.ModuleSpecifiers.ResultKind.Relative);
-            Sequence(result.Specifiers!.Select(specifier => specifier.AsString()), new[] { "./a" });
+            Sequence(GoSlices.Values(result.Specifiers).Select(specifier => specifier.AsString()), new[] { "./a" });
             Require(result.AmbientModuleSymbol == null, "Original source API returns no ambient symbol.");
         }
     }
@@ -517,7 +510,7 @@ public static partial class ProjectSupportChecks
         public TypeScript.Symlinks.KnownSymlinks GetSymlinkCache() => throw new InvalidOperationException("Unused original mock service");
         public RootedDirectoryPath GetGlobalTypingsCacheLocation() => throw new InvalidOperationException("Unused original mock service");
         public TypeScript.TsOptions.SourceOutputAndProjectReference? GetProjectReferenceFromSource(PathKey path) => throw new InvalidOperationException("Unused original mock service");
-        public List<RootedFilePath>? GetRedirectTargets(PathKey path) => throw new InvalidOperationException("Unused original mock service");
+        public Slice<RootedFilePath> GetRedirectTargets(PathKey path) => throw new InvalidOperationException("Unused original mock service");
         public RootedFilePath GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file) => throw new InvalidOperationException("Unused original mock service");
         public RootedDirectoryPath GetNearestAncestorDirectoryWithPackageJson(RootedDirectoryPath directory) => throw new InvalidOperationException("Unused original mock service");
         public TypeScript.PackageJson.InfoCacheEntry? GetPackageJsonInfo(RootedFilePath path) => throw new InvalidOperationException("Unused original mock service");
@@ -544,14 +537,14 @@ public static partial class ProjectSupportChecks
         Require(!File.Exists(shadow), "Fresh shadow probe must not overwrite another file.");
         var absent = Run();
         Equal(absent.Kind, TypeScript.ModuleSpecifiers.ResultKind.Relative);
-        Sequence(absent.Specifiers!.Select(specifier => specifier.AsString()), new[] { ".." });
+        Sequence(GoSlices.Values(absent.Specifiers).Select(specifier => specifier.AsString()), new[] { ".." });
         Require(absent.AmbientModuleSymbol == null, "Original absent-shadow ambient symbol is nil.");
         try
         {
             File.WriteAllText(shadow, "class OutsideSourceMustNotBeParsed {};");
             var present = Run();
             Equal(present.Kind, TypeScript.ModuleSpecifiers.ResultKind.Relative);
-            Sequence(present.Specifiers!.Select(specifier => specifier.AsString()), new[] { "../index" });
+            Sequence(GoSlices.Values(present.Specifiers).Select(specifier => specifier.AsString()), new[] { "../index" });
             Require(present.AmbientModuleSymbol == null, "Original present-shadow ambient symbol is nil.");
             Require(project.UserFiles.All(file => file.FileName() != shadow), "Shadow metadata must not enter source set.");
             Reject(() => new ProjectDiskHost(disk.Root).FileExists(shadow), "outsideRoot");

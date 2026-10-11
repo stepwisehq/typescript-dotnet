@@ -19,15 +19,21 @@ public partial class Parser
     internal static SourceFile ParseSourceFileOwned(SourceFileParseOptions opts, ByteStringView sourceText, ScriptKind scriptKind)
     {
         var p = getParser();
-        // Go parser-pool return omitted: this port creates an isolated managed parser.
-        p.initializeState(opts, sourceText, scriptKind);
-        p.nextToken();
-        if ((p.scriptKind == ScriptKind.JSON))
+        try
         {
-            return p.parseJSONText();
-        }
+            p.initializeState(opts, sourceText, scriptKind);
+            p.nextToken();
+            if ((p.scriptKind == ScriptKind.JSON))
+            {
+                return p.parseJSONText();
+            }
 
-        return p.parseSourceFileWorker();
+            return p.parseSourceFileWorker();
+        }
+        finally
+        {
+            putParser(p);
+        }
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:145:1.
@@ -278,11 +284,17 @@ public partial class Parser
     private static Node ParseIsolatedEntityNameRaw(ByteStringView text)
     {
         var p = getParser();
-        // Go parser-pool return omitted: this port creates an isolated managed parser.
-        p.initializeState(new SourceFileParseOptions { }, text, ScriptKind.JS);
-        p.nextToken();
-        var entityName = p.parseEntityName(true, false, null);
-        return Core.IfElse(((p.token == Kind.EndOfFile) && (GoRuntime.Len(p.diagnostics) == 0)), entityName, null);
+        try
+        {
+            p.initializeState(new SourceFileParseOptions { }, text, ScriptKind.JS);
+            p.nextToken();
+            var entityName = p.parseEntityName(true, false, null);
+            return Core.IfElse(((p.token == Kind.EndOfFile) && (GoRuntime.Len(p.diagnostics) == 0)), entityName, null);
+        }
+        finally
+        {
+            putParser(p);
+        }
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:290:1.
@@ -475,7 +487,7 @@ public partial class Parser
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:430:1.
     private SourceFile parseSourceFileWorker()
     {
-        var isDeclarationFile = this.opts.FileName.IsDeclarationFile();
+        var isDeclarationFile = TsPath.IsDeclarationFileName(this.opts.FileNameValue.IsNull ? default : this.opts.FileNameValue);
         if (isDeclarationFile)
         {
             this.contextFlags |= NodeFlags.Ambient;
@@ -2977,13 +2989,13 @@ public partial class Parser
             }
         }
 
-        var suggestion = Core.GetSpellingSuggestionForStrings(expressionText.Materialize(), GoSlices.Values(viableKeywordSuggestions));
-        if ((suggestion == ""))
+        var suggestion = Core.GetSpellingSuggestionForStrings(expressionText, GoSlices.Values(viableKeywordSuggestions));
+        if ((suggestion.Length == 0))
         {
-            suggestion = getSpaceSuggestion(expressionText.Materialize());
+            suggestion = getSpaceSuggestion(expressionText);
         }
 
-        if ((suggestion != ""))
+        if ((suggestion.Length != 0))
         {
             this.parseErrorAt(pos, node.End(), Diagnostics.Unknown_keyword_or_identifier_Did_you_mean_0, suggestion);
             return;
@@ -2998,19 +3010,19 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:2112:1.
-    private static string getSpaceSuggestion(string expressionText)
+    private static ByteStringValue getSpaceSuggestion(ByteStringValue expressionText)
     {
         {
             foreach (var keyword in GoRuntime.RangeValues(viableKeywordSuggestions))
             {
-                if (((GoRuntime.Len(expressionText) > (GoRuntime.Len(keyword) + 2)) && GoStrings.HasPrefix(expressionText, keyword)))
+                if (((GoRuntime.Len(expressionText) > (GoRuntime.Len(keyword) + 2)) && expressionText.StartsWith(ByteStringValue.FromString(keyword))))
                 {
-                    return ((keyword + " ") + GoRuntime.Slice(expressionText, GoRuntime.Len(keyword)));
+                    return ByteStringValue.Concat(ByteStringValue.FromString(keyword), ByteStringValue.FromString(" "), expressionText.Slice(keyword.Length));
                 }
             }
         }
 
-        return "";
+        return default;
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:2121:1.
@@ -9510,8 +9522,37 @@ public partial class Parser
     private static readonly string[] viableKeywordSuggestions = Scanner.GetViableKeywordSuggestions();
     // parser.go:111/6490: missing lists have a distinct zero-length cap-one backing slot.
     private static readonly Slice<Node> missingListNodes = Slice<Node>.Make(0, 1);
-    // Go parser-pool adapter: each request obtains an isolated managed parser.
-    private static Parser getParser() => newParser();
+    // parser.go:119-131. Standard managed concurrent storage supplies exclusive
+    // reusable parser leases; discarded owners can be collected normally.
+    private static readonly System.Collections.Concurrent.ConcurrentBag<Parser> parserPool = new();
+    private static Parser getParser() => parserPool.TryTake(out var parser) ? parser : newParser();
+    private static void putParser(Parser parser)
+    {
+        // Go retains only the scanner and cached parent visitor. Resetting the
+        // embedded managed factory/arena owners drops state without touching
+        // published syntax objects or their clipped storage arrays.
+        parser.factory.Reset();
+        parser.opts = default;
+        parser.sourceText = default;
+        parser.scriptKind = default;
+        parser.languageVariant = default;
+        parser.diagnostics = parser.jsDiagnostics = parser.jsdocDiagnostics = default;
+        parser.token = default;
+        parser.sourceFlags = parser.contextFlags = default;
+        parser.parsingContexts = default;
+        parser.statementHasAwaitIdentifier = parser.hasDeprecatedTag = parser.hasParseError = false;
+        parser.identifierCount = default;
+        parser.notParenthesizedArrow = null;
+        parser.nodeSliceArena.Reset();
+        parser.stringSliceArena.Reset();
+        parser.jsdocInfos = default;
+        parser.possibleAwaitSpans = default;
+        parser.jsdocCommentsSpace = parser.jsdocTagCommentsSpace = default;
+        parser.jsdocCommentRangesSpace = default;
+        parser.jsdocTagCommentsPartsSpace = parser.reparseList = parser.reparsedClones = default;
+        parser.currentParent = null;
+        parserPool.Add(parser);
+    }
     private static bool isMissingNodeList(NodeList list) => list != null && list.Nodes.Capacity == 1 && list.Nodes.Slice2(0, 1).SameStorageRange(missingListNodes.Slice2(0, 1));
     // Supported contract: JS1, JSX2, TS3, TSX4, JSON6. Unknown follows upstream failure; reserved numeric casts are outside the tested contract.
     public static SourceFile ParseSourceFile(SourceFileParseOptions opts, string sourceText, ScriptKind scriptKind) => ParseSourceFileOwned(opts, ByteStringView.FromUnicode(sourceText), scriptKind);

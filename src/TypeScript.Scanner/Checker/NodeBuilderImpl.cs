@@ -3326,7 +3326,7 @@ internal sealed partial class NodeBuilderImpl
         if (ctx.enclosingFile == null)
         {
             var(ambientName, hasAmbientName) = Ast.TryGetAmbientModuleNameValueFromSymbolName(symbol.NameValue);
-            return new(hasAmbientName ? ambientName : ByteStringValue.FromString(Ast.GetSourceFileOfModule(symbol).FileNameGoBytes()));
+            return new(hasAmbientName ? ambientName : Ast.GetSourceFileOfModule(symbol).FileNameGoValue());
         }
 
         var contextFile = ctx.enclosingFile;
@@ -3335,14 +3335,14 @@ internal sealed partial class NodeBuilderImpl
             resolutionMode = ch.program.GetModeForUsageLocation(contextFile, originalSpecifier);
         else if (resolutionMode == ResolutionMode.None && contextFile != null)
             resolutionMode = ch.program.GetDefaultResolutionModeForFile(contextFile);
-        var cacheKey = new ModeAwareCacheKey(contextFile.PathKey(), resolutionMode);
+        var cacheKey = new ModeAwareCacheKey(contextFile.PathKeyValue(), resolutionMode);
         ref var links = ref symbolLinks.Get(symbol);
         links.specifierCache ??= new();
         if (links.specifierCache.TryGetValue(cacheKey, out var existing))
             return moduleSpecifierResultForSymbol(existing, originalAttributes, symbol);
         var generated = ModuleSpecifierFunctions.GetModuleSpecifiers(symbol, ch, ch.compilerOptions, contextFile, ctx.host, new UserPreferences { ImportModuleSpecifierPreference = ImportModuleSpecifierPreference.ProjectRelative, ImportModuleSpecifierEnding = resolutionMode == ResolutionMode.ESNext ? ImportModuleSpecifierEndingPreference.Js : ImportModuleSpecifierEndingPreference.None }, new ModuleSpecifierOptions { OverrideImportMode = overrideImportMode }, false);
         System.Diagnostics.Debug.Assert(GoRuntime.Len(generated.Specifiers) > 0);
-        var result = new moduleSpecifierResult(ByteStringValue.FromString(generated.Specifiers[0].AsString()));
+        var result = new moduleSpecifierResult(generated.Specifiers[0].AsValue());
         if (generated.AmbientModuleSymbol != null)
             result = result with
             {

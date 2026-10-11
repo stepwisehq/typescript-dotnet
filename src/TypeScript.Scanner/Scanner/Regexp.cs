@@ -1293,8 +1293,8 @@ public partial class Scanner
                                     if ((propertyName == ""))
                                     {
                                         this.error(Diagnostics.Unknown_Unicode_property_name, propertyNameOrValueStart, (this.pos() - propertyNameOrValueStart));
-                                        var suggestion = this.getSpellingSuggestionForUnicodePropertyName(propertyNameOrValue.Materialize()!);
-                                        if ((suggestion != ""))
+                                        var suggestion = this.getSpellingSuggestionForUnicodePropertyName(propertyNameOrValue);
+                                        if ((suggestion.Length != 0))
                                         {
                                             this.error(Diagnostics.Did_you_mean_0, propertyNameOrValueStart, (this.pos() - propertyNameOrValueStart), suggestion);
                                         }
@@ -1315,8 +1315,8 @@ public partial class Scanner
                                         if (((values != null) && !propertyValue.ContainsIn(values)))
                                         {
                                             this.error(Diagnostics.Unknown_Unicode_property_value, propertyValueStart, (this.pos() - propertyValueStart));
-                                            var suggestion = this.getSpellingSuggestionForUnicodePropertyValue(propertyName, propertyValue.Materialize()!);
-                                            if ((suggestion != ""))
+                                            var suggestion = this.getSpellingSuggestionForUnicodePropertyValue(propertyName, propertyValue);
+                                            if ((suggestion.Length != 0))
                                             {
                                                 this.error(Diagnostics.Did_you_mean_0, propertyValueStart, (this.pos() - propertyValueStart), suggestion);
                                             }
@@ -1355,8 +1355,8 @@ public partial class Scanner
                                         if ((!propertyNameOrValue.ContainsIn(valuesOfNonBinaryUnicodeProperties[ByteStringKey.FromString("General_Category")]) && !propertyNameOrValue.ContainsIn(binaryUnicodeProperties)))
                                         {
                                             this.error(Diagnostics.Unknown_Unicode_property_name_or_value, propertyNameOrValueStart, (this.pos() - propertyNameOrValueStart));
-                                            var suggestion = this.getSpellingSuggestionForUnicodePropertyNameOrValue(propertyNameOrValue.Materialize()!);
-                                            if ((suggestion != ""))
+                                            var suggestion = this.getSpellingSuggestionForUnicodePropertyNameOrValue(propertyNameOrValue);
+                                            if ((suggestion.Length != 0))
                                             {
                                                 this.error(Diagnostics.Did_you_mean_0, propertyNameOrValueStart, (this.pos() - propertyNameOrValueStart), suggestion);
                                             }
@@ -1388,24 +1388,24 @@ public partial class Scanner
             return false;
         }
 
-        private string getSpellingSuggestionForUnicodePropertyName(string name)
+        private ByteStringValue getSpellingSuggestionForUnicodePropertyName(ByteStringValue name)
         {
-            return Core.GetSpellingSuggestionForStrings(name, nonBinaryUnicodeProperties.Keys.Select(key => key.ToString()));
+            return Core.GetSpellingSuggestionForKeys(name, nonBinaryUnicodeProperties.Keys);
         }
 
-        private string getSpellingSuggestionForUnicodePropertyValue(string propertyName, string value)
+        private ByteStringValue getSpellingSuggestionForUnicodePropertyValue(string propertyName, ByteStringValue value)
         {
             var values = valuesOfNonBinaryUnicodeProperties.GetValueOrDefault(ByteStringKey.FromString(propertyName));
             if ((values == null))
             {
-                return "";
+                return default;
             }
-            return Core.GetSpellingSuggestionForStrings(value, values.Select(key => key.ToString()));
+            return Core.GetSpellingSuggestionForKeys(value, values);
         }
 
-        private string getSpellingSuggestionForUnicodePropertyNameOrValue(string name)
+        private ByteStringValue getSpellingSuggestionForUnicodePropertyNameOrValue(ByteStringValue name)
         {
-            return Core.GetSpellingSuggestionForStrings(name, valuesOfNonBinaryUnicodeProperties[ByteStringKey.FromString("General_Category")].Concat(binaryUnicodeProperties).Concat(binaryUnicodePropertiesOfStrings).Select(key => key.ToString()));
+            return Core.GetSpellingSuggestionForKeys(name, valuesOfNonBinaryUnicodeProperties[ByteStringKey.FromString("General_Category")].Concat(binaryUnicodeProperties).Concat(binaryUnicodePropertiesOfStrings));
         }
 
         private ByteStringValue scanWordCharacters()
@@ -1503,8 +1503,8 @@ public partial class Scanner
                     this.error(Diagnostics.There_is_no_capturing_group_named_0_in_this_regular_expression, reference.pos, (reference.end - reference.pos), reference.name.Materialize()!);
                     if ((this.groupSpecifiers.Count > 0))
                     {
-                        var suggestion = Core.GetSpellingSuggestionForStrings(reference.name.Materialize()!, this.groupSpecifiers.Keys.Select(key => key.ToString()));
-                        if ((suggestion != ""))
+                        var suggestion = Core.GetSpellingSuggestionForKeys(reference.name, this.groupSpecifiers.Keys);
+                        if ((suggestion.Length != 0))
                         {
                             this.error(Diagnostics.Did_you_mean_0, reference.pos, (reference.end - reference.pos), suggestion);
                         }

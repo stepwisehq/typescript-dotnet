@@ -186,7 +186,7 @@ public sealed class CompilerBaselineFileSystem : IFS
         string? resolved = ValidLookupPath(path.AsString()) ? Resolve(path.AsString()) : null;
         if (resolved is null || Lookup(resolved) is not { Directory: true }) return new Entries { Symlinks = [] };
         PathKey parentKey = sensitivity.PathKey(RootedPath.FromGoString(resolved));
-        Entries result = new() { Files = [], Directories = [], Symlinks = [] };
+        Entries result = new() { Files = Slice<ByteStringValue>.Make(0), Directories = Slice<ByteStringValue>.Make(0), Symlinks = new(ByteStringKey.Comparer) };
         foreach (Entry entry in entries.Values)
         {
             if (sensitivity.PathKey(RootedPath.FromGoString(entry.Path)) == parentKey) continue;
@@ -194,15 +194,16 @@ public sealed class CompilerBaselineFileSystem : IFS
             Entry? target = Lookup(entry.Path);
             if (target is null) continue;
             string name = TsPath.GetBaseFileName(entry.Path);
-            (target.Directory ? result.Directories : result.Files).Add(name);
-            if (entry.Symlink is not null) result.Symlinks.Add(name);
+            if (target.Directory) result.Directories = result.Directories.Append(ByteStringValue.FromString(name));
+            else result.Files = result.Files.Append(ByteStringValue.FromString(name));
+            if (entry.Symlink is not null) result.Symlinks.Add(ByteStringKey.FromString(name));
         }
-        result.Files.Sort(StringComparer.Ordinal);
-        result.Directories.Sort(StringComparer.Ordinal);
+        GoSlices.SortFunc(result.Files, static (left, right) => ByteStringKey.FromValue(left).CompareTo(ByteStringKey.FromValue(right)));
+        GoSlices.SortFunc(result.Directories, static (left, right) => ByteStringKey.FromValue(left).CompareTo(ByteStringKey.FromValue(right)));
         // vfs.Common appends into nil file/directory slices, while allocating
         // the symlink set even for empty or inaccessible directories.
-        if (result.Files.Count == 0) result.Files = null;
-        if (result.Directories.Count == 0) result.Directories = null;
+        if (result.Files.Count == 0) result.Files = default;
+        if (result.Directories.Count == 0) result.Directories = default;
         return result;
     }
 

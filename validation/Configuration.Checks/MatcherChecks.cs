@@ -83,7 +83,7 @@ public static partial class MatcherChecks
 
     private static bool Contains(IReadOnlyList<string>? values, string value) => values?.Contains(value) == true;
     private static RootedDirectoryPath D(string path) => RootedDirectoryPath.FromGoString(path);
-    private static List<string>? Read(IFS host, string root, List<string>? extensions, List<string>? excludes, List<string>? includes) => M.ReadDirectory(host, D(root), extensions, excludes, includes, M.UnlimitedDepth)?.Select(path => path.AsString()).ToList();
+    private static List<string>? Read(IFS host, string root, List<string>? extensions, List<string>? excludes, List<string>? includes) => GoSlices.ToListOrNull(M.ReadDirectory(host, D(root), extensions, excludes, includes, M.UnlimitedDepth))?.Select(path => path.AsString()).ToList();
     private static void TestReadDirectoryWithExtendedDynamicRoot()
     {
         const string packageDirectory = "^/~ts-uri~/custom/ts-nul-authority/node_modules/Pkg";
@@ -102,7 +102,7 @@ public static partial class MatcherChecks
             Sensitivity = () => CaseSensitivity.CaseInsensitive
         };
         var got = M.ReadDirectory(host, TsPath.RootedDirectoryPathFromNormalized(root + "/"), [".ts"], (List<string>? )null, ["Foo/**/*.ts"], M.UnlimitedDepth);
-        Check.Sequence(got?.Select(path => path.AsString()).ToList(), new[] { root + "/Foo/a.ts" }, "dynamic sensitivity");
+        Check.Sequence(GoSlices.ToListOrNull(got)?.Select(path => path.AsString()).ToList(), new[] { root + "/Foo/a.ts" }, "dynamic sensitivity");
     }
 
     private static void TestDynamicAbsoluteGlobUsesCaseSensitivePattern()
@@ -114,12 +114,14 @@ public static partial class MatcherChecks
         Check.True(!matcher.MatchString(root + "/foo/a.ts"), "dynamic changed case");
     }
 
+    private static (ByteStringValue Part, int NextOffset, bool Ok) NextPathPartParts(string prefix, string suffix, int offset) => M.nextPathPartParts(ByteStringValue.FromString(prefix), ByteStringValue.FromString(suffix), offset);
+
     private static void AssertPart(string prefix, string suffix, int offset, string? part = null, int? next = null, bool ok = true)
     {
-        var result = M.nextPathPartParts(prefix, suffix, offset);
+        var result = NextPathPartParts(prefix, suffix, offset);
         Check.Equal(result.Ok, ok, "nextPathPartParts status");
         if (part is not null)
-            Check.Equal(result.Part, part, "nextPathPartParts part");
+            Check.Equal(result.Part.Materialize(), part, "nextPathPartParts part");
         if (next is not null)
             Check.Equal(result.NextOffset, next.Value, "nextPathPartParts offset");
     }
@@ -130,36 +132,36 @@ public static partial class MatcherChecks
         // asserted by upstream are only carried to the next source call.
         const string path = "/dev//foo///bar";
         AssertPart(path, "", 0, "", 1);
-        var result = M.nextPathPartParts(path, "", 1);
+        var result = NextPathPartParts(path, "", 1);
         Check.True(result.Ok, "consecutive slashes dev");
-        Check.Equal(result.Part, "dev", "dev");
-        result = M.nextPathPartParts(path, "", result.NextOffset);
+        Check.Equal(result.Part.Materialize(), "dev", "dev");
+        result = NextPathPartParts(path, "", result.NextOffset);
         Check.True(result.Ok, "consecutive slashes foo");
-        Check.Equal(result.Part, "foo", "foo");
-        result = M.nextPathPartParts(path, "", result.NextOffset);
+        Check.Equal(result.Part.Materialize(), "foo", "foo");
+        result = NextPathPartParts(path, "", result.NextOffset);
         Check.True(result.Ok, "consecutive slashes bar");
-        Check.Equal(result.Part, "bar", "bar");
-        result = M.nextPathPartParts("/dev/", "", 0);
+        Check.Equal(result.Part.Materialize(), "bar", "bar");
+        result = NextPathPartParts("/dev/", "", 0);
         Check.True(result.Ok, "trailing slash root");
-        result = M.nextPathPartParts("/dev/", "", result.NextOffset);
+        result = NextPathPartParts("/dev/", "", result.NextOffset);
         Check.True(result.Ok, "trailing slash dev");
-        result = M.nextPathPartParts("/dev/", "", result.NextOffset);
+        result = NextPathPartParts("/dev/", "", result.NextOffset);
         Check.True(!result.Ok, "trailing slash end");
         AssertPart("", "/dev//foo", 0, "", 1);
-        result = M.nextPathPartParts("", "/dev//foo", 1);
+        result = NextPathPartParts("", "/dev//foo", 1);
         Check.True(result.Ok, "empty prefix dev");
-        Check.Equal(result.Part, "dev", "dev");
-        result = M.nextPathPartParts("", "/dev//foo", result.NextOffset);
+        Check.Equal(result.Part.Materialize(), "dev", "dev");
+        result = NextPathPartParts("", "/dev//foo", result.NextOffset);
         Check.True(result.Ok, "empty prefix foo");
-        Check.Equal(result.Part, "foo", "foo");
-        result = M.nextPathPartParts("/dev/", "foo", 0);
+        Check.Equal(result.Part.Materialize(), "foo", "foo");
+        result = NextPathPartParts("/dev/", "foo", 0);
         Check.True(result.Ok, "split root");
-        result = M.nextPathPartParts("/dev/", "foo", result.NextOffset);
+        result = NextPathPartParts("/dev/", "foo", result.NextOffset);
         Check.True(result.Ok, "split dev");
-        Check.Equal(result.Part, "dev", "dev");
-        result = M.nextPathPartParts("/dev/", "foo", result.NextOffset);
+        Check.Equal(result.Part.Materialize(), "dev", "dev");
+        result = NextPathPartParts("/dev/", "foo", result.NextOffset);
         Check.True(result.Ok, "split foo");
-        Check.Equal(result.Part, "foo", "foo");
+        Check.Equal(result.Part.Materialize(), "foo", "foo");
         Check.Equal(result.NextOffset, "/dev/".Length + "foo".Length, "split total length");
         AssertPart("/dev/", "foo", result.NextOffset, ok: false);
         AssertPart("/", "a", 0, "", 1);
@@ -174,10 +176,10 @@ public static partial class MatcherChecks
     {
         // Source literals are ordinary Unicode in this explicit body; convert at
         // the input boundary, matching Go compiler string-literal UTF8 bytes.
-        var(pattern, ok) = M.compileGlobPattern(GoString.ToUtf8(spec), D("/"), Usage.Files, CaseSensitivity.CaseSensitive);
+        var(pattern, ok) = M.compileGlobPattern(ByteStringValue.FromString(GoString.ToUtf8(spec)), D("/"), Usage.Files, CaseSensitivity.CaseSensitive);
         Check.True(ok, context + " compile");
         foreach (var row in rows)
-            Check.Equal(pattern!.matches(GoString.ToUtf8(row.Path)), row.Expected, context + row.Path);
+            Check.Equal(pattern!.Value.matches(ByteStringValue.FromString(GoString.ToUtf8(row.Path))), row.Expected, context + row.Path);
     }
 
     private static void TestMatchSegmentsEdgeCases()
@@ -216,10 +218,10 @@ public static partial class MatcherChecks
 
     private static void TestGetBasePathsCaseSensitivity()
     {
-        var paths = M.getBasePaths(D("/root"), ["../Other/**/*.ts", "../other/**/*.ts"], CaseSensitivity.CaseSensitive).Select(path => path.AsString()).ToList();
+        var paths = M.getBasePaths<string>(D("/root"), ["../Other/**/*.ts", "../other/**/*.ts"], CaseSensitivity.CaseSensitive, static text => ByteStringValue.FromString(text)).AsSpan().ToArray().Select(path => path.AsString()).ToList();
         Check.True(paths.Contains("/Other"), "case-sensitive /Other");
         Check.True(paths.Contains("/other"), "case-sensitive /other");
-        paths = M.getBasePaths(D("/root"), ["../Other/**/*.ts", "../other/**/*.ts"], CaseSensitivity.CaseInsensitive).Select(path => path.AsString()).ToList();
+        paths = M.getBasePaths<string>(D("/root"), ["../Other/**/*.ts", "../other/**/*.ts"], CaseSensitivity.CaseInsensitive, static text => ByteStringValue.FromString(text)).AsSpan().ToArray().Select(path => path.AsString()).ToList();
         int count = 0;
         foreach (string path in paths)
             if (path is "/Other" or "/other")

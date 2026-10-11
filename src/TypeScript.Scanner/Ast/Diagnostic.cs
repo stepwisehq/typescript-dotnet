@@ -189,14 +189,14 @@ public sealed class DiagnosticsCollection
 {
     private readonly object mu = new();
     private int count;
-    private readonly Dictionary<string, Slice<Diagnostic>> fileDiagnostics = new(StringComparer.Ordinal);
-    private readonly HashSet<string> fileDiagnosticsSorted = new(StringComparer.Ordinal);
+    private readonly Dictionary<ByteStringKey, Slice<Diagnostic>> fileDiagnostics = new(ByteStringKey.Comparer);
+    private readonly HashSet<ByteStringKey> fileDiagnosticsSorted = new(ByteStringKey.Comparer);
     private Slice<Diagnostic> nonFileDiagnostics;
     private bool nonFileDiagnosticsSorted;
     private readonly Dictionary<diagnosticLocationKey, Diagnostic> diagnosticIndex = new();
     private readonly Dictionary<diagnosticLocationKey, Slice<Diagnostic>> diagnosticCollisions = new();
-    private readonly record struct diagnosticLocationKey(string path, TextRange loc, int code);
-    private static diagnosticLocationKey getDiagnosticLocationKey(Diagnostic diagnostic) => new(diagnostic.File()?.PathKey() ?? "", diagnostic.Loc(), diagnostic.Code());
+    private readonly record struct diagnosticLocationKey(ByteStringKey path, TextRange loc, int code);
+    private static diagnosticLocationKey getDiagnosticLocationKey(Diagnostic diagnostic) => new(diagnostic.File()?.PathKeyKey() ?? default, diagnostic.Loc(), diagnostic.Code());
     public Diagnostic Add(Diagnostic diagnostic)
     {
         lock (mu)
@@ -223,7 +223,7 @@ public sealed class DiagnosticsCollection
             count++;
             if (diagnostic.File()is not null)
             {
-                var path = diagnostic.File().PathKey() ?? "";
+                var path = diagnostic.File().PathKeyKey();
                 fileDiagnostics.TryGetValue(path, out var diagnostics);
                 fileDiagnostics[path] = diagnostics.Append(diagnostic);
                 fileDiagnosticsSorted.Remove(path);
@@ -273,7 +273,7 @@ public sealed class DiagnosticsCollection
 
     private Slice<Diagnostic> getDiagnosticsForFileLocked(SourceFile file)
     {
-        var path = file.PathKey() ?? "";
+        var path = file.PathKeyKey();
         fileDiagnostics.TryGetValue(path, out var diagnostics);
         if (!fileDiagnosticsSorted.Contains(path))
         {
@@ -304,13 +304,13 @@ public sealed class DiagnosticsCollection
 
 public static partial class Ast
 {
-    private static string getDiagnosticPath(Diagnostic d) => d.File()?.FileNameGoBytes() ?? "";
+    private static ByteStringValue getDiagnosticPath(Diagnostic d) => d.File()?.FileNameGoValue() ?? default;
     public static bool EqualDiagnostics(Diagnostic d1, Diagnostic d2) => ReferenceEquals(d1, d2) || EqualDiagnosticsNoRelatedInfo(d1, d2) && equalDiagnosticSlices(d1.RelatedInformation(), d2.RelatedInformation(), EqualDiagnostics);
     public static bool EqualDiagnosticsNoRelatedInfo(Diagnostic d1, Diagnostic d2)
     {
         if (ReferenceEquals(d1, d2))
             return true;
-        return getDiagnosticPath(d1) == getDiagnosticPath(d2) && d1.Loc() == d2.Loc() && d1.Code() == d2.Code() && d1.Category() == d2.Category() && d1.Source() == d2.Source() && getDiagnosticMessageIdentity(d1) == getDiagnosticMessageIdentity(d2) && compareDiagnosticArgs(d1.MessageArgs(), d2.MessageArgs()) == 0 && equalDiagnosticSlices(d1.MessageChain(), d2.MessageChain(), equalMessageChain);
+        return getDiagnosticPath(d1).EqualsValue(getDiagnosticPath(d2)) && d1.Loc() == d2.Loc() && d1.Code() == d2.Code() && d1.Category() == d2.Category() && d1.Source() == d2.Source() && getDiagnosticMessageIdentity(d1) == getDiagnosticMessageIdentity(d2) && compareDiagnosticArgs(d1.MessageArgs(), d2.MessageArgs()) == 0 && equalDiagnosticSlices(d1.MessageChain(), d2.MessageChain(), equalMessageChain);
     }
 
     private static bool equalDiagnosticSlices(Slice<Diagnostic> x, Slice<Diagnostic> y, Func<Diagnostic, Diagnostic, bool> equal)
@@ -397,7 +397,7 @@ public static partial class Ast
     {
         if (ReferenceEquals(d1, d2))
             return 0;
-        int c = StringComparer.Ordinal.Compare(getDiagnosticPath(d1), getDiagnosticPath(d2));
+        int c = ByteStringKey.FromValue(getDiagnosticPath(d1)).CompareTo(ByteStringKey.FromValue(getDiagnosticPath(d2)));
         if (c != 0)
             return c;
         c = d1.Pos() - d2.Pos();

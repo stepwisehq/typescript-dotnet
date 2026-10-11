@@ -119,7 +119,7 @@ for name in names:
             current=row.get('currentDir','"/"');path=row.get('path','"/dev"');depth=row.get('depth','UnlimitedDepth')
             lines+=['            IFS host = '+host(row['host'])+';',
                 '            RootedDirectoryPath path = TsPath.ToRootedDirectoryPath('+expr(path)+', TsPath.RootedDirectoryPathFromAbsolute('+expr(current)+'));',
-                '            List<string>? got = M.ReadDirectory(host, path, '+coll(row.get('extensions','nil'))+', (List<string>?)'+coll(row.get('excludes','nil'))+', '+coll(row.get('includes','nil'))+', '+expr(depth)+')?.Select(value => value.AsString()).ToList();',
+                '            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, '+coll(row.get('extensions','nil'))+', (List<string>?)'+coll(row.get('excludes','nil'))+', '+coll(row.get('includes','nil'))+', '+expr(depth)+'))?.Select(value => value.AsString()).ToList();',
                 assertion_body(row['expect'])]
         elif 'input' in row:
             lines+=['            Check.Equal(M.IsImplicitGlob('+expr(row['input'])+'), '+expr(row['expected'])+', context);']

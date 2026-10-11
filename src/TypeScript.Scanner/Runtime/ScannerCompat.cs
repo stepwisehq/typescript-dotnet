@@ -51,7 +51,11 @@ internal static partial class GoStrings
     public static string ToLower(string value) => value.ToLowerInvariant();
     // Go strings.go:708 ToLower and Map: share unchanged input; allocate only
     // at the first mapped rune/invalid UTF8 byte, preserving consume-one errors.
-    public static ByteStringValue ToLower(ByteStringValue value)
+    public static ByteStringValue ToLower(ByteStringValue value) => toLower(value, false);
+    // tspath preserves U+0130, unlike ordinary Go strings.ToLower. Both use
+    // the same first-change map/invalid-rune algorithm and unchanged header.
+    internal static ByteStringValue ToFileNameLowerCase(ByteStringValue value) => toLower(value, true);
+    private static ByteStringValue toLower(ByteStringValue value, bool preserveIWithDot)
     {
         if (value.IsNull) throw new NullReferenceException();
         bool isAscii = true, hasUpper = false;
@@ -85,7 +89,7 @@ internal static partial class GoStrings
         {
             var (rune, width) = value.IsBytes ? Utf8.DecodeRuneInString(value.ByteSpan[i..])
                 : Utf8.DecodeRuneInString(value.CharSpan[i..]);
-            int mapped = UnicodeCase.ToLower(rune);
+            int mapped = preserveIWithDot && rune == 0x130 ? rune : UnicodeCase.ToLower(rune);
             if (output is null && (mapped != rune || rune == Utf8.RuneError && width == 1))
             {
                 output = new GoBuilder();
@@ -191,12 +195,15 @@ internal static class Utf16
 
 internal static class ScannerString
 {
-    public static string ToUtf8String(string bytes)
+    public static string ToUtf8String(string bytes) => ToUtf8String(ByteStringValue.FromString(bytes));
+    public static string ToUtf8String(ByteStringValue bytes)
     {
+        if (bytes.IsNull) throw new NullReferenceException();
         var value = new System.Text.StringBuilder();
         for (int i = 0; i < bytes.Length;)
         {
-            var(rune, size) = Utf8.DecodeRuneInString(bytes.AsSpan(i));
+            var(rune, size) = bytes.IsBytes ? Utf8.DecodeRuneInString(bytes.ByteSpan.Slice(i))
+                : Utf8.DecodeRuneInString(bytes.CharSpan.Slice(i));
             value.Append(char.ConvertFromUtf32(rune));
             i += size;
         }

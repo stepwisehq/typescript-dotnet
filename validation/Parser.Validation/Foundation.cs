@@ -45,7 +45,8 @@ public sealed class CanonicalFoundation
 internal static class FoundationEncoder
 {
     private static uint? Cache(Node node) => node.data.CacheSubtreeFacts ? node.data.CachedSubtreeFacts : null;
-    private static List<CanonicalDiagnosticState> States(IEnumerable<Diagnostic>? diagnostics, SourceFile file) => diagnostics?.Select(d => new CanonicalDiagnosticState { FileNameBase64 = d.File()is { } diagnosticFile ? Convert.ToBase64String(Encoding.UTF8.GetBytes(diagnosticFile.FileName())) : null, FileMatchesSource = ReferenceEquals(d.File(), file), SourceBase64 = Encoder.Bytes(d.Source()), MessageTextBase64 = Encoder.Bytes(d.MessageText()), ArgsNull = d.MessageArgs()is null, ChainNull = d.MessageChain()is null, RelatedNull = d.RelatedInformation()is null, ReportsUnnecessary = d.ReportsUnnecessary(), ReportsDeprecated = d.ReportsDeprecated(), SkippedOnNoEmit = d.SkippedOnNoEmit(), Chain = States(d.MessageChain(), file), Related = States(d.RelatedInformation(), file), }).ToList() ?? [];
+    private static List<CanonicalDiagnosticState> States(IEnumerable<Diagnostic>? diagnostics, SourceFile file) => diagnostics?.Select(d => new CanonicalDiagnosticState { FileNameBase64 = d.File()is { } diagnosticFile ? Convert.ToBase64String(Encoding.UTF8.GetBytes(diagnosticFile.FileName())) : null, FileMatchesSource = ReferenceEquals(d.File(), file), SourceBase64 = Encoder.Bytes(d.Source()), MessageTextBase64 = Encoder.Bytes(d.MessageText()), ArgsNull = d.MessageArgs()is null, ChainNull = d.MessageChain().IsNil, RelatedNull = d.RelatedInformation().IsNil, ReportsUnnecessary = d.ReportsUnnecessary(), ReportsDeprecated = d.ReportsDeprecated(), SkippedOnNoEmit = d.SkippedOnNoEmit(), Chain = States(d.MessageChain(), file), Related = States(d.RelatedInformation(), file), }).ToList() ?? [];
+    private static List<CanonicalDiagnosticState> States(Slice<Diagnostic> diagnostics, SourceFile file) => States(GoSlices.ToListOrNull(diagnostics), file);
     internal static CanonicalFoundation Observe(SourceFile file, IReadOnlyList<Node> nodes)
     {
         // Snapshot every slot before observer calls. Calls then follow canonical
@@ -89,7 +90,7 @@ internal static class FoundationEncoder
         result.ParseStates = States(file.Diagnostics(), file);
         result.JsStates = States(file.JSDiagnostics(), file);
         result.JsDocStates = States(file.JSDocDiagnostics(), file);
-        result.DiagnosticChannelsNull = [file.Diagnostics()is null, file.JSDiagnostics()is null, file.JSDocDiagnostics()is null ];
+        result.DiagnosticChannelsNull = [file.Diagnostics().IsNil, file.JSDiagnostics().IsNil, file.JSDocDiagnostics().IsNil ];
         return result;
     }
 }

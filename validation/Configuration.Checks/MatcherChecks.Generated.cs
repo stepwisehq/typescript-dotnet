@@ -28,7 +28,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: defaults include common package folders";
             IFS host = commonFoldersHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, null, M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, null, M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
                 Check.True(Contains(got, "/dev/b.ts"), context);
                 Check.True(Contains(got, "/dev/x/a.ts"), context);
@@ -40,56 +40,56 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: literal includes without exclusions";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["a.ts", "b.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["a.ts", "b.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/a.ts", "/dev/b.ts"], context);
         }
         {
             const string context = "TestReadDirectory: literal includes with non ts extensions excluded";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["a.js", "b.js"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["a.js", "b.js"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Equal((got?.Count ?? 0), 0, context);
         }
         {
             const string context = "TestReadDirectory: literal includes missing files excluded";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["z.ts", "x.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["z.ts", "x.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Equal((got?.Count ?? 0), 0, context);
         }
         {
             const string context = "TestReadDirectory: literal includes with literal excludes";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["b.ts"], ["a.ts", "b.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["b.ts"], ["a.ts", "b.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/a.ts"], context);
         }
         {
             const string context = "TestReadDirectory: literal includes with wildcard excludes";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["*.ts", "z/??z.ts", "*/b.ts"], ["a.ts", "b.ts", "z/a.ts", "z/abz.ts", "z/aba.ts", "x/b.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["*.ts", "z/??z.ts", "*/b.ts"], ["a.ts", "b.ts", "z/a.ts", "z/abz.ts", "z/aba.ts", "x/b.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/z/a.ts", "/dev/z/aba.ts"], context);
         }
         {
             const string context = "TestReadDirectory: literal includes with recursive excludes";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**/b.ts"], ["a.ts", "b.ts", "x/a.ts", "x/b.ts", "x/y/a.ts", "x/y/b.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**/b.ts"], ["a.ts", "b.ts", "x/a.ts", "x/b.ts", "x/y/a.ts", "x/y/b.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/a.ts", "/dev/x/a.ts", "/dev/x/y/a.ts"], context);
         }
         {
             const string context = "TestReadDirectory: case sensitive exclude is respected";
             IFS host = caseSensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**/b.ts"], ["B.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**/b.ts"], ["B.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/B.ts"], context);
         }
         {
             const string context = "TestReadDirectory: explicit includes keep common package folders";
             IFS host = commonFoldersHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["a.ts", "b.ts", "node_modules/a.ts", "bower_components/a.ts", "jspm_packages/a.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["a.ts", "b.ts", "node_modules/a.ts", "bower_components/a.ts", "jspm_packages/a.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
                 Check.True(Contains(got, "/dev/b.ts"), context);
                 Check.True(Contains(got, "/dev/node_modules/a.ts"), context);
@@ -100,7 +100,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: wildcard include sorted order";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["z/*.ts", "x/*.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["z/*.ts", "x/*.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 string[] expected = ["/dev/z/a.ts", "/dev/z/aba.ts", "/dev/z/abz.ts", "/dev/z/b.ts", "/dev/z/bba.ts", "/dev/z/bbz.ts", "/dev/x/a.ts", "/dev/x/aa.ts", "/dev/x/b.ts"];
                 Check.Sequence<string>(got, expected, context);
         }
@@ -108,7 +108,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: wildcard include same named declarations excluded";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
                 Check.True(Contains(got, "/dev/b.ts"), context);
                 Check.True(Contains(got, "/dev/a.d.ts"), context);
@@ -118,7 +118,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: wildcard star matches only ts files";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 foreach (string f in got ?? []) {
                 Check.True(f.Contains(".ts", StringComparison.Ordinal) || f.Contains(".tsx", StringComparison.Ordinal) || f.Contains(".d.ts", StringComparison.Ordinal), context);
                 }
@@ -129,14 +129,14 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: wildcard question mark single character";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/?.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/?.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/x/a.ts", "/dev/x/b.ts"], context);
         }
         {
             const string context = "TestReadDirectory: wildcard recursive directory";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/a.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/a.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
                 Check.True(Contains(got, "/dev/z/a.ts"), context);
                 Check.True(Contains(got, "/dev/x/a.ts"), context);
@@ -146,7 +146,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: double asterisk matches zero-or-more directories";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/**/a.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/**/a.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Equal((got?.Count ?? 0), 2, context);
                 Check.True(Contains(got, "/dev/x/a.ts"), context);
                 Check.True(Contains(got, "/dev/x/y/a.ts"), context);
@@ -155,28 +155,28 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: wildcard multiple recursive directories";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/y/**/a.ts", "x/**/a.ts", "z/**/a.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/y/**/a.ts", "x/**/a.ts", "z/**/a.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True((got?.Count ?? 0) > 0, context);
         }
         {
             const string context = "TestReadDirectory: wildcard case sensitive matching";
             IFS host = caseSensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/A.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/A.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/A.ts"], context);
         }
         {
             const string context = "TestReadDirectory: wildcard missing files excluded";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*/z.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*/z.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Equal((got?.Count ?? 0), 0, context);
         }
         {
             const string context = "TestReadDirectory: exclude folders with wildcards";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["z", "x"], ["**/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["z", "x"], ["**/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 foreach (string f in got ?? []) {
                 Check.True(!f.Contains("/z/", StringComparison.Ordinal) && !f.Contains("/x/", StringComparison.Ordinal), context);
                 }
@@ -187,7 +187,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: include paths outside project absolute";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*", "/ext/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*", "/ext/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
                 Check.True(Contains(got, "/ext/ext.ts"), context);
         }
@@ -195,21 +195,21 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: include paths outside project relative";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**"], ["*", "../ext/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**"], ["*", "../ext/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/ext/ext.ts"), context);
         }
         {
             const string context = "TestReadDirectory: include files containing double dots";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**"], ["/ext/b/a..b.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**"], ["/ext/b/a..b.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/ext/b/a..b.ts"), context);
         }
         {
             const string context = "TestReadDirectory: exclude files containing double dots";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["/ext/b/a..b.ts"], ["/ext/**/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["/ext/b/a..b.ts"], ["/ext/**/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/ext/ext.ts"), context);
                 Check.True(!Contains(got, "/ext/b/a..b.ts"), context);
         }
@@ -217,7 +217,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: common package folders implicitly excluded";
             IFS host = commonFoldersHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/a.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/a.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
                 Check.True(Contains(got, "/dev/x/a.ts"), context);
                 Check.True(!Contains(got, "/dev/node_modules/a.ts"), context);
@@ -228,7 +228,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: common package folders explicit recursive include";
             IFS host = commonFoldersHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/a.ts", "**/node_modules/a.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/a.ts", "**/node_modules/a.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
                 Check.True(Contains(got, "/dev/node_modules/a.ts"), context);
         }
@@ -236,7 +236,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: common package folders wildcard include";
             IFS host = commonFoldersHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*/a.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*/a.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/x/a.ts"), context);
                 Check.True(!Contains(got, "/dev/node_modules/a.ts"), context);
         }
@@ -244,7 +244,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: common package folders explicit wildcard include";
             IFS host = commonFoldersHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*/a.ts", "node_modules/a.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*/a.ts", "node_modules/a.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/x/a.ts"), context);
                 Check.True(Contains(got, "/dev/node_modules/a.ts"), context);
         }
@@ -252,7 +252,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: dotted folders not implicitly included";
             IFS host = dottedFoldersHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/**/*", "w/*/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/**/*", "w/*/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/x/d.ts"), context);
                 Check.True(Contains(got, "/dev/x/y/d.ts"), context);
                 Check.True(!Contains(got, "/dev/x/.y/a.ts"), context);
@@ -263,7 +263,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: dotted folders explicitly included";
             IFS host = dottedFoldersHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/.y/a.ts", "/dev/.z/.b.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/.y/a.ts", "/dev/.z/.b.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/x/.y/a.ts"), context);
                 Check.True(Contains(got, "/dev/.z/.b.ts"), context);
         }
@@ -271,7 +271,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: dotted folders recursive wildcard matches directories";
             IFS host = dottedFoldersHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/.*/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/.*/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/x/.y/a.ts"), context);
                 Check.True(Contains(got, "/dev/.z/c.ts"), context);
                 Check.True(Contains(got, "/dev/w/.u/e.ts"), context);
@@ -280,21 +280,21 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: trailing recursive include returns empty";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Equal((got?.Count ?? 0), 0, context);
         }
         {
             const string context = "TestReadDirectory: trailing recursive exclude removes everything";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**"], ["**/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**"], ["**/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Equal((got?.Count ?? 0), 0, context);
         }
         {
             const string context = "TestReadDirectory: multiple recursive directory patterns in includes";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/x/**/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/x/**/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/x/a.ts"), context);
                 Check.True(Contains(got, "/dev/x/y/a.ts"), context);
         }
@@ -302,7 +302,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: multiple recursive directory patterns in excludes";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**/x/**"], ["**/a.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**/x/**"], ["**/a.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
                 Check.True(Contains(got, "/dev/z/a.ts"), context);
                 Check.True(!Contains(got, "/dev/x/a.ts"), context);
@@ -312,7 +312,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: implicit globbification expands directory";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["z"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["z"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/z/a.ts"), context);
                 Check.True(Contains(got, "/dev/z/aba.ts"), context);
                 Check.True(Contains(got, "/dev/z/b.ts"), context);
@@ -321,7 +321,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: exclude patterns starting with starstar";
             IFS host = caseSensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**/x"], null, M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**/x"], null, M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 foreach (string f in got ?? []) {
                 Check.True(!f.Contains("/x/", StringComparison.Ordinal), context);
                 }
@@ -330,7 +330,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: include patterns starting with starstar";
             IFS host = caseSensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/x", "**/a/**/b"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/x", "**/a/**/b"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/x/a.ts"), context);
                 Check.True(Contains(got, "/dev/q/a/c/b/d.ts"), context);
         }
@@ -338,7 +338,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: depth limit one";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, null, 1)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, null, 1))?.Select(value => value.AsString()).ToList();
                 foreach (string f in got ?? []) {
                 string suffix = f["/dev/".Length..];
                 Check.True(!suffix.Contains("/", StringComparison.Ordinal), context);
@@ -348,7 +348,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: depth limit two";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, null, 2)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, null, 2))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
                 Check.True(Contains(got, "/dev/z/a.ts"), context);
                 Check.True(!Contains(got, "/dev/x/y/a.ts"), context);
@@ -357,7 +357,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: mixed extensions only ts";
             IFS host = mixedExtensionHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts"], (List<string>?)null, null, M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts"], (List<string>?)null, null, M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 foreach (string f in got ?? []) {
                 Check.True(f.EndsWith(".ts", StringComparison.Ordinal), context);
                 }
@@ -366,7 +366,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: mixed extensions ts and tsx";
             IFS host = mixedExtensionHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx"], (List<string>?)null, null, M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx"], (List<string>?)null, null, M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 foreach (string f in got ?? []) {
                 Check.True(f.EndsWith(".ts", StringComparison.Ordinal) || f.EndsWith(".tsx", StringComparison.Ordinal), context);
                 }
@@ -375,7 +375,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: mixed extensions js and jsx";
             IFS host = mixedExtensionHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".js", ".jsx"], (List<string>?)null, null, M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".js", ".jsx"], (List<string>?)null, null, M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 foreach (string f in got ?? []) {
                 Check.True(f.EndsWith(".js", StringComparison.Ordinal) || f.EndsWith(".jsx", StringComparison.Ordinal), context);
                 }
@@ -384,7 +384,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: min js files excluded by wildcard";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".js"], (List<string>?)null, ["js/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".js"], (List<string>?)null, ["js/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/js/a.js"), context);
                 Check.True(Contains(got, "/dev/js/b.js"), context);
                 Check.True(!Contains(got, "/dev/js/d.min.js"), context);
@@ -394,7 +394,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: min js exclusion is case-sensitive on case-sensitive FS";
             IFS host = caseSensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".js"], (List<string>?)null, ["js/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".js"], (List<string>?)null, ["js/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/js/a.js"), context);
                 Check.True(Contains(got, "/dev/js/b.js"), context);
                 Check.True(Contains(got, "/dev/js/d.MIN.js"), context);
@@ -403,7 +403,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: min js files explicitly included";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".js"], (List<string>?)null, ["js/*.min.js"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".js"], (List<string>?)null, ["js/*.min.js"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/js/d.min.js"), context);
                 Check.True(Contains(got, "/dev/js/ab.min.js"), context);
         }
@@ -411,7 +411,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: min js files included when pattern mentions .min.";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".js"], (List<string>?)null, ["js/*.min.*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".js"], (List<string>?)null, ["js/*.min.*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Equal((got?.Count ?? 0), 2, context);
                 Check.True(Contains(got, "/dev/js/d.min.js"), context);
                 Check.True(Contains(got, "/dev/js/ab.min.js"), context);
@@ -420,7 +420,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: exclude literal node_modules folder";
             IFS host = commonFoldersHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["node_modules"], ["**/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["node_modules"], ["**/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
                 Check.True(!Contains(got, "/dev/node_modules/a.ts"), context);
         }
@@ -428,14 +428,14 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: same named declarations include ts";
             IFS host = sameNamedDeclarationsHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True((got?.Count ?? 0) > 0, context);
         }
         {
             const string context = "TestReadDirectory: same named declarations include tsx";
             IFS host = sameNamedDeclarationsHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*.tsx"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*.tsx"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 foreach (string f in got ?? []) {
                 Check.True(f.EndsWith(".tsx", StringComparison.Ordinal), context);
                 }
@@ -444,7 +444,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: empty includes returns all matching files";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, null, M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, null, M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True((got?.Count ?? 0) > 0, context);
                 Check.True(Contains(got, "/dev/a.ts"), context);
         }
@@ -452,7 +452,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: nil extensions returns all files";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, null, (List<string>?)null, null, M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, null, (List<string>?)null, null, M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
                 Check.True(Contains(got, "/dev/a.js"), context);
         }
@@ -460,7 +460,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectory: empty extensions slice returns all files";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [], (List<string>?)null, null, M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [], (List<string>?)null, null, M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True((got?.Count ?? 0) > 0, context);
         }
     }
@@ -515,28 +515,28 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectoryEdgeCases: rooted include path";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["/dev/a.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["/dev/a.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
         }
         {
             const string context = "TestReadDirectoryEdgeCases: include with extension in path";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["a.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["a.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
         }
         {
             const string context = "TestReadDirectoryEdgeCases: special regex characters in path";
             IFS host = new ConfigurationFileSystem([new("/dev/file+test.ts"), new("/dev/file[0].ts"), new("/dev/file(1).ts"), new("/dev/file$money.ts"), new("/dev/file^start.ts"), new("/dev/file|pipe.ts"), new("/dev/file#hash.ts")], CaseSensitivity.CaseInsensitive);
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["file+test.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["file+test.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/file+test.ts"), context);
         }
         {
             const string context = "TestReadDirectoryEdgeCases: include pattern starting with question mark";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["?.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["?.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
                 Check.True(Contains(got, "/dev/b.ts"), context);
         }
@@ -544,28 +544,28 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectoryEdgeCases: include pattern starting with star";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["*b.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["*b.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/b.ts"), context);
         }
         {
             const string context = "TestReadDirectoryEdgeCases: case insensitive file matching";
             IFS host = new ConfigurationFileSystem([new("/dev/File.ts"), new("/dev/FILE.ts")], CaseSensitivity.CaseSensitive);
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["*.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["*.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True((got?.Count ?? 0) == 2, context);
         }
         {
             const string context = "TestReadDirectoryEdgeCases: nested subdirectory base path";
             IFS host = caseSensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["q/a/c/b/d.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["q/a/c/b/d.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/q/a/c/b/d.ts"), context);
         }
         {
             const string context = "TestReadDirectoryEdgeCases: current directory differs from path";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["z/*.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["z/*.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True((got?.Count ?? 0) > 0, context);
         }
     }
@@ -576,7 +576,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectoryEmptyIncludes: empty includes slice behavior";
             IFS host = new ConfigurationFileSystem([new("/root/a.ts")], CaseSensitivity.CaseSensitive);
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/root", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts"], (List<string>?)null, [], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts"], (List<string>?)null, [], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 if ((got?.Count ?? 0) == 0) {
                 return;
                 }
@@ -590,7 +590,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectorySymlinkCycle: detects and skips symlink cycles";
             IFS host = new ConfigurationFileSystem([new("/root/file.ts"), new("/root/a/file.ts"), new("/root/a/b", Symlink: "/root/a")], CaseSensitivity.CaseSensitive);
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/root", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["**/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts"], (List<string>?)null, ["**/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 string[] expected = ["/root/file.ts", "/root/a/file.ts"];
                 Check.Sequence<string>(got, expected, context);
         }
@@ -602,7 +602,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: sorted in include order then alphabetical";
             IFS host = new ConfigurationFileSystem([new("/dev/z/a.ts"), new("/dev/z/aba.ts"), new("/dev/z/abz.ts"), new("/dev/z/b.ts"), new("/dev/z/bba.ts"), new("/dev/z/bbz.ts"), new("/dev/x/a.ts"), new("/dev/x/aa.ts"), new("/dev/x/b.ts")], CaseSensitivity.CaseInsensitive);
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["z/*.ts", "x/*.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["z/*.ts", "x/*.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 string[] expected = ["/dev/z/a.ts", "/dev/z/aba.ts", "/dev/z/abz.ts", "/dev/z/b.ts", "/dev/z/bba.ts", "/dev/z/bbz.ts", "/dev/x/a.ts", "/dev/x/aa.ts", "/dev/x/b.ts"];
                 Check.Sequence<string>(got, expected, context);
         }
@@ -610,7 +610,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: recursive wildcards match dotted directories";
             IFS host = new ConfigurationFileSystem([new("/dev/x/d.ts"), new("/dev/x/y/d.ts"), new("/dev/x/y/.e.ts"), new("/dev/x/.y/a.ts"), new("/dev/.z/.b.ts"), new("/dev/.z/c.ts"), new("/dev/w/.u/e.ts"), new("/dev/g.min.js/.g/g.ts")], CaseSensitivity.CaseInsensitive);
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/.*/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/.*/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 string[] expected = ["/dev/.z/c.ts", "/dev/g.min.js/.g/g.ts", "/dev/w/.u/e.ts", "/dev/x/.y/a.ts"];
                 Check.Equal((got?.Count ?? 0), expected.Length, context);
                 foreach (string want in expected ?? []) {
@@ -621,21 +621,21 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: common package folders implicitly excluded with wildcard";
             IFS host = new ConfigurationFileSystem([new("/dev/a.ts"), new("/dev/a.d.ts"), new("/dev/a.js"), new("/dev/b.ts"), new("/dev/x/a.ts"), new("/dev/node_modules/a.ts"), new("/dev/bower_components/a.ts"), new("/dev/jspm_packages/a.ts")], CaseSensitivity.CaseInsensitive);
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/a.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/a.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/a.ts", "/dev/x/a.ts"], context);
         }
         {
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: js wildcard excludes min js files";
             IFS host = new ConfigurationFileSystem([new("/dev/js/a.js"), new("/dev/js/b.js"), new("/dev/js/d.min.js"), new("/dev/js/ab.min.js")], CaseSensitivity.CaseInsensitive);
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".js"], (List<string>?)null, ["js/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".js"], (List<string>?)null, ["js/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/js/a.js", "/dev/js/b.js"], context);
         }
         {
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: explicit min js pattern includes min files";
             IFS host = new ConfigurationFileSystem([new("/dev/js/a.js"), new("/dev/js/b.js"), new("/dev/js/d.min.js"), new("/dev/js/ab.min.js")], CaseSensitivity.CaseInsensitive);
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".js"], (List<string>?)null, ["js/*.min.js"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".js"], (List<string>?)null, ["js/*.min.js"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 string[] expected = ["/dev/js/ab.min.js", "/dev/js/d.min.js"];
                 Check.Equal((got?.Count ?? 0), expected.Length, context);
                 foreach (string want in expected ?? []) {
@@ -646,49 +646,49 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: literal excludes baseline";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["b.ts"], ["a.ts", "b.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["b.ts"], ["a.ts", "b.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/a.ts"], context);
         }
         {
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: wildcard excludes baseline";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["*.ts", "z/??z.ts", "*/b.ts"], ["a.ts", "b.ts", "z/a.ts", "z/abz.ts", "z/aba.ts", "x/b.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["*.ts", "z/??z.ts", "*/b.ts"], ["a.ts", "b.ts", "z/a.ts", "z/abz.ts", "z/aba.ts", "x/b.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/z/a.ts", "/dev/z/aba.ts"], context);
         }
         {
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: recursive excludes baseline";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**/b.ts"], ["a.ts", "b.ts", "x/a.ts", "x/b.ts", "x/y/a.ts", "x/y/b.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**/b.ts"], ["a.ts", "b.ts", "x/a.ts", "x/b.ts", "x/y/a.ts", "x/y/b.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/a.ts", "/dev/x/a.ts", "/dev/x/y/a.ts"], context);
         }
         {
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: question mark baseline";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/?.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/?.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/x/a.ts", "/dev/x/b.ts"], context);
         }
         {
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: recursive directory pattern baseline";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/a.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/a.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/a.ts", "/dev/x/a.ts", "/dev/x/y/a.ts", "/dev/z/a.ts"], context);
         }
         {
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: case sensitive baseline";
             IFS host = caseSensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/A.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/A.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/A.ts"], context);
         }
         {
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: exclude folders baseline";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["z", "x"], ["**/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["z", "x"], ["**/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 foreach (string f in got ?? []) {
                 Check.True(!f.Contains("/z/", StringComparison.Ordinal) && !f.Contains("/x/", StringComparison.Ordinal), context);
                 }
@@ -699,28 +699,28 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: implicit glob expansion baseline";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["z"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["z"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Sequence<string>(got, ["/dev/z/a.ts", "/dev/z/aba.ts", "/dev/z/abz.ts", "/dev/z/b.ts", "/dev/z/bba.ts", "/dev/z/bbz.ts"], context);
         }
         {
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: trailing recursive directory baseline";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Equal((got?.Count ?? 0), 0, context);
         }
         {
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: exclude trailing recursive directory baseline";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**"], ["**/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**"], ["**/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.Equal((got?.Count ?? 0), 0, context);
         }
         {
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: multiple recursive directory patterns baseline";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/x/**/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/x/**/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/x/a.ts"), context);
                 Check.True(Contains(got, "/dev/x/aa.ts"), context);
                 Check.True(Contains(got, "/dev/x/b.ts"), context);
@@ -731,7 +731,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: include dirs with starstar prefix baseline";
             IFS host = caseSensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/x", "**/a/**/b"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["**/x", "**/a/**/b"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/x/a.ts"), context);
                 Check.True(Contains(got, "/dev/x/b.ts"), context);
                 Check.True(Contains(got, "/dev/q/a/c/b/d.ts"), context);
@@ -740,7 +740,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: dotted folders not implicitly included baseline";
             IFS host = dottedFoldersHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/**/*", "w/*/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["x/**/*", "w/*/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/x/d.ts"), context);
                 Check.True(Contains(got, "/dev/x/y/d.ts"), context);
                 Check.True(!Contains(got, "/dev/x/.y/a.ts"), context);
@@ -751,7 +751,7 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: include paths outside project baseline";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*", "/ext/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)null, ["*", "/ext/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/dev/a.ts"), context);
                 Check.True(Contains(got, "/ext/ext.ts"), context);
         }
@@ -759,14 +759,14 @@ public static partial class MatcherChecks
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: include files with double dots baseline";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**"], ["/ext/b/a..b.ts"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["**"], ["/ext/b/a..b.ts"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/ext/b/a..b.ts"), context);
         }
         {
             const string context = "TestReadDirectoryMatchesTypeScriptBaselines: exclude files with double dots baseline";
             IFS host = caseInsensitiveHost();
             RootedDirectoryPath path = TsPath.ToRootedDirectoryPath("/dev", TsPath.RootedDirectoryPathFromAbsolute("/"));
-            List<string>? got = M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["/ext/b/a..b.ts"], ["/ext/**/*"], M.UnlimitedDepth)?.Select(value => value.AsString()).ToList();
+            List<string>? got = GoSlices.ToListOrNull(M.ReadDirectory(host, path, [".ts", ".tsx", ".d.ts"], (List<string>?)["/ext/b/a..b.ts"], ["/ext/**/*"], M.UnlimitedDepth))?.Select(value => value.AsString()).ToList();
                 Check.True(Contains(got, "/ext/ext.ts"), context);
                 Check.True(!Contains(got, "/ext/b/a..b.ts"), context);
         }
