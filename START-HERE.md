@@ -12,12 +12,48 @@ work, report that checkpoint and wait for a new bounded mandate; this resume
 instruction does not authorize emit or unrelated compiler infrastructure. The whole-checker
 mandate below authorizes successive no-emit checking campaigns until its final gate.
 
-Active mandate: [autonomous whole-checker no-emit completion](./docs/CHECKER-COMPLETION-PROMPT.md)
-from accepted `bb035b3`. Resume the [live checkpoint](./docs/CHECKER-COMPLETION-STATUS.md).
-Continue through successive campaigns without renewed authorization; an accepted
-intermediate campaign or context reset is not a stopping point. Stop after the whole-
-checker gate passes, or for a genuine material blocker. Large-project comparisons and
-optimization remain deferred. The prior campaign's “no active campaign” state is historical.
+## Current operating procedure: comprehensive allocation rollout
+
+The whole-checker gate was accepted. The user subsequently authorized VS Code
+checking, profiling and comprehensive Go-faithful allocation reduction. Older
+instructions below that defer optimization or stop at checker acceptance are
+historical; they do not stop this active work.
+
+**Read this section and the top of [STATE.md](./docs/STATE.md) after every restart,
+compaction or agent handoff.** The user's latest direction is to stop the inefficient
+cycle of one or two local changes followed by targeted tests and benchmarks.
+
+- Work through complete ownership paths: storage owners, producers, retained
+  references, consumers and cache boundaries together. Apply the established slice,
+  borrowed UTF8 text, stateful callback and embedded-object techniques consistently
+  where they match Go. An intermediate conversion bridge is not a finished rollout.
+- Preserve pinned Go algorithms, control flow, function boundaries, organization,
+  and actual allocation/ownership rules. Required copies, Clip/Clone operations and
+  detachments stay. Use standard .NET operations where their semantics fit. Do not
+  introduce a different compiler design or assume every upstream allocation can go.
+- The main Astra coordinator owns decisions and integration; GPT-6.1 Sol agents own
+  substantive implementation and independent review. Assign coherent, disjoint
+  source ownership, coordinate shared APIs and continue between internal families
+  without seeking another assignment. Current lanes and files are in STATE.md.
+- **Do not restart per-small-change targeted tests, repeated VS Code benchmarks,
+  allocation captures or full gates after compaction.** Use coordinated integration
+  builds as the larger rollout comes together. Run behavioral and performance
+  verification after the complete integrated change; investigate concrete defects
+  proportionately. This changes verification timing, not correctness requirements.
+- Retain source review, original upstream expectations, meaningful Go comparisons,
+  xUnit coverage and actual Linux x64 Native AOT acceptance before finalization.
+  Preserve useful existing evidence; never call a partially verified change accepted.
+  Do not weaken expectations or suppress discrepancies.
+- Keep concise resumable state and source mapping. Preserve verified checkpoints
+  separately from ongoing changes. A commit, subagent completion, internal milestone
+  or context reset is not a reason to stop or request renewed authorization.
+- Do not generate more SVG flamegraphs. Keep raw traces and useful analysis for a
+  performance viewer. Do not build replacement process or viewer infrastructure.
+
+The immediate objective is comprehensive implementation of the established
+Go-compatible allocation techniques, followed by integrated verification and
+measurement. Identical allocation counts between runtimes are not assumed, and
+performance gains must be measured rather than declared from source changes.
 
 ## User mandate
 

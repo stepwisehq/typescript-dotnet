@@ -1,14 +1,32 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** HEAD `72565f3` records semantic regression provenance;
+**Resume here:** HEAD `b84b436` commits qualified type constituent/parser scratch slices;
+`72565f3` records semantic regression provenance;
 `d39e05c` commits qualified AST slices/arenas; `faad6ec` commits checker text receivers;
 `5e960cd` commits AST/binder borrowed text, private stacks,
 inference candidates and numeric span parsing; `d6a3cb5` commits callback/rune followthrough; `146839d` preserves
 borrowed scanner tokens, flow slices and conditional targets;
 `08d2294` preserves the preceding path/ASCII/singleton reductions.
 Continue Go-faithful allocation work autonomously; no blocker. Answering a question
-or committing a checkpoint does not finish the work. Native AOT VS Code first,
-focused checks next; comprehensive regressions remain deferred until finalization.
+or committing a checkpoint does not finish the work.
+**Latest user steering supersedes per-packet validation:** implement the established
+Go-faithful allocation techniques comprehensively across complete ownership paths.
+No targeted tests, repeated benchmarks or profiles for each intermediate change.
+Use coordinated integration builds after coherent multi-lane changes; perform actual
+Native AOT VS Code and behavioral/performance acceptance after the broader rollout.
+Verification requirements remain; their frequency changes. Preserve source algorithms,
+control flow, function boundaries and actual Clip/Clone/detach semantics. No custom
+compiler redesign, interning, hashtables or pooling. Prefer standard .NET facilities
+where semantics fit. No new process framework.
+
+Three implementation lanes, existing GPT-6.1 Sol agents:
+- scanner: Ast/Parser/Scanner/Runtime/generators, complete text/syntax storage paths.
+- support: Checker storage/callbacks, beginning generic parameter/argument owners and
+  all consumers, then remaining coherent slice/callback families without per-slice gates.
+- verification: Binder/Compiler/Modules/Config/Vfs and shared Core storage/callbacks;
+  also later integrated build scheduling and independent peer review.
+Coordinate cross-lane API changes through owners; avoid overlapping edits. Agent
+completion messages are handoffs, not permission to stop. Existing evidence is reusable.
 User preference: do not generate further SVG flamegraphs. Keep raw profiles and
 analysis usable in a performance viewer; existing SVG files may remain.
 
@@ -49,9 +67,8 @@ Full regressions and repeated native timing stay deferred to later milestones.
 `67bd3eb5` library /`d90a3628` native is preserved from its16 frozen source files.
 Eight initial finite compiler bindings repaired together; clean retry9.615s.
 Native VS Code exact10 but slower single observation:33.64wall/112.84CPU/
-10,042,164KiB. Verifier runs selected semantic/parser gates, then alternating3each
-against frozen061c and one allocation comparison to establish whether regression
-persists. No conclusion from the one sample; do not commit as a performance win.
+10,042,164KiB. Subsequent selected gates and alternating runs below establish that
+the one slower observation did not repeat; no strong speedup claim.
 Support reviewed changed ownership/cache/copy/boxing paths with no defect found.
 Six alternating native observations all retain exact10:061c->67bd means
 24.4033->23.97wall,102.4067->99.00CPU,10,473,164->9,889,178.67KiB peak.
@@ -65,7 +82,7 @@ checkpoint, while next AST layout edits remain separate in the working tree.
 Saved sources: artifacts/vscode-type-constituent-slices/.
 Parser scratch source/review: artifacts/vscode-parser-scratch-slices/.
 
-**Next AST implementation authorized and underway:** scanner and support independently found
+**AST representation implemented, intermediate verification only:** scanner and support independently found
 normal C# inheritance NodeData:Node can model Go embedded Node while eliminating
 separate wrapper allocation and back-reference. Keep concrete bare Node and
 Node.data=self dispatch; explicit hiding must avoid recursion/warnings. Common node
@@ -73,16 +90,21 @@ fields remain, so full1.11GB sampled Node bucket is NOT removable savings. AST-o
 candidate, no Type layout/pooling redesign. Repeated timing did not reproduce the
 initial slowdown, so scanner owns implementation and support independent review.
 Generator and named observer compatibility changes are required; source algorithms/
-identity/hooks/clone behavior must remain intact. No next build until source ready
-and current frozen candidate's capture/control qualification completes.
+identity/hooks/clone behavior remain intact by independent review.
+Six-file snapshot62389c81 built clean10.816s/native publish11.312s. Native b557cb84
+matches exact10/available pinned chains:27.53wall/105.85CPU/9,645,988KiB peak.
+Single observation, no speed claim. No allocation capture/pairs launched. Saved under
+artifacts/vscode-ast-single-object/. TypeSystem77 passed before latest user steering;
+verifier stopped queued checks and permits only already-running atomic Collections44
+to finish. Keep partial evidence explicit; no final acceptance/commit yet. Latest
+whole-path strategy above applies to remaining work, not more micro-packet validation.
 User emphasized .NET copy facilities: Slice growth/append/arena use span CopyTo;
 one identity-only Reparser loop changed to CopyTo, transformations remain loops.
 Old List adapters still copy and are being removed from hot paths.
 Root approved public Slice<Node> child-list headers, clipped arena allocation and
 Go Clone header/slot sharing; provisional C# List APIs may change, but actual Go
-behavior/expected outputs remain. User informed. Scanner owns AST/runtime/parser/
-binder/generator, support owns Checker/NodeBuilder consumers, verifier owns harness
-bindings/independent review and sole heavy window. Keep List input factory adapters
+behavior/expected outputs remain. User informed. Ownership follows the three lanes
+above; coordinated integration builds remain serialized. Keep List input factory adapters
 explicit; no per-node wrapper or hot list snapshots. Replace incidental List
 ReferenceEquals observer with Go Core.Same storage test only where original intended
 assertion is the Go shared-first-slot rule; preserve results.
