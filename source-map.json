@@ -1768,7 +1768,21 @@
         "profileEvidence": "artifacts/vscode-link-slots/allocation-comparison.json"
       },
       "arenaStorageRolloutAdaptation": "In progress: map-backed LinkStore payloads move from individually allocated classes to zeroed GoArena struct chunks, standard Memory locations and live ref returns. Preserve lazy map allocation, key identity and missing entries. PagedLinkStore supports value locations while retaining existing class/page-presence behavior. Complete 26-owner consumer and existing observer conversion underway; execution pending.",
-      "arenaStorageRolloutEvidence": "cae7ee5 / integration12: selected 26 map owners, value-symbol arena and inline symbol-node pages implemented and independently reviewed; actual Linux x64 Native AOT VS Code ten complete diagnostics exact. Wider Memory locations increase named arena/map allocation buckets despite lower combined sampled allocations. Cold observer execution and broader regression acceptance pending."
+      "arenaStorageRolloutEvidence": "cae7ee5 / integration12: selected 26 map owners, value-symbol arena and inline symbol-node pages implemented and independently reviewed; actual Linux x64 Native AOT VS Code ten complete diagnostics exact. Wider Memory locations increase named arena/map allocation buckets despite lower combined sampled allocations. Cold observer execution and broader regression acceptance pending.",
+      "pohBackingArrayCandidate": {
+        "state": "Rejected integration22 experiment; original Go-sized ordinary managed-array factories restored. No production adoption or comprehensive acceptance of POH placement.",
+        "adaptation": "Rejected experiment only: LinkStoreArena<V> chunk and PagedLinkStore<V> page factories used standard GC.AllocateArray<T>(sameLength,pinned:true): collectible zero-initialized POH arrays supporting managed-reference records. Go2-to-256 chunk growth,256-entry pages, private8-byte ordinals, lazy owners, nil/presence distinctions and actual ref/escaped Memory ownership remain unchanged. No parser arena, temporary slice, capacity, pooling/reset, unsafe storage or compiler algorithm change. POH does not pin children or root unreachable arrays.",
+        "risk": "Direct old-heap placement may increase full-GC work, cards, RSS or fragmentation; separately scoped NodeBuilder links may be shorter-lived. Source fidelity and exact workload outputs do not establish speedup, safe memory budget or completed regression acceptance.",
+        "evidence": [
+          "artifacts/vscode-allocation-rollout/integration-22-poh/source-independent-review.json",
+          "artifacts/vscode-allocation-rollout/integration-22-poh/build-1/first-vscode/result.json",
+          "artifacts/vscode-allocation-rollout/integration-22-poh/timing/comparison.json",
+          "artifacts/vscode-allocation-rollout/integration-22-poh/gc-lifecycle/capture/independent-analysis.json",
+          "artifacts/vscode-allocation-rollout/integration-22-poh/gc-lifecycle/capture-followup-time/independent-analysis.json"
+        ],
+        "historicalBoundary": "Existing accepted integration18 compact-location and integration21 dispatch behavior/evidence remain unchanged; this candidate changes CLR allocation placement only.",
+        "decision": "Five-run uninstrumented cohort showed modest wall/RSS improvement with essentially flat median CPU; diagnostic captures did not consistently reduce GC costs and included an unexplained9.735s pause that did not recur in followup. Revert rather than extend uncertain lifetime policy; preserve original/followup evidence."
+      }
     },
     {
       "upstream": null,

@@ -103,6 +103,210 @@ The current target is Native VSCode wall time at most1.2 times pinned Go with
 equivalent files/settings. This correctness checkpoint does not meet that target
 or demonstrate a dispatch speedup; the authorized campaign continues.
 
+### Fresh pinned-Go comparison and single policy candidate
+
+Five fresh processes each used pinned Go, accepted Native21 defaults and the same
+Native binary with only `DOTNET_GCConserveMemory=3`. Same VSCode config/no-emit and
+skip-library-check settings were preserved. All15 complete diagnostic outputs,
+expected exits and guards passed; workload hashes were checked outside timing.
+This is repeated warm-input process timing, not cold-cache measurement.
+
+| Runtime/policy | Wall best / median / range (s) | CPU median (s) | Peak RSS median (KiB) |
+| --- | --- | --- | --- |
+| Pinned Go |12.03 /12.98 /12.03–13.50 |59.74 |7,784,448 |
+| Native default |17.83 /22.47 /17.83–23.28 |82.29 |8,805,920 |
+| Native ConserveMemory3 |14.70 /17.80 /14.70–20.79 |75.39 |9,495,232 |
+
+Candidate/Go ratios are1.222 for best and1.371 for medians: neither reaches1.2.
+Candidate RSS median is7.83% above Native default and22% above Go. RSS measures
+resident process footprint, not retained heap or allocation count; no major
+faults/swaps were reported. Variability remains substantial. Five observations per
+variant do not establish statistical significance, isolated GC causality or a
+guaranteed gain. This single policy candidate is **not adopted**; production GC
+settings stay unchanged while the authorized investigation continues.
+[Fresh results](../artifacts/vscode-allocation-rollout/integration-21/fresh-go-comparison/timing/comparison.json)
+and [independent review](../artifacts/vscode-allocation-rollout/integration-21/fresh-go-comparison/result-independent-review.json)
+retain complete evidence without another correctness gate or capture.
+
+### DATAS comparison at the same ConserveMemory3 setting
+
+Five fresh processes each used pinned Go and the same frozen Native21 binary with
+ConserveMemory3 and DATAS enabled or disabled. Only the disabled arm added
+`DOTNET_GCDynamicAdaptationMode=0`; background Server GC and compiler worker count
+were unchanged. All15 original complete diagnostic outputs, expected exits and
+source/binary/configuration guards passed. Independent review recomputed resource
+measurements and ratios without rerunning workloads or repeating the input census.
+
+| Runtime/policy | Wall best / median / range (s) | CPU median (s) | Peak RSS median (KiB) |
+| --- | --- | --- | --- |
+| Pinned Go |12.16 /13.34 /12.16–15.12 |64.04 |8,052,524 |
+| Native ConserveMemory3, DATAS on |18.49 /19.86 /18.49–24.62 |79.55 |8,779,752 |
+| Native ConserveMemory3, DATAS off |17.26 /20.56 /17.26–21.13 |78.50 |9,811,956 |
+
+DATAS-off adoption is **rejected**: median wall was3.52% slower and median RSS11.76%
+higher than DATAS-on. Its better best observation does not establish a repeatable
+gain. Native/Go best ratios were1.521/1.419 and median ratios1.489/1.541 for DATAS
+on/off respectively; neither meets1.2. These observations preserve the prior
+ConserveMemory3 study rather than replacing its measurements. ConserveMemory3
+itself remains unadopted, and production GC settings remain unchanged.
+
+DATAS changes both gen0 budgeting and active heap adaptation; ConserveMemory3
+retains separate older-generation growth and fragmentation rules. Results do not
+isolate either mechanism, identify promoted/live/scanned bytes, or establish
+statistical significance. No further GC knob experiments are planned now; the
+NodeLinks recheck confirmed the accepted stable chunk structs, eight-byte ordinals
+and ref returns already remove separate link objects. That family is not reopened. No new allocation,
+profiling capture or compiler build accompanied this comparison.
+
+[Complete DATAS results](../artifacts/vscode-allocation-rollout/integration-21/gc-datas-screen/timing/comparison.json),
+[independent result review](../artifacts/vscode-allocation-rollout/integration-21/gc-datas-screen/result-independent-review.json)
+and [exact runtime source evidence](../artifacts/vscode-allocation-rollout/integration-21/gc-datas-screen/runtime-source-evidence.json)
+preserve the decision and next action.
+
+### SustainedLowLatency lifecycle capture and separate throughput comparison
+
+One artifact-only Native wrapper reused the frozen integration21 compiler; its
+single publication verified the actual ILC dependency references and Speed setting.
+The standard latency API applied SustainedLowLatency successfully and restored
+Interactive afterward. Production source and GC policy remain unchanged.
+
+The separate instrumented captures passed complete original diagnostics. Default
+versus SLL allocated10.601/10.592GB, with collection counts (gen0/gen1/gen2)
+31/15/8 versus36/17/9. Public cumulative pause deltas were2.676/3.891s. The largest
+observed pauses were **gen1**,662/864ms; SLL also had a late blocking gen2 collection.
+The default662ms record (index25) was **noncompacting**: gen0/gen1 sizes before
+collection were560,281,048/1,443,151,568 bytes, with1,625,667,712 bytes reported
+promoted. SLL's corresponding largest pause (index30) was also noncompacting,
+with roughly0.639/1.61GB before and1.765GB promoted. These show substantial young
+space and surviving/promoted volume; “promoted” does not assert physical copying.
+The public records cannot separate tracing, relocation, synchronization or scheduling
+costs. Do not attribute the662ms pause to compaction.
+It did not remove this workload's collection or pause costs. Observed occupied-heap
+proxies were7.206/7.237GB and fragmentation0.939/1.396GB, but their final snapshots
+represent different generations and phases. These are not matched live-object or
+scanned-byte measurements. The100ms latest-kind polling missed5/3 indices within
+its observed intervals (no cap drops); it is not a complete GC event stream.
+Go printed19 completed collections; its last reported live heap5593MiB was at an
+earlier workload phase. Those Go/.NET snapshots cannot establish a retained-graph
+ratio or isolate scanning costs. Instrumented capture wall times are excluded from
+throughput acceptance.
+
+The subsequent15-process comparison used five fresh Go, default Native and SLL
+processes in rotated order. Both Native arms used the **same wrapper**, with the
+lifecycle observer OFF. Compact applied/restored-mode sidecars remained inside
+outer timing in both arms. All15 full original outputs, expected exits, mode
+sidecars and frozen input/binary guards passed independent review.
+
+| Runtime | Wall best / median / range (s) | Median CPU (s) | Median peak RSS (KiB) |
+|---|---:|---:|---:|
+| Pinned Go |8.58 /11.58 /8.58–13.30 |54.77 |7,734,780 |
+| Default Native |16.64 /16.67 /16.64–21.79 |68.90 |9,353,260 |
+| SLL Native |17.14 /19.05 /17.14–19.86 |70.57 |8,982,976 |
+
+**Reject SLL adoption:** its best wall was3.00% slower and median14.28% slower
+than default, despite3.96% lower median peak RSS. Native/Go best ratios were
+1.939/1.998 and median ratios1.440/1.645 for default/SLL; neither meets1.2.
+Five observations do not establish statistical significance or a general runtime
+ranking. Fresh Go best8.58s shows that the earlier ConserveMemory3 best ratio1.222
+(14.70/12.03) was cohort-specific, not a stable remaining22% gap. Keep each study's
+Native and Go observations together; do not combine best times across cohorts.
+No runtime policy is adopted. The next user-requested comparison investigates
+ReadyToRun separately; no further GC knob grid or NodeLinks conversion is planned.
+
+[Lifecycle capture analysis](../artifacts/vscode-allocation-rollout/integration-21/gc-lifecycle/capture/independent-analysis.json),
+[exact Native runtime API evidence](../artifacts/vscode-allocation-rollout/integration-21/gc-lifecycle/runtime-source-evidence.json),
+[separate clean timing results](../artifacts/vscode-allocation-rollout/integration-21/gc-lifecycle/timing/comparison.json)
+and [independent timing review](../artifacts/vscode-allocation-rollout/integration-21/gc-lifecycle/timing/result-independent-review.json)
+preserve the evidence and limits.
+
+### Integration22 POH candidate: promising, not full acceptance
+
+The reviewed candidate changes only the two checker link backing-array factories
+to standard `GC.AllocateArray<T>(sameLength, pinned: true)`. Existing struct records
+remain inline in managed arrays; this is **managed POH placement**, not unmanaged
+allocation or a new record layout. Managed ref returns, escaped Memory ownership,
+zeroed slots, capacities, growth and ordinal decoding remain unchanged. Referenced
+child objects are not pinned. Both pinned NativeAOT and CoreCLR support arrays of
+structs containing managed references. POH still traces references and young-object
+cards; it does not eliminate the referenced graph's collection costs. Separately
+owned NodeBuilder stores may have shorter lifetimes and remain a retention risk.
+
+The central build and actual Native publication passed source/dependency binding
+review; the first VSCode run returned the complete original diagnostics. The
+subsequent rotated15-process comparison used five fresh processes each of pinned
+Go, accepted21 Native and candidate22 Native, with **production binaries**, no
+observer, wrapper or runtime overrides. All15 complete original outputs, expected
+exits, raw timing arithmetic and frozen guards passed independent review.
+
+| Runtime | Wall best / median / range (s) | Median CPU (s) | Median peak RSS (KiB) |
+|---|---:|---:|---:|
+| Pinned Go |9.37 /11.58 /9.37–13.76 |55.63 |7,833,972 |
+| Accepted21 Native |16.77 /22.16 /16.77–24.35 |83.56 |9,060,856 |
+| Candidate22 POH Native |15.22 /20.97 /15.22–22.14 |83.10 |8,566,252 |
+
+Retain the **promising candidate pending broader integrated verification**: within
+this cohort, best wall improved9.24%, median wall5.37% and median RSS5.46%; median
+CPU improved only0.55%. Wide ranges and five observations do not establish
+statistical significance or identify which GC mechanism changed. Candidate/Go
+ratios remain1.624 best and1.811 median, so the1.2 target is unmet. This is not full
+compiler acceptance or a final adoption claim; accepted21 remains the verified
+checkpoint. A bounded reuse of existing public lifecycle telemetry can examine
+actual POH occupancy and collection behavior separately from these clean timings;
+no mechanism or scanned-byte reduction is inferred from the timing table.
+
+The subsequent fresh Default lifecycle captures confirmed placement: candidate22's
+last observed POH size was1,178,401,464 bytes versus77,408 for baseline21, with zero
+reported POH fragmentation at those snapshots. Allocated totals remained nearly
+equal (10.601/10.595GB). However, candidate collections were36/17/10 versus
+30/15/8 and cumulative pause14.053s versus2.757s. Candidate index35 had a
+**9,734.763ms gen0 pause**, collection-level `compacted=true`, and407,792,688 bytes
+reported promoted. This does not mean POH objects compacted, nor that promoted
+bytes were physically copied. Candidate maximum observed gen1 pause was748.954ms
+versus478.916ms; gen2 maxima180.633/235.571ms. The extraordinary gen0 pause
+materially weakens the adoption case despite the clean cohort's modest gains.
+Public elapsed-pause fields cannot distinguish collector CPU from synchronization,
+scheduling or host delay; neither POH nor observer causation is established.
+
+Final occupied-heap proxies were7.459/7.175GB and overall fragmentation0.726/0.741GB
+for candidate/baseline, but snapshots were gen1/gen0 at different workload phases.
+They are not matched exact live graphs. Polling captured29/25 unique indices,
+missed4/3 within the observed intervals, and had zero cap drops; pre-first and
+in-progress-at-exit collections remain unobserved. Both complete outputs and actual
+ILC/frozen-source/unchanged-observer bindings passed independent review.
+**Hold provisional adoption/checkpoint pending the concrete latency-risk decision**;
+do not extend POH to broader arenas from this evidence. Source-faithful resets and
+speculative parser lifetimes differ from compile-retained links and need their own
+ownership justification. A focused verification of the observed risk may be
+justified; no new workload or implementation was performed by the reviewer.
+[Fresh lifecycle analysis](../artifacts/vscode-allocation-rollout/integration-22-poh/gc-lifecycle/capture/independent-analysis.json)
+preserves the long-pause snapshots and coverage limits.
+
+The focused reverse-order followup used the unchanged observer and direct GNUtime;
+both complete original outputs, Default readbacks and frozen guards passed review.
+Baseline/candidate cumulative pauses were4.286/4.504s, maximum observed pauses
+0.830/1.586s, and collection counts36/16/9 versus31/14/9. Whole instrumented
+process totals were18.35s wall/69.32s CPU versus23.31s/84.45s; these are diagnostic
+observations, not replacement throughput acceptance. Coverage was31/24 unique
+snapshots, with2/4 gaps and no cap drops. The9.735s pause **did not recur**, but the
+original correctly converted observation remains unexplained; neither a counter
+mistake nor host/observer causation is established. Aggregate CPU/context-switch
+fields cannot attribute the time to an individual collection.
+
+**Recommend rejecting POH adoption and reverting the two candidate factories.**
+The modest clean-cohort gain with essentially flat median CPU, inconsistent GC
+behavior and unexplained original latency risk do not establish a dependable
+benefit for this runtime placement departure. Preserve every original, followup
+and failed perf artifact. Do not expand POH placement or continue an open-ended
+measurement loop; resettable/speculative parser arenas have different lifetimes.
+[Focused followup review](../artifacts/vscode-allocation-rollout/integration-22-poh/gc-lifecycle/capture-followup-time/independent-analysis.json)
+records this recommendation; the coordinator owns the actual revert decision.
+
+[POH source review](../artifacts/vscode-allocation-rollout/integration-22-poh/source-independent-review.json),
+[actual publication review](../artifacts/vscode-allocation-rollout/integration-22-poh/build-1/publication-independent-review.json),
+[complete cohort results](../artifacts/vscode-allocation-rollout/integration-22-poh/timing/comparison.json)
+and [independent result review](../artifacts/vscode-allocation-rollout/integration-22-poh/result-independent-review.json)
+preserve the candidate boundary and evidence.
+
 ## Integration20: callback/setup completion and Native throughput policy (accepted)
 
 The complete batch has passed integrated acceptance. It closes synchronous
@@ -2348,3 +2552,50 @@ reference investigation and cross-review. The relation reduction avoided an
 unjustified checker change; the pinned run removed revision ambiguity. No token or
 monetary measurements are available. Full historical gates were not redundantly
 rerun for these narrow changes.
+
+
+## ReadyToRun diagnostic comparison (2026-10-11)
+
+The artifact-only framework-dependent ReadyToRun publication reused the exact
+reviewed Native wrapper sources and frozen integration21 Scanner/Hashing inputs.
+Offline cached restore took0.816s; publication took3.730s. Actual Crossgen input
+hashes, transformed output hashes and independent PE/RTR16.0 header checks verify
+all three published assemblies. No production compiler or Native wrapper rebuild
+occurred. Runtime10.0.12/RollForwardDisable, ServerGC, TieredCompilation and TieredPGO
+were explicit; compile PGO inputs were empty. Enabled dynamic PGO does not establish
+that useful optimized hot tiers occurred during this finite workload.
+
+Five fresh processes each of pinned Go, the default Native wrapper and ReadyToRun
+ran in rotated/reversed order. Both .NET arms had default GC latency and lifecycle
+telemetry OFF; their compact applied/restored-policy sidecars remained inside outer
+timing. All15 complete original diagnostic outputs, legitimate Goexit2/Nativeexit1,
+policy sidecars and preserved production/input/runtime/binary guards passed independent
+review. Best/median/range, CPU/RSS and ratios were recomputed from the original files.
+
+| Runtime | Wall best / median / range (s) | Median CPU (s) | Median peak RSS (KiB) |
+|---|---:|---:|---:|
+| Pinned Go |8.93 /11.08 /8.93–13.52 |54.44 |7,946,584 |
+| Default Native |17.31 /19.67 /17.31–20.98 |74.71 |8,870,072 |
+| ReadyToRun |19.11 /22.32 /19.11–24.78 |119.98 |9,368,568 |
+
+**Reject ReadyToRun adoption for this workload:** its best wall was10.40% slower
+and median13.47% slower than the default Native wrapper, with higher median CPU and
+peak RSS. Default Native/Go best and median ratios were1.938/1.775; ReadyToRun ratios
+were2.140/2.014. Neither reaches1.2. Five observations do not establish statistical
+significance, general deployment rankings or a causal account of tiering costs.
+This diagnostic CLR deployment comparison does not replace actual Native AOT
+acceptance or its performance target. Keep this cohort together; no runtime policy
+or production deployment setting is adopted.
+
+[Publication provenance review](../artifacts/vscode-allocation-rollout/integration-21/r2r-comparison/publication-independent-review.json),
+[complete timing results](../artifacts/vscode-allocation-rollout/integration-21/r2r-comparison/timing/comparison.json)
+and [independent timing review](../artifacts/vscode-allocation-rollout/integration-21/r2r-comparison/timing/result-independent-review.json)
+preserve the exact evidence.
+
+The coordinator rejected integration22 POH adoption after this review and restored
+both original allocation factories and the accepted21 build outputs. Candidate source,
+executables, original anomaly and followup evidence remain preserved; this is an
+experimental rejection, not a compiler correctness failure or proof that POH is
+universally slower. No broad regression rerun was needed to restore the exact accepted
+source. The next investigation checks actual NativeAOT instruction-set coverage before
+considering a code-generation experiment; compiler algorithms remain unchanged.

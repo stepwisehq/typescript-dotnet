@@ -1,3 +1,26 @@
+# Active performance continuation: accepted21 restored (2026-10-11)
+
+Latest decision supersedes provisional POH entries in the chronological record below.
+Integration22 POH placement was **rejected**, and the exact original Linkstore source
+and accepted21 central/native build outputs were restored. Candidate source, binaries,
+all measurements and the unexplained9.735s GC pause remain preserved under
+`artifacts/vscode-allocation-rollout/integration-22-poh/`; rejection.json records restoration.
+The repeat did not reproduce9.735s (baseline max0.830s/candidate1.586s), but neither
+capture established consistently lower GC cost. Five uninstrumented runs showed only
+modest wall/RSS improvement and effectively flat medianCPU. No broader arena extension.
+No new comprehensive regression acceptance is claimed for the rejected experiment.
+Accepted production compiler remains integration21/077578ed; 1.2x Go target unmet.
+
+SLL and R2R also rejected; production runtime defaults unchanged. All jobs finished;
+no build/performance workload active, source/metadata freeze released. Root is recording
+these reviewed results, not stopping the autonomous performance mandate.
+Next: Sol cache_audit read-only assessment of actual NativeAOT default ISA versus
+runtime-dispatched vector/AES paths in our byte/hash/copy consumers and pinnedGo.
+Determine whether host-specific code generation enables a real missing standard.NET
+path before any publication; preserve compiler algorithms and explicit platform bounds.
+Do not restart rejected Symbol arenas, NodeLinks conversion, GC knob grids or POH rollout.
+Use established proof/commands; avoid another recipe-review cycle for incidental wording.
+
 # Crash recovery and storage cleanup (2026-10-11)
 
 The WSL/server reboot interrupted integration21 full Native no-emit acceptance.
@@ -18,15 +41,121 @@ records; reused8832 and executed6472. Independent final acceptance ACK73497dc8 c
 full rows,1721managed, NativeFoundation3153+87,utilities20,Program9,actualILC and all
 source/binary guards.2048 prefix records explicitly reconstructed from preserved exact
 actual rows and sequential controller evidence; no invented uninterrupted pass.
-Source/metadata freeze is now released; root preparing accepted dispatch checkpoint.
+Accepted dispatch checkpoint077578ed committed. Source/metadata freeze released;
+no compiler changes since. Runtime investigation continues autonomously.
 
 Same-binary backgroundGC screen completed session8691: default20.34/18.95s,
 batch18.30/18.54s; all full diagnostics exact. Default retained (small screen, higher
 batchCPU and variableRSS; no large/repeatable benefit claim). Native21 immutable
 binary/compiler and full evidence remain under artifacts/vscode-allocation-rollout/integration-21.
-Current Sol lanes: storage_audit prepares fresh5Go/5defaultNative/5Conserve3 timing
-recipe with equal-count best/median/range and rotatedorder. recovery supplies exact
-runtime budget evidence and independent recipe review. cache_audit completed acceptance
+Fresh5Go/5defaultNative/5Conserve3 comparison completed root82882 exit0, all15
+complete diagnostics and final input guards exact. Recipee1822d61, reviewedclear by
+Sol recovery. Results fresh-go-comparison/timing/comparison.json. Best/medianwall:
+Go12.03/12.98; defaultNative17.83/22.47; Conserve3 14.70/17.80. Conserve3 vsGo
+1.221945xbest/1.371341xmedian:20%targetNOTmet. Conserve3 medianRSS9,495,232KiB vs
+default8,805,920/Go7,784,448. No adoptedruntimepolicy yet. All5Go runs
+13.03,13.50,12.56,12.98,12.03 (interleaved); warm-input timing, hostnoise unisolated.
+Sol cache_audit independently accepted fresh15result comparison and updated statusdoc.
+DATAS15comparison completed31334 exit0, independentreviewclear. SameC3 bothNative:
+DATASon median19.86wall vs off20.56 (+3.52%); offmedianRSS+11.76%. RejectDATASoff
+adoption; full15diagnostic/reference guards exact. No runtimepolicy adopted.
+SourceNodeLinks recheck found accepted18 already uses stablechunkstructs+refreturns;
+NO missing classperlink allocation. Do not redo that family or rejectedSymbolarena.
+
+Latest user asks SustainedLowLatency. Root authorizes one coherent artifact-only
+Native diagnostic/timing wrapper reuse on frozen21CLI/Scanner/Hashing. Solstorage_audit
+implements optional public GCtelemetry (initial/final +100ms changedcompletedindex,
+max512records; heap/promoted/pause/generation fields; missedindicesexplicit). Standard
+GCSettings.LatencyMode selectsnormal/SLL; effective readback MUST match becauseNative
+setter can silentlyignoreSLL withoutbackgroundGC. Solrecovery verifies exactNative
+route and independentlyreviews. Productiondefaults in BOTHarms (noC3/batch/DATASoff).
+Lifecycle sourceReadyf771b151 independentlyreviewed. ONE Nativewrapperpublish
+13.3587s, actualILC frozenScanner/Hashing/Speed/LINQfalse/ServerGC exact, compiler
+NOTrebuilt. Nativewrapper c70515c68ceb5d37a29c0276f12a8b397b7db266f05a2f9e77b43d0b7edc5684.
+Default+SLL+Go captures79270 completedalloriginaldiag. Independentcaptureanalysis:
+Nativecollections31/15/8 vs36/17/9, allocation10.601/10.592GB nearidentical; totalpause
+2.676/3.891s; maxobservedpauseGEN1 662/864ms. SLLstilllateblockinggen2; occupiedheap
+proxies7.206/7.237GB similar, fragmentation.939/1.396GB. Snapshotgaps5/3withinobserved
+interval; publicmetrics notscannedbytes/perowner/exactGo-livephase equality.
+
+SamewrappertelemetryOFF15timingcompleted69590exit0: normalbest16.64median16.67,
+SLLbest17.14median19.05;Go best8.58median11.58. RejectSLLadoption; rootaskedSolrecovery
+independentresultreview+statusdoc. Publicsmallmodeverification sidecar includedbothNative
+arms; no lifecycleobserver. EarlierC3best14.70/Go12.03 gap22% is cohort-specific,
+NOTstableprogressclaim; laterGo8.58/9.06 validates freshreference necessity.
+
+User nowrequestsReadyToRun experiment (tieredJIT), and Speed. Speedalreadyactual--Ot
+productionNative+wrapper; R2RCrossgenoptimization must separatelyverify. Solcache_audit
+prepared r2r-comparison artifact-only same3wrapperCSsources, frozen21inputDLLs transformed
+byCrossgen; NativeAOTfalse/R2Rtrue, explicitTieredCompilation+PGO, hostruntime10.0.12
+RollForwardDisable. Allpacks cached, offline-only restore, no downloads authorized.
+Solstorage_audit reviewCLEAR binds sourceReadyf6b15025. ONE R2Rpublish completed
+root13057 exit0: offline restore0.816s/publication3.730s; actualCrossgen transforms
+and R2Rheaders checked, productioncompiler not rebuilt. Root9197 completed15exact;
+independentreviewclear alloutputs/guards. Go best8.93median11.08; Native17.31/19.67;
+R2R19.11/22.32. RejectR2Radoption (median+13.47%vsNative); 1.2xtargetNOTmet. Nativeacceptance
+and1.2xtarget remain; R2Rresults separate, no assumptionpropertySpeedcontrolsJIT.
+Sourcecheckpoint077578ed unchanged, productionruntimepolicyunchanged; no moreGCknobs.
+User asks direct LOH allocation for compile-lifetime data. Solrecovery investigates
+exactLinuxNativeAOT APIs/threshold and existing structarena chunk sizing read-only;
+no arena policy/source change yet. Ordinary reference arrays do not place pointees
+onLOH; no blanketpadding or NodeLinks re-port. Worst662ms pause was noncompacting
+Gen1 with1.626GB promoted, not proof of copying cost.
+Exact NativeAOT+CoreCLR source does support standard GC.AllocateArray<T>(length,
+pinned:true) for reference-containing arrays (POH, not LOH; no size threshold).
+Root authorized candidate integration-22-poh: Solcache_audit prepares artifact-only
+patch for complete compile-retained LinkStoreArena/PagedLinkStore backing arrays,
+unchanged capacities/ordinals/managed refs. Solrecovery independentreview; no parser
+arenas/padding/unsafe storage. No production edits/build until9197 timing finalguards.
+Reuse existing centralbuild/publishVSCodeFIRST scripts after source-review; measure
+before adoption. POH remainscollectible/cardtracked; not zero-GC or demonstratedgain.
+Integration22 sourceReady0637b687 independentreviewCLEAR; rootappliedexactreviewed
+patch (onlyCore/Linkstore.cs twoallocationfactories, candidatec1ec3b8f). Centralbuild
+root46390 passed10.63s compiler214d7c92; existing21 publication+VSCodeFIRST root99989
+completed actualNative21.28wall/76.93CPU/8,740,036KiBRSS, all10fulldiagnostics exact.
+SourceANDmetadata freeze active, no commits. Storage_audit preparing minimalreviewed
+15timingrecipe adaptation 5Go/5accepted21productionNative/5candidate22productionNative,
+cache_audit independentreview. No observers/wrappers/policyknobs. Reuseworkloadguards.
+No broadregression untilcandidateevidence; oneNativeobservationnotbenefitclaim.
+Recipe307baa2d independentACK77a4e200 released; root69366 completedall15exact,
+Solrecovery actualpublication+finalresultreviewCLEAR. BestwallGo9.37/base16.77/POH15.22;
+medians11.58/22.16/20.97. POHmedianwall−5.37%,best−9.24%,RSS−5.46%,CPU−0.55%; wide
+variance, no significance/targetclaim. Retainpromisingcandidatependingbroaderverification;
+accepted21 remainslastfullgate. Storage_audit nowprepares minimalreuse21 GC-lifecycle
+wrapper in22-poh/gc-lifecycle, same3CSsources frozen22IL/normalmode only; cache_audit
+review. Rootwillpublishonce thennew22/default+existing21/default publictelemetrycapture
+serial (no SLL/C3/newtrace/timingclaims) tointerpretPOHoccupancy/promoted/pause. Source
+andmetadata freezeheld for thispublication. Wrapperreadyfabe6878 independentreview
+CLEAR; buildroot16186 completed, capture root21058 nowactive serial22Default then
+21Default. No competingworkloads/broadregression. Source-map adds explicitlyprovisional
+POH note, prioracceptance unchanged. Oncecapture/reviewcomplete rootmaycheckpoint
+sourcecandidate+docs asprovisional; do not implyfullgate or target achieved.
+IMPORTANT latestcapture21058 completed but POHadoption/checkpoint nowHELD: original
+22capture totalpause14.053s vsfresh21 2.757; candidateGen0index35 compactingpause
+9734.763ms, POH1.178GB. Independentreviewconfirmsrawcounterunits/diagnostics/bindings,
+no attribution toPOH/observer yet. User askswhethermistake/astronomicalpause. ExactGC
+source timer includes suspension-rendezvous and timed-GC waits/descheduling, notCPU.
+Rootauthorized focusedreversecaptures21then22 samefrozenwrappers +perfstat100ms
+task-clock/context-switch/pagefaulttext (+time), no rebuild/newobserver. Storage_audit
+prepares, cache_auditreviews, rootexecutes. Keeporiginaloutlier evidence; do notexpand
+POH or commitcandidate before resolvingresource concern. Otheruserprocessesactive;
+no killing/tuning; guestcounters cannotfullyestablishWSLhost scheduling behavior.
+Followupreadye88c1c81 independentACK6139ef1c released; root10616 nowrunning
+reverse21then22 captures with softwareintervalcounters/time. No competingownedjobs.
+No newbuild/observer edits and original9.735s anomaly retained. Next reviewactual
+interval data/GCsnapshots beforeanyadoption/checkpointdecision.
+10616 failedharness afterbaseline21: installedperf7 -I returns0 forchild1; idle
+intervalnot-counted markers expected, kernelsoftwarecounterpermissions restricted.
+Tool-only probesreproduced; originalbaselineGC/output/time retained, intervaldata
+NOTusedforattribution. No inheritedcounterfailureclaim fromsleepingparent. Simpler
+reviewedGNUtimefallbackreadyedfe9cb8 root42067 NOWRUNNING direct21then22 samewrappers,
+explicit%xexit1/fullDTO, CPU/wall/fault/switchtotals +publicGC. No rebuild/newobserver.
+No furthercapturevariantframework; totalscannotlocalizeindividualpause. Finishthis
+focusedriskcheck then decide; avoidrepeatedmetadata-review loops. Latestuser asksstructs/
+unmanaged: inline managedstructrecordarrays+refreturns alreadyused; ulonglocations
+referencefree. Node-reference arrays do not inlineNodeobjects; no unmanagedgraphrewrite. No candidate
+adoption yet. R2Rexperimentdocs updated; baseline accepted077578ed remainsseparate.
+cache_audit completed acceptance
 review/proof/docs/map updates and made folded exports opt-in in artifact-only analyzer
 source; compiled historical analyzer unchanged. No future hugeexports unless requested.
 Root owns execution/release/STATE/commit; no competing performance workloads.
