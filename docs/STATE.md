@@ -1,68 +1,75 @@
-# Active: cumulative allocation comparison after accepted integration19
+# Active: complete symbol-arena ownership experiment after5951030
 
-The user explicitly directed continuing after827f131. Go performance parity is
-unmet; do not stop at another checkpoint/report/commit. Follow START-HERE.md's
-comprehensive ownership-path SOP; Astra coordination/GPT-6.1 Sol implementation and
-independent review remain. Do not redo accepted families or local benchmark loops.
+The user explicitly directed continuing allocation/performance work autonomously.
+Go parity remains unmet. This is NOT a request to stop after the following accepted
+checkpoint. Follow START-HERE.md's comprehensive ownership-path SOP and Astra/GPT-6.1
+Sol arrangement. Root coordinates architecture/integration/acceptance and commits.
 
-Integration19 is accepted; this checkpoint includes source/doc/proof changes and
-the completed cumulative Native/Go allocation comparison. No tracked production changes after
-freeze; all source/control/profile/final evidence independent ACKs closed.
-- Frozen compiler bd28c9ddd6a18c402dc60890afd031775e16058c09d69a0495cdb4d5bb83260f.
-  Production10.07s zero warnings/errors; NativeCLI11.05s exact frozen compiler.
-- VSCode FIRST17.22wall/71.48CPU/9,672,180KiB,10completeDTO/Gochains exact.
-  One observation versus prior17.72s; CPU/RSS did not decline, no speedup claim.
-- One capture BEFORE tests:10,818,807,776sampledB/10.075800GiB,−3.2024%vs18,
-  −71.3493%originalServerGC.92,791typed ticks, one missingstack,zero loss/truncation.
-  Offlineanalysis only overlapped correctness tests. Profile independentACK closed.
-- Managed1712pass:Checker832/TypeSystem84/selectedParser695/additionalNoEmit101.
-  NativeFoundation3153+87shared controls/utilities20/full15304originals exact.
-  FullNative120chunks340.08s. Actual compiler/applicationILCinputs,587/242guards exact.
-- InitialNativeFoundation MissingMethodException was stale RID Parser.Validation;
-  fresh already-built dependency restored, onlyChecker/Foundation republished.
-  Initialfailure retained. Finalcontroller aggregate-only NameError occurred AFTER
-  allNative outputs/result persisted; aggregate independently reconstructed from
-  unchangedTRX/stage/chunk records. No semantic repair/production rebuild/retests.
-  Twelve cold nullable warnings match18, separate from productionzero.
-- Changes: AST composite-only cache, Node/Type/Mapper runtime typed selfviews,
-  PseudoType singleobjectembedding, source missinglistsentinel; known-count hints,
-  intersectionorderedSet threshold17, lazy leasedRelater reporter reuse, one-pass
-  authored genuineProgram libraryclassification. Preserve Go copies/retainedcallbacks.
-  Source mapping/doc/proof updated; no unresolved sourcefindings.
+Accepted source checkpoint5951030 closes integration19 record/cache ownership,
+missing-list sentinel, orderedSet threshold/capacities, reporter reuse and authored
+library classification. Compilerbd28c9ddd6a18c402dc60890afd031775e16058c09d69a0495cdb4d5bb83260f.
+VSCode FIRST17.22wall/71.48CPU,10completeDTO/chains exact. Sampled10.075800GiB,
+−3.2024%vs18 and−71.3493%originalServerGC. Managed1712, NativeFoundation3153+87shared,
+utilities20, full15304original Native records passed with independent review.
+Failed staleRID Parser.Validation/controller aggregate attempts preserved; exact
+fresh dependency reused and only affected validators republished. No compiler repair.
+Details and proof: docs/VSCODE-CHECK-STATUS.md and validation/results/allocation-rollout-verified.json.
 
-NEXT WORK IS RUNNING, not awaiting user assignment:
-- support owns artifact-only cumulative allocation measurement under
-  artifacts/vscode-allocation-rollout/integration-19/cumulative-allocation.
-  Source-ready0650da84/scanner source and result ACKs closed; Native+Go runs passed.
-  Actual Native ILC references frozen19 compiler directly; Go -overlay changes only
-  CLI main measurement wrapper/imports. Tracked production/upstream source untouched.
-- Native public GC.GetTotalAllocatedBytes(precise:true) reports before103,648B /
-  after10,675,045,432B /delta10,674,941,784B. ServerGCtrue,CPUcount16 is NOT GCheapcount.
-  Gen0/1/2 collection deltas36/17/9. Full10diagnostics/guards exact. Go completeddelta8,992,138,304B (before1,014,928/end8,993,153,232); ratio1.1871416,
-  gap1,682,803,480B. Bothcomplete10diagnostics/status/guards exact.
-- Go runtime.ReadMemStats.TotalAlloc measured around normalrunMain, before os.Exit;
-  no forcedGC/profiling, sidecarconstruction outside finalcounter. Absolute+delta
-  boundaries differ somewhat byfrontend/startup; not exactpurechecker/RSS/native
-  memory/objectcounts. Instrumentedelapsed is NOT benchmark. This resolves actual
-  sampled/lastGC-lag ambiguity; do not revive prior exact5x allocation claims.
-- scanner independently verified measurement results; resultACKb427ca2f closed.
-- verification final docs/proof consistency ACK closed; all19regressionexecution
-  finished. Root owns the checkpoint; support/verification own next GC design/review.
-- Next task assigned: support designs bounded standard ServerGC policy/heapbudget
-  comparison on UNCHANGED19Nativebinary; verification independentlyreviews. Four
-  checkerworkers/16CPU and prior37.57%SVRsampledcost motivate this now that cumulative
-  allocationgap is18.7%, notseveral-times. No productionGCpolicychange yet; wait
-  designreview/rootrelease, smallcontrolledcompleteVSCodecomparison, no hugegrid.
-  Continue from measured gap+existing17Native/GoCPU evidence to next substantial
-  source-grounded allocation/runtimeaction. No current evidence of another dominant
-  missed Go family. Naive publicSymbol Memory handles and ConcurrentDictionary swap
-  remain reviewed unfavorable designs; don't redo them without new evidence.
-  Runtime GC tuning is being assessed; no production configchange chosen yet.
+New public cumulative counters materially corrected the resource picture:
+Native10,674,941,784B versus pinnedGo8,992,138,304B, ratio1.1871416 (+18.714%), not
+several-times. Exact unchanged diagnostics/source/config/binary/ILC guards and
+independent review passed. Artifact-only wrappers, no forcedGC/profiler, report
+formatting excluded. Distinct allocator/frontend boundaries remain; no speed claim.
 
-No dependent publication remains active. Preserve this accepted checkpoint and
-continue autonomously with the assigned runtime investigation. No commits during
-any future dependent publication. No new
-process framework, SVGs, custommaps/globalhandles/unsafeGCpointers/speculativepooling.
+The completed six-run unchanged-Native GC screen gives paired walls:
+- DefaultDATAS17.44/17.21s, medianCPU67.04s, peakRSS8.338GiB.
+- Fixed4 17.56/17.28s, CPU57.94s, RSS9.022GiB.
+- Fixed16 15.91/16.34s, CPU61.295s, RSS9.747GiB.
+All10diagnostics/allguards exact; source/probe/results independently reviewed.
+Root retains production adaptive default: fixed16's6.93% lower medianwall costs
+16.90% more RSS; only2observations/policy, combinedDATAS/conserve/affinity differences.
+No more policy sweep. Finite artifact preflight key/spelling failures preserved;
+successful probe reused, no duplicate timedworkloads. Future small measurement
+scripts should derive schema/flags from actual output, avoiding per-spellinghandoffs.
+
+NEXT COORDINATOR DECISION / COMPLETE EXPERIMENT CONTRACT:
+Public Symbol value locations backed by standard managed Memory<SymbolData> will
+be evaluated in an isolated worktree, preserving accepted main source. New evidence
+makes GC object count/graph cost worth evaluating separately from byte volume; this
+reopens the prior unfavorable byte-width-only choice, without predicting a gain.
+Read artifacts/vscode-allocation-rollout/public-symbol-gc-tradeoff-addendum.json and
+the prior assessment; do not recreate their inventories.
+
+- Port actual core.Arena.New lifetime/growth (2→256), Binder and Checker record
+  ownership, resets, and ALL Symbol producers/storage/consumers as one family.
+  No class facade/globalhandle registry/unsafe GC pointer/custom map. Standard
+  Memory keeps escaped array slots alive. Required copies/aliases remain source-faithful.
+- Preserve pointer meaning using immutable owner+slot identity: default=nil, distinct
+  allocated-zero, stable equality/hash/live mutation/CAS IDs and checker-token guards.
+  Arena reset drops current owner without clearing or recycling escaped slots.
+- Explicit provisional .NET API adaptation: Symbol becomes a value location; null,
+  nullable patterns, class ReferenceEquals and field/ref consumers must use the
+  logical location semantics. SymbolTable still uses ordinary Dictionary<ByteStringKey,
+  Symbol>, with changed value representation. No promise of binary/source API
+  compatibility for external C# class/reflection consumers. Ordinary compiler CLI,
+  upstream symbol relationships, supported semantic results and diagnostics stay.
+- Carry through generated AST/storage, binder/name resolution, checker/inference/
+  relation/link stores, helpers and named validation consumers. Update observers
+  only to preserve actual Go identity; never change original expected diagnostics
+  or corpus observations. No permissive null/identity bridge, no halfway hot-path facade.
+- No local tests/microbenchmarks while family is incomplete. Root coordinates build
+  feedback after disjoint source owners integrate. Independent review by whole source
+  family; then actual Linuxx64 NativeAOT VSCode FIRST under the unchanged defaultGC.
+  Measure complete allocation/runtime impact at the integrated boundary. Retain
+  xUnit/original Go comparisons/Native AOT before accepting; preserve rejected
+  experiments rather than silently replacing accepted baseline.
+- Wider references, payload/indexing cost, API adaptation and neighbor retention
+  are real risks. Do not declare a win from fewer logical objects. If integration
+  disproves usefulness, retain measured evidence and accepted5951030 behavior.
+
+Root will assign exact disjoint worktree paths/files before implementation. Existing
+Sol lanes are scanner, support and verification. No active benchmark/test process
+remains. No repeated prior foundation audit or broad private-state framework.
 
 # Allocation layout and current CPU follow-through accepted (2026-10-11)
 

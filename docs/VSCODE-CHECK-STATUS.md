@@ -113,9 +113,31 @@ cleanup boundaries differ. These are cumulative heap-accounted bytes, not retain
 memory, RSS, native allocations or equal logical allocation counts. Native's public
 collection deltas36/17/9 and Go's19 collections describe different collectors and
 cannot be compared as equivalent cycles. CPUcount/GOMAXPROCS16 is not observed GC
-heap count. The remaining time gap therefore warrants a bounded standard ServerGC
-policy investigation using the unchanged integrated compiler; this is underway,
-with no production policy change selected yet.
+heap count. A subsequent [ServerGC policy screen](../artifacts/vscode-allocation-rollout/integration-19/gc-policy/comparison.json)
+ran the unchanged accepted Native executable six times, in forward/reverse order:
+
+| Policy | Wall observations | Median CPU | Median peak RSS |
+| --- | --- | ---: | ---: |
+| Default adaptive ServerGC | 17.44s /17.21s | 67.04s | 8.338GiB |
+| Four fixed heaps | 17.56s /17.28s | 57.94s | 9.022GiB |
+| Sixteen fixed heaps | 15.91s /16.34s | 61.295s | 9.747GiB |
+
+All six complete diagnostic outputs, original exit status, source/config/binary
+and runtime guards passed; independent review closed. Fixed16's median wall time
+was6.93% lower with16.90% higher peak RSS. Fixed4 reduced CPU13.57% while median wall
+was0.55% higher. **Keep the production adaptive default unchanged**: this finite
+screen demonstrates a tradeoff on this host/workload, not a general better policy.
+
+Explicit heap count disables DATAS; default-versus-fixed also changes implicit
+memory conservation and default affinity policy. The separate NativeAOT10.0.12
+public configuration probe verifies accepted settings, not the target's changing
+heap history. Only the unchanged compiler is timed. Two artifact guard mistakes
+(linker spelling and public configuration key names) stopped preparation before
+any timed run; the successful probe build was reused. Finite corrections were
+reviewed with final results rather than requiring more handoff cycles. Further
+screens should derive those guards from actual captured output from the outset.
+These two observations/policy do not establish statistical significance, isolate
+GC costs or explain the whole Go gap. No additional policy sweep was performed.
 
 ## Current CPU and storage follow-through (2026-10-11, accepted)
 

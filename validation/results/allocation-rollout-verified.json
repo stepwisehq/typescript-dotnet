@@ -446,6 +446,47 @@
           "sha256": "b427ca2f560960d54ce25e8d02e818faf7a4cf64d68f1f4d38d7416eae115a86"
         }
       }
+    },
+    "gcPolicyScreen": {
+      "status": "six unchanged Native AOT workload runs passed; independent review closed; production default unchanged",
+      "policies": {
+        "defaultDATAS": {
+          "wallSeconds": [
+            17.44,
+            17.21
+          ],
+          "medianWallSeconds": 17.325
+        },
+        "fixed4": {
+          "wallSeconds": [
+            17.56,
+            17.28
+          ],
+          "medianWallSeconds": 17.42
+        },
+        "fixed16": {
+          "wallSeconds": [
+            15.91,
+            16.34
+          ],
+          "medianWallSeconds": 16.125
+        }
+      },
+      "limits": "Two observations/policy, compound policy changes including DATAS/conservation/affinity, no statistical or isolated-mechanism claim. Separate public probe establishes accepted configuration, not dynamic target heap history. Two artifact preflight spelling/key guard failures preserved; reused successful probe build, no workload repetitions beyond six.",
+      "evidence": {
+        "artifacts/vscode-allocation-rollout/integration-19/gc-policy/source-ready.json": {
+          "sha256": "4ca2fbb763eaf7a717e5891acee7357ce668c731bf245927dee58fcdf4580c3f"
+        },
+        "artifacts/vscode-allocation-rollout/integration-19/gc-policy/comparison.json": {
+          "sha256": "7e546a30faf6c0585640040f7c9d89e1f8e19597006c188944f1f9de2dd6ec87"
+        },
+        "artifacts/vscode-allocation-rollout/integration-19/gc-policy/interpretation.json": {
+          "sha256": "2895388bba7baad3376fd621fe8f8d9eee41818396fd7731c79676219f4f46a9"
+        },
+        "artifacts/vscode-allocation-rollout/integration-19/gc-policy/verification-result-ack.json": {
+          "sha256": "9509b386490dcc0880cb0c1e938fbf08719e003ea03a457a91c6f1e4a7730b61"
+        }
+      }
     }
   }
 }
