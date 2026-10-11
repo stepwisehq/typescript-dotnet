@@ -1267,7 +1267,7 @@
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
-      "allocationRolloutAdaptation": "In-progress: Active mapper/cache slice headers preserve cleared spare dictionary slots for upstream reuse (checker.go22634). Deferred property constituent, switch and accessibility storage preserves actual Clone, Clip and optional cached-nil distinctions. Immediate predicates carry explicit state; one return/yield recursive Visitor remains at the existing virtual child API. No retained capture lifetime is shortened. Source-reviewed and included in integration6 Native AOT VS Code proof; broader regression acceptance pending. Live successors and evidence in docs/STATE.md."
+      "allocationRolloutAdaptation": "In-progress: Retained generic/member/deferred/switch/accessibility and tuple metadata, variance, return/yield/constraint/contextual/iterator scratch, ambient symbols, diagnostic node groups and outer signature collections use source Slice ownership through consumers. Preserve actual Clone/Clip, nil/cache markers, captured-header traversal and canonical normalization. Immediate callbacks use explicit state; required escaping/recursive captures remain. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md."
     },
     {
       "upstream": "tsc/internal/checker/types.go",
@@ -1343,7 +1343,7 @@
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
-      "allocationRolloutAdaptation": "In-progress: generic parameters/arguments, signature parameters and declared/resolved property/index storage use Slice headers across consumers. TypeData inherits Type to preserve pinned TypeBase embedding in one object; AsType identity, data dispatch and factory IDs remain. String literal payload retains the upstream single any/object field, boxing a borrowed descriptor where the Go string escapes; no invented string-literal subtype. Combined acceptance pending."
+      "allocationRolloutAdaptation": "In-progress: Embedded Type payloads share one managed object. Generic/member/tuple/variance owner fields use Go-shaped headers; target retention and allocated-empty distinctions preserved. Tuples retain actual transformation copies and returned element-flag buffers. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md."
     },
     {
       "upstream": "tsc/internal/checker/links.go",
@@ -1460,7 +1460,7 @@
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
-      "allocationRolloutAdaptation": "In-progress: Immediate recursion identity, structured/index relations and template placeholder predicates use explicit state and static callbacks, preserving original ordered helper algorithms, lazy target.types[i] reads and quit behavior. Source-reviewed and included in integration6 Native AOT VS Code proof; broader regression acceptance pending. Live successors and evidence in docs/STATE.md."
+      "allocationRolloutAdaptation": "In-progress: Connected relation Type/Symbol/Node and outer-signature scratch uses source headers; actual reusable source/target stacks retained. Immediate recursion identity, structured/index relations and template predicates use explicit state with original order, lazy reads and quit semantics. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md."
     },
     {
       "upstream": "tsc/internal/checker/flow.go",
@@ -1750,7 +1750,8 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "allocationRolloutAdaptation": "In-progress: Tracked-symbol cache/recovery and deferred-report headers retain source scope, rollback and replay ownership. Stable tracked-record and callback identities retained. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md."
     },
     {
       "upstream": "tsc/internal/checker/nodebuilderimpl.go",
@@ -3032,7 +3033,7 @@
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
-      "allocationRolloutAdaptation": "In-progress: Immediate declaration predicates at inference.go843/1630 carry Checker state explicitly; original guards and lazy current skip-node-set reads retained. Source-reviewed and included in integration6 Native AOT VS Code proof; broader regression acceptance pending. Live successors and evidence in docs/STATE.md."
+      "allocationRolloutAdaptation": "In-progress: Inference candidates, generic type arguments, matched-bit/unmatched/applicable-index scratch retain source header semantics and ordered algorithms. Immediate predicates use explicit state; lazy skip-node-set and deferred context lifetimes retained. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md."
     },
     {
       "upstream": null,
@@ -3316,7 +3317,8 @@
       "programCampaignFunctionInventory": "docs/program-functions.json",
       "programSelectedDeclarations": 12,
       "programExternalDeclarations": [],
-      "programCampaignEvidence": "validation/results/program-verified.json"
+      "programCampaignEvidence": "validation/results/program-verified.json",
+      "allocationRolloutAdaptation": "In-progress: ParseTask includeReason starts nil as upstream; normal producers publish their real reason pointer, automatic-type task keeps nil. Original casing/diagnostic nullable consumer path retained; no eager placeholder record. Independently source-reviewed and included in integration8 Native AOT VS Code proof; broader regression acceptance pending. Current evidence in docs/STATE.md."
     },
     {
       "upstream": "tsc/internal/compiler/fileInclude.go",
@@ -5931,7 +5933,7 @@
     "name": "comprehensive-go-faithful-allocation-rollout",
     "baselineCommit": "b84b436",
     "procedureCommit": "7a3537e",
-    "status": "in progress; integration6 production build and actual Linux x64 Native AOT VS Code workload passed; further ownership paths underway, broader regression acceptance pending",
+    "status": "in progress; known allocation ownership families implemented and independently reviewed, integration8 production build and Linux x64 Native AOT VS Code passed; combined allocation profiling underway, broader regression acceptance pending",
     "state": "docs/STATE.md",
     "procedure": "START-HERE.md",
     "boundaries": "Preserve pinned algorithms and genuine Go Clip/Clone/copy/detach operations. Carry borrowed byte text and slice headers through complete internal ownership paths. Actual external output adapters remain explicit. No new emit or language-service functionality.",

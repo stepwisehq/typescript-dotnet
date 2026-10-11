@@ -37,20 +37,33 @@ Three existing GPT-6.1 Sol agents, shared workspace with disjoint editing:
 Root owns scope, decisions, documents/source-map and commit/acceptance. An idle agent
 needs followup_task to restart; send_message alone does not start its next turn.
 
-**Latest broad frozen workload proof: integration6, not final regression acceptance.**
-- Production build10.509s, zero warnings/errors;238 sources and2 generators frozen,
-  no drift. Library e740a6aa4be3ba7772dfeff6ecf2f0d3ea51baac3bd46139b70be7bb93582915.
-- Native AOT publish11.462s consumed that exact library; native
-  126bc431407a593c01abc084581cbe6890568134deba4d13922fd025a68f06af.
+**Latest broad frozen workload proof: integration8, not final regression acceptance.**
+- Production build10.381s, zero warnings/errors;238 production sources plus4 generators,
+  no drift. Library a745e5467f78e768c48b26a948c4a5b9b633c01675dd404dc46c56c96cd0b5c3.
+- Native AOT publish10.912s consumed that exact library; native
+  1b587dbf03007e13ef84e7d77daf4b4ecf5ee1c216a939d1ff6a15b3d93997ba.
   Actual ServerGC=true, ProcessorCount16 (NOT a measured heap count).
-- Actual VS Code26.13wall/112.18CPU/10,020,768KiB peak, expected exit1,
+- Actual VS Code24.54wall/91.59CPU/10,076,540KiB peak, expected exit1,
   all10 complete diagnostic DTOs and available pinned chains exact; empty stderr;
-  no source/binary/config drift, swaps or major faults. This single run is slower
-  than integration5; no improvement claim, no causal attribution from single runs.
-  Evidence: artifacts/vscode-allocation-rollout/integration-6/boundary-summary.json.
-- Includes all completed families below. Source freeze released; agents assessing
-  remaining coherent source-grounded families using existing profile/findings.
-  No tests/profiles/repeated runs queued. No final acceptance claim.
+  no source/binary/config drift, swaps or major faults. Single observation, no
+  wall-speed improvement claim versus earlier integration5 23.63s.
+  Evidence: artifacts/vscode-allocation-rollout/integration-8/boundary-summary.json.
+- Integration7 failed8.610s with one legacy null recursion-stack binding; exact
+  reviewed null→default nil-header repair produced clean integration8. Failure saved.
+- Integration6 remains distinct:26.13wall/112.18CPU/10,020,768KiB peak, full10 exact.
+  Its cost increase is unresolved; not dismissed as proven variance or causal defect.
+- ALL known ownership families below are implemented/reviewed and in integration8.
+  ONE existing-recipe managed allocation+sampled-thread CPU capture completed on frozen
+  integration8:12,498,151,248B/11.639810GiB,−10.9407% vs integration5 and−20.5078% vs
+  saved b84. Original matched ServerGC35.167694GiB→11.639810 (−66.902%); older
+  pre-ServerGC capture not pooled. Zero loss/truncation/overflow;108641ticks,2without
+  stacks. Full10 diagnostics exact, guards clean. Closures906→504MB,delegates689→440MB,
+  arrays5.047→4.648GB. These are sampled CoreCLR weights, NOT exact Native AOT totals.
+  Rawtrace/ETLX/joint/comparison under integration-8/managed-profile. Managed CPU
+  samples dominated by waits/PollGC, cannot establish native CPU shares. Source paused;
+  residual classification identified actual smaller semantic receivers; next source
+  family below is authorized. No new Native CPU capture, full suites or repeated runs
+  authorized. No final acceptance claim.
 
 **Previous integration5 workload and latest allocation/CPU profiles:**
 - Production build9.544s, zero warnings/errors,238 source files, source drift NONE.
@@ -78,10 +91,10 @@ needs followup_task to restart; send_message alone does not start its next turn.
   ~0.7%. Header-only metadata warning retained; primary leaves/report clean. GC CPU
   cannot be subtracted from wall time. Evidence: integration-5/native-cpu/analysis.json,
   comparison.json and perf.data. No SVG or repeated timing run.
-All captures completed. The continuation below is covered by integration6, but NOT
-by integration5 allocation/CPU profiles. No builds/profiles/full suites running or queued.
+All captures completed. The continuation below is covered by integration8, but NOT
+by integration5 allocation/CPU profiles. Integration8 single managed capture completed; no full suites queued.
 
-**Comprehensive continuation included in integration6 (broader acceptance pending).**
+**First continuation included in integration6 (also retained by integration8).**
 - Binder descriptor construction and direct typed new at the three existing factory
   boundaries are complete/independently reviewed: artifacts/vscode-binder-borrowed-names/
   build/source-ready.json (c8ae0e93 Binder). Ambient/private/signed/external module names
@@ -123,19 +136,59 @@ by integration5 allocation/CPU profiles. No builds/profiles/full suites running 
 - Inference immediate declaration predicates completed/peer-reviewed:
   artifacts/vscode-inference-declaration-state/build/ (Inference61c4dde4), pinned
   inference.go843/1630. Original lazy current skip-node-set lookup retained.
-Next active coherent families, after integration6 (no new execution yet):
-- support: tuple element-info storage and retained variance metadata, including
-  connected Checker/Relater/Inference consumers; pinned types.go1083 and
-  checker.go25309/23882. Preserve actual clone-on-transform paths.
-- scanner: NodeKindIs variadic argument spans and parseDelimitedList explicit-state
-  parameter callback, pinned ast/utilities.go100 and parser.go651/3356. Existing
-  profile attributes ~98MB to the named Kind[] callers and ~25MB to the parser
-  callback/display class; these are attribution weights, not promised savings.
-- verification: assess remaining Program/resolver/Binder ownership path or supply
-  independent review; support owns current Relater/Inference edits.
-No tests/build/profile authorized at present. Actual xUnit/upstream comparisons and
-Native AOT acceptance remain mandatory before finalization; Native VS Code precedes
-broad regression suites. Do not invent tiny changes merely because a lane closes.
+Additional known owner-path closure, now included in integration8:
+- support: tuple element-info storage/normalization and retained variance metadata
+  through Checker/Relater/Inference, reviewed6-file family at
+  artifacts/vscode-tuple-variance-slices/build/. Source clone-on-transform and
+  variance uncomputed/nonnil-empty cache distinctions remain.
+- scanner: NodeKindIs variadic spans, parseDelimitedList explicit-state parameter
+  callback and nil-map Range without dummy Dictionary. Reviewed3-file family at
+  artifacts/vscode-syntax-invocation-state/build/. Source enum short representation
+  uses standard MemoryMarshal.Cast/span Contains; nonnil map enumeration unchanged.
+- verification: ParseTask include-reason nil owner and original diagnostic consumers,
+  plus existing copy-on-change lowercasing/direct bytes in GetScriptKindFromFileName.
+  Reviewed3+1 families: artifacts/vscode-parse-task-reasons/{build,core-script-kind}/.
+- support connected Type scratch6-file family complete and independently reviewed:
+  artifacts/vscode-checker-type-scratch/build/source-ready.json. Covers return/yield,
+  iterator and retained mapped results; inference unmatched/indices; contextual/indexed
+  properties; mapped/conditional/base constraints; enum/assignment/rest keys; relation
+  discriminant matrix, JSX and pseudo unions.74 immediate Type literals use nonescaping spans. Preserve actual
+  unique append, visitor captures, nil/empty, source capacities, Clone/Clip, canonical
+  normalization and published buffers. Inference preference callbacks separately reviewed.
+- Remaining in-place instantiation/relation stacks already retain/reuse capacity;
+  external input/output adapters and genuine owned outputs remain explicit. Scanner
+  and Program lanes report no established substantial remaining owner omissions from
+  current findings. Two unmeasured JSDoc callback locals remain; no tiny tail patch selected.
+Consolidated production owner families now independently reviewed and in integration8:
+- support (artifacts/vscode-checker-symbol-node-scratch/build/source-ready.json): ambient-symbol/cache and export visited-symbol headers; renamed-binding,
+  duplicate-export/index/import diagnostic node groups, missing-binding/index-location/
+  identifier-chain node scratch; outer signature-group mapped headers.
+- verifier (artifacts/vscode-nodebuilder-tracked-slices/build/source-ready.json):
+  NodeBuilder tracked-symbol cache/recovery and deferred-report headers complete.
+  Original scope/cache/rollback/replay semantics retained. Program/Binder/Core lane closed.
+- scanner: independent source reviewer for these complete ownership paths.
+Retain in-place reused stacks, ordered-set Add storage and actual formatter/public
+List adapters. No blanket collection redesign or repeated per-generic-type gate.
+Integration8 build, actual Native AOT VS Code, and one managed capture are frozen
+and complete. Broad owner-path rollout is not final acceptance. The profile/source
+review found required instantiated Symbol/ValueSymbolLinks records, canonical AST
+identities, member/normalization arrays and source buffers in dominant buckets;
+no large missing storage owner was established there.
+
+**Active residual semantic receiver closure (new edits NOT covered by integration8):**
+- support: seven connected synchronous callback sites (~256.4MB disjoint sampled
+  attribution, NOT predicted savings) and four internal Checker Text/Name projections.
+  Existing explicit-state/static callback and descriptor APIs; preserve lazy guards,
+  object construction mutable state and real output/error materialization.
+- scanner: Evaluator string/numeric/template Result byte-descriptor ownership through
+  retained enum consumer; preserve real owned concatenation, coordinate Checker.cs
+  edits through support. Independently reviews support batch.
+- verifier: finish bounded existing-profile classification, then independently review
+  scanner Evaluator handoff. No further runtime commands authorized.
+Keep measured raw Project-leaf total separate from selected four-site subset and use
+consistent decimal bytes/MiB. Do not claim the whole bucket removable. No microtests,
+new instrumentation/SVG or per-family build/profile cycle. Root decides next broad
+integrated boundary after complete source handoffs/reviews.
 
 ## Retained design decisions and boundaries
 

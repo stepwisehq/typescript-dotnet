@@ -75,14 +75,38 @@ are included in integration6, alongside immediate Checker/Relater/Inference call
 [artifacts/](../artifacts/); no new SVG flamegraphs or per-local-change benchmark
 cycle should be started from the historical reproduction commands below.
 
-Latest combined workload proof: **integration6**, after the additional cache,
-mapper, binder factory, and callback families above. Production build **10.509s**,
-zero warnings/errors; Native AOT publish **11.462s**; the first VS Code run matched
-all ten diagnostics and available pinned chains: **26.13s wall, 112.18s CPU,
-10,020,768 KiB peak RSS**. Source/config/binary guards passed. This single run is
-slower than integration5, so no speed improvement is claimed; no new allocation
-profile measures this continuation. It is not final broad regression acceptance.
-See [integration6 evidence](../artifacts/vscode-allocation-rollout/integration-6/boundary-summary.json).
+Latest combined workload proof: **integration8**, after tuple/variance metadata,
+connected Type/Symbol/Node scratch, signature groups, NodeBuilder tracked caches,
+parser argument spans and the source nil-task/nil-map corrections. Production build
+**10.381s**, zero warnings/errors; Native AOT publish **10.912s**; VS Code matched all
+ten diagnostics and available pinned chains: **24.54s wall, 91.59s CPU,
+10,076,540 KiB peak RSS**. Source/config/binary guards passed. These are single runs:
+integration6 was **26.13s/112.18s/10,020,768 KiB**, and integration5 was
+**23.63s/94.93s/9,064,632 KiB**. No wall-speed improvement or causal regression is
+claimed. Integration7's single recursion-header binding error and its reviewed fix
+are retained. Broader regression acceptance remains pending. The combined integration8 managed
+capture reports **12,498,151,248 bytes (11.639810 GiB)** sampled allocation weight,
+versus integration5 **14,033,517,160 bytes (13.069731 GiB)**: **−10.9407%**.
+Against the saved qualified b84 snapshot's14.642716 GiB, the combined change is
+**−20.5078%**. The older matching Server GC baseline was35.167694 GiB (−66.902%
+from that earlier point); the pre-Server-GC profile is not pooled into this comparison.
+No event loss/truncation/export overflow was reported;108,641 allocation ticks,
+with2 missing stacks. Disjoint closure weight fell906.394→504.194 MB, delegates
+689.409→440.375 MB, arrays5.047→4.648 GB. These are combined sampled managed
+measurements, not isolated savings or exact Native AOT totals.
+The [profile comparison](../artifacts/vscode-allocation-rollout/integration-8/managed-profile/comparison.json)
+retains provider, binary and workload attribution. Sampled managed stacks are heavily
+influenced by waits/PollGC and do not establish native on-CPU shares. No new SVG or
+performance claim is based on the profiled managed runtime.
+See [integration8 evidence](../artifacts/vscode-allocation-rollout/integration-8/boundary-summary.json).
+
+Residual review after integration8 distinguishes required allocations (instantiated
+symbols and links, canonical AST records, immutable source buffers, owned union/member
+arrays) from the remaining concrete omissions. Seven synchronous callback sites and
+four internal Checker text projections, plus an Evaluator borrowed-text path, are now
+being closed using the established techniques. Their source-only changes are not
+covered by the frozen integration8 measurements; sampled attribution is not promised
+savings. Broader regression qualification is still pending.
 
 ## Workload and compiler identity
 
