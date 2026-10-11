@@ -13,7 +13,7 @@ public partial class Parser
         var p = getParser();
         // Go parser-pool return omitted: this port creates an isolated managed parser.
         p.initializeState(sourceFile.ParseOptions(), sourceFile.TextView(), sourceFile.ScriptKind);
-        var ranges = GetJSDocCommentRanges(p.factory, null, node, sourceFile.TextView());
+        var ranges = GetJSDocCommentRanges(p.factory, default, node, sourceFile.TextView());
         if ((GoRuntime.Len(ranges) == 0))
         {
             return default;

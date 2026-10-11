@@ -55,6 +55,31 @@ public static class ParserListScratchChecks
         Require(list.Nodes.Length == 2 && clone.Nodes.Length == 3, "Clone append retains independent header lengths");
         clone.Nodes[0] = first;
         Require(ReferenceEquals(list.Nodes[0], replacement), "Append past clipped capacity detaches the cloned header");
+
+        // Go Delete/DeleteFunc mutate existing slots and clear the abandoned tail;
+        // copied headers keep their lengths and observe those same slot writes.
+        var deleteSource = Slice<Node>.Make(4, 8);
+        Node[] values = [first, replacement, second, replacement];
+        values.AsSpan().CopyTo(deleteSource.AsSpan());
+        var savedDelete = deleteSource;
+        var deleted = GoSlices.Delete(deleteSource, 1, 3);
+        Require(deleted.Length == 2 && deleted.Capacity == 8 && savedDelete.Length == 4 &&
+            deleted.SameStorageRange(savedDelete.Slice2(0, 2)) &&
+            ReferenceEquals(first, savedDelete[0]) && ReferenceEquals(replacement, savedDelete[1]) &&
+            savedDelete[2] is null && savedDelete[3] is null,
+            "Delete compacts shared slots, clears tail and preserves header capacity and copied length");
+
+        var filterSource = Slice<Node>.Make(4, 8);
+        values.AsSpan().CopyTo(filterSource.AsSpan());
+        var savedFilter = filterSource;
+        var filtered = GoSlices.DeleteFunc(filterSource, node => ReferenceEquals(node, replacement));
+        Require(filtered.Length == 2 && filtered.Capacity == 8 && savedFilter.Length == 4 &&
+            filtered.SameStorageRange(savedFilter.Slice2(0, 2)) &&
+            ReferenceEquals(first, savedFilter[0]) && ReferenceEquals(second, savedFilter[1]) &&
+            savedFilter[2] is null && savedFilter[3] is null,
+            "DeleteFunc keeps ordered shared values, clears tail and leaves copied header length intact");
+        var unchanged = GoSlices.DeleteFunc(filtered, _ => false);
+        Require(unchanged.SameStorageRange(filtered), "An all-kept DeleteFunc retains its original header");
     }
 
     private static void Nested()

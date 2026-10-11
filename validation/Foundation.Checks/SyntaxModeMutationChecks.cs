@@ -131,6 +131,7 @@ public static partial class SyntaxServiceChecks
 
     private static object SortControls()
     {
+        StableSortControls();
         // Same deterministic key/id inputs as the actual Go slices.SortFunc probe.
         var rows = new List<object>();
         foreach (int length in new[]
@@ -165,9 +166,35 @@ public static partial class SyntaxServiceChecks
                 }, Id: i)).ToList();
                 var sorted = input.ToList();
                 GoSlices.SortFunc(sorted, (a, b) => a.Key.CompareTo(b.Key));
+                var sortedHeader = Slice<(int Key, int Id)>.FromArray(input.ToArray());
+                GoSlices.SortFunc(sortedHeader, (a, b) => a.Key.CompareTo(b.Key));
+                if (!sortedHeader.AsSpan().SequenceEqual(System.Runtime.InteropServices.CollectionsMarshal.AsSpan(sorted)))
+                    throw new InvalidOperationException("Borrowed Slice sort differs from the same genuine Go sort row.");
                 rows.Add(new object[] { length, pattern, sorted.Select(p => (object)new object[] { p.Key, p.Id }).ToArray() });
             }
 
         return rows.ToArray();
+    }
+
+    // Authored extension: stable duplicate order across Go's initial 20-element
+    // insertion blocks and subsequent merge. It adds no original oracle rows.
+    private static void StableSortControls()
+    {
+        GoSlices.SortStableFunc(default(Slice<(int Key, int Id)>), (_, _) =>
+            throw new InvalidOperationException("Nil stable sort must not compare elements."));
+        GoSlices.SortStableFunc(Slice<(int Key, int Id)>.Make(0), (_, _) =>
+            throw new InvalidOperationException("Empty stable sort must not compare elements."));
+        foreach (int length in new[] { 21, 65 })
+            foreach (bool equalKeys in new[] { false, true })
+            {
+                var input = Enumerable.Range(0, length)
+                    .Select(i => (Key: equalKeys ? 0 : (length - i) % 5, Id: i)).ToArray();
+                // Enumerable.OrderBy is a separate standard-library stable sort.
+                var expected = input.OrderBy(value => value.Key).ToArray();
+                var sorted = Slice<(int Key, int Id)>.FromArray(input);
+                GoSlices.SortStableFunc(sorted, (a, b) => a.Key.CompareTo(b.Key));
+                if (!sorted.AsSpan().SequenceEqual(expected))
+                    throw new InvalidOperationException("Stable sort must retain input order among equal keys across merge blocks.");
+            }
     }
 }

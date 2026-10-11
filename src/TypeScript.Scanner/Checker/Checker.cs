@@ -277,7 +277,7 @@ public sealed partial class Checker
         c.stringOrNumberType = c.getUnionType([c.stringType, c.numberType]);
         c.stringNumberSymbolType = c.getUnionType([c.stringType, c.numberType, c.esSymbolType]);
         c.numberOrBigIntType = c.getUnionType([c.numberType, c.bigintType]);
-        c.numericStringType = c.getTemplateLiteralType(["", ""], [c.numberType]);
+        c.numericStringType = c.getTemplateLiteralType(["", ""], Slice<Type>.FromArray([c.numberType]));
         c.templateConstraintType = c.getUnionType([c.stringType, c.numberType, c.booleanType, c.bigintType, c.nullType, c.undefinedType]);
         c.uniqueLiteralType = c.newIntrinsicType(TypeFlags.Never, "never");
         c.uniqueLiteralMapper = newFunctionTypeMapper(c.getUniqueLiteralTypeForTypeParameter);
@@ -1385,7 +1385,10 @@ public sealed partial class Checker
         return t;
     }
 
-    private Type newUnionType(ObjectFlags objectFlags, List<Type> types) => newType(TypeFlags.Union, objectFlags, new UnionType { types = types });
+    private Type newUnionType(ObjectFlags objectFlags, Slice<Type> types) => newType(TypeFlags.Union, objectFlags, new UnionType { types = types });
+    private ObjectFlags getPropagatingFlagsOfTypes(Slice<Type> types, TypeFlags excludeKinds) =>
+        getPropagatingFlagsOfTypes(types.AsSpan(), excludeKinds);
+
     private ObjectFlags getPropagatingFlagsOfTypes(List<Type> types, TypeFlags excludeKinds) =>
         getPropagatingFlagsOfTypes(CollectionsMarshal.AsSpan(types), excludeKinds);
 
@@ -1555,11 +1558,11 @@ public sealed partial class Checker
         if (mappedCount == 0)
             return null;
         // checker.go:26131 slices.Clone: the published input detaches from local scratch.
-        var mappedTypes = new List<Type>(mappedCount);
+        var mappedTypes = Slice<Type>.Make(mappedCount);
         if (spilledTypes.IsNil)
-            mappedTypes.AddRange(((ReadOnlySpan<Type>)inlineTypes).Slice(0, mappedCount));
+            ((ReadOnlySpan<Type>)inlineTypes).Slice(0, mappedCount).CopyTo(mappedTypes.AsSpan());
         else
-            mappedTypes.AddRange(spilledTypes.AsSpan());
+            spilledTypes.AsSpan().CopyTo(mappedTypes.AsSpan());
         return getUnionTypeEx(mappedTypes, noReductions ? UnionReduction.None : UnionReduction.Literal, null, null);
     }
 
@@ -1574,7 +1577,7 @@ public sealed partial class Checker
     }
 
     internal Type getUnionType(List<Type> types) => getUnionTypeEx(types, UnionReduction.Literal, null, null);
-    private Type getUnionType(Slice<Type> types) => getUnionTypeEx(types.AsSpan(), UnionReduction.Literal, null, null);
+    internal Type getUnionType(Slice<Type> types) => getUnionTypeEx(types.AsSpan(), UnionReduction.Literal, null, null);
     // checker.go:26162–26270. Canonical union construction and reduction.
     private Type getUnionTypeEx(List<Type> types, UnionReduction reduction, TypeAlias alias, Type origin) =>
         getUnionTypeEx(CollectionsMarshal.AsSpan(types), reduction, alias, origin);
@@ -1622,7 +1625,7 @@ public sealed partial class Checker
             }
 
             if ((includes & TypeFlags.Undefined) != 0 && typeSet.Count >= 2 && typeSet[0] == undefinedType && typeSet[1] == missingType)
-                typeSet.RemoveAt(1);
+                typeSet = GoSlices.Delete(typeSet, 1, 2);
             if ((includes & (TypeFlags.Enum | TypeFlags.Literal | TypeFlags.UniqueESSymbol | TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0 || (includes & TypeFlags.Void) != 0 && (includes & TypeFlags.Undefined) != 0)
                 typeSet = removeRedundantLiteralTypes(typeSet, includes, reduction == UnionReduction.Subtype);
             if ((includes & TypeFlags.StringLiteral) != 0 && (includes & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0)
@@ -1632,7 +1635,7 @@ public sealed partial class Checker
             if (reduction == UnionReduction.Subtype)
             {
                 typeSet = removeSubtypes(typeSet, (includes & TypeFlags.Object) != 0);
-                if (typeSet == null)
+                if (typeSet.IsNil)
                     return errorType;
             }
 
@@ -1648,23 +1651,17 @@ public sealed partial class Checker
 
         if (origin == null && (includes & TypeFlags.Union) != 0)
         {
-            var named = addNamedUnions(null, types);
-            List<Type> reduced = null;
+            var named = addNamedUnions(default, types);
+            Slice<Type> reduced = default;
             foreach (var t in typeSet)
-                if (!(named?.Any(u => u.Types().Contains(t)) ?? false))
+                if (!Core.Some(named, u => containsType(u.Types(), t)))
                     reduced = GoRuntime.Append(reduced, t);
-            if (alias == null && named?.Count == 1 && (reduced?.Count ?? 0) == 0)
+            if (alias == null && named.Count == 1 && reduced.Count == 0)
                 return named[0];
-            if ((named?.Sum(u => u.Types().Count) ?? 0) + (reduced?.Count ?? 0) == typeSet.Count)
+            if (getConstituentCountOfNamedUnions(named) + reduced.Count == typeSet.Count)
             {
-                foreach (var t in named ?? [])
-                {
-                    reduced ??= [];
-                    if (!reduced.Contains(t))
-                        reduced.Add(t);
-                }
-
-                reduced?.Sort(CompareTypes);
+                foreach (var t in named)
+                    (reduced, _) = insertType(reduced, t);
                 origin = newUnionType(ObjectFlags.None, reduced);
             }
         }
@@ -1675,9 +1672,16 @@ public sealed partial class Checker
         return getUnionTypeFromSortedList(typeSet, objectFlags, alias, origin);
     }
 
-    private (List<Type>, TypeFlags) addTypesToUnion(ReadOnlySpan<Type> sourceTypes)
+    private static int getConstituentCountOfNamedUnions(Slice<Type> named)
     {
-        var types = new List<Type>(sourceTypes.Length);
+        int count = 0;
+        foreach (var type in named) count += type.Types().Length;
+        return count;
+    }
+
+    private (Slice<Type>, TypeFlags) addTypesToUnion(ReadOnlySpan<Type> sourceTypes)
+    {
+        var types = Slice<Type>.Make(0, sourceTypes.Length);
         TypeFlags includes = 0;
         void addType(Type t)
         {
@@ -1699,7 +1703,7 @@ public sealed partial class Checker
                     includes |= TypeFlags.IncludesNonWideningType;
                 return;
             }
-            types.Add(t);
+            types = types.Append(t);
         }
 
         Type lastType = null;
@@ -1723,7 +1727,7 @@ public sealed partial class Checker
 
         if (types.Count >= 2)
         {
-            types.Sort(CompareTypes);
+            GoSlices.SortStableFunc(types, CompareTypes);
             // checker.go:26346: range borrows the sorted suffix; writes never overtake reads.
             int length = types.Count;
             int unique = 1;
@@ -1734,27 +1738,28 @@ public sealed partial class Checker
                     types[unique++] = t;
             }
             // Go clears the discarded tail before shortening the header.
-            types.RemoveRange(unique, length - unique);
+            types.AsSpan().Slice(unique).Clear();
+            types = types.Slice2(0, unique);
         }
 
         return (types, includes);
     }
 
-    private List<Type> removeRedundantLiteralTypes(List<Type> types, TypeFlags includes, bool reduceVoidUndefined)
+    private Slice<Type> removeRedundantLiteralTypes(Slice<Type> types, TypeFlags includes, bool reduceVoidUndefined)
     {
         for (int i = types.Count - 1; i >= 0; i--)
         {
             var t = types[i];
             var flags = t.flags;
-            bool remove = (flags & (TypeFlags.StringLiteral | TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0 && (includes & TypeFlags.String) != 0 || (flags & TypeFlags.NumberLiteral) != 0 && (includes & TypeFlags.Number) != 0 || (flags & TypeFlags.BigIntLiteral) != 0 && (includes & TypeFlags.BigInt) != 0 || (flags & TypeFlags.UniqueESSymbol) != 0 && (includes & TypeFlags.ESSymbol) != 0 || reduceVoidUndefined && (flags & TypeFlags.Undefined) != 0 && (includes & TypeFlags.Void) != 0 || isFreshLiteralType(t) && types.Contains(t.AsLiteralType().regularType);
+            bool remove = (flags & (TypeFlags.StringLiteral | TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0 && (includes & TypeFlags.String) != 0 || (flags & TypeFlags.NumberLiteral) != 0 && (includes & TypeFlags.Number) != 0 || (flags & TypeFlags.BigIntLiteral) != 0 && (includes & TypeFlags.BigInt) != 0 || (flags & TypeFlags.UniqueESSymbol) != 0 && (includes & TypeFlags.ESSymbol) != 0 || reduceVoidUndefined && (flags & TypeFlags.Undefined) != 0 && (includes & TypeFlags.Void) != 0 || isFreshLiteralType(t) && GoSlices.Contains(types, t.AsLiteralType().regularType);
             if (remove)
-                types.RemoveAt(i);
+                types = GoSlices.Delete(types, i, i + 1);
         }
 
         return types;
     }
 
-    private Type getUnionTypeFromSortedList(List<Type> types, ObjectFlags precomputedObjectFlags, TypeAlias alias = null, Type origin = null)
+    private Type getUnionTypeFromSortedList(Slice<Type> types, ObjectFlags precomputedObjectFlags, TypeAlias alias = null, Type origin = null)
     {
         if (GoRuntime.Len(types) == 0)
             return neverType;
@@ -4665,7 +4670,7 @@ public sealed partial class Checker
         {
             if ((t.flags & TypeFlags.EnumLiteral) != 0)
                 return true;
-            return t.Types().All(isUnitType);
+            return Core.Every(t.Types(), isUnitType);
         }
 
         return isUnitType(t);
@@ -4685,7 +4690,7 @@ public sealed partial class Checker
         {
             var types = t.Types();
             var filtered = filterConstituents(types, state, predicate, false);
-            if (ReferenceEquals(filtered, types))
+            if (Core.Same(filtered, types))
                 return t;
             var origin = t.AsUnionType().origin;
             Type newOrigin = null;
@@ -4709,7 +4714,7 @@ public sealed partial class Checker
 
     // core.Filter clones only the retained prefix at the first rejection. Origin unions bypass
     // the predicate at precisely the same point as checker.go:27108's short-circuit callback.
-    private static List<Type> filterConstituents<TState>(List<Type> types, TState state, Func<Type, TState, bool> predicate, bool keepUnions)
+    private static Slice<Type> filterConstituents<TState>(Slice<Type> types, TState state, Func<Type, TState, bool> predicate, bool keepUnions)
     {
         int count = GoRuntime.Len(types);
         for (int i = 0; i < count; i++)
@@ -4717,12 +4722,12 @@ public sealed partial class Checker
             var value = types[i];
             if (!((keepUnions && (value.flags & TypeFlags.Union) != 0) || predicate(value, state)))
             {
-                var filtered = types.GetRange(0, i);
+                var filtered = GoSlices.Clone(types.Slice2(0, i));
                 for (i++; i < count; i++)
                 {
                     value = types[i];
                     if ((keepUnions && (value.flags & TypeFlags.Union) != 0) || predicate(value, state))
-                        filtered.Add(value);
+                        filtered = filtered.Append(value);
                 }
                 return filtered;
             }
@@ -4821,7 +4826,7 @@ public sealed partial class Checker
             var types = t.Types();
             // checker.go:28574 core.SameMap. Explicit state retains clone-on-first-change.
             var normalized = instantiateList(types, (checker: this, writing), static (u, state) => state.checker.getNormalizedType(u, state.writing));
-            if (!ReferenceEquals(normalized, types))
+            if (!Core.Same(normalized, types))
                 return getIntersectionType(normalized);
         }
 
@@ -4853,7 +4858,7 @@ public sealed partial class Checker
             {
                 t.objectFlags |= ObjectFlags.IsUnknownLikeUnionComputed;
                 var types = t.Types();
-                if (types.Count >= 3 && (types[0].flags & TypeFlags.Undefined) != 0 && (types[1].flags & TypeFlags.Null) != 0 && types.Any(IsEmptyAnonymousObjectType))
+                if (types.Count >= 3 && (types[0].flags & TypeFlags.Undefined) != 0 && (types[1].flags & TypeFlags.Null) != 0 && Core.Some(types, IsEmptyAnonymousObjectType))
                     t.objectFlags |= ObjectFlags.IsUnknownLikeUnion;
             }
 
@@ -5323,7 +5328,7 @@ public sealed partial class Checker
         return t;
     }
 
-    private bool isMappingOfSameObjectType(List<Type> types)
+    private bool isMappingOfSameObjectType(Slice<Type> types)
     {
         if (((GoRuntime.Len(types) != 0) && ((types[0].objectFlags & ObjectFlags.Mapped) != 0)))
         {
@@ -5371,7 +5376,7 @@ public sealed partial class Checker
     {
         var types = t.Types();
         var reduced = instantiateList(types, this, static (u, checker) => checker.getReducedType(u));
-        if (ReferenceEquals(reduced, types))
+        if (Core.Same(reduced, types))
             return t;
         var result = getUnionType(reduced);
         if ((result.flags & TypeFlags.Union) != 0)
@@ -6672,11 +6677,12 @@ public sealed partial class Checker
         internal void writeInt(int value) => writeUint64(unchecked((ulong)value));
         internal void writeSymbol(Symbol symbol) => writeUint64(Ast.GetSymbolId(symbol));
         internal void writeType(Type t) => writeUint32(t.id);
-        internal void writeTypes(List<Type> types)
+        internal void writeTypes(Slice<Type> types) => writeTypes(types.AsSpan());
+        internal void writeTypes(List<Type> types) => writeTypes(CollectionsMarshal.AsSpan(types));
+        internal void writeTypes(ReadOnlySpan<Type> types)
         {
-            writeInt(types?.Count ?? 0);
-            foreach (var t in types ?? [])
-                writeType(t);
+            writeInt(types.Length);
+            foreach (var t in types) writeType(t);
         }
 
         internal void writeAlias(TypeAlias alias)
@@ -6775,6 +6781,13 @@ public sealed partial class Checker
         }
     }
 
+    internal static CacheHashKey getTypeListKey(Slice<Type> types, Checker verificationOwner = null)
+    {
+        var b = new keyBuilder();
+        b.writeTypes(types);
+        return b.hash(verificationOwner);
+    }
+
     internal static CacheHashKey getTypeListKey(List<Type> types, Checker verificationOwner = null)
     {
         var b = new keyBuilder();
@@ -6789,7 +6802,11 @@ public sealed partial class Checker
         return b.hash(verificationOwner);
     }
 
-    private static CacheHashKey getUnionKey(List<Type> types, Type origin, TypeAlias alias, Checker verificationOwner = null)
+    private static CacheHashKey getUnionKey(Slice<Type> types, Type origin, TypeAlias alias, Checker verificationOwner = null) =>
+        getUnionKey(types.AsSpan(), origin, alias, verificationOwner);
+    private static CacheHashKey getUnionKey(List<Type> types, Type origin, TypeAlias alias, Checker verificationOwner = null) =>
+        getUnionKey(CollectionsMarshal.AsSpan(types), origin, alias, verificationOwner);
+    private static CacheHashKey getUnionKey(ReadOnlySpan<Type> types, Type origin, TypeAlias alias, Checker verificationOwner = null)
     {
         var b = new keyBuilder();
         if (origin == null)
@@ -6817,7 +6834,11 @@ public sealed partial class Checker
         return b.hash(verificationOwner);
     }
 
-    private static CacheHashKey getIntersectionKey(List<Type> types, IntersectionFlags flags, TypeAlias alias, Checker verificationOwner = null)
+    private static CacheHashKey getIntersectionKey(Slice<Type> types, IntersectionFlags flags, TypeAlias alias, Checker verificationOwner = null) =>
+        getIntersectionKey(types.AsSpan(), flags, alias, verificationOwner);
+    private static CacheHashKey getIntersectionKey(List<Type> types, IntersectionFlags flags, TypeAlias alias, Checker verificationOwner = null) =>
+        getIntersectionKey(CollectionsMarshal.AsSpan(types), flags, alias, verificationOwner);
+    private static CacheHashKey getIntersectionKey(ReadOnlySpan<Type> types, IntersectionFlags flags, TypeAlias alias, Checker verificationOwner = null)
     {
         var b = new keyBuilder();
         b.writeTypes(types);
@@ -6871,7 +6892,7 @@ public sealed partial class Checker
     {
         internal WideningContext parent;
         internal string propertyName;
-        internal List<Type> siblings;
+        internal Slice<Type> siblings;
         internal List<Symbol> resolvedProperties;
         internal Dictionary<string, WideningContext> childContexts;
         internal Dictionary<Type, Type> widenedTypes;
@@ -6908,8 +6929,8 @@ public sealed partial class Checker
                 {
                     siblings = t.Types()
                 };
-                var widenedTypes = t.Types().Select(s => (s.flags & TypeFlags.Nullable) != 0 ? s : getWidenedTypeWithContext(s, unionContext)).ToList();
-                result = getUnionTypeEx(widenedTypes, widenedTypes.Any(isEmptyObjectType) ? UnionReduction.Subtype : UnionReduction.Literal, null, null);
+                var widenedTypes = Core.MapSlice(t.Types(), s => (s.flags & TypeFlags.Nullable) != 0 ? s : getWidenedTypeWithContext(s, unionContext));
+                result = getUnionTypeEx(widenedTypes, Core.Some(widenedTypes, isEmptyObjectType) ? UnionReduction.Subtype : UnionReduction.Literal, null, null);
             }
             else if ((t.flags & TypeFlags.Intersection) != 0)
                 result = getIntersectionType(instantiateList(t.Types(), this, static (u, checker) => checker.getWidenedType(u)));
@@ -7010,17 +7031,18 @@ public sealed partial class Checker
         return context.resolvedProperties;
     }
 
-    private List<Type> getSiblingsOfContext(WideningContext context)
+    private Slice<Type> getSiblingsOfContext(WideningContext context)
     {
-        if (context.siblings == null)
+        if (context.siblings.IsNil)
         {
-            var siblings = new List<Type>();
+            // checker.go:18886 creates a non-nil empty owned child header.
+            var siblings = Slice<Type>.Make(0);
             foreach (var t in getSiblingsOfContext(context.parent))
                 if (isObjectLiteralType(t))
                 {
                     var property = getPropertyOfObjectType(t, context.propertyName);
                     if (property != null)
-                        siblings.AddRange(getTypeOfSymbol(property).Distributed() ?? []);
+                        siblings = siblings.Append(getTypeOfSymbol(property).Distributed());
                 }
 
             context.siblings = siblings;
@@ -8611,10 +8633,10 @@ public sealed partial class Checker
 
     private void resolveUnionTypeMembers(Type t)
     {
-        var calls = getUnionSignatures(t.Types().Select(u => u == globalFunctionType ? Slice<Signature>.FromArray(new Signature[] { unknownSignature }) : getSignaturesOfType(u, SignatureKind.Call)).ToList());
+        var calls = getUnionSignatures(Core.Map(t.Types(), u => u == globalFunctionType ? Slice<Signature>.FromArray(new Signature[] { unknownSignature }) : getSignaturesOfType(u, SignatureKind.Call)));
         if (calls.Length == 0)
             calls = getArrayMemberCallSignatures(t);
-        var constructs = getUnionSignatures(t.Types().Select(u => getSignaturesOfType(u, SignatureKind.Construct)).ToList());
+        var constructs = getUnionSignatures(Core.Map(t.Types(), u => getSignaturesOfType(u, SignatureKind.Construct)));
         setStructuredTypeMembers(t, null, calls, constructs, getUnionIndexInfos(t.Types()));
     }
 
@@ -8766,15 +8788,15 @@ public sealed partial class Checker
         return getSymbolIfSameReference(symbol, globalArrayType.symbol) != null || getSymbolIfSameReference(symbol, globalReadonlyArrayType.symbol) != null;
     }
 
-    private List<IndexInfo> getUnionIndexInfos(List<Type> types)
+    private List<IndexInfo> getUnionIndexInfos(Slice<Type> types)
     {
         var sourceInfos = getIndexInfosOfType(types[0]);
         List<IndexInfo> result = null;
         foreach (var info in sourceInfos ?? [])
-            if (types.All(t => getIndexInfoOfType(t, info.keyType) != null))
+            if (Core.Every(types, t => getIndexInfoOfType(t, info.keyType) != null))
             {
-                var valueType = getUnionType(types.Select(t => getIndexTypeOfType(t, info.keyType)).ToList());
-                result = GoRuntime.Append(result, newIndexInfo(info.keyType, valueType, types.Any(t => getIndexInfoOfType(t, info.keyType).isReadonly), null, null));
+                var valueType = getUnionType(Core.MapSlice(types, t => getIndexTypeOfType(t, info.keyType)));
+                result = GoRuntime.Append(result, newIndexInfo(info.keyType, valueType, Core.Some(types, t => getIndexInfoOfType(t, info.keyType).isReadonly), null, null));
             }
 
         return result;
@@ -9141,7 +9163,13 @@ public sealed partial class Checker
         return this.neverType;
     }
 
-    private Type getSuggestedTypeForNonexistentStringLiteralType(Type source, Type target) => Core.GetSpellingSuggestionWithMaxCandidateCount((string)source.AsLiteralType().value, target.Types().Where(t => (t.flags & TypeFlags.StringLiteral) != 0), t => (string)t.AsLiteralType().value, CompareTypes, 1000);
+    private static IEnumerable<Type> getStringLiteralConstituentsForSuggestion(Slice<Type> types)
+    {
+        foreach (var type in types)
+            if ((type.flags & TypeFlags.StringLiteral) != 0) yield return type;
+    }
+
+    private Type getSuggestedTypeForNonexistentStringLiteralType(Type source, Type target) => Core.GetSpellingSuggestionWithMaxCandidateCount((string)source.AsLiteralType().value, getStringLiteralConstituentsForSuggestion(target.Types()), t => (string)t.AsLiteralType().value, CompareTypes, 1000);
 }
 
 public sealed partial class Checker
@@ -9168,7 +9196,7 @@ public sealed partial class Checker
             }
             else
                 propType = c.undefinedType;
-            foreach (var s in propType.Distributed() ?? [])
+            foreach (var s in propType.Distributed())
                 if (c.isTypeAssignableTo(s, t))
                     return true;
             return false;
@@ -9249,18 +9277,20 @@ public sealed partial class Checker
     private readonly Dictionary<CacheHashKey, Type> intersectionTypes = new();
     internal Type getIntersectionType(List<Type> types) => getIntersectionTypeEx(types, IntersectionFlags.None, null);
     private Type getIntersectionType(Slice<Type> types) => getIntersectionTypeEx(types.AsSpan(), IntersectionFlags.None, null);
+    private Type getIntersectionTypeEx(Slice<Type> types, IntersectionFlags flags, TypeAlias alias) =>
+        getIntersectionTypeEx(types.AsSpan(), flags, alias);
     private Type getIntersectionTypeEx(List<Type> types, IntersectionFlags flags, TypeAlias alias) =>
         getIntersectionTypeEx(CollectionsMarshal.AsSpan(types), flags, alias);
 
     // checker.go:26590. Borrow input headers; normalization and published constituents stay owned.
     private Type getIntersectionTypeEx(ReadOnlySpan<Type> types, IntersectionFlags flags, TypeAlias alias)
     {
-        var orderedTypes = new List<Type>(types.Length);
-        var includes = addTypesToIntersection(orderedTypes, 0, types);
+        var orderedTypes = Slice<Type>.Make(0, types.Length);
+        var includes = addTypesToIntersection(ref orderedTypes, 0, types);
         var typeSet = orderedTypes;
         ObjectFlags objectFlags = ObjectFlags.None;
         if ((includes & TypeFlags.Never) != 0)
-            return typeSet.Contains(silentNeverType) ? silentNeverType : neverType;
+            return GoSlices.Contains(typeSet, silentNeverType) ? silentNeverType : neverType;
         if (strictNullChecks && (includes & TypeFlags.Nullable) != 0 && (includes & (TypeFlags.Object | TypeFlags.NonPrimitive | TypeFlags.IncludesEmptyObject)) != 0 || (includes & TypeFlags.NonPrimitive) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.NonPrimitive)) != 0 || (includes & TypeFlags.StringLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.StringLike)) != 0 || (includes & TypeFlags.NumberLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.NumberLike)) != 0 || (includes & TypeFlags.BigIntLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.BigIntLike)) != 0 || (includes & TypeFlags.ESSymbolLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.ESSymbolLike)) != 0 || (includes & TypeFlags.VoidLike) != 0 && (includes & (TypeFlags.DisjointDomains & ~TypeFlags.VoidLike)) != 0)
             return neverType;
         if ((includes & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0 && (includes & TypeFlags.StringLiteral) != 0)
@@ -9279,7 +9309,7 @@ public sealed partial class Checker
             if ((flags & IntersectionFlags.NoSupertypeReduction) == 0)
                 typeSet = removeRedundantSupertypes(typeSet, includes);
         if ((includes & TypeFlags.IncludesMissingType) != 0)
-            typeSet[typeSet.IndexOf(undefinedType)] = missingType;
+            typeSet[GoSlices.Index(typeSet, undefinedType)] = missingType;
         if (typeSet.Count == 0)
             return unknownType;
         if (typeSet.Count == 1)
@@ -9296,7 +9326,7 @@ public sealed partial class Checker
                 {
                     if (isTypeStrictSubtypeOf(constraint, primitiveType))
                         return typeVariable;
-                    if (!((constraint.flags & TypeFlags.Union) != 0 && constraint.Types().Any(n => isTypeStrictSubtypeOf(n, primitiveType))))
+                    if (!((constraint.flags & TypeFlags.Union) != 0 && Core.Some(constraint.Types(), n => isTypeStrictSubtypeOf(n, primitiveType))))
                         if (!isTypeStrictSubtypeOf(primitiveType, constraint))
                             return neverType;
                     objectFlags = ObjectFlags.IsConstrainedTypeVariable;
@@ -9313,13 +9343,13 @@ public sealed partial class Checker
             typeSet = reducedSet;
             if (reduced)
                 result = getIntersectionTypeEx(typeSet, flags, alias);
-            else if (typeSet.All(isUnionWithUndefined))
+            else if (Core.Every(typeSet, isUnionWithUndefined))
             {
-                var containedUndefined = typeSet.Any(containsMissingType) ? missingType : undefinedType;
+                var containedUndefined = Core.Some(typeSet, containsMissingType) ? missingType : undefinedType;
                 filterTypes(typeSet, t => (t.flags & TypeFlags.Undefined) == 0);
                 result = getUnionTypeEx((ReadOnlySpan<Type>)[getIntersectionTypeEx(typeSet, flags, null), containedUndefined], UnionReduction.Literal, alias, null);
             }
-            else if (typeSet.All(isUnionWithNull))
+            else if (Core.Every(typeSet, isUnionWithNull))
             {
                 filterTypes(typeSet, t => (t.flags & TypeFlags.Null) == 0);
                 result = getUnionTypeEx((ReadOnlySpan<Type>)[getIntersectionTypeEx(typeSet, flags, null), nullType], UnionReduction.Literal, alias, null);
@@ -9327,7 +9357,7 @@ public sealed partial class Checker
             else if (typeSet.Count >= 3 && types.Length > 2)
             {
                 int middle = typeSet.Count / 2;
-                result = getIntersectionTypeEx((ReadOnlySpan<Type>)[getIntersectionTypeEx(CollectionsMarshal.AsSpan(typeSet).Slice(0, middle), flags, null), getIntersectionTypeEx(CollectionsMarshal.AsSpan(typeSet).Slice(middle), flags, null)], flags, alias);
+                result = getIntersectionTypeEx((ReadOnlySpan<Type>)[getIntersectionTypeEx(typeSet.AsSpan().Slice(0, middle), flags, null), getIntersectionTypeEx(typeSet.AsSpan().Slice(middle), flags, null)], flags, alias);
             }
             else
             {
@@ -9335,7 +9365,7 @@ public sealed partial class Checker
                     return errorType;
                 var constituents = getCrossProductIntersections(typeSet, flags);
                 Type origin = null;
-                if (constituents.Any(t => (t.flags & TypeFlags.Intersection) != 0) && getConstituentCountOfTypes(constituents) > getConstituentCountOfTypes(typeSet))
+                if (Core.Some(constituents, t => (t.flags & TypeFlags.Intersection) != 0) && getConstituentCountOfTypes(constituents) > getConstituentCountOfTypes(typeSet))
                     origin = newIntersectionType(ObjectFlags.None, typeSet);
                 result = getUnionTypeEx(constituents, UnionReduction.Literal, alias, origin);
             }
@@ -9350,24 +9380,24 @@ public sealed partial class Checker
         return result;
     }
 
-    private TypeFlags addTypesToIntersection(List<Type> typeSet, TypeFlags includes, ReadOnlySpan<Type> types)
+    private TypeFlags addTypesToIntersection(ref Slice<Type> typeSet, TypeFlags includes, ReadOnlySpan<Type> types)
     {
         foreach (var t in types)
-            includes = addTypeToIntersection(typeSet, includes, getRegularTypeOfLiteralType(t));
+            includes = addTypeToIntersection(ref typeSet, includes, getRegularTypeOfLiteralType(t));
         return includes;
     }
 
-    private TypeFlags addTypeToIntersection(List<Type> typeSet, TypeFlags includes, Type t)
+    private TypeFlags addTypeToIntersection(ref Slice<Type> typeSet, TypeFlags includes, Type t)
     {
         var flags = t.flags;
         if ((flags & TypeFlags.Intersection) != 0)
-            return addTypesToIntersection(typeSet, includes, CollectionsMarshal.AsSpan(t.Types()));
+            return addTypesToIntersection(ref typeSet, includes, t.Types().AsSpan());
         if (IsEmptyAnonymousObjectType(t))
         {
             if ((includes & TypeFlags.IncludesEmptyObject) == 0)
             {
                 includes |= TypeFlags.IncludesEmptyObject;
-                typeSet.Add(t);
+                typeSet = typeSet.Append(t);
             }
         }
         else
@@ -9387,11 +9417,11 @@ public sealed partial class Checker
                     t = undefinedType;
                 }
 
-                if (!typeSet.Contains(t))
+                if (!GoSlices.Contains(typeSet, t))
                 {
                     if ((t.flags & TypeFlags.Unit) != 0 && (includes & TypeFlags.Unit) != 0)
                         includes |= TypeFlags.NonPrimitive;
-                    typeSet.Add(t);
+                    typeSet = typeSet.Append(t);
                 }
             }
 
@@ -9401,34 +9431,34 @@ public sealed partial class Checker
         return includes;
     }
 
-    private List<Type> removeRedundantSupertypes(List<Type> types, TypeFlags includes)
+    private Slice<Type> removeRedundantSupertypes(Slice<Type> types, TypeFlags includes)
     {
         for (int i = types.Count - 1; i >= 0; i--)
         {
             var t = types[i];
             if ((t.flags & TypeFlags.String) != 0 && (includes & (TypeFlags.StringLiteral | TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0 || (t.flags & TypeFlags.Number) != 0 && (includes & TypeFlags.NumberLiteral) != 0 || (t.flags & TypeFlags.BigInt) != 0 && (includes & TypeFlags.BigIntLiteral) != 0 || (t.flags & TypeFlags.ESSymbol) != 0 && (includes & TypeFlags.UniqueESSymbol) != 0 || (t.flags & TypeFlags.Void) != 0 && (includes & TypeFlags.Undefined) != 0 || IsEmptyAnonymousObjectType(t) && (includes & TypeFlags.DefinitelyNonNullable) != 0)
-                types.RemoveAt(i);
+                types = GoSlices.Delete(types, i, i + 1);
         }
 
         return types;
     }
 
     // checker.go:26877. Publish the primitive intersection in CompareTypes order.
-    private (List<Type>, bool) intersectUnionsOfPrimitiveTypes(List<Type> types)
+    private (Slice<Type>, bool) intersectUnionsOfPrimitiveTypes(Slice<Type> types)
     {
-        int index = types.FindIndex(t => (t.objectFlags & ObjectFlags.PrimitiveUnion) != 0);
+        int index = Core.FindIndex(types, t => (t.objectFlags & ObjectFlags.PrimitiveUnion) != 0);
         if (index < 0)
             return (types, false);
 
         int i = index + 1;
-        var unionTypes = new List<Type> { types[index] };
+        var unionTypes = types.Slice3(index, i, i);
         while (i < types.Count)
         {
             var t = types[i];
             if ((t.objectFlags & ObjectFlags.PrimitiveUnion) != 0)
             {
-                unionTypes.Add(t);
-                types.RemoveAt(i);
+                unionTypes = unionTypes.Append(t);
+                types = GoSlices.Delete(types, i, i + 1);
             }
             else
                 i++;
@@ -9436,8 +9466,8 @@ public sealed partial class Checker
         if (unionTypes.Count == 1)
             return (types, false);
 
-        List<Type> checkedTypes = null;
-        List<Type> result = null;
+        Slice<Type> checkedTypes = default;
+        Slice<Type> result = default;
         foreach (var u in unionTypes)
         {
             foreach (var t in u.Types())
@@ -9462,29 +9492,30 @@ public sealed partial class Checker
         return (types, true);
     }
 
-    private bool eachUnionContains(List<Type> unions, Type t) => unions.All(u => unionContainsType(u, t, true));
+    private bool eachUnionContains(Slice<Type> unions, Type t) => Core.Every(unions, u => unionContainsType(u, t, true));
     private bool unionContainsType(Type union, Type t, bool matchSymbol)
     {
         var types = union.Types();
-        if (types.Contains(t))
+        if (GoSlices.Contains(types, t))
             return true;
         if (t == missingType)
-            return types.Contains(undefinedType);
+            return GoSlices.Contains(types, undefinedType);
         if (t == undefinedType)
-            return types.Contains(missingType);
+            return GoSlices.Contains(types, missingType);
         Type primitive = (t.flags & TypeFlags.StringLiteral) != 0 ? stringType : (t.flags & (TypeFlags.Enum | TypeFlags.NumberLiteral)) != 0 ? numberType : (t.flags & TypeFlags.BigIntLiteral) != 0 ? bigintType : (t.flags & TypeFlags.UniqueESSymbol) != 0 && matchSymbol ? esSymbolType : null;
-        return primitive != null && types.Contains(primitive);
+        return primitive != null && GoSlices.Contains(types, primitive);
     }
 
     private static bool isUnionWithUndefined(Type t) => (t.flags & TypeFlags.Union) != 0 && (t.Types()[0].flags & TypeFlags.Undefined) != 0;
     private static bool isUnionWithNull(Type t) => (t.flags & TypeFlags.Union) != 0 && ((t.Types()[0].flags & TypeFlags.Null) != 0 || (t.Types()[1].flags & TypeFlags.Null) != 0);
-    private void filterTypes(List<Type> types, Func<Type, bool> predicate)
+    private void filterTypes(Slice<Type> types, Func<Type, bool> predicate)
     {
         for (int i = 0; i < types.Count; i++)
             types[i] = filterType(types[i], predicate);
     }
 
-    private int getCrossProductUnionSize(List<Type> types)
+    private int getCrossProductUnionSize(Slice<Type> types) => getCrossProductUnionSize(types.AsSpan());
+    private int getCrossProductUnionSize(ReadOnlySpan<Type> types)
     {
         int size = 1;
         foreach (var t in types)
@@ -9500,7 +9531,9 @@ public sealed partial class Checker
         return size;
     }
 
-    private bool checkCrossProductUnion(List<Type> types)
+    private bool checkCrossProductUnion(Slice<Type> types) => checkCrossProductUnion(types.AsSpan());
+    private bool checkCrossProductUnion(List<Type> types) => checkCrossProductUnion(CollectionsMarshal.AsSpan(types));
+    private bool checkCrossProductUnion(ReadOnlySpan<Type> types)
     {
         if (getCrossProductUnionSize(types) >= 100000)
         {
@@ -9511,13 +9544,13 @@ public sealed partial class Checker
         return true;
     }
 
-    private List<Type> getCrossProductIntersections(List<Type> types, IntersectionFlags flags)
+    private Slice<Type> getCrossProductIntersections(Slice<Type> types, IntersectionFlags flags)
     {
         int count = getCrossProductUnionSize(types);
-        List<Type> intersections = null;
+        Slice<Type> intersections = default;
         for (int i = 0; i < count; i++)
         {
-            var constituents = new List<Type>(types);
+            var constituents = GoSlices.Clone(types);
             int n = i;
             for (int j = types.Count - 1; j >= 0; j--)
                 if ((types[j].flags & TypeFlags.Union) != 0)
@@ -9529,10 +9562,10 @@ public sealed partial class Checker
 
             var t = getIntersectionTypeEx(constituents, flags, null);
             if ((t.flags & TypeFlags.Never) == 0)
-                (intersections ??= []).Add(t);
+                intersections = intersections.Append(t);
         }
 
-        return intersections ?? [];
+        return intersections;
     }
 }
 
@@ -9683,7 +9716,7 @@ public sealed partial class Checker
     }
 
     private bool isGenericIndexType(Type t) => (getGenericObjectFlags(t) & ObjectFlags.IsGenericIndexType) != 0;
-    private bool isGenericReducibleType(Type t) => (t.flags & TypeFlags.Union) != 0 && (t.objectFlags & ObjectFlags.ContainsIntersections) != 0 && t.Types().Any(isGenericReducibleType) || (t.flags & TypeFlags.Intersection) != 0 && isReducibleIntersection(t);
+    private bool isGenericReducibleType(Type t) => (t.flags & TypeFlags.Union) != 0 && (t.objectFlags & ObjectFlags.ContainsIntersections) != 0 && Core.Some(t.Types(), isGenericReducibleType) || (t.flags & TypeFlags.Intersection) != 0 && isReducibleIntersection(t);
     private bool isReducibleIntersection(Type t)
     {
         var d = t.AsIntersectionType();
@@ -10312,7 +10345,7 @@ public sealed partial class Checker
                 {
                     // Go checker.go:13924: preserve ordered short-circuit evaluation without a managed capturing delegate.
                     var types = t.Types();
-                    if (types != null)
+                    if (!types.IsNil)
                         foreach (var s in types)
                             if (this.isConstTypeVariable(s, depth))
                                 return true;
@@ -10365,7 +10398,7 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     private bool allTypesAssignableToKind(Type source, TypeFlags kind) => allTypesAssignableToKindEx(source, kind, false);
-    private bool allTypesAssignableToKindEx(Type source, TypeFlags kind, bool strict) => (source.flags & TypeFlags.Union) != 0 ? source.Types().All(t => allTypesAssignableToKindEx(t, kind, strict)) : isTypeAssignableToKindEx(source, kind, strict);
+    private bool allTypesAssignableToKindEx(Type source, TypeFlags kind, bool strict) => (source.flags & TypeFlags.Union) != 0 ? Core.Every(source.Types(), t => allTypesAssignableToKindEx(t, kind, strict)) : isTypeAssignableToKindEx(source, kind, strict);
 }
 
 public sealed partial class Checker
@@ -11022,7 +11055,7 @@ public sealed partial class Checker
             // checker.go:19990 core.SameMap. Unchanged mapping borrows the original list;
             // explicit state and first-change copy avoid LINQ captures and eager snapshots.
             var mapped = instantiateList(types, (checker: this, thisArgument, needApparentType), static (s, state) => state.checker.getTypeWithThisArgument(s, state.thisArgument, state.needApparentType));
-            if (ReferenceEquals(mapped, types))
+            if (Core.Same(mapped, types))
                 return t;
             return getIntersectionType(mapped);
         }
@@ -11092,7 +11125,7 @@ public sealed partial class Checker
             return target == checkBase || (getBaseTypes(target)?.Any(x => hasBaseType(x, checkBase)) ?? false);
         }
 
-        return (t.flags & TypeFlags.Intersection) != 0 && t.Types().Any(x => hasBaseType(x, checkBase));
+        return (t.flags & TypeFlags.Intersection) != 0 && Core.Some(t.Types(), x => hasBaseType(x, checkBase));
     }
 
     private void reportCircularBaseType(Node node, Type t) => error(node, Diagnostics.Type_0_recursively_references_itself_as_a_base_type, typeToStringWriteArrayAsGenericType(t));
@@ -11106,7 +11139,7 @@ public sealed partial class Checker
         }
 
         return (t.flags & (TypeFlags.Object | TypeFlags.NonPrimitive | TypeFlags.Any)) != 0 && !isGenericMappedType(t) ||
-            (t.flags & TypeFlags.Intersection) != 0 && t.Types().All(isValidBaseType);
+            (t.flags & TypeFlags.Intersection) != 0 && Core.Every(t.Types(), isValidBaseType);
     }
 
     private InterfaceType resolveDeclaredMembers(Type t)
@@ -11544,12 +11577,17 @@ public sealed partial class Checker
 
     // checker.go:22567,22681,22875. Ordered core.Some calls share this direct
     // short-circuit loop instead of recreating instance-method delegates.
-    private bool someTypeCouldContainTypeVariables(List<Type> types)
+    private bool someTypeCouldContainTypeVariables(List<Type> types) =>
+        someTypeCouldContainTypeVariables((ReadOnlySpan<Type>)CollectionsMarshal.AsSpan(types));
+
+    private bool someTypeCouldContainTypeVariables(Slice<Type> types) =>
+        someTypeCouldContainTypeVariables(types.AsSpan());
+
+    private bool someTypeCouldContainTypeVariables(ReadOnlySpan<Type> types)
     {
-        if (types != null)
-            foreach (var type in types)
-                if (couldContainTypeVariables(type))
-                    return true;
+        foreach (var type in types)
+            if (couldContainTypeVariables(type))
+                return true;
         return false;
     }
 
@@ -12009,6 +12047,9 @@ public sealed partial class Checker
 
     // checker.go:23255/23259/23263/23267. Source passes unbound checker methods;
     // static callbacks carry the checker and mapper without creating bound delegates.
+    private Slice<Type> instantiateTypes(Slice<Type> values, TypeMapper mapper) =>
+        instantiateList(values, (checker: this, mapper), static (value, state) => state.checker.instantiateType(value, state.mapper));
+
     private List<Type> instantiateTypes(List<Type> values, TypeMapper mapper) =>
         instantiateList(values, (checker: this, mapper), static (value, state) => state.checker.instantiateType(value, state.mapper));
     // checker.go:23270: first changed element detaches; unchanged mapping retains the header.
@@ -12353,7 +12394,7 @@ public sealed partial class Checker
                 {
                     var types2 = t.Types();
                     // checker.go:28068. Preserve the source's maximum output capacity.
-                    var constraints2 = new List<Type>(GoRuntime.Len(types2));
+                    var constraints2 = Slice<Type>.Make(0, GoRuntime.Len(types2));
                     {
                         foreach (var range2 in GoRuntime.Range(types2))
                         {
@@ -12362,7 +12403,7 @@ public sealed partial class Checker
                             var constraint3 = this.getNextBaseConstraint(s2, stack);
                             if ((constraint3 != null))
                             {
-                                constraints2.Add(constraint3);
+                                constraints2 = constraints2.Append(constraint3);
                             }
                         }
                     }
@@ -12492,7 +12533,7 @@ public sealed partial class Checker
         return result;
     }
 
-    private List<Type> addNamedUnions(List<Type> named, ReadOnlySpan<Type> types)
+    private Slice<Type> addNamedUnions(Slice<Type> named, ReadOnlySpan<Type> types)
     {
         foreach (var t in types)
             if ((t.flags & TypeFlags.Union) != 0)
@@ -12500,11 +12541,11 @@ public sealed partial class Checker
                 var origin = t.AsUnionType().origin;
                 if (t.alias != null || origin != null && (origin.flags & TypeFlags.Union) == 0)
                 {
-                    if (!(named?.Contains(t) ?? false))
+                    if (!(GoSlices.Contains(named, t)))
                         named = GoRuntime.Append(named, t);
                 }
                 else if (origin != null && (origin.flags & TypeFlags.Union) != 0)
-                    named = addNamedUnions(named, CollectionsMarshal.AsSpan(origin.Types()));
+                    named = addNamedUnions(named, origin.Types().AsSpan());
             }
 
         return named;
@@ -12693,7 +12734,7 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     // checker.go:25728, 26986. Full selected data-type allocation/count paths.
-    private Type newIntersectionType(ObjectFlags flags, List<Type> types) => newType(TypeFlags.Intersection, flags, new IntersectionType { types = types });
+    private Type newIntersectionType(ObjectFlags flags, Slice<Type> types) => newType(TypeFlags.Intersection, flags, new IntersectionType { types = types });
     private static int getConstituentCount(Type t)
     {
         if ((t.flags & TypeFlags.UnionOrIntersection) == 0 || t.alias != null)
@@ -12703,10 +12744,10 @@ public sealed partial class Checker
         return getConstituentCountOfTypes(t.Types());
     }
 
-    private static int getConstituentCountOfTypes(List<Type> types)
+    private static int getConstituentCountOfTypes(Slice<Type> types)
     {
         int n = 0;
-        foreach (var t in types ?? [])
+        foreach (var t in types)
             n += getConstituentCount(t);
         return n;
     }
@@ -12719,17 +12760,17 @@ public sealed partial class Checker
         return "x";
     }
 
-    private readonly Dictionary<CacheHashKey, List<Type>> subtypeReductionCache = new();
+    private readonly Dictionary<CacheHashKey, Slice<Type>> subtypeReductionCache = new();
     private Type unknownEmptyObjectType;
     // checker.go:26468. Reduce subtypes with the original constraint and derivation checks.
-    private List<Type> removeSubtypes(List<Type> types, bool hasObjectTypes)
+    private Slice<Type> removeSubtypes(Slice<Type> types, bool hasObjectTypes)
     {
         if (types.Count < 2)
             return types;
         var key = getTypeListKey(types, verificationOwner: authoredCollectionsProfile ? this : null);
         if (subtypeReductionCache.TryGetValue(key, out var cached))
             return cached;
-        bool hasEmptyObject = hasObjectTypes && types.Any(t => (t.flags & TypeFlags.Object) != 0 && !isGenericMappedType(t) && isEmptyResolvedType(resolveStructuredTypeMembers(t)));
+        bool hasEmptyObject = hasObjectTypes && Core.Some(types, t => (t.flags & TypeFlags.Object) != 0 && !isGenericMappedType(t) && isEmptyResolvedType(resolveStructuredTypeMembers(t)));
         int length = types.Count, i = length, count = 0;
         while (i > 0)
         {
@@ -12739,8 +12780,8 @@ public sealed partial class Checker
             {
                 if ((source.flags & TypeFlags.TypeParameter) != 0 && (getBaseConstraintOrType(source).flags & TypeFlags.Union) != 0)
                 {
-                    if (isTypeRelatedTo(source, getUnionType(types.Select(t => t == source ? neverType : t).ToList()), strictSubtypeRelation))
-                        types.RemoveAt(i);
+                    if (isTypeRelatedTo(source, getUnionType(Core.MapSlice(types, t => t == source ? neverType : t)), strictSubtypeRelation))
+                        types = GoSlices.Delete(types, i, i + 1);
                     continue;
                 }
 
@@ -12760,7 +12801,7 @@ public sealed partial class Checker
                         if (estimatedCount > 1000000)
                         {
                             error(currentNode, Diagnostics.Expression_produces_a_union_type_that_is_too_complex_to_represent);
-                            return null;
+                            return default;
                         }
                     }
 
@@ -12779,7 +12820,7 @@ public sealed partial class Checker
                          (getTargetType(target).objectFlags & ObjectFlags.Class) == 0 ||
                          isTypeDerivedFrom(source, target)))
                     {
-                        types.RemoveAt(i);
+                        types = GoSlices.Delete(types, i, i + 1);
                         break;
                     }
                 }
@@ -12829,9 +12870,9 @@ public sealed partial class Checker
         this.setStructuredTypeMembers(t, null, callSignatures, constructSignatures, indexInfos);
     }
 
-    private (List<bool>, int) findMixins(List<Type> types)
+    private (List<bool>, int) findMixins(Slice<Type> types)
     {
-        var flags = types.Select(isMixinConstructorType).ToList();
+        var flags = Core.Map(types, isMixinConstructorType);
         int constructorTypeCount = 0, mixinCount = 0, firstMixinIndex = -1;
         for (int i = 0; i < types.Count; i++)
         {
@@ -13158,7 +13199,7 @@ public sealed partial class Checker
 {
     private Type stringOrNumberType;
     private Type newIndexType(Type target, IndexFlags flags) => newType(TypeFlags.Index, ObjectFlags.None, new IndexType { target = target, indexFlags = flags });
-    private bool isKeyTypeIncluded(Type keyType, TypeFlags include) => (keyType.flags & include) != 0 || (keyType.flags & TypeFlags.Intersection) != 0 && keyType.Types().Any(t => isKeyTypeIncluded(t, include));
+    private bool isKeyTypeIncluded(Type keyType, TypeFlags include) => (keyType.flags & include) != 0 || (keyType.flags & TypeFlags.Intersection) != 0 && Core.Some(keyType.Types(), t => isKeyTypeIncluded(t, include));
 }
 
 public sealed partial class Checker
@@ -13833,6 +13874,8 @@ public sealed partial class Checker
 
     private Signature getContextualSignatureForFunctionLikeDeclaration(Node node) => Ast.IsFunctionExpressionOrArrowFunction(node) || Ast.IsObjectLiteralMethod(node) ? getContextualSignature(node) : null;
     // checker.go:26144.
+    private Type getUnionOrIntersectionType(Slice<Type> types, bool isUnion, UnionReduction unionReduction) =>
+        isUnion ? getUnionTypeEx(types, unionReduction, null, null) : getIntersectionType(types);
     private Type getUnionOrIntersectionType(List<Type> types, bool isUnion, UnionReduction unionReduction) => isUnion ? getUnionTypeEx(types, unionReduction, null, null) : getIntersectionType(types);
     // Upstream upstream/TypeScript/tsc/internal/checker/checker.go:20939:1.
     private TypePredicate getTypePredicateFromBody(Node fn)
@@ -15804,7 +15847,7 @@ public sealed partial class Checker
                     return types[(1 - i)];
                 }
 
-                var filtered = GoRuntime.Append(GoRuntime.Slice(types, 0, i), GoRuntime.Slice(types, (i + 1)));
+                var filtered = types.Slice3(0, i, i).Append(types.Slice2(i + 1));
                 return this.getUnionTypeFromSortedList(filtered, (t.objectFlags & ((ObjectFlags.PrimitiveUnion | ObjectFlags.ContainsIntersections))), null, null);
             }
         }
@@ -15833,7 +15876,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private bool computeIsUniformUnionType(List<Type> types)
+    private bool computeIsUniformUnionType(Slice<Type> types)
     {
         Symbol enumSymbol = default;
         bool hasStringOrNumberLiteral = default;
@@ -17032,7 +17075,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static bool containsType(List<Type> types, Type t)
+    private static bool containsType(Slice<Type> types, Type t)
     {
         var tuple1 = GoSlices.BinarySearchFunc(types, t, CompareTypes);
         var ok = tuple1.Item2;
@@ -27144,7 +27187,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static CacheHashKey getTemplateTypeKey(List<string> texts, List<Type> types, Checker verificationOwner = null)
+    private static CacheHashKey getTemplateTypeKey(List<string> texts, Slice<Type> types, Checker verificationOwner = null)
     {
         var b = new keyBuilder();
         b.writeTypes(types);
@@ -27172,7 +27215,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Type newTemplateLiteralType(List<string> texts, List<Type> types)
+    private Type newTemplateLiteralType(List<string> texts, Slice<Type> types)
     {
         var data = new TemplateLiteralType
         {
@@ -27248,7 +27291,7 @@ public sealed partial class Checker
         if ((t.flags & (TypeFlags.Any | TypeFlags.String | TypeFlags.StringMapping)) != 0 || isGenericIndexType(t))
             return getStringMappingTypeForGenericType(symbol, t);
         if (isPatternLiteralPlaceholderType(t))
-            return getStringMappingTypeForGenericType(symbol, getTemplateLiteralType(["", ""], [t]));
+            return getStringMappingTypeForGenericType(symbol, getTemplateLiteralType(["", ""], Slice<Type>.FromArray([t])));
         return t;
     }
 
@@ -27274,14 +27317,14 @@ public sealed partial class Checker
         return str;
     }
 
-    private (List<string> Texts, List<Type> Types) applyTemplateStringMapping(Symbol symbol, List<string> texts, List<Type> types)
+    private (List<string> Texts, Slice<Type> Types) applyTemplateStringMapping(Symbol symbol, List<string> texts, Slice<Type> types)
     {
         switch (intrinsicTypeKinds.GetValueOrDefault(symbol.Name))
         {
             case IntrinsicTypeKind.Uppercase:
             case IntrinsicTypeKind.Lowercase:
                 return (texts?.Select(text => applyStringMapping(symbol, text)).ToList(),
-                    types?.Select(type => getStringMappingType(symbol, type)).ToList());
+                    Core.MapSlice(types, type => getStringMappingType(symbol, type)));
             case IntrinsicTypeKind.Capitalize:
             case IntrinsicTypeKind.Uncapitalize:
                 if (texts[0] != "")
@@ -27290,7 +27333,7 @@ public sealed partial class Checker
                     newTexts[0] = applyStringMapping(symbol, newTexts[0]);
                     return (newTexts, types);
                 }
-                var newTypes = types == null ? null : new List<Type>(types);
+                var newTypes = GoSlices.Clone(types);
                 newTypes[0] = getStringMappingType(symbol, newTypes[0]);
                 return (texts, newTypes);
         }
@@ -27309,7 +27352,7 @@ public sealed partial class Checker
         return result;
     }
 
-    private Type getTemplateLiteralType(List<string> texts, List<Type> types)
+    private Type getTemplateLiteralType(List<string> texts, Slice<Type> types)
     {
         var unionIndex = Core.FindIndex(types, (t) =>
         {
@@ -27333,13 +27376,13 @@ public sealed partial class Checker
             return this.wildcardType;
         }
 
-        List<Type> newTypes = default;
+        Slice<Type> newTypes = default;
         List<string> newTexts = default;
         GoBuilder sb = new GoBuilder();
         sb.WriteString(texts[0]);
         var textLength = 0;
         var tooLarge = false;
-        Func<List<string>, List<Type>, bool> addSpans = default;
+        Func<List<string>, Slice<Type>, bool> addSpans = default;
         addSpans = (texts2, types2) =>
         {
             {
@@ -27370,7 +27413,7 @@ public sealed partial class Checker
 
                         case true when (this.isGenericIndexType(t3) || this.isPatternLiteralPlaceholderType(t3)):
                             {
-                                (newTypes ??= []).Add(t3);
+                                newTypes = newTypes.Append(t3);
                                 (newTexts ??= []).Add(StringUtil.CombineSurrogatePairs(sb.String()));
                                 textLength += sb.Len();
                                 sb = new GoBuilder();
@@ -29765,7 +29808,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private List<Type> removeStringLiteralsMatchedByTemplateLiterals(List<Type> types)
+    private Slice<Type> removeStringLiteralsMatchedByTemplateLiterals(Slice<Type> types)
     {
         var templates = Core.Filter(types, this.isPatternLiteralType);
         if ((GoRuntime.Len(templates) != 0))
@@ -29804,9 +29847,9 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private List<Type> removeConstrainedTypeVariables(List<Type> types)
+    private Slice<Type> removeConstrainedTypeVariables(Slice<Type> types)
     {
-        List<Type> typeVariables = default;
+        Slice<Type> typeVariables = default;
         {
             foreach (var t in GoRuntime.RangeValues(types))
             {
@@ -29828,7 +29871,7 @@ public sealed partial class Checker
             {
                 var _2 = range2.Key;
                 var typeVariable = range2.Value;
-                List<Type> primitives = default;
+                Slice<Type> primitives = default;
                 {
                     foreach (var range3 in GoRuntime.Range(types))
                     {
@@ -29887,7 +29930,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private (List<Type>, bool) extractRedundantTemplateLiterals(List<Type> types)
+    private (Slice<Type>, bool) extractRedundantTemplateLiterals(Slice<Type> types)
     {
         var literals = Core.Filter(types, t => (t.flags & TypeFlags.StringLiteral) != 0);
         int i = GoRuntime.Len(types);
@@ -29897,7 +29940,7 @@ public sealed partial class Checker
             var template = types[i];
             if ((template.flags & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) == 0)
                 continue;
-            foreach (var literal in literals ?? [])
+            foreach (var literal in literals)
             {
                 if (isTypeSubtypeOf(literal, template))
                 {
@@ -29917,13 +29960,12 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     // checker.go:27155. Insert into the sorted local type-set header.
-    private static (List<Type>, bool) insertType(List<Type> types, Type t)
+    private static (Slice<Type>, bool) insertType(Slice<Type> types, Type t)
     {
         var position = GoSlices.BinarySearchFunc(types, t, CompareTypes);
         if (!position.Found)
         {
-            types ??= [];
-            types.Insert(position.Index, t);
+                        types = types.Insert(position.Index, t);
             return (types, true);
         }
 
@@ -37128,7 +37170,7 @@ public sealed partial class Checker
                 }
             case true when ((t.flags & TypeFlags.Intersection) != 0):
                 {
-                    return this.getIntersectionType(Core.Map(t.AsIntersectionType().types, this.getTypeWithoutSignatures));
+                    return this.getIntersectionType(Core.MapSlice(t.AsIntersectionType().types, this.getTypeWithoutSignatures));
                 }
         }
         return t;
@@ -38047,7 +38089,7 @@ public sealed partial class Checker
             var template = node.AsTemplateLiteralTypeNode();
             var spans = template.TemplateSpans.Nodes;
             var texts = GoRuntime.MakeSlice<string>(spans.Count + 1);
-            var types = GoRuntime.MakeSlice<Type>(spans.Count);
+            var types = Slice<Type>.Make(spans.Count);
             texts[0] = template.Head.Text();
             for (var i = 0; i < spans.Count; i++)
             {
@@ -38117,9 +38159,9 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Type includeMixinType(Type t, List<Type> types, List<bool> mixinFlags, int index)
+    private Type includeMixinType(Type t, Slice<Type> types, List<bool> mixinFlags, int index)
     {
-        List<Type> mixedTypes = default;
+        Slice<Type> mixedTypes = default;
         {
             foreach (var i in GoRuntime.RangeKeys(types))
             {
@@ -40088,7 +40130,7 @@ public sealed partial class Checker
         var expr = node.AsTemplateExpression();
         var length = GoRuntime.Len(expr.TemplateSpans.Nodes);
         var texts = GoRuntime.MakeSlice<string>((length + 1));
-        var types = GoRuntime.MakeSlice<Type>(length);
+        var types = Slice<Type>.Make(length);
         texts[0] = expr.Head.Text();
         {
             foreach (var range1 in GoRuntime.Range(expr.TemplateSpans.Nodes))
@@ -40470,7 +40512,7 @@ public sealed partial class Checker
         }
         else
         {
-            indexInfos = this.getUnionIndexInfos(new List<Type> { left, right });
+            indexInfos = this.getUnionIndexInfos(Slice<Type>.FromArray([left, right]));
         }
         {
             foreach (var rightProp in GoRuntime.RangeValues(this.getPropertiesOfType(right)))

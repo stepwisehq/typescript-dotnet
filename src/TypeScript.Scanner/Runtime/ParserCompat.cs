@@ -336,6 +336,21 @@ internal static class GoSlices
         return true;
     }
 
+    // Go slices/slices.go:220. Remove in shared storage with memmove, clear
+    // the abandoned tail, and preserve nilness/capacity in the returned header.
+    public static Slice<T> Delete<T>(Slice<T> values, int start, int end)
+    {
+        int length = values.Length;
+        if (start < 0 || start > end || end > length)
+            throw new ArgumentOutOfRangeException(nameof(start));
+        if (start == end) return values;
+        int newLength = length - (end - start);
+        var storage = values.AsSpan();
+        storage.Slice(end).CopyTo(storage.Slice(start));
+        storage.Slice(newLength).Clear();
+        return values.Slice2(0, newLength);
+    }
+
     // slices.Delete keeps the caller's captured header length, shifts the
     // backing values and clears the abandoned tail. The returned List owns
     // the shorter header, as with the existing managed Slice adapter.
@@ -395,6 +410,25 @@ internal static class GoSlices
     public static IEnumerable<T> Values<T>(IEnumerable<T> values) => values ?? [];
     public static List<T> Clone<T>(List<T> values) => values is null ? null : new(values);
     public static void SortFunc<T>(List<T> values, Comparison<T> compare) => GoSliceSort.SortFunc(values, compare);
+    public static void SortFunc<T>(Slice<T> values, Comparison<T> compare) => GoSliceSort.SortFunc(values.AsSpan(), compare);
+    public static void SortStableFunc<T>(Slice<T> values, Comparison<T> compare) => GoSliceSort.SortStableFunc(values.AsSpan(), compare);
+
+    // Go 1.27.1 slices/slices.go:241. Same header when unchanged; otherwise
+    // compact shared storage, clear abandoned slots and return the shorter header.
+    // Copyright 2021 The Go Authors; BSD license in licenses/Go-LICENSE.txt.
+    public static Slice<T> DeleteFunc<T>(Slice<T> values, Func<T, bool> pred)
+    {
+        int i = 0;
+        while (i < values.Length && !pred(values[i])) i++;
+        if (i == values.Length) return values;
+        for (int j = i + 1; j < values.Length; j++)
+        {
+            var value = values[j];
+            if (!pred(value)) values[i++] = value;
+        }
+        values.AsSpan().Slice(i).Clear();
+        return values.Slice2(0, i);
+    }
     public static List<T> DeleteFunc<T>(List<T> values, Func<T, bool> pred) => values?.Where(x => !pred(x)).ToList();
 }
 

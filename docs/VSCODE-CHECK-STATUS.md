@@ -1483,6 +1483,36 @@ is distinct from native CPU profiling. No speedup or final regression acceptance
 claimed; parser scratch and checker constituent storage work continues. Repeated
 timing is deferred to the next combined implementation milestone.
 
+## Type constituent slices and parser scratch
+
+The [67bd snapshot](../artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json)
+carries union/intersection constituents and template placeholders through checker,
+relation, inference and printer consumers as shared slice headers. Source-required
+clipping and detached mutation buffers remain explicit. Parser reparse/await/JSDoc
+scratch also retains Go length/capacity behavior. The shared sort works over spans;
+union normalization now uses the actual upstream stable-sort algorithm. Persistent
+type headers grow by 16 bytes relative to a List reference, partly offsetting the
+removal of List objects. This is not completion of all checker collection storage.
+
+Focused verification passed **442 managed cases**, **162 complete native parser
+records** and **three native scratch/sort controls**. The existing sort case was
+then extended with authored stable-order checks and passed in managed and Native
+AOT execution. Original Go result rows and semantic expectations remain unchanged.
+Finite observer adapters needed updating for the new headers; failed build/test
+artifacts are retained. This is targeted validation, not the deferred full gate.
+
+[Six alternating Linux x64 Native AOT runs](../artifacts/vscode-type-constituent-slices/paired-native/report.json)
+all matched the ten complete VS Code diagnostics and available pinned-Go chains.
+Baseline 061c/candidate 67bd means were **24.4033/23.97s wall**, **102.4067/99.00s CPU**,
+and **10,473,164/9,889,178.67 KiB peak RSS**. Wall ranges overlap; this is no strong
+throughput claim. The candidate's first 33.64-second observation did not recur.
+
+The matched CoreCLR allocation capture decreased sampled interval weight from
+**14.869364 to 14.642716 GiB (−1.5243%)**. All 139,008 allocation events have type and
+resolved stack information, with no lost or truncated events. These samples are
+not exact native allocation totals. Raw traces are retained for performance viewers;
+new SVG flamegraphs are no longer produced at the user's request.
+
 ## Reproduction and records
 
 ```bash

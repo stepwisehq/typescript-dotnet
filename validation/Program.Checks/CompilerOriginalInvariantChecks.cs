@@ -56,7 +56,7 @@ public static class CompilerOriginalInvariantChecks
         {
             foreach (CheckerType union in checker.UnionTypes())
             {
-                List<CheckerType> types = union.Types();
+                List<CheckerType> types = GoSlices.ToListOrNull(union.Types())!;
                 List<CheckerType> reversed = [.. types];
                 reversed.Reverse();
                 reversed.Sort(Checker.CompareTypes);

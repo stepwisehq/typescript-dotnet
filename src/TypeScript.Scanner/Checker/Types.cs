@@ -231,17 +231,17 @@ public sealed class Type
     public InterfaceType TargetInterfaceType() => Target().AsInterfaceType();
     public TupleType TargetTupleType() => AsTypeReference().target.AsTupleType();
     // Upstream checker/types.go:740.
-    public List<Type> Distributed()
+    public Slice<Type> Distributed()
     {
         if ((flags & TypeFlags.Union) != 0)
             return AsUnionType().types;
         if ((flags & TypeFlags.Never) != 0)
-            return null;
-        return [this];
+            return default;
+        return Slice<Type>.FromArray([this]);
     }
 
     // Upstream checker/types.go:780; union/intersection and template payloads.
-    public List<Type> Types()
+    public Slice<Type> Types()
     {
         if ((flags & TypeFlags.UnionOrIntersection) != 0)
             return AsUnionOrIntersectionType().types;
@@ -511,11 +511,11 @@ public sealed class ConditionalType : ConstrainedType
 
 public class UnionOrIntersectionType : StructuredType
 {
-    internal List<Type> types;
+    internal Slice<Type> types;
     internal SymbolTable propertyCache, propertyCacheWithoutFunctionPropertyAugment;
     internal List<Symbol> resolvedProperties;
     public override UnionOrIntersectionType AsUnionOrIntersectionType() => this;
-    public List<Type> Types() => types;
+    public Slice<Type> Types() => types;
 }
 
 public sealed class UnionType : UnionOrIntersectionType
@@ -928,9 +928,9 @@ internal enum ExternalEmitHelpers : uint
 public sealed class TemplateLiteralType : ConstrainedType
 {
     internal List<string> texts;
-    internal List<Type> types;
+    internal Slice<Type> types;
     public List<string> Texts() => texts;
-    public List<Type> Types() => types;
+    public Slice<Type> Types() => types;
 }
 
 // types.go:1242. Intrinsic string mappings retain the actual constrained target.

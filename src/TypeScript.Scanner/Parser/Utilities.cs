@@ -35,10 +35,15 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/utilities.go:28:1.
-    public static List<CommentRange> GetJSDocCommentRanges(NodeFactory f, List<CommentRange> commentRanges, Node node, string text)
+    public static Slice<CommentRange> GetJSDocCommentRanges(NodeFactory f, Slice<CommentRange> commentRanges, Node node, string text)
         => GetJSDocCommentRanges(f, commentRanges, node, (ByteStringView)text);
 
-    private static List<CommentRange> GetJSDocCommentRanges(NodeFactory f, List<CommentRange> commentRanges, Node node, ByteStringView text)
+    // Explicit legacy managed input/output boundary; parser scratch uses headers.
+    public static List<CommentRange> GetJSDocCommentRanges(NodeFactory f, List<CommentRange> commentRanges, Node node, string text)
+        => GoSlices.ToListOrNull(GetJSDocCommentRanges(f,
+            Slice<CommentRange>.FromArray(commentRanges?.ToArray()), node, (ByteStringView)text));
+
+    private static Slice<CommentRange> GetJSDocCommentRanges(NodeFactory f, Slice<CommentRange> commentRanges, Node node, ByteStringView text)
     {
         switch (node.Kind)
         {

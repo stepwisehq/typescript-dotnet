@@ -385,7 +385,7 @@ public sealed partial class Checker
                 if (value == null || (value.flags & TypeFlags.TemplateLiteral) == 0)
                     throw new InvalidOperationException("Template cache has another payload");
                 var data = value.AsTemplateLiteralType();
-                if (data.texts == null || data.types == null || data.types.Count == 0 || data.texts.Count != data.types.Count + 1 || data.texts.Any(text => text == null))
+                if (data.texts == null || data.types.IsNil || data.types.Count == 0 || data.texts.Count != data.types.Count + 1 || data.texts.Any(text => text == null))
                     throw new InvalidOperationException("Invalid retained template span shape");
                 foreach (var type in data.types)
                     if (type == null || !ReferenceEquals(resolve(type.id), type))
@@ -393,7 +393,7 @@ public sealed partial class Checker
                 var rebuilt = getTemplateTypeKey(data.texts, data.types);
                 if (rebuilt != key || !keys.Add(rebuilt) || !templateLiteralTypes.TryGetValue(rebuilt, out var found) || !ReferenceEquals(found, value))
                     throw new InvalidOperationException("Template key association mismatch");
-                entries.Add(new(value, Texts: data.texts, Types: data.types));
+                entries.Add(new(value, Texts: data.texts, Types: GoSlices.ToListOrNull(data.types)));
             }
 
             complete(templateLiteralTypes.Count, count, keys.Count, entries.Count);

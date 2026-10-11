@@ -107,17 +107,14 @@ public sealed partial class Checker
 
         if (((target.flags & TypeFlags.Union) != 0))
         {
-            List<Type> sourceTypes = default;
+            Slice<Type> sourceTypes = default;
             if (((source.flags & TypeFlags.Union) != 0))
             {
                 sourceTypes = source.Types();
             }
             else
             {
-                sourceTypes = new List<Type>
-                {
-                    source
-                };
+                sourceTypes = Slice<Type>.FromArray([source]);
             }
 
             var tuple2 = this.inferFromMatchingTypes(n, sourceTypes, target.Types(), (c, s, t) => c.isTypeOrBaseIdenticalTo(s, t), false);
@@ -148,7 +145,7 @@ public sealed partial class Checker
                 // without allocating a Checker-bound predicate delegate on each inference.
                 bool allNonGenericObjectTypes = true;
                 var targetTypes = target.Types();
-                if (targetTypes != null)
+                if (!targetTypes.IsNil)
                 {
                     foreach (var constituent in targetTypes)
                     {
@@ -162,17 +159,14 @@ public sealed partial class Checker
 
                 if ((!allNonGenericObjectTypes && ((source.flags & TypeFlags.Union) == 0)))
                 {
-                    List<Type> sourceTypes2 = default;
+                    Slice<Type> sourceTypes2 = default;
                     if (((source.flags & TypeFlags.Intersection) != 0))
                     {
                         sourceTypes2 = source.Types();
                     }
                     else
                     {
-                        sourceTypes2 = new List<Type>
-                        {
-                            source
-                        };
+                        sourceTypes2 = Slice<Type>.FromArray([source]);
                     }
 
                     var tuple4 = this.inferFromMatchingTypes(n, sourceTypes2, target.Types(), (c, s, t) => c.isTypeIdenticalTo(s, t), false);
@@ -536,10 +530,10 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:381:1.
-    private (List<Type>, List<Type>) inferFromMatchingTypes(InferenceState n, List<Type> sources, List<Type> targets, Func<Checker, Type, Type, bool> matches, bool sort)
+    private (Slice<Type>, Slice<Type>) inferFromMatchingTypes(InferenceState n, Slice<Type> sources, Slice<Type> targets, Func<Checker, Type, Type, bool> matches, bool sort)
     {
-        List<Type> matchedSources = default;
-        List<Type> matchedTargets = default;
+        Slice<Type> matchedSources = default;
+        Slice<Type> matchedTargets = default;
         {
             foreach (var t2 in GoRuntime.RangeValues(targets))
             {
@@ -654,11 +648,15 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:451:1.
-    private static int getTypeListDepth(List<Type> types, int maxDepth)
+    private static int getTypeListDepth(Slice<Type> types, int maxDepth) =>
+        getTypeListDepth(types.AsSpan(), maxDepth);
+    private static int getTypeListDepth(List<Type> types, int maxDepth) =>
+        getTypeListDepth(System.Runtime.InteropServices.CollectionsMarshal.AsSpan(types), maxDepth);
+    private static int getTypeListDepth(ReadOnlySpan<Type> types, int maxDepth)
     {
         var depth = 0;
         {
-            foreach (var t in GoRuntime.RangeValues(types))
+            foreach (var t in types)
             {
                 depth = Math.Max(depth, getTypeDepth(t, maxDepth));
             }
@@ -668,6 +666,8 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/inference.go:459:1.
+    private void inferToMultipleTypes(InferenceState n, Type source, Slice<Type> targets, TypeFlags targetFlags) =>
+        inferToMultipleTypes(n, source, targets.AsSpan(), targetFlags);
     private void inferToMultipleTypes(InferenceState n, Type source, List<Type> targets, TypeFlags targetFlags) =>
         inferToMultipleTypes(n, source, System.Runtime.InteropServices.CollectionsMarshal.AsSpan(targets), targetFlags);
 
@@ -678,17 +678,14 @@ public sealed partial class Checker
         if (((targetFlags & TypeFlags.Union) != 0))
         {
             Type nakedTypeVariable = default;
-            List<Type> sources = default;
+            Slice<Type> sources = default;
             if (((source.flags & TypeFlags.Union) != 0))
             {
                 sources = source.Types();
             }
             else
             {
-                sources = new List<Type>
-                {
-                    source
-                };
+                sources = Slice<Type>.FromArray([source]);
             }
 
             var matched = GoRuntime.MakeSlice<bool>(GoRuntime.Len(sources));

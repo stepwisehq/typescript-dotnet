@@ -575,7 +575,7 @@ public partial class Parser
         {
             if (((GoRuntime.Len(this.possibleAwaitSpans) == 0) || (this.possibleAwaitSpans[(GoRuntime.Len(this.possibleAwaitSpans) - 1)] != i)))
             {
-                this.possibleAwaitSpans = GoRuntime.Append(this.possibleAwaitSpans, i, (i + 1));
+                this.possibleAwaitSpans = this.possibleAwaitSpans.Append((ReadOnlySpan<int>)[i, (i + 1)]);
             }
             else
             {
@@ -9500,11 +9500,11 @@ public partial class Parser
     private GoArena<ByteStringView> stringSliceArena = new();
     // parser.go:90: private append/reslice storage; only the final JSDoc cache escapes.
     private Slice<JSDocInfo> jsdocInfos;
-    private List<int> possibleAwaitSpans;
+    private Slice<int> possibleAwaitSpans;
     private Slice<ByteStringView> jsdocCommentsSpace, jsdocTagCommentsSpace;
-    private List<CommentRange> jsdocCommentRangesSpace;
+    private Slice<CommentRange> jsdocCommentRangesSpace;
     private Slice<Node> jsdocTagCommentsPartsSpace, reparseList;
-    private List<Node> reparsedClones;
+    private Slice<Node> reparsedClones;
     private Node currentParent;
     private Visitor setParentFromContext;
     private static readonly string[] viableKeywordSuggestions = Scanner.GetViableKeywordSuggestions();

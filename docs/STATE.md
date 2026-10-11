@@ -1,6 +1,7 @@
 # Active performance work (2026-10-10)
 
-**Resume here:** HEAD `faad6ec` commits checker borrowed-text receivers;
+**Resume here:** HEAD `72565f3` records semantic regression provenance;
+`d39e05c` commits qualified AST slices/arenas; `faad6ec` commits checker text receivers;
 `5e960cd` commits AST/binder borrowed text, private stacks,
 inference candidates and numeric span parsing; `d6a3cb5` commits callback/rune followthrough; `146839d` preserves
 borrowed scanner tokens, flow slices and conditional targets;
@@ -8,6 +9,8 @@ borrowed scanner tokens, flow slices and conditional targets;
 Continue Go-faithful allocation work autonomously; no blocker. Answering a question
 or committing a checkpoint does not finish the work. Native AOT VS Code first,
 focused checks next; comprehensive regressions remain deferred until finalization.
+User preference: do not generate further SVG flamegraphs. Keep raw profiles and
+analysis usable in a performance viewer; existing SVG files may remain.
 
 **Qualified checkpoint committed `5e960cd`:** `c8962c20` library, `ac486c4d` native at
 `artifacts/vscode-ast-text-values/`. Exact17 production files + generator and three
@@ -25,8 +28,8 @@ native. Build9.29s/publish10.94s. Native VS Code exact10:23.74wall/103.97CPU/
 and actual nativeAST5 all256-key extension passed. No new profile or speedup claim.
 Evidence: artifacts/vscode-checker-text-values/qualification.json.
 
-**Qualified checkpoint being committed:** NodeList arena/header snapshot2
-`061cb294` is staged from exact saved sources (30 production files +two generators
+**Qualified checkpoint committed `d39e05c` (+provenance `72565f3`):** NodeList arena/header snapshot2
+`061cb294` was committed from exact saved sources (30 production files +two generators
 +18 successful harness/test/resource files). All focused qualification passed:
 906 managed; native162 parser DTOs +29 shared cases +one authored semantic spread
 record. Sampled allocation15.300418 ->14.869364GiB (-2.8173%), zero event loss/
@@ -42,14 +45,36 @@ neighboring new append boundaries reviewed. Failed evidence retained. Do not use
 full pinned-Go semantic agreement, including intentional2345/repeats/queries.
 Full regressions and repeated native timing stay deferred to later milestones.
 
-**Next source work:** Scanner's seven parser scratch files are UNSTAGED, saved under
-artifacts/vscode-parser-scratch-slices/build (private rewind/await/comment buffers,
-SourceFile.ReparsedClones, same Go sort algorithm via span worker, in-place DeleteFunc).
-They were parked hash-exact for the isolated Clip repair, then restored after freeze.
-Support six-file union/intersection/template constituent Slice family is source-ready
-for independent review and combined integration build with parser scratch; tuple metadata/type argument/Symbol storage remain separate for now.
-Check source clone/clip ownership at every newly borrowed append boundary up front.
-Verifier owns harness adapters, independent review and the sole heavy build window.
+**Qualified constituent/parser checkpoint:** combined parser scratch +Type constituent batch
+`67bd3eb5` library /`d90a3628` native is preserved from its16 frozen source files.
+Eight initial finite compiler bindings repaired together; clean retry9.615s.
+Native VS Code exact10 but slower single observation:33.64wall/112.84CPU/
+10,042,164KiB. Verifier runs selected semantic/parser gates, then alternating3each
+against frozen061c and one allocation comparison to establish whether regression
+persists. No conclusion from the one sample; do not commit as a performance win.
+Support reviewed changed ownership/cache/copy/boxing paths with no defect found.
+Six alternating native observations all retain exact10:061c->67bd means
+24.4033->23.97wall,102.4067->99.00CPU,10,473,164->9,889,178.67KiB peak.
+Wall ranges overlap; no strong speed claim and no reproduced regression.
+Managed442 selected checks and native162 parser+scratch2/sort1 pass. Authored stable
+sort extension passes in managed/native execution; prior sort controls exercised
+pdqsort only. Sampled allocation14.869364->14.642716GiB (-1.5243%), all139,008 events
+typed/stack-resolved, zero loss/truncation. No SVG generated. Final qualification and
+exact seven executed harness copies are saved; those qualified versions join the
+checkpoint, while next AST layout edits remain separate in the working tree.
+Saved sources: artifacts/vscode-type-constituent-slices/.
+Parser scratch source/review: artifacts/vscode-parser-scratch-slices/.
+
+**Next AST implementation authorized and underway:** scanner and support independently found
+normal C# inheritance NodeData:Node can model Go embedded Node while eliminating
+separate wrapper allocation and back-reference. Keep concrete bare Node and
+Node.data=self dispatch; explicit hiding must avoid recursion/warnings. Common node
+fields remain, so full1.11GB sampled Node bucket is NOT removable savings. AST-only
+candidate, no Type layout/pooling redesign. Repeated timing did not reproduce the
+initial slowdown, so scanner owns implementation and support independent review.
+Generator and named observer compatibility changes are required; source algorithms/
+identity/hooks/clone behavior must remain intact. No next build until source ready
+and current frozen candidate's capture/control qualification completes.
 User emphasized .NET copy facilities: Slice growth/append/arena use span CopyTo;
 one identity-only Reparser loop changed to CopyTo, transformations remain loops.
 Old List adapters still copy and are being removed from hot paths.

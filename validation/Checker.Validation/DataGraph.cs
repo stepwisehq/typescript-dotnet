@@ -191,8 +191,14 @@ public sealed partial class Graph
                 field.Ref = Mapper((TypeMapper? )value);
                 break;
             case "types":
-                foreach (var item in (List<CheckType>? )value ?? [])
-                    field.Refs.Add(Type(item)!.Value);
+                if (value is Slice<CheckType> typeHeader)
+                {
+                    field.Null = typeHeader.IsNil;
+                    foreach (var item in typeHeader) field.Refs.Add(Type(item)!.Value);
+                }
+                else
+                    foreach (var item in (List<CheckType>? )value ?? [])
+                        field.Refs.Add(Type(item)!.Value);
                 break;
             case "symbols":
                 foreach (var item in (List<Symbol>? )value ?? [])

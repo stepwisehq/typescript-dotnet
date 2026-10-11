@@ -1020,9 +1020,15 @@ internal sealed partial class NodeBuilderImpl
 
     // nodebuilderimpl.go:350. Generated elision nodes and named references
     // retain the original truncation and name-collision branches.
-    private NodeList mapToTypeNodes(List<Type> list, bool isBareList)
+    private NodeList mapToTypeNodes(List<Type> list, bool isBareList) =>
+        mapToTypeNodes((ReadOnlySpan<Type>)System.Runtime.InteropServices.CollectionsMarshal.AsSpan(list), isBareList);
+
+    private NodeList mapToTypeNodes(Slice<Type> list, bool isBareList) =>
+        mapToTypeNodes(list.AsSpan(), isBareList);
+
+    private NodeList mapToTypeNodes(ReadOnlySpan<Type> list, bool isBareList)
     {
-        if (list == null || list.Count == 0)
+        if (list.Length == 0)
             return null;
         if (checkTruncationLength())
         {
@@ -1034,28 +1040,28 @@ internal sealed partial class NodeBuilderImpl
                     f.NewTypeReferenceNode(f.NewIdentifier("..."), null);
                 return f.NewNodeList(Slice<Node>.FromArray([node]));
             }
-            if (list.Count > 2)
+            if (list.Length > 2)
             {
                 var nodes = Slice<Node>.FromArray([typeToTypeNode(list[0]), null, typeToTypeNode(list[^1])]);
                 nodes[1] = (ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ?
                     e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword),
-                        Kind.MultiLineCommentTrivia, $"... {list.Count - 2} more elided ...", false) :
-                    f.NewTypeReferenceNode(f.NewIdentifier($"... {list.Count - 2} more ..."), null);
+                        Kind.MultiLineCommentTrivia, $"... {list.Length - 2} more elided ...", false) :
+                    f.NewTypeReferenceNode(f.NewIdentifier($"... {list.Length - 2} more ..."), null);
                 return f.NewNodeList(nodes);
             }
         }
 
         var seenNames = useFullyQualifiedType ? null : new Dictionary<string, List<(Type type, int index)>>(StringComparer.Ordinal);
-        var result = Slice<Node>.Make(0, list.Count);
-        for (int i = 0; i < list.Count; i++)
+        var result = Slice<Node>.Make(0, list.Length);
+        for (int i = 0; i < list.Length; i++)
         {
             int displayIndex = i + 1;
-            if (checkTruncationLength() && displayIndex + 2 < list.Count - 1)
+            if (checkTruncationLength() && displayIndex + 2 < list.Length - 1)
             {
                 result = result.Append((ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ?
                     e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword),
-                        Kind.MultiLineCommentTrivia, $"... {list.Count - displayIndex} more elided ...", false) :
-                    f.NewTypeReferenceNode(f.NewIdentifier($"... {list.Count - displayIndex} more ..."), null));
+                        Kind.MultiLineCommentTrivia, $"... {list.Length - displayIndex} more elided ...", false) :
+                    f.NewTypeReferenceNode(f.NewIdentifier($"... {list.Length - displayIndex} more ..."), null));
                 var last = typeToTypeNode(list[^1]);
                 if (last != null)
                     result = result.Append(last);

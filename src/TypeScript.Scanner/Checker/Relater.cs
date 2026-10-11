@@ -36,11 +36,11 @@ public sealed partial class Checker
     private bool isTypeDerivedFrom(Type source, Type target)
     {
         if ((source.flags & TypeFlags.Union) != 0)
-            return source.Types().All(t => isTypeDerivedFrom(t, target));
+            return Core.Every(source.Types(), t => isTypeDerivedFrom(t, target));
         if ((target.flags & TypeFlags.Union) != 0)
-            return target.Types().Any(t => isTypeDerivedFrom(source, t));
+            return Core.Some(target.Types(), t => isTypeDerivedFrom(source, t));
         if ((source.flags & TypeFlags.Intersection) != 0)
-            return source.Types().Any(t => isTypeDerivedFrom(t, target));
+            return Core.Some(source.Types(), t => isTypeDerivedFrom(t, target));
         if ((source.flags & TypeFlags.InstantiableNonPrimitive) != 0)
             return isTypeDerivedFrom(getBaseConstraintOfType(source) ?? unknownType, target);
         if (IsEmptyAnonymousObjectType(target))
@@ -504,7 +504,7 @@ public sealed partial class Checker
         if ((t.flags & TypeFlags.Substitution) != 0)
             return isWeakType(t.AsSubstitutionType().baseType);
         if ((t.flags & TypeFlags.Intersection) != 0)
-            return t.Types().All(isWeakType);
+            return Core.Every(t.Types(), isWeakType);
         return false;
     }
 
@@ -512,7 +512,7 @@ public sealed partial class Checker
     private bool isObjectTypeWithInferableIndex(Type t)
     {
         if ((t.flags & TypeFlags.Intersection) != 0)
-            return t.Types().All(isObjectTypeWithInferableIndex);
+            return Core.Every(t.Types(), isObjectTypeWithInferableIndex);
         return t.symbol != null && (t.symbol.Flags & (SymbolFlags.ObjectLiteral | SymbolFlags.TypeLiteral | SymbolFlags.Enum | SymbolFlags.ValueModule)) != 0 && (t.symbol.Flags & SymbolFlags.Class) == 0 && !typeHasCallOrConstructSignatures(t) || (t.objectFlags & (ObjectFlags.JSLiteral | ObjectFlags.ObjectRestType)) != 0 || (t.objectFlags & ObjectFlags.ReverseMapped) != 0 && isObjectTypeWithInferableIndex(t.AsReverseMappedType().source);
     }
 
@@ -543,7 +543,7 @@ public sealed partial class Checker
 
     private static bool isExcessPropertyCheckTarget(Type type)
     {
-        return (type.flags & TypeFlags.Object) != 0 && (type.objectFlags & ObjectFlags.ObjectLiteralPatternWithComputedProperties) == 0 || (type.flags & TypeFlags.NonPrimitive) != 0 || (type.flags & TypeFlags.Substitution) != 0 && isExcessPropertyCheckTarget(type.AsSubstitutionType().baseType) || (type.flags & TypeFlags.Union) != 0 && type.Types().Any(isExcessPropertyCheckTarget) || (type.flags & TypeFlags.Intersection) != 0 && type.Types().All(isExcessPropertyCheckTarget);
+        return (type.flags & TypeFlags.Object) != 0 && (type.objectFlags & ObjectFlags.ObjectLiteralPatternWithComputedProperties) == 0 || (type.flags & TypeFlags.NonPrimitive) != 0 || (type.flags & TypeFlags.Substitution) != 0 && isExcessPropertyCheckTarget(type.AsSubstitutionType().baseType) || (type.flags & TypeFlags.Union) != 0 && Core.Some(type.Types(), isExcessPropertyCheckTarget) || (type.flags & TypeFlags.Intersection) != 0 && Core.Every(type.Types(), isExcessPropertyCheckTarget);
     }
 
     private readonly record struct RecursionId(object value);
@@ -585,7 +585,7 @@ public sealed partial class Checker
     private static bool hasMatchingRecursionIdentity(Type t, RecursionId identity)
     {
         var target = getRecursionIdentityTarget(t);
-        return (target.flags & TypeFlags.Intersection) != 0 ? target.Types().Any(part => hasMatchingRecursionIdentity(part, identity)) : getRecursionIdentityFromTarget(target) == identity;
+        return (target.flags & TypeFlags.Intersection) != 0 ? Core.Some(target.Types(), part => hasMatchingRecursionIdentity(part, identity)) : getRecursionIdentityFromTarget(target) == identity;
     }
 
     private static RecursionId getRecursionIdentity(Type t) => getRecursionIdentityFromTarget(getRecursionIdentityTarget(t));
@@ -639,7 +639,7 @@ public sealed partial class Checker
         // checker/relater.go:1044. Go ranges over nil for a never property type.
         public bool matches(int index, Type t)
         {
-            foreach (var s in c.getTypeOfSymbol(props[index]).Distributed() ?? [])
+            foreach (var s in c.getTypeOfSymbol(props[index]).Distributed())
                 if (isRelatedTo(s, t) != Ternary.False)
                     return true;
             return false;
@@ -764,7 +764,7 @@ public sealed partial class Checker
     private (string, Dictionary<Type, Type>) computeKeyPropertyNameAndMap(Type t)
     {
         var types = t.Types();
-        if (types.Count < 10 || (t.objectFlags & ObjectFlags.PrimitiveUnion) != 0 || types.Count(isObjectOrInstantiableNonPrimitive) < 10)
+        if (types.Count < 10 || (t.objectFlags & ObjectFlags.PrimitiveUnion) != 0 || Core.CountWhere(types, isObjectOrInstantiableNonPrimitive) < 10)
             return (Ast.InternalSymbolNameMissing, null);
         var name = getKeyPropertyCandidateName(types);
         if (name == "")
@@ -774,7 +774,7 @@ public sealed partial class Checker
     }
 
     private static bool isObjectOrInstantiableNonPrimitive(Type t) => (t.flags & (TypeFlags.Object | TypeFlags.InstantiableNonPrimitive)) != 0;
-    private string getKeyPropertyCandidateName(List<Type> types)
+    private string getKeyPropertyCandidateName(Slice<Type> types)
     {
         foreach (var t in types)
             if (isObjectOrInstantiableNonPrimitive(t))
@@ -784,7 +784,7 @@ public sealed partial class Checker
         return "";
     }
 
-    private Dictionary<Type, Type> mapTypesByKeyProperty(List<Type> types, string name)
+    private Dictionary<Type, Type> mapTypesByKeyProperty(Slice<Type> types, string name)
     {
         var map = new Dictionary<Type, Type>();
         int count = 0;
@@ -827,7 +827,7 @@ public sealed partial class Checker
     }
 
     private static bool isNonPrimitiveType(Type t) => (t.flags & TypeFlags.Primitive) == 0;
-    private Type getTypeOfPropertyInTypes(List<Type> types, string name) => getUnionType(types.Select(t => getTypeOfPropertyInType(t, name)).ToList());
+    private Type getTypeOfPropertyInTypes(Slice<Type> types, string name) => getUnionType(Core.MapSlice(types, t => getTypeOfPropertyInType(t, name)));
     private Type getTypeOfPropertyInType(Type t, string name)
     {
         t = getApparentType(t);
@@ -868,7 +868,7 @@ public sealed partial class Checker
     }
 
     // relater.go:2315. Combined constraints preserve intersection/union reduction.
-    private Type getEffectiveConstraintOfIntersection(List<Type> types, bool targetIsUnion)
+    private Type getEffectiveConstraintOfIntersection(Slice<Type> types, bool targetIsUnion)
     {
         List<Type> constraints = null;
         bool hasDisjointDomainType = false;
@@ -943,7 +943,7 @@ public sealed partial class Checker
     private Type findBestTypeForInvokable(Type source, Type target, SignatureKind kind)
     {
         if (GoRuntime.Len(getSignaturesOfType(source, kind)) != 0)
-            return target.Types().FirstOrDefault(t => GoRuntime.Len(getSignaturesOfType(t, kind)) != 0);
+            return Core.Find(target.Types(), t => GoRuntime.Len(getSignaturesOfType(t, kind)) != 0);
         return null;
     }
 
@@ -968,7 +968,7 @@ public sealed partial class Checker
                         return t;
                     if (isUnitType(overlap) || (overlap.flags & TypeFlags.Union) != 0)
                     {
-                        int length = (overlap.flags & TypeFlags.Union) != 0 ? overlap.Types().Count(isUnitType) : 1;
+                        int length = (overlap.flags & TypeFlags.Union) != 0 ? Core.CountWhere(overlap.Types(), isUnitType) : 1;
                         if (length >= matchingCount)
                         {
                             bestMatch = t;
@@ -2130,7 +2130,7 @@ public sealed partial class Checker
             if ((relation == c.assignableRelation || relation == c.comparableRelation) && (c.isTypeSubsetOf(c.globalObjectType, target) || !isComparingJsxAttributes && c.isEmptyObjectType(target)))
                 return false;
             var reducedTarget = target;
-            List<Type> checkTypes = null;
+            Slice<Type> checkTypes = default;
             if ((target.flags & TypeFlags.Union) != 0)
             {
                 reducedTarget = c.findMatchingDiscriminantType(source, target, isRelatedToSimple) ?? c.filterPrimitivesIfContainsNonPrimitive(target);
@@ -2181,7 +2181,7 @@ public sealed partial class Checker
                         return true;
                     }
 
-                    if (checkTypes != null && isRelatedTo(c.getTypeOfSymbol(prop), c.getTypeOfPropertyInTypes(checkTypes, prop.Name), RecursionFlags.Both, reportErrors) == Ternary.False)
+                    if (!checkTypes.IsNil && isRelatedTo(c.getTypeOfSymbol(prop), c.getTypeOfPropertyInTypes(checkTypes, prop.Name), RecursionFlags.Both, reportErrors) == Ternary.False)
                     {
                         if (reportErrors)
                             reportError(Diagnostics.Types_of_property_0_are_incompatible, c.symbolToString(prop));
@@ -2201,10 +2201,10 @@ public sealed partial class Checker
                 if ((target.flags & TypeFlags.Union) != 0)
                 {
                     var sourceOrigin = source.AsUnionType().origin;
-                    if (sourceOrigin != null && (sourceOrigin.flags & TypeFlags.Intersection) != 0 && target.alias != null && sourceOrigin.Types().Contains(target))
+                    if (sourceOrigin != null && (sourceOrigin.flags & TypeFlags.Intersection) != 0 && target.alias != null && GoSlices.Contains(sourceOrigin.Types(), target))
                         return Ternary.True;
                     var targetOrigin = target.AsUnionType().origin;
-                    if (targetOrigin != null && (targetOrigin.flags & TypeFlags.Union) != 0 && source.alias != null && targetOrigin.Types().Contains(source))
+                    if (targetOrigin != null && (targetOrigin.flags & TypeFlags.Union) != 0 && source.alias != null && GoSlices.Contains(targetOrigin.Types(), source))
                         return Ternary.True;
                 }
 
@@ -2221,8 +2221,8 @@ public sealed partial class Checker
             // primitive comparability; source parameters are excluded, implicit-this is retained.
             if (relation == c.comparableRelation && (target.flags & TypeFlags.Primitive) != 0)
             {
-                var constraints = source.Types().Select(t => (t.flags & TypeFlags.Instantiable) != 0 ? c.getBaseConstraintOfType(t) ?? c.unknownType : t).ToList();
-                if (!constraints.SequenceEqual(source.Types()))
+                var constraints = Core.SameMap(source.Types(), t => (t.flags & TypeFlags.Instantiable) != 0 ? c.getBaseConstraintOfType(t) ?? c.unknownType : t);
+                if (!Core.Same(constraints, source.Types()))
                 {
                     source = c.getIntersectionType(constraints);
                     if ((source.flags & TypeFlags.Never) != 0)
@@ -2241,7 +2241,7 @@ public sealed partial class Checker
         private Ternary someTypeRelatedToType(Type source, Type target, bool reportErrors, IntersectionState intersectionState)
         {
             var types = source.Types();
-            if ((source.flags & TypeFlags.Union) != 0 && types.Contains(target))
+            if ((source.flags & TypeFlags.Union) != 0 && GoSlices.Contains(types, target))
                 return Ternary.True;
             for (int i = 0; i < types.Count; i++)
             {
@@ -2258,10 +2258,10 @@ public sealed partial class Checker
             var result = Ternary.True;
             var sourceTypes = source.Types();
             var strippedTarget = getUndefinedStrippedTargetIfNeeded(source, target);
-            var strippedTypes = (strippedTarget.flags & TypeFlags.Union) != 0 ? strippedTarget.Types() : null;
+            var strippedTypes = (strippedTarget.flags & TypeFlags.Union) != 0 ? strippedTarget.Types() : default;
             for (int i = 0; i < sourceTypes.Count; i++)
             {
-                if (strippedTypes != null && sourceTypes.Count >= strippedTypes.Count && sourceTypes.Count % strippedTypes.Count == 0)
+                if (!strippedTypes.IsNil && sourceTypes.Count >= strippedTypes.Count && sourceTypes.Count % strippedTypes.Count == 0)
                 {
                     var related = isRelatedToEx(sourceTypes[i], strippedTypes[i % strippedTypes.Count], RecursionFlags.Both, false, null, intersectionState);
                     if (related != Ternary.False)
@@ -2292,7 +2292,7 @@ public sealed partial class Checker
             var targetTypes = target.Types();
             if ((target.flags & TypeFlags.Union) != 0)
             {
-                if (targetTypes.Contains(source))
+                if (GoSlices.Contains(targetTypes, source))
                     return Ternary.True;
                 if (relation != c.comparableRelation && (target.objectFlags & ObjectFlags.PrimitiveUnion) != 0 && (source.flags & TypeFlags.EnumLiteral) == 0 && ((source.flags & (TypeFlags.StringLiteral | TypeFlags.BooleanLiteral | TypeFlags.BigIntLiteral)) != 0 || (relation == c.subtypeRelation || relation == c.strictSubtypeRelation) && (source.flags & TypeFlags.NumberLiteral) != 0))
                 {
@@ -2305,7 +2305,7 @@ public sealed partial class Checker
                         primitive = c.numberType;
                     else if ((source.flags & TypeFlags.BigIntLiteral) != 0)
                         primitive = c.bigintType;
-                    if (primitive != null && targetTypes.Contains(primitive) || alternate != null && targetTypes.Contains(alternate))
+                    if (primitive != null && GoSlices.Contains(targetTypes, primitive) || alternate != null && GoSlices.Contains(targetTypes, alternate))
                         return Ternary.True;
                     return Ternary.False;
                 }
@@ -2475,12 +2475,9 @@ public sealed partial class Checker
             {
                 if (result == Ternary.False && ((source.flags & TypeFlags.Intersection) != 0 || (source.flags & TypeFlags.TypeParameter) != 0 && (target.flags & TypeFlags.Union) != 0))
                 {
-                    var sourceTypes = (source.flags & TypeFlags.Intersection) != 0 ? source.Types() : new List<Type>
-                    {
-                        source
-                    };
+                    var sourceTypes = (source.flags & TypeFlags.Intersection) != 0 ? source.Types() : Slice<Type>.FromArray([source]);
                     var constraint = c.getEffectiveConstraintOfIntersection(sourceTypes, (target.flags & TypeFlags.Union) != 0);
-                    if (constraint != null && ((constraint.flags & TypeFlags.Union) != 0 ? constraint.Types().All(part => part != source) : constraint != source))
+                    if (constraint != null && ((constraint.flags & TypeFlags.Union) != 0 ? Core.Every(constraint.Types(), part => part != source) : constraint != source))
                         result = isRelatedToEx(constraint, target, RecursionFlags.Source, false, null, intersectionState);
                 }
 
@@ -2500,7 +2497,7 @@ public sealed partial class Checker
         }
 
         // relater.go:3287.
-        private bool isSourceIntersectionNeedingExtraCheck(Type source, Type target) => (source.flags & TypeFlags.Intersection) != 0 && (c.getApparentType(source).flags & TypeFlags.StructuredType) != 0 && !source.Types().Any(t => t == target || (t.objectFlags & ObjectFlags.NonInferrableType) != 0);
+        private bool isSourceIntersectionNeedingExtraCheck(Type source, Type target) => (source.flags & TypeFlags.Intersection) != 0 && (c.getApparentType(source).flags & TypeFlags.StructuredType) != 0 && !Core.Some(source.Types(), t => t == target || (t.objectFlags & ObjectFlags.NonInferrableType) != 0);
         private Ternary structuredTypeRelatedToWorker(Type source, Type target, bool reportErrors, IntersectionState intersectionState)
         {
             Ternary result = default;
@@ -3460,7 +3457,7 @@ public sealed partial class Checker
                     return Ternary.False;
             }
 
-            var sourceDiscriminantTypes = new List<List<Type>>();
+            var sourceDiscriminantTypes = new List<Slice<Type>>();
             HashSet<string> excludedProperties = new(StringComparer.Ordinal);
             foreach (var property in filtered)
             {
@@ -4219,7 +4216,7 @@ public sealed partial class Checker
                 var targetTypes = target.Types();
                 var intrinsicAttributes = c.getJsxType(JsxNames.IntrinsicAttributes, errorNode);
                 var intrinsicClassAttributes = c.getJsxType(JsxNames.IntrinsicClassAttributes, errorNode);
-                if (!c.isErrorType(intrinsicAttributes) && !c.isErrorType(intrinsicClassAttributes) && (targetTypes.Contains(intrinsicAttributes) || targetTypes.Contains(intrinsicClassAttributes)))
+                if (!c.isErrorType(intrinsicAttributes) && !c.isErrorType(intrinsicClassAttributes) && (GoSlices.Contains(targetTypes, intrinsicAttributes) || GoSlices.Contains(targetTypes, intrinsicClassAttributes)))
                     return;
             }
             else if ((originalTarget.flags & TypeFlags.Intersection) != 0 && (originalTarget.objectFlags & ObjectFlags.IsNeverIntersection) != 0)
@@ -4445,7 +4442,7 @@ public sealed partial class Checker
         if ((t.flags & TypeFlags.Boolean) != 0)
             return false;
         if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
-            return t.Types().Any(typeCouldHaveTopLevelSingletonTypes);
+            return Core.Some(t.Types(), typeCouldHaveTopLevelSingletonTypes);
         if ((t.flags & TypeFlags.Instantiable) != 0)
         {
             var constraint = getConstraintOfType(t);
@@ -4456,7 +4453,7 @@ public sealed partial class Checker
         return isUnitType(t) || (t.flags & (TypeFlags.TemplateLiteral | TypeFlags.StringMapping)) != 0;
     }
 
-    private bool isOrHasGenericConditional(Type t) => (t.flags & TypeFlags.Conditional) != 0 || (t.flags & TypeFlags.Intersection) != 0 && t.Types().Any(isOrHasGenericConditional);
+    private bool isOrHasGenericConditional(Type t) => (t.flags & TypeFlags.Conditional) != 0 || (t.flags & TypeFlags.Intersection) != 0 && Core.Some(t.Types(), isOrHasGenericConditional);
     private bool elaborateError(Node node, Type source, Type target, Relation relation, Message headMessage, List<Diagnostic> diagnosticOutput)
     {
         if (node == null || isOrHasGenericConditional(target))
@@ -5190,7 +5187,7 @@ public sealed partial class Checker
         {
             case true when ((source.flags & TypeFlags.StringLiteral) != 0):
             {
-                return this.inferFromLiteralPartsToTemplateLiteral(new List<string> { getStringLiteralValue(source) }, null, target);
+                return this.inferFromLiteralPartsToTemplateLiteral(new List<string> { getStringLiteralValue(source) }, default, target);
             }
 
             case true when ((source.flags & TypeFlags.TemplateLiteral) != 0):
@@ -5240,7 +5237,7 @@ public sealed partial class Checker
     // the first inference is the template literal type `<${string}>`. The remainder of the source makes up the second
     // inference, the template literal type `<${number}-${number}>`.
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2418:1.
-    private List<Type> inferFromLiteralPartsToTemplateLiteral(List<string> sourceTexts, List<Type> sourceTypes, TemplateLiteralType target)
+    private List<Type> inferFromLiteralPartsToTemplateLiteral(List<string> sourceTexts, Slice<Type> sourceTypes, TemplateLiteralType target)
     {
         var lastSourceIndex = (GoRuntime.Len(sourceTexts) - 1);
         var sourceStartText = sourceTexts[0];
@@ -5359,7 +5356,7 @@ public sealed partial class Checker
             return t;
         }
 
-        return this.getTemplateLiteralType(new List<string> { "", "" }, new List<Type> { t });
+        return this.getTemplateLiteralType(new List<string> { "", "" }, Slice<Type>.FromArray([t]));
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2509:1.

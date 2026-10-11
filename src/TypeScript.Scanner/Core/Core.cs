@@ -242,6 +242,15 @@ internal static partial class Core
     {
         if (values is null) return default;
         ReadOnlySpan<T> input = System.Runtime.InteropServices.CollectionsMarshal.AsSpan(values);
+        return MapIndexSlice<T, U>(input, map);
+    }
+    public static Slice<U> MapIndexSlice<T, U>(Slice<T> values, Func<T, int, U> map)
+    {
+        if (values.IsNil) return default;
+        return MapIndexSlice<T, U>(values.AsSpan(), map);
+    }
+    private static Slice<U> MapIndexSlice<T, U>(ReadOnlySpan<T> input, Func<T, int, U> map)
+    {
         var result = Slice<U>.Make(input.Length);
         for (int i = 0; i < input.Length; i++) result[i] = map(input[i], i);
         return result;
@@ -296,6 +305,17 @@ internal static partial class Core
         return result;
     }
 
+    public static List<U>? MapIndex<T, U>(Slice<T> values, Func<T, int, U> map)
+    {
+        if (values.IsNil)
+            return null;
+        int count = values.Length;
+        var result = new List<U>(count);
+        for (int i = 0; i < count; i++)
+            result.Add(map(values[i], i));
+        return result;
+    }
+
     public static List<T>? SameMapIndex<T>(List<T>? values, Func<T, int, T> map)
     {
         int count = values?.Count ?? 0;
@@ -341,6 +361,13 @@ internal static partial class Core
     }
 
     public static List<T> ReplaceElement<T>(List<T> values, int index, T value)
+    {
+        var result = GoSlices.Clone(values);
+        result[index] = value;
+        return result;
+    }
+
+    public static Slice<T> ReplaceElement<T>(Slice<T> values, int index, T value)
     {
         var result = GoSlices.Clone(values);
         result[index] = value;

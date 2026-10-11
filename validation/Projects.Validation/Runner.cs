@@ -454,7 +454,7 @@ public static class Runner
                         Symbol = graph.Symbol(t.Symbol()),
                         Target = Type(t.AsObjectType()?.target),
                         Arguments = Ts(t.AsTypeReference()?.resolvedTypeArguments),
-                        Constituents = (t.Flags() & TypeFlags.UnionOrIntersection) != 0 ? Ts(t.AsUnionOrIntersectionType().types) : null,
+                        Constituents = (t.Flags() & TypeFlags.UnionOrIntersection) != 0 ? Ts(GoSlices.ToListOrNull(t.AsUnionOrIntersectionType().types)) : null,
                         Members = graph.Table(d?.members),
                         Properties = d?.properties?.Select(s => graph.Symbol(s)!.Value).ToList(),
                         CallSignatureCount = d?.callSignatureCount ?? 0

@@ -721,11 +721,15 @@ public sealed partial class Checker
         return 0;
     }
 
-    private static int compareTypeLists(List<Type> left, List<Type> right)
+    private static int compareTypeLists(Slice<Type> left, Slice<Type> right) =>
+        compareTypeLists(left.AsSpan(), right.AsSpan());
+    private static int compareTypeLists(List<Type> left, List<Type> right) =>
+        compareTypeLists(System.Runtime.InteropServices.CollectionsMarshal.AsSpan(left), System.Runtime.InteropServices.CollectionsMarshal.AsSpan(right));
+    private static int compareTypeLists(ReadOnlySpan<Type> left, ReadOnlySpan<Type> right)
     {
-        if ((left?.Count ?? 0) != (right?.Count ?? 0))
-            return (left?.Count ?? 0) - (right?.Count ?? 0);
-        for (int i = 0; i < (left?.Count ?? 0); i++)
+        if ((left.Length) != (right.Length))
+            return (left.Length) - (right.Length);
+        for (int i = 0; i < (left.Length); i++)
         {
             int result = CompareTypes(left[i], right[i]);
             if (result != 0)

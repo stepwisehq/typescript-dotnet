@@ -99,9 +99,9 @@ public sealed partial class Checker
     }
 
     // checker/printer.go:253. Boolean grouping and nullable suffix ordering.
-    internal List<Type> formatUnionTypes(List<Type> types, bool expandingEnum)
+    internal Slice<Type> formatUnionTypes(Slice<Type> types, bool expandingEnum)
     {
-        List<Type> result = null;
+        Slice<Type> result = default;
         TypeFlags flags = TypeFlags.None;
         for (int i = 0; i < types.Count; i++)
         {
@@ -117,21 +117,21 @@ public sealed partial class Checker
                         int count = baseType.AsUnionType().types.Count;
                         if (i + count <= types.Count && getRegularTypeOfLiteralType(types[i + count - 1]) == getRegularTypeOfLiteralType(baseType.AsUnionType().types[count - 1]))
                         {
-                            (result ??= new()).Add(baseType);
+                            result = result.Append(baseType);
                             i += count - 1;
                             continue;
                         }
                     }
                 }
 
-                (result ??= new()).Add(t);
+                result = result.Append(t);
             }
         }
 
         if ((flags & TypeFlags.Null) != 0)
-            (result ??= new()).Add(nullType);
+            result = result.Append(nullType);
         if ((flags & TypeFlags.Undefined) != 0)
-            (result ??= new()).Add(undefinedType);
+            result = result.Append(undefinedType);
         return result;
     }
 }

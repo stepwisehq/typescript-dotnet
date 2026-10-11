@@ -491,7 +491,8 @@ public sealed partial class SourceFile : NodeData, SourceFileLike, ISourceTextFi
     public bool IsDeclarationFile;
     public Tristate UsesUriStyleNodeCoreModules;
     public int IdentifierCount, NodeCount, TextCount;
-    public List<Node> ModuleAugmentations, ReparsedClones;
+    public List<Node> ModuleAugmentations;
+    public Slice<Node> ReparsedClones;
     public List<string> AmbientModuleNames;
     public List<CommentDirective> CommentDirectives;
     public List<Pragma> Pragmas;

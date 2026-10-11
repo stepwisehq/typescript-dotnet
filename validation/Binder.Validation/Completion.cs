@@ -69,7 +69,7 @@ public static class CompletionRunner
         ["moduleAugmentations"] = file.ModuleAugmentations is null,
         ["ambientModuleNames"] = file.AmbientModuleNames is null,
         ["commentDirectives"] = file.CommentDirectives is null,
-        ["reparsedClones"] = file.ReparsedClones is null,
+        ["reparsedClones"] = file.ReparsedClones.IsNil,
         ["pragmas"] = file.Pragmas is null,
         ["referencedFiles"] = file.ReferencedFiles is null,
         ["typeReferenceDirectives"] = file.TypeReferenceDirectives is null,

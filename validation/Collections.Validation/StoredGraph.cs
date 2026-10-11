@@ -316,7 +316,7 @@ public sealed partial class StoredGraph
                     break;
                 case "UnionType":
                 case "IntersectionType":
-                    seed += "|types(" + string.Join(";", type.Types().Select(t => TypeSeed(t, stack))) + ")";
+                    seed += "|types(" + string.Join(";", GoSlices.ToListOrNull(type.Types())!.Select(t => TypeSeed(t, stack))) + ")";
                     break;
             }
 
@@ -568,6 +568,12 @@ public sealed partial class StoredGraph
                 result.Kind = "cache";
                 if (cache.Count != 0)
                     throw new InvalidDataException("Unobserved stored cache key family (" + cache.Count + " entries)");
+                break;
+            case Slice<Type> typeHeader:
+                result.Kind = typeHeader.IsNil ? nullKind ?? "null" : "list";
+                result.Null = typeHeader.IsNil;
+                foreach (var item in typeHeader)
+                    result.Values.Add(Value(item, "reference"));
                 break;
             case Slice<Node> header:
                 result.Kind = header.IsNil ? nullKind ?? "null" : "list";
