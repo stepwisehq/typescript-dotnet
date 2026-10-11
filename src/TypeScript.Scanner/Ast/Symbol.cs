@@ -63,7 +63,7 @@ public sealed class SymbolTable : Dictionary<ByteStringKey, Symbol>
         get => TryGetValue(key, out var symbol) ? symbol : null;
         set => base[ByteStringKey.FromValue(key)] = value;
     }
-    internal bool TryGetValue(ByteStringValue key, out Symbol symbol) => TryGetValue(key, out _, out symbol);
+    internal bool TryGetValue(ByteStringValue key, out Symbol symbol) => key.TryGetValue(this, out symbol);
     internal bool TryGetValue(ByteStringValue key, out ByteStringValue actualKey, out Symbol symbol) =>
         key.TryGetValue(this, out actualKey, out symbol);
     internal bool ContainsKey(ByteStringValue key) => TryGetValue(key, out _);

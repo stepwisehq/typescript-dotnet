@@ -457,7 +457,7 @@
       "upstream": "tsc/internal/parser/parser.go",
       "destination": "src/TypeScript.Scanner/Parser/Parser.cs",
       "status": "ported",
-      "scope": "All source-file parser algorithms; managed allocation replaces pooled getParser/putParser (putParser omitted), static initialization registers JSDoc callback. Public .NET string/byte input wrappers adapt raw Go text. No semantic compiler stages.",
+      "scope": "All source-file parser algorithms; standard ConcurrentBag getParser/putParser leases adapt the Go parser pool, and static initialization registers the JSDoc callback. Public .NET string/byte input wrappers adapt raw Go text. No semantic compiler stages.",
       "upstreamSha256": "18fbeb9644a2c642d2757188107f2a802e8084cf1ed56a24c78bab1933328c2e",
       "textViewAdaptation": "Internal source text uses an immutable shared byte-string view, preserving upstream slicing/bounds and byte positions; explicit string materialization remains at output boundaries. JSDoc save/slice/restore ordering unchanged. See docs/VSCODE-CHECK-STATUS.md.",
       "jsdocFragmentAdaptation": "JSDoc comment/link text borrows immutable source slices through scanner state, trimming and four AST payloads; public mutable List<string> projection remains explicit and shared across clones. Original algorithms/order retained; generated counterparts reproduced by narrow generator bridges. Source reconciliation: artifacts/vscode-jsdoc-fragments/source-reconciliation.json; verification and limits: docs/VSCODE-CHECK-STATUS.md.",
@@ -501,6 +501,16 @@
         "adaptation": "missingListNodes shares the pure Ast sentinel and isMissingNodeList uses the derived header predicate; redundant mutable missing-state assignments removed, including parser regeneration inputs. Actual parser flow, list storage and clones preserved.",
         "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
         "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      },
+      "currentPerformanceAdaptation": {
+        "adaptation": "parseListIndex and parseDelimitedList retain inline16 scratch, rent only private Node[] spill storage from ArrayPool<Node>, clear written references and return every lease in finally, including replaced growth buffers. Recursive leases remain independent. Required final Go arena clone uses the exact logical count and publishes detached storage; rented bucket capacity and ownership never escape. This is a .NET temporary-buffer adaptation, not a claim of an upstream ArrayPool.",
+        "state": "Independently source-reviewed and integration31 integrated correctness verified: 1730 managed cases passed with zero failures/skips; Native 3153 foundation records, 87 shared controls, 20 utilities, 9 Program controls and all 15304 original records exact. Final independent timing review verified the observed scoped target pass: best-of-five Native 6.95s / pinned Go 6.06s = 1.1469x (14.7% slower), using AVX2, matched eight checkers and explicit NoGCRegion. This is not a portable-default or universal performance guarantee. No isolated adaptation speedup attribution; historical coverage claims remain unchanged.",
+        "documentation": [
+          "docs/VSCODE-CHECK-STATUS.md",
+          "docs/progress/parser.md"
+        ],
+        "correctnessEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json",
+        "performanceEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json"
       }
     },
     {
@@ -1035,7 +1045,16 @@
         "allocationQualification": "One matched ServerGC CoreCLR trace per variant: total sampled interval19.321389\u219218.701305GiB (\u22123.2093%); zero events lost/truncation, one candidate missing stack. Net ownership+reporter batch, not per-change attribution or exact allocations/native speed."
       },
       "astCandidateStackCheckpoint": "Internal raw-text ordinal lookup borrows keys; persistent/public dictionary keys remain strings. Qualified c896 evidence: artifacts/vscode-ast-text-values/qualification.json; cumulative sampled estimates and remaining string boundaries: docs/VSCODE-CHECK-STATUS.md. Later descriptor receivers are separate.",
-      "allocationRolloutAdaptation": "Implemented through accepted integration16: symbol names retain ByteStringValue, SymbolTable uses standard Dictionary<ByteStringKey, Symbol>, and declarations use Slice<Node>. Explicit Name/output projection remains. Required source Clip/Clone distinctions preserved; combined acceptance pending."
+      "allocationRolloutAdaptation": "Implemented through accepted integration16: symbol names retain ByteStringValue, SymbolTable uses standard Dictionary<ByteStringKey, Symbol>, and declarations use Slice<Node>. Explicit Name/output projection remains. Required source Clip/Clone distinctions preserved; combined acceptance pending.",
+      "currentPerformanceAdaptation": {
+        "adaptation": "SymbolTable value-only borrowed ByteStringValue lookup avoids retrieving/projecting a stored key when the consumer needs only the Symbol. Actual-key lookup remains available where required; missing-key/null behavior, retained key snapshots and symbol identity remain unchanged.",
+        "state": "Independently source-reviewed and integration31 integrated correctness verified: 1730 managed cases passed with zero failures/skips; Native 3153 foundation records, 87 shared controls, 20 utilities, 9 Program controls and all 15304 original records exact. Final independent timing review verified the observed scoped target pass: best-of-five Native 6.95s / pinned Go 6.06s = 1.1469x (14.7% slower), using AVX2, matched eight checkers and explicit NoGCRegion. This is not a portable-default or universal performance guarantee. No isolated adaptation speedup attribution; historical coverage claims remain unchanged.",
+        "documentation": [
+          "docs/VSCODE-CHECK-STATUS.md"
+        ],
+        "correctnessEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json",
+        "performanceEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json"
+      }
     },
     {
       "upstream": "tsc/internal/ast/symbolflags.go",
@@ -1312,6 +1331,15 @@
         "adaptation": "Immediate connected literal/facts/falsy/narrowed-symbol/recursive spread transforms carry explicit state into static callbacks; original algorithms, cache/origin and required retained callbacks unchanged.",
         "state": "accepted integration20; independent source review, actual Linux x64 Native AOT FIRST,1721 selected managed, Native Foundation/shared/utilities/Program and full15304 original no-emit passed",
         "evidence": "validation/results/allocation-rollout-verified.json#throughputOwnershipFollowThrough"
+      },
+      "currentPerformanceAdaptation": {
+        "adaptation": "Object/type discriminator names and affected property lookup consumers retain ByteStringValue through the producer-to-consumer boundary rather than projecting managed strings. Required persistent name ownership, property ordering, discriminant matching and diagnostics are unchanged; explicit external string boundaries remain.",
+        "state": "Independently source-reviewed and integration31 integrated correctness verified: 1730 managed cases passed with zero failures/skips; Native 3153 foundation records, 87 shared controls, 20 utilities, 9 Program controls and all 15304 original records exact. Final independent timing review verified the observed scoped target pass: best-of-five Native 6.95s / pinned Go 6.06s = 1.1469x (14.7% slower), using AVX2, matched eight checkers and explicit NoGCRegion. This is not a portable-default or universal performance guarantee. No isolated adaptation speedup attribution; historical coverage claims remain unchanged.",
+        "documentation": [
+          "docs/VSCODE-CHECK-STATUS.md"
+        ],
+        "correctnessEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json",
+        "performanceEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json"
       }
     },
     {
@@ -1525,6 +1553,15 @@
         "adaptation": "Reuse one lazy standard bound ErrorReporter delegate across immediate calls on the exclusively leased/free-list Relater receiver. Recursion reads the same live receiver state. Required retained inference TypeComparer and SignatureRelatedComparer callbacks remain allocated. Adds a receiver reference field; benefit is measured for the combined integration only.",
         "state": "accepted integration19; actual Linux x64 Native AOT and selected regressions passed",
         "evidence": "artifacts/vscode-allocation-rollout/integration-19"
+      },
+      "currentPerformanceAdaptation": {
+        "adaptation": "Object/type discriminator names and affected property lookup consumers retain ByteStringValue through the producer-to-consumer boundary rather than projecting managed strings. Required persistent name ownership, property ordering, discriminant matching and diagnostics are unchanged; explicit external string boundaries remain.",
+        "state": "Independently source-reviewed and integration31 integrated correctness verified: 1730 managed cases passed with zero failures/skips; Native 3153 foundation records, 87 shared controls, 20 utilities, 9 Program controls and all 15304 original records exact. Final independent timing review verified the observed scoped target pass: best-of-five Native 6.95s / pinned Go 6.06s = 1.1469x (14.7% slower), using AVX2, matched eight checkers and explicit NoGCRegion. This is not a portable-default or universal performance guarantee. No isolated adaptation speedup attribution; historical coverage claims remain unchanged.",
+        "documentation": [
+          "docs/VSCODE-CHECK-STATUS.md"
+        ],
+        "correctnessEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json",
+        "performanceEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json"
       }
     },
     {
@@ -1782,6 +1819,15 @@
         ],
         "historicalBoundary": "Existing accepted integration18 compact-location and integration21 dispatch behavior/evidence remain unchanged; this candidate changes CLR allocation placement only.",
         "decision": "Five-run uninstrumented cohort showed modest wall/RSS improvement with essentially flat median CPU; diagnostic captures did not consistently reduce GC costs and included an unexplained9.735s pause that did not recur in followup. Revert rather than extend uncertain lifetime policy; preserve original/followup evidence."
+      },
+      "currentPerformanceAdaptation": {
+        "adaptation": "Only exact Node and Symbol key types use standard ReferenceEqualityComparer, matching Go pointer-key identity. Other generic key types retain default equality. Lazy map creation, chunk growth, zero/presence, ordinals and escaped ref/Memory ownership are unchanged.",
+        "state": "Independently source-reviewed and integration31 integrated correctness verified: 1730 managed cases passed with zero failures/skips; Native 3153 foundation records, 87 shared controls, 20 utilities, 9 Program controls and all 15304 original records exact. Final independent timing review verified the observed scoped target pass: best-of-five Native 6.95s / pinned Go 6.06s = 1.1469x (14.7% slower), using AVX2, matched eight checkers and explicit NoGCRegion. This is not a portable-default or universal performance guarantee. No isolated adaptation speedup attribution; historical coverage claims remain unchanged.",
+        "documentation": [
+          "docs/VSCODE-CHECK-STATUS.md"
+        ],
+        "correctnessEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json",
+        "performanceEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json"
       }
     },
     {
@@ -3624,7 +3670,17 @@
       "programCampaignState": "accepted selected responsibility or authored adapter; broader scope as documented",
       "programCampaignContract": "docs/PROGRAM-CONTRACT.md",
       "programCampaignEvidence": "validation/results/program-verified.json",
-      "runtimePolicyAdaptation": "Authored exact --runtime-info command reports actual GCSettings.IsServerGC and Environment.ProcessorCount without reflection/serialization metadata; CLI project enables ServerGarbageCollection for managed and Native AOT. Normal compiler commands unchanged. Separate matched native runtime comparison recorded in docs/VSCODE-CHECK-STATUS.md."
+      "runtimePolicyAdaptation": "Authored exact --runtime-info command reports actual GCSettings.IsServerGC and Environment.ProcessorCount without reflection/serialization metadata; CLI project enables ServerGarbageCollection for managed and Native AOT. Normal compiler commands unchanged. Separate matched native runtime comparison recorded in docs/VSCODE-CHECK-STATUS.md.",
+      "currentPerformanceAdaptation": {
+        "adaptation": "Authored default-off --no-gc-region applies only to one-shot --config, before configuration loading, using standard GC.TryStartNoGCRegion with fixed 14 GiB total including 2 GiB LOH and disallowFullBlockingGC:true. Linux MemAvailable preflight requires 20 GiB; failure falls back to normal compilation. Finally records honest start/end/mode/count/allocated-byte outcomes, restores prior mode, and optionally writes TSC_GC_POLICY_REPORT without changing normal stdout or diagnostic exits. Budget/preflight are not a hard RSS limit; no watch or guaranteed zero-GC claim.",
+        "state": "Independently source-reviewed and integration31 integrated correctness verified: 1730 managed cases passed with zero failures/skips; Native 3153 foundation records, 87 shared controls, 20 utilities, 9 Program controls and all 15304 original records exact. Final independent timing review verified the observed scoped target pass: best-of-five Native 6.95s / pinned Go 6.06s = 1.1469x (14.7% slower), using AVX2, matched eight checkers and explicit NoGCRegion. This is not a portable-default or universal performance guarantee. No isolated adaptation speedup attribution; historical coverage claims remain unchanged.",
+        "documentation": [
+          "README.md",
+          "docs/VSCODE-CHECK-STATUS.md"
+        ],
+        "correctnessEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json",
+        "performanceEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json"
+      }
     },
     {
       "upstream": null,
@@ -6069,7 +6125,48 @@
       "upstream": null,
       "destination": "src/TypeScript.Scanner/Runtime/ByteStringKey.cs",
       "status": "new",
-      "scope": "Authored immutable content-key snapshot for standard .NET Dictionary storage and alternate ByteStringValue lookup. Preserves borrowed Go string content without intermediate managed string projection; no custom hash table or interner. Byte-backed and raw-string-backed equivalent contents share hashing/equality; public byte input copies mutable caller storage. Current rollout is not yet behaviorally accepted."
+      "scope": "Authored immutable content-key snapshot for standard .NET Dictionary storage and alternate ByteStringValue lookup. Preserves borrowed Go string content without intermediate managed string projection; no custom hash table or interner. Byte-backed and raw-string-backed equivalent contents share hashing/equality; public byte input copies mutable caller storage. Current rollout is not yet behaviorally accepted.",
+      "currentPerformanceAdaptation": {
+        "adaptation": "Standard System.IO.Hashing.XxHash3 computes byte-content Dictionary hashes; byte-representable raw strings use the same Latin1 byte hash and alternate lookup shares that hash. Non-byte UTF16 strings retain ordinal string hashing. Content equality, null distinctions and immutable key ownership remain unchanged. This authored .NET hash adaptation does not reproduce Go map hash identity and does not alter the compiler key-builder XXH3-128 identity algorithm.",
+        "state": "Independently source-reviewed and integration31 integrated correctness verified: 1730 managed cases passed with zero failures/skips; Native 3153 foundation records, 87 shared controls, 20 utilities, 9 Program controls and all 15304 original records exact. Final independent timing review verified the observed scoped target pass: best-of-five Native 6.95s / pinned Go 6.06s = 1.1469x (14.7% slower), using AVX2, matched eight checkers and explicit NoGCRegion. This is not a portable-default or universal performance guarantee. No isolated adaptation speedup attribution; historical coverage claims remain unchanged.",
+        "documentation": [
+          "docs/VSCODE-CHECK-STATUS.md"
+        ],
+        "correctnessEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json",
+        "performanceEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json"
+      }
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Check/CliArguments.cs",
+      "status": "new",
+      "scope": "Authored CLI argument validation for existing commands and explicit default-off --no-gc-region. Rejects duplicate options and unsupported non-config policy invocation; no upstream compiler option or fabricated Go counterpart.",
+      "currentPerformanceAdaptation": {
+        "state": "Independently source-reviewed and integration31 integrated correctness verified: 1730 managed cases passed with zero failures/skips; Native 3153 foundation records, 87 shared controls, 20 utilities, 9 Program controls and all 15304 original records exact. Final independent timing review verified the observed scoped target pass: best-of-five Native 6.95s / pinned Go 6.06s = 1.1469x (14.7% slower), using AVX2, matched eight checkers and explicit NoGCRegion. This is not a portable-default or universal performance guarantee. No isolated adaptation speedup attribution; historical coverage claims remain unchanged.",
+        "documentation": [
+          "README.md",
+          "docs/VSCODE-CHECK-STATUS.md"
+        ],
+        "review": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/source-review.json",
+        "correctnessEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json",
+        "performanceEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json"
+      }
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Check/NoGcRegionPolicy.cs",
+      "status": "new",
+      "scope": "Authored default-off --no-gc-region applies only to one-shot --config, before configuration loading, using standard GC.TryStartNoGCRegion with fixed 14 GiB total including 2 GiB LOH and disallowFullBlockingGC:true. Linux MemAvailable preflight requires 20 GiB; failure falls back to normal compilation. Finally records honest start/end/mode/count/allocated-byte outcomes, restores prior mode, and optionally writes TSC_GC_POLICY_REPORT without changing normal stdout or diagnostic exits. Budget/preflight are not a hard RSS limit; no watch or guaranteed zero-GC claim.",
+      "currentPerformanceAdaptation": {
+        "state": "Independently source-reviewed and integration31 integrated correctness verified: 1730 managed cases passed with zero failures/skips; Native 3153 foundation records, 87 shared controls, 20 utilities, 9 Program controls and all 15304 original records exact. Final independent timing review verified the observed scoped target pass: best-of-five Native 6.95s / pinned Go 6.06s = 1.1469x (14.7% slower), using AVX2, matched eight checkers and explicit NoGCRegion. This is not a portable-default or universal performance guarantee. No isolated adaptation speedup attribution; historical coverage claims remain unchanged.",
+        "documentation": [
+          "README.md",
+          "docs/VSCODE-CHECK-STATUS.md"
+        ],
+        "review": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/source-review.json",
+        "correctnessEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json",
+        "performanceEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json"
+      }
     }
   ],
   "activePhase": {

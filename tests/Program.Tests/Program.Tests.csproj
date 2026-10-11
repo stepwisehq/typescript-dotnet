@@ -11,5 +11,7 @@
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1" />
     <ProjectReference Include="../../validation/Program.Checks/Program.Checks.csproj" />
+    <Compile Include="../../src/TypeScript.Check/CliArguments.cs" Link="CliArguments.cs" />
+    <Compile Include="../../src/TypeScript.Check/NoGcRegionPolicy.cs" Link="NoGcRegionPolicy.cs" />
   </ItemGroup>
 </Project>

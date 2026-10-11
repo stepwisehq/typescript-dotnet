@@ -19,8 +19,9 @@ See the [assessment and limitations](./docs/CHECKER-NOEMIT-ASSESSMENT.md),
 Two unavailable historical internal API declarations remain a documented evidence
 limitation; genuine missing-import diagnostics are retained. Only Linux x64 Native
 AOT has been qualified. Emit, language services and incremental builder scheduling
-remain external. Large-project correctness/performance comparisons are the next
-separately authorized evaluation; they have not been started.
+remain external. The explicitly authorized VSCode correctness and performance
+evaluation is underway; see [its current status](./docs/VSCODE-CHECK-STATUS.md).
+Evaluation of a broader large-project corpus remains future work.
 
 Ordinary `tscheck --config <tsconfig> --json` uses genuine Program options and unchanged
 upstream libraries. The strict ES2022 [job-stream project](./examples/protocols/job-stream/)
@@ -29,6 +30,51 @@ resources across files. Its [invalid variant](./examples/protocols/job-stream-in
 reports six complete diagnostics and exits 1; the valid project exits 0. See the
 [project usage guide](./examples/protocols/README.md). No Go process is needed to use
 the C# checker or run tests against committed reference records.
+
+The optional `--no-gc-region` flag applies only to one-shot `--config` checking;
+ordinary execution stays unchanged. It uses the standard .NET API with a 14 GiB
+total budget including 2 GiB LOH, after a Linux MemAvailable preflight of 20 GiB.
+Insufficient or unavailable headroom falls back to ordinary GC. The region may
+also end automatically; neither budget nor preflight is a process memory limit.
+Set `TSC_GC_POLICY_REPORT` to a separate file to record start/end modes, fallback,
+allocation and collection counters without changing diagnostic stdout or exit codes.
+This is an authored runtime adaptation, not an upstream compiler option. AVX2
+publication and a matched checker-count configuration remain separate explicit
+choices; portable/default execution remains available.
+
+To publish the explicit AVX2 variant from the repository root:
+
+```sh
+dotnet publish src/TypeScript.Check/TypeScript.Check.csproj -c Release -r linux-x64 -p:PublishAot=true -p:IlcInstructionSet=avx2 -o artifacts/production-avx2
+```
+
+This requires an AVX2-capable CPU with OS vector-state support and the Native AOT
+build prerequisites. Omitting `IlcInstructionSet=avx2` retains the portable default;
+Server GC and the compiler algorithms are unchanged.
+
+For a matched eight-checker comparison, use `compilerOptions.checkers: 8` in the
+same genuine project configuration for both compilers. A separate config can extend
+the original, but place its entry **beside the original config** so implicit type
+roots and package lookup keep the original directory. For example, beside VSCode's
+`src/tsconfig.json`, a `src/tsconfig.checkers8.json` can contain:
+
+```json
+{"extends":"./tsconfig.json","compilerOptions":{"checkers":8}}
+```
+
+Do not relocate that entry to a different artifact directory without preserving and
+verifying resolution equivalence. Invoke both compilers with this same config:
+
+```sh
+TSC_GC_POLICY_REPORT=/tmp/tscheck-policy.json artifacts/production-avx2/tscheck --config /home/greg/projects/vscode/src/tsconfig.checkers8.json --noEmit --json --no-gc-region
+artifacts/vscode-diagnostic-fix/pinned-cli/tsc --project /home/greg/projects/vscode/src/tsconfig.checkers8.json --noEmit --skipLibCheck --pretty false
+```
+
+The report is optional; omit the environment assignment to disable it. Successful
+start alone does not establish a complete region: check `noGcStarted`,
+`noGcEndOutcome` and `modeBeforeEnd`. Ordinary diagnostics may still produce exit 1
+(Native) or exit 2 (Go). These are one-shot instructions; no watch-mode guarantee or
+hard RSS limit is implied.
 
 All 115 pinned library files remain embedded unchanged. `--inspect-config`,
 `--inspect-project` and `--inspect-program` inspect configuration, resolved graphs and

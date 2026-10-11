@@ -1,4 +1,75 @@
-# Active performance continuation: accepted21 restored (2026-10-11)
+# Accepted final delivery checkpoint (2026-10-11)
+
+Integration31 is accepted: complete integrated correctness gates and the delivered
+CLI performance target passed independent final review. The delivery commit containing
+this entry records the accepted implementation and evidence. Do not restart builds,
+gates, profiling or configuration trials on re-entry; this performance target is met
+under the explicit configuration below. No more builds are pending.
+The previous accepted21 baseline remains preserved separately.
+
+The durable production CLI opt-in is `--no-gc-region` for one-shot `--config` checks.
+It uses standard GC.TryStartNoGCRegion with 14 GiB total including 2 GiB LOH,
+20 GiB Linux MemAvailable preflight, and honest fallback/end outcomes. Default
+portable Server GC remains unchanged. Source adaptations include complete byte-name
+producer/consumer boundaries, standard XXH3 integer map hashing (semantic hashes and
+content equality unchanged), exact Node/Symbol pointer-identity LinkStore comparers
+(other key types retain default equality), and complete parser temporary spill
+ArrayPool ownership with required arena clones preserved. No isolated pooling or
+hash/comparer speedup is claimed. Batch was a single artifact observation, not adopted.
+
+CLI-only build passed 2.222 s with 244 sources/no drift; frozen29 Scanner IL remains
+0d6730e7 and fresh CLI IL is 4c0d07af. Actual production ILC root/Scanner/Hashing
+inputs and both portable/AVX2 binaries are bound. Portable default-four FIRST was
+17.95 s (one observation, no performance target claim); AVX2 default-four FIRST
+16.27 s. Matched-eight opt-in FIRST had a successful full region and exact original
+outputs. Independent FIRST and correctness review passed.
+
+The existing gates ran once: 1,730 managed cases (original 1,721 plus 9 CLI policy
+cases), Native foundation 3,153 original assertions plus 87 shared controls,
+utilities 20, Program 9, and all 15,304 original Native rows exact. No source,
+expectation or Scanner rebuild was needed during validation.
+[Correctness result](../artifacts/vscode-allocation-rollout/integration-31-production-delivery/build-1/regressions/selected-result.json)
+and [independent correctness ACK](../artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json)
+retain the full gate evidence.
+
+The final fresh five-each delivered cohort used Linux x64 AVX2, matched checkers=8
+in pinned Go and Native, explicit Native --no-gc-region, unchanged source/library
+inputs and no wrapper runtime flags. Native best 6.95 s versus Go 6.06 s gives
+1.1468647x, meeting the user's primary best-to-best <=1.2x target on this workload.
+Secondary medians were 9.25/6.78 s; ranges 6.95–10.42/6.06–8.33 s; median RSS
+12,021,304/8,814,056 KiB. All five full regions and complete original diagnostics
+qualified. A brief roughly three-second read/review may overlap the opening run;
+all observations remain retained, and the two best runs were adjacent in round 3,
+not the opening pair. Five observations and host variability do not establish a
+universal runtime guarantee or portable-default target.
+[Delivered cohort](../artifacts/vscode-allocation-rollout/integration-31-production-delivery/timing/comparison.json)
+is distinct from artifact30 and earlier default-four/failed-eight cohorts.
+
+[Final independent acceptance ACK](../artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json)
+is clear. Implementation, review and acceptance are complete in this delivery checkpoint.
+[README reproduction](../README.md) describes portable and explicit AVX2 publication,
+matched-eight config and opt-in/fallback qualifications. The abandoned debugger,
+runtime-crash and heap-capture investigation stays closed. No further workload or
+source audit is required to finish this accepted checkpoint.
+
+# Latest user direction: abandon the diagnostic investigation (2026-10-11)
+
+The user reported repeated platform classifier errors and directed abandoning the
+debugger/runtime-crash investigation. Stop this line of work, including further heap
+captures or attempts to work around the platform restriction. Preserve existing
+evidence; do not resume this investigation after compaction or a restart. This
+supersedes diagnostic assignments and pending actions in the historical record below.
+Ordinary Go-faithful allocation and performance work remains authorized.
+
+Integration25 finished: all15 diagnostic comparisons and guards passed independent
+review. Reject adopting AVX2+C3: median wall was9.51% slower and median RSS7.99%
+higher than AVX2 defaults; median CPU was essentially unchanged. Best/median seconds:
+Go11.39/12.24, AVX2 defaults18.07/18.83, AVX2+C3 15.62/20.62. The1.2x target remains
+unmet. Production source and portable runtime defaults remain unchanged. No build,
+benchmark or diagnostic workload remains active; source/metadata freeze is released.
+Integration23 remains a promising CPU-specific artifact, not the production default.
+
+# Prior performance continuation: accepted21 restored (2026-10-11)
 
 Latest decision supersedes provisional POH entries in the chronological record below.
 Integration22 POH placement was **rejected**, and the exact original Linkstore source
@@ -27,9 +98,68 @@ Best/median Go9.13/9.56, portable17.12/17.84, AVX2 13.70/16.58; targetunmet.
 Recovery independently proved actualYMM vsbaselineXMM XXH/Span paths and reviewed
 all15rawresults/guards clear; statusdoc updated. Retain promisingCPU-specificartifact;
 portableproductiondefault unchanged.
-Next Solcache_audit assessing existing heaptools for exactNativeAOT retainedstorage
-composition (meaningful GC cost concern). No new census framework/source/capture
-authorized; investigate tool feasibility first. No competing owned workloads.
+AVX2 evidence committed3f98000c. Next integration24-retained-heap: exactruntime10.0.12
+supports standardNativeAOTgcdump object/edge/typeID events (typenames omitted, debug
+symbol attribution needed; root completeness limited). Solcache_audit prepares
+artifact wrapper retaining actualProgram/checker owners afterCheck +release/KeepAlive,
+modernlocalgcdump installation and ONE boundedcapture recipe; recovery reviews once.
+Root owns publication/workload. Source-ready93be0362 independently reviewed clear:
+actualproject->Program->Checker[] ownerhold+KeepAlive, explicitEventSourceSupporttrue,
+collectoronly4GiBmanagedlimit/1GiBperfilelimit,120scollection/5minhold. Hostdiskfree
+unknown (mountpointsnotmounted), userreportedfreeinghostspace; boundedexposure. Root
+publication40528 completed with actualEventPipeenabled bindings independently clear.
+Capture86350 FAILED EndOfStreamException openingheapsession aftertypeflush (~2s);
+no dump/stdout/policy, targetexit notpersisted byoriginalfailurepath. NO validretained
+composition/diagclaim. Authorcache_audit investigates exacttool/runtimeIPC; tinyexisting
+project samebinary compatibilityprobe authorized, NO fullVSCode rerun yet. Recovery
+reviews failure reasoning. Toolwarn.NET11Blockunsupported/fallback; causeunknown.
+Originalfailedrecords retained; collect-with-outcomes.py fixesfuturebookkeeping only.
+Tiny samebinary examples/program compatibilityprobe reproduced targetSIGSEGV(-11),
+collector255 before release/noheap. Author nowauthorizedONE tiny samebinary gdb
+backtrace withmatchingdbg ifinstalled; no largeVSCode retry orrebuild. Neither gdb
+nor lldb present (PATH+cache+/usr libs checked); root requesteduser installgdb via
+sudo apt-get update && sudo apt-get install -y gdb, awaitingreply. No debugger
+reproduction executed. Recovery checks exactruntimeknownissues whilewaiting;
+author records failedcapture statusdocs. Exacttoolsource
+uses1024MiBeventbuffer, correcting earlier256MiBestimate. Blockfallback expected;
+Strong knownruntimecause candidate: dotnet/runtime#131677, fix#131678; exactpinned
+heapdump path uses ScanContext.thread_number=-1 asServerGCindex. Source chain
+verified in known-runtime-defect-assessment.json; notbacktrace-confirmed. This is
+separate from prior9.735spause. No storage/largeheapOOM inference fromfailedcaptures.
+Continue with standardCoreCLRretainedcomposition PROXY: authorcache_audit prepares
+companionproject same24hold/21compilerIL, pinned10.0.12+ServerGC, ONEboundedcapture;
+proxyready328b4987 afterfailurebookkeepingdelta independentlyreviewedclear;
+publication13214 passed. CoreCLRcapture98428 FAILED TOO: targetSIGABRT(-6),
+stderr free(): invalid next size (normal), collector255/StartSessionEOF~1.7s,
+noheap/nodiagqualification. Failure/targetexit nowproperlyrecorded.
+USERinstalledgdb. Authorcache_audit nowexecutes twofocusedtiny gdbreproductions
+of SAMEpublishedNative+CoreCLR binaries, noVSCode/no rebuilds; recoveryinterprets
+stacksindependently. Nativeknownbug remainscandidate; CoreCLRfailurecannotbe
+attributedtoNative-onlybug. Tinygdb nowCONFIRMSNative#131677: ServerGCheapindex-1
+fromGcScanRootsForETW. CoreCLRtinycapture succeeds (collector0,2.3MBdump, targetexit1);
+largeCoreCLRabort unexplained. RootauthorizesONE fullVSCodeCoreCLR undergdb existing
+proxybinary tolocalizefault or captureheap. Minimalrecipee76dfc13 independently
+reviewed; fullCoreCLRgdb44738 reproduced allocatorSIGABRT onServerGCthread6,
+freeinvalidnextsize(size64480), privatecoreclrIPs unsymbolized. Collector255/noheap,
+secondstopownedkill, no naturalexit/DTOqualification. Independentrawreview saved.
+Authorcache_audit owns exactcoreclr symbolsretrieval/sourceassessment (buildID
+79945f51fb2612f13b7667a10a8fd29122664791), recoveryreviews attribution. Exactcoreclrdebugsymbols nowresolved with independentlycorroboratedINFERREDloadbias
+0x7ffff7000000 (originalmapmissing); faultfree isBulkStaticsLogger destructor,
+64464Bbuffer/64480Bchunk. Byte/WCHARcapacitymismatch verifiedsource butactualwriter
+notproved/no publishedfixfound. Authorread-onlychecks longstaticfieldnametrigger.
+No furtherheapcaptures or runtimepatch. No runtimeupgrade.
+Next integration25 runtimecombination: ONEexisting23AVX2default vs samebinaryC3 vs
+freshGo5each, recipeea7ed494/ready569bb233 independentlyreviewed. Roottiming61890
+ACTIVE observerOFF; no newbuild/knobgrid or productionchange. C3wasunadopted, not
+rejected; individualbenefits cannotbeadded. Recovery reviewsfinalresults.
+Keepcommitfreeze until15finalguards; metadatachanges only aftertimingcomplete.
+No Native retry/rebuild/runtimechange.
+No VSCodeheapcomposition claims yet. Supersedesgdbpending above.
+No runtimeupgrade/patch/workstationGCworkaround.
+Proxycan guide logicalstoragefamilies, NOT Nativephysicalheapcounts/performance.
+Nativefailedartifacts retained, gdbrequest remainspending for confirmation.
+ForcedGC capture is NOT timing; one toolinvocation may force multipleGCs. No new
+census framework or production source changes. Publication metadatafreeze released.
 Preserveproductionportabledefault until evidence. Publication complete; metadata freeze released after timing56801 finalguards.
 Do not restart rejected Symbol arenas, NodeLinks conversion, GC knob grids or POH rollout.
 Use established proof/commands; avoid another recipe-review cycle for incidental wording.

@@ -11,7 +11,16 @@ The historical whole-checker acceptance at `17e8c36` and its corpus/proof remain
 unchanged. This focused investigation does not repeat that complete acceptance gate
 or imply that finite acceptance established exhaustive large-project correctness.
 
-## Current CPU attribution and checked dispatch continuation
+## Current delivery checkpoint: integration31
+
+Correctness gates and the final delivered CLI cohort passed independent final
+acceptance review. Only the root commit/clean checkpoint remains. The measured target is scoped
+to Linux x64 AVX2, matched eight-checker settings and explicit `--no-gc-region`, with
+14 GiB total/2 GiB LOH and 20 GiB MemAvailable preflight. Portable production defaults
+remain unchanged; the single portable FIRST observation is not a target claim.
+The detailed integration31 result below supersedes historical pending-phase wording.
+
+## Historical CPU attribution and checked dispatch continuation
 
 Integration20 was committed as `3f466095`. One subsequent CPU recording used its
 unchanged Linux x64 Native executable, default adaptive Server GC and normal
@@ -344,6 +353,35 @@ fresh Go comparisons within their cohort.
 [complete timing results](../artifacts/vscode-allocation-rollout/integration-23-avx2/timing/comparison.json)
 and [independent result review](../artifacts/vscode-allocation-rollout/integration-23-avx2/result-independent-review.json)
 preserve this artifact's evidence and platform limits.
+
+### Integration25: AVX2 plus ConserveMemory3 combination rejected
+
+This fresh15-process cohort compared five Go runs, five Default AVX2 runs and five
+ConserveMemory3 AVX2 runs. Both Native arms used the **same existing integration23
+binary**, observer OFF and Default LatencyMode; only the C3 arm added
+`DOTNET_GCConserveMemory=3`. Exact pinned runtime source establishes that control's
+route; mode sidecars verify latency selection, not conservation readback. No new
+publication, compiler source or runtime upgrade accompanied this comparison.
+All15 complete original outputs, expected exits, mode sidecars, timing arithmetic
+and frozen guards passed independent review.
+
+| Runtime | Wall best / median / range (s) | CPU median / range (s) | Peak RSS median / range (KiB) |
+|---|---:|---:|---:|
+| Pinned Go |11.39 /12.24 /11.39–13.79 |60.25 /52.56–69.01 |7,929,904 /7,723,764–8,008,400 |
+| AVX2 Default |18.07 /18.83 /18.07–20.24 |76.55 /72.64–81.83 |8,716,724 /8,449,928–9,340,032 |
+| AVX2 ConserveMemory3 |15.62 /20.62 /15.62–22.81 |76.43 /60.05–85.19 |9,413,488 /8,755,188–9,512,452 |
+
+**Reject combined C3 adoption:** its better best wall (13.56% lower) came with
+9.51% slower median wall,7.99% higher median RSS and effectively flat median CPU
+(0.16% lower). These five observations do not establish significance or a
+repeatable combined benefit. Default/C3 Native-to-Go ratios were1.586/1.371 best
+and1.538/1.685 median; neither meets1.2. Preserve the separate prior studies and
+keep each fresh Go cohort paired with its own Native results. The Default AVX2
+artifact remains promising and CPU-specific; portable production policy is unchanged.
+
+[Complete combination results](../artifacts/vscode-allocation-rollout/integration-25-runtime-combination/timing/comparison.json)
+and [independent result review](../artifacts/vscode-allocation-rollout/integration-25-runtime-combination/result-independent-review.json)
+preserve the decision.
 
 ## Integration20: callback/setup completion and Native throughput policy (accepted)
 
@@ -2637,3 +2675,282 @@ experimental rejection, not a compiler correctness failure or proof that POH is
 universally slower. No broad regression rerun was needed to restore the exact accepted
 source. The next investigation checks actual NativeAOT instruction-set coverage before
 considering a code-generation experiment; compiler algorithms remain unchanged.
+
+## Retained-heap diagnostic investigation (2026-10-11)
+
+Integration24 published an artifact-only NativeAOT10.0.12 wrapper against frozen21
+Scanner/Hashing IL, explicitly enabling EventSource/EventPipe support. Actual enabled
+native archive and diagnostic-server symbols were checked. A bounded hold immediately
+after `Project.Check()` roots Project's readonly genuine Program, its checker pool and
+all retained checker owners; `GC.KeepAlive(project)` follows release. Production source,
+compiler algorithms and runtime defaults remain unchanged.
+
+ONE VSCode collection failed while starting the heap EventPipe session after a successful
+type-table flush: collector reported `EndOfStreamException`; no heap file, target output
+or policy sidecar was produced. This invocation has no diagnostic qualification or
+retained-family evidence. Its controller did not persist the original target exit code;
+that historical outcome remains unknown. The authorized tiny existing
+`examples/program/tsconfig.json` reproduction used the same published binary and recorded
+collector exit255 and target SIGSEGV (`-11`) **before hold release**, with no heap file.
+This establishes a small-workload diagnostic failure, not its native fault location or
+an OOM/storage explanation. The .NET11 non-lossy Block-buffer warning announces an
+expected fallback and does not alone explain the fault.
+
+Exact installed gcdump10.0.750501 source requests **1024MiB** EventPipe buffering,
+correcting the earlier256MiB documentation estimate. Collector-only managed heap was
+capped at4GiB; file output at1GiB. Failed capture logs are preserved unchanged, and a
+separate source-only controller successor records both exit codes on failure. Neither
+gdb nor lldb is installed; gdb has been requested to obtain a bounded tiny native
+backtrace. Do not classify all NativeAOT heap collection as unsupported or attribute
+this fault without that stack. No full VSCode retry, Go heap capture or census framework
+has been added.
+
+[Diagnostic runtime binding](../artifacts/vscode-allocation-rollout/integration-24-retained-heap/diagnostic-runtime-binding.json),
+[failed original capture](../artifacts/vscode-allocation-rollout/integration-24-retained-heap/capture/),
+[tiny reproduction result](../artifacts/vscode-allocation-rollout/integration-24-retained-heap/compatibility-probe/result.json),
+[runtime source support](../artifacts/vscode-allocation-rollout/integration-24-retained-heap/support-evidence.json)
+and [outcome bookkeeping correction](../artifacts/vscode-allocation-rollout/integration-24-retained-heap/outcome-bookkeeping.json)
+retain the evidence and limitations.
+
+Independent exact-source investigation found a likely matching runtime defect:
+[known defect assessment](../artifacts/vscode-allocation-rollout/integration-24-retained-heap/known-runtime-defect-assessment.json)
+binds runtime#131677/PR131678 to the pinned Native heap-walk root filter, which can
+use profiling thread_number=-1 as a ServerGC heap index. This is a strong candidate
+for the tiny SIGSEGV, pending its native backtrace; no runtime patch, upgrade or
+workstation workaround is adopted. An artifact-only pinned CoreCLR10.0.12 companion
+is being prepared with the exact hold and frozen21 compiler IL. Its named histogram
+will be a **logical retained-family proxy only**, not Native physical object counts,
+sizes, live-byte equality or performance evidence. Original Native failures remain.
+
+## Remaining byte-name and map-lookup family (2026-10-11)
+
+Implemented and independently source-reviewed; integrated build, actual NativeAOT
+qualification and measurement are pending. This is not an accepted performance gain.
+[Relater.cs](../src/TypeScript.Scanner/Checker/Relater.cs) now carries immutable byte
+headers through the discriminator interface and type-discriminator producer.
+[Checker.cs](../src/TypeScript.Scanner/Checker/Checker.cs) does the same for object-literal
+discriminators and the remaining static-property contextual lookup. Existing property,
+index-signature and contextual-property byte consumers complete those paths. Pinned Go
+`relater.go:1030–1042,1199+` and `checker.go:31277–31293,30175+` retain string headers at
+these boundaries; required ownership, copies, lookup order and equality remain intact.
+[Symbol.cs](../src/TypeScript.Scanner/Ast/Symbol.cs) routes value-only symbol lookup
+through the existing value-only adapter; explicit stored-key retrieval remains unchanged.
+
+[ByteStringKey.cs](../src/TypeScript.Scanner/Runtime/ByteStringKey.cs) uses standard
+XXH3 truncated to Dictionary's integer hash consistently for retained/alternate byte
+keys and Latin1-compatible text. This is a CLR map implementation adaptation, not a
+claim that Go uses XXH3 for runtime string maps. Exact content equality, null handling,
+non-byte UTF16 ordinal hashing and key layout are unchanged. Compiler semantic cache
+identities, including XXH3-128 keyBuilder hashes, are untouched.
+
+Saved integration20 CPU evidence attributes1.642% of sampled user CPU to XXH32:
+this bounds the old sampled hash cost, not predicted wall-time savings. Its hot property
+lookups establish relevant callers but contain no key-length histogram. Standard XXH3
+specializes short lengths and enables vector accumulation only above240 bytes; AVX2
+coverage does not establish faster short-name hashing. Only four selected-worker samples
+contain discriminator paths. No isolated test, microbenchmark or new capture was run.
+[Saved leaf analysis](../artifacts/vscode-allocation-rollout/integration-20/native-cpu/leaf-analysis.json)
+and [recovered caller analysis](../artifacts/vscode-allocation-rollout/integration-20/native-cpu/per-tid-recovery/analysis.json)
+retain the profile context.
+
+The focused scheduling review found no substantial discrepancy: checker-pool count
+four, bounded capacity, lazy creation, FENNEL weights/order/ties/import multiedges and
+exclusive task/checker file order match Go. Per-checker caches/global initialization
+remain intentional Go ownership; binding/typeChecked/skipLibCheck gates also match.
+Four saved active workers have broadly similar sampled CPU, without evidence of
+startup/off-CPU delays. No custom scheduler or shared checker caches are justified.
+The focused iteration review likewise found no substantial candidate: sort-helper
+leaves were eight of5177 samples (0.155%); getNamedMembers retains required allocation
+and two passes, and Slice enumeration plus Slice/List Contains already use concrete
+indexed traversal. Remaining boxed/iterator leaves did not establish a material
+source discrepancy. Do not restart these source audits without new concrete evidence.
+
+The user's latest performance criterion is **best of five Native versus best of five
+pinned Go within the same cohort**, with the1.2x ratio as the primary target. Median,
+range and resource observations remain secondary variability/context evidence; median
+alone is not a rejection criterion. Apply this prospectively without rerunning finished
+cohorts or silently adopting configurations. Earlier23 best13.70/Go9.13=1.501 and
+25 C3 best15.62/Go11.39=1.371 still miss1.2; their historical evidence remains intact.
+
+### Integration26/27 source changes and optional NoGCRegion evidence
+
+Integration26's complete byte-name/discriminator/XXH3 family passed both FIRST
+comparisons and all15 paired diagnostics, but demonstrated no wall improvement:
+old/new AVX2 best14.79/17.27s, median18.14/18.91s; fresh Go best9.53s.
+Median CPU70.07/69.25s was nearly unchanged. Its new saved Native CPU profile still
+attributes34.46% of sampled user CPU to GC/allocation helpers and11.06% to dictionary
+lookup/insertion; these categories do not isolate removable work.
+[26 paired results](../artifacts/vscode-allocation-rollout/integration-26-byte-boundaries/timing/comparison.json)
+and [fresh leaf analysis](../artifacts/vscode-allocation-rollout/integration-26-byte-boundaries/native-cpu/leaf-analysis.json)
+retain the observations without attributing a speedup to that source family.
+
+Integration27 retains the provisional26 family and adds standard reference equality
+only for exact Node/Symbol LinkStore keys, matching Go pointer identity. Other key
+types keep their default comparer; lazy storage, chunks, ordinals and ref-return
+lifetimes remain unchanged. Frozen compiler919a7610 and the AVX2 wrapper were bound
+in actual ILC inputs. This cohort does not isolate the identity patch's contribution.
+[Independent source review](../artifacts/vscode-allocation-rollout/integration-26-byte-boundaries/native-cpu/identity-comparer-source-review.json)
+and [FIRST/binding review](../artifacts/vscode-allocation-rollout/integration-27-identity-nogc/first-independent-review.json)
+record source fidelity and original diagnostics.
+
+One artifact-only option invokes standard GC.TryStartNoGCRegion with12GiB total,
+including2GiB LOH, and disallowFullBlockingGC:true. It requires at least18GiB guest
+MemAvailable immediately before starting; failure falls back to ordinary GC and is
+reported. Neither budget nor preflight is a process memory limit. Production CLI
+and runtime defaults remain unchanged. Five fresh processes each used pinned Go,
+the same27 AVX2 executable with the option off, and that executable with the option
+on; rotated order, lifecycle observer off, identical compact policy sidecars.
+All15 original complete diagnostics, legitimate exits and frozen guards passed.
+
+| Runtime / option | Wall best / median / range (s) | CPU best / median / range (s) | Peak RSS minimum / median / range (KiB) |
+|---|---:|---:|---:|
+| Pinned Go |8.87 /10.55 /8.87–11.92 |43.88 /49.56 /43.88–56.74 |7,750,184 /7,840,592 /7,750,184–7,994,964 |
+| Same27 AVX2, default |15.33 /16.81 /15.33–18.37 |65.80 /68.17 /65.80–73.91 |8,601,056 /8,609,540 /8,601,056–8,953,708 |
+| Same27 AVX2, NoGCRegion |11.44 /15.77 /11.44–16.23 |41.47 /58.59 /41.47–59.83 |10,584,244 /10,594,828 /10,584,244–10,599,724 |
+
+All five opt-in runs started successfully, ended successfully and reported
+NoGCRegion immediately before ending. Before/after collection counts were0/0/0
+and1/1/1 in every opt-in run; these include region-start work, so this is not a
+universal zero-GC claim. Same-binary option-on best wall improved25.38%, median
+wall6.19%, median CPU14.05%, with median RSS23.06% higher. These are measured
+option comparisons on this host, not isolated source-patch gains or guarantees.
+Primary best-to-best NoGCRegion/Go ratio is **1.28974**, still above1.2; secondary
+median ratio is1.49479. Default best ratio is1.72830.
+[All15 results and full-region qualifications](../artifacts/vscode-allocation-rollout/integration-27-identity-nogc/timing/comparison.json)
+preserve every run. Warm-input timing, five observations and variable host conditions
+limit generalization; AVX2 requires suitable CPU/OS support. No policy adoption or
+comprehensive regression acceptance is claimed. Broad integrated regressions remain
+deferred while the performance target is pursued.
+
+### Integration28: eight-checker NoGCRegion feasibility stopped
+
+The existing27 AVX2 executable and unchanged12GiB total/2GiB LOH budget were
+compared with pinned Go using matched checkers=8. A temporary same-directory
+configuration symlink preserved implicit type roots, package fallback and inherited
+input paths; original configurations stayed unchanged and the symlink was removed.
+Both FIRST outputs exactly matched original diagnostics, with legitimate exits and
+empty stderr. Go wall was7.69s; Native21.21s. These are single feasibility
+observations, not the primary best-of-five performance comparison.
+
+Native started NoGCRegion, but modeBeforeEnd was Interactive and ending reported
+`regionFailure:NoGCRegion mode must be set.` Collection counts changed0/0/0->2/1/1
+and allocatedAfter was11,882,935,016B. This is below the12GiB total budget; exhaustion
+of the10GiB SOH portion is plausible but the exact cause was not observed. Counts
+include region-start work. Full-region qualification failed, so the five-each cohort
+was stopped; no budget increase or eight-checker adoption is authorized. The earlier
+successful default-four27 cohort remains separate.
+[Negative result assessment](../artifacts/vscode-allocation-rollout/integration-28-checkers8/result-assessment.json)
+and [Native FIRST result](../artifacts/vscode-allocation-rollout/integration-28-checkers8/first/02-nogc27/result.json)
+retain the failed policy and parsed resources. Final whole-cohort inventory checking
+was not reached; no completed timing acceptance is claimed. No compiler source change
+or build accompanied this experiment. Broad integrated gates remain deferred.
+
+### Integration29: parser spill pooling and three FIRST qualifications
+
+The complete parser temporary-list spill family now leases overflow storage from
+standard ArrayPool<Node>. Inline16 storage, arena-owned final clones and Go ownership
+boundaries stay intact; independent leases return on growth and finally, clearing used
+references. This is the requested temporary pooling adaptation, not a compiler algorithm
+change. Source review passed; the first central build's four nullable annotations were
+corrected without changing behavior. Failed build1 is preserved; build2 passed10.437s,
+242 sources with no drift, compiler0d6730e7. Actual AVX2 publication passed12.050s,
+binary996b43fc, with frozen build2 Scanner and Hashing references verified in ILC input.
+[Source review](../artifacts/vscode-allocation-rollout/parser-list-spill/source-review.json)
+and [publication binding](../artifacts/vscode-allocation-rollout/integration-29-parser-spill-batch/build-result.json)
+retain the source and actual-build evidence. All six compiler source files remain
+provisional against the distinct accepted21 baseline; comprehensive gates are deferred.
+
+| Single FIRST mode | Wall seconds | CPU seconds | Peak RSS KiB | Applied policy |
+|---|---:|---:|---:|---|
+| Default |16.17 |68.85 |8,813,056 |Interactive, restored exactly |
+| Batch |14.57 |64.12 |8,790,356 |Batch through beforeEnd, restored Interactive |
+| NoGCRegion |12.44 |43.78 |10,580,140 |Started and ended successfully, beforeEnd NoGCRegion |
+
+All three preserved complete original diagnostics, legitimate exit1 and empty stderr;
+lifecycle telemetry remained off. Batch and NoGCRegion are mutually exclusive artifact
+options; production runtime defaults remain unchanged. NoGC retains12GiB total/2GiB
+LOH and18GiB MemAvailable preflight. Its counts0/0/0->1/1/1 include startup work,
+not proof that the whole invocation avoided GC.
+[Default FIRST](../artifacts/vscode-allocation-rollout/integration-29-parser-spill-batch/first-vscode/result.json),
+[Batch FIRST](../artifacts/vscode-allocation-rollout/integration-29-parser-spill-batch/first-batch/result.json)
+and [NoGC FIRST](../artifacts/vscode-allocation-rollout/integration-29-parser-spill-batch/first-nogc/result.json)
+are single feasibility observations: no throughput comparison, pooling speedup or target
+acceptance is claimed. Independent actual-build/FIRST review is pending. No five-run
+cohort is planned solely for pooling. The next bounded question is whether eight checkers
+can fit a14GiB/2GiB split; assessment only, no budget increase authorized. The earlier
+eight-checker12GiB/2GiB failure remains preserved separately.
+
+### Integration30: matched eight-checker observed performance target
+
+The single authorized extension used frozen29 compiler IL with14GiB total/2GiB LOH
+and20GiB MemAvailable preflight, matched checkers=8 in both runtimes. All ten fresh
+processes preserved complete original diagnostics, legitimate exits and empty stderr;
+all five Native regions started and ended successfully. Original-four and failed
+eight-checker12GiB evidence remain separate.
+
+| Runtime | Wall best / median / range (s) | CPU best / median / range (s) | RSS minimum / median / maximum (KiB) |
+|---|---:|---:|---:|
+| Pinned Go, eight checkers |6.06 /6.98 /6.06–8.42 |50.78 /55.81 /50.78–69.52 |8,749,508 /8,789,436 /8,964,136 |
+| Native AVX2, eight checkers, NoGCRegion |6.77 /7.69 /6.77–9.58 |42.23 /50.92 /42.23–66.26 |12,006,988 /12,015,164 /12,028,696 |
+
+The observed primary best-to-best ratio is **1.11716**, below1.2; the secondary
+median ratio is1.10172. These are this host/cohort's measurements, not a guarantee
+or isolated source-patch gain. AVX2 requires suitable CPU/OS support, NoGCRegion
+requires substantial memory and may fail outside this qualified cohort.
+[All ten results](../artifacts/vscode-allocation-rollout/integration-30-checkers8-nogc14/timing/comparison.json)
+retain every observation; independent review is ongoing. No production adoption or
+comprehensive correctness acceptance is claimed from artifact performance alone.
+
+Final integration31 acceptance is now underway: durable CLI opt-in, CLI-only rebuild
+against frozen29 Scanner IL, actual portable/AVX2 production publication and VSCode
+FIRST, then existing managed1721/foundation/original15304 gates once. Verify actual
+CLI/Scanner bindings and no drift before independent final review and commit.
+The accepted21 baseline remains distinct until those gates pass.
+
+### Integration31: accepted delivered correctness and observed target
+
+The delivered production CLI now offers explicit one-shot `--no-gc-region`; standard
+NoGCRegion uses 14 GiB total including 2 GiB LOH and a 20 GiB Linux MemAvailable
+preflight. Fallback and failed-end outcomes remain visible; these are not RSS limits
+or a watch-mode guarantee. Portable Server GC/default behavior stays unchanged.
+Actual ILC root CLI, frozen29 Scanner/Hashing inputs and portable/AVX2 binaries were
+verified. Portable default-four FIRST was 17.95 s, a single qualification observation
+with no target claim. Batch remains an unadopted single artifact observation.
+
+Independent source review covered complete byte-name lookup boundaries, standard
+XXH3 integer map hashing with equality and semantic hashes unchanged, exact
+Node/Symbol pointer-identity comparer specialization with other key semantics
+preserved, and complete parser ArrayPool spill ownership with required arena clones.
+No isolated hash, comparer or ArrayPool performance gain is attributed.
+
+All existing correctness gates ran once: 1,730 managed cases, including the original
+1,721 and nine new CLI policy cases; Native foundation 3,153 original assertions plus
+87 shared controls; utilities 20; Program 9; all 15,304 original Native records exact.
+[Complete correctness result](../artifacts/vscode-allocation-rollout/integration-31-production-delivery/build-1/regressions/selected-result.json)
+and [independent correctness ACK](../artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json)
+retain unchanged expectations and frozen-input/binary evidence.
+
+The final fresh five-each cohort exercised the delivered AVX2 CLI with explicit
+`--no-gc-region`, matched checkers=8 in pinned Go and Native, identical source/library
+environment and no wrapper policy flags. All original diagnostic outputs and all
+five complete regions qualified.
+
+| Runtime | Wall best / median / range (s) | CPU best / median / range (s) | Median RSS (KiB) |
+|---|---:|---:|---:|
+| Pinned Go, eight checkers |6.06 / 6.78 / 6.06–8.33 |49.69 / 58.10 / 49.69–73.96 |8,814,056 |
+| Delivered AVX2 CLI, eight checkers, NoGCRegion |6.95 / 9.25 / 6.95–10.42 |44.02 / 60.80 / 44.02–74.12 |12,021,304 |
+
+Primary best-to-best ratio **1.1468647** meets the user's <=1.2x target in this cohort.
+Median/range/RSS are secondary variability and resource evidence; this is five
+observations of one workload, not a universal speed guarantee. Suitable AVX2 CPU/OS
+and sufficient memory are required. A brief approximately three-second read/review
+may have overlapped the opening run; every run remains retained, and the adjacent
+round-three best pair was not the opening pair.
+[Final delivered results](../artifacts/vscode-allocation-rollout/integration-31-production-delivery/timing/comparison.json)
+are separate from artifact30 and earlier default-four or failed-eight results.
+
+[Final independent acceptance ACK](../artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json)
+is clear. Root commit/clean checkpoint remains; source/metadata freeze is released for
+that commit, with no additional builds. [README reproduction](../README.md) documents actual
+portable/AVX2 publication, matched settings, explicit opt-in and outcome readback.
+No further configuration trial, capture or per-change gate is needed before final review.

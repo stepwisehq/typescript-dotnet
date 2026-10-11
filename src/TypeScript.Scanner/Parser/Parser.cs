@@ -722,21 +722,36 @@ public partial class Parser
     [System.Runtime.CompilerServices.InlineArray(16)]
     private struct ParseNodeBuffer { private Node first; }
 
-    // Shared managed append adapter for the two private parser list buffers; no header escapes.
-    private static void appendListNode(ref ParseNodeBuffer inlineNodes, ref Slice<Node> spilledNodes, ref int count, Node node)
+    // Private temporary spills never escape: both consumers clone into the AST arena.
+    // Keep the Go inline16 fast path; pool only the managed overflow storage.
+    private static void appendListNode(ref ParseNodeBuffer inlineNodes, ref Node[] spilledNodes, ref int count, Node node)
     {
         if (count < 16)
             inlineNodes[count] = node;
         else
         {
-            if (spilledNodes.IsNil)
+            if (spilledNodes is null)
             {
-                spilledNodes = Slice<Node>.Make(16, 32);
-                ((ReadOnlySpan<Node>)inlineNodes).CopyTo(spilledNodes.AsSpan());
+                spilledNodes = System.Buffers.ArrayPool<Node>.Shared.Rent(32);
+                ((ReadOnlySpan<Node>)inlineNodes).CopyTo(spilledNodes);
             }
-            spilledNodes = spilledNodes.Append(node);
+            else if (count == spilledNodes.Length)
+            {
+                var grown = System.Buffers.ArrayPool<Node>.Shared.Rent(checked(count * 2));
+                spilledNodes.AsSpan(0, count).CopyTo(grown);
+                returnListSpill(spilledNodes, count);
+                spilledNodes = grown;
+            }
+            spilledNodes[count] = node;
         }
         count++;
+    }
+
+    private static void returnListSpill(Node[] spilledNodes, int count)
+    {
+        if (spilledNodes is null) return;
+        spilledNodes.AsSpan(0, count).Clear();
+        System.Buffers.ArrayPool<Node>.Shared.Return(spilledNodes);
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:612:1.
@@ -749,48 +764,55 @@ public partial class Parser
         var outerReparseList = this.reparseList;
         this.reparseList = default;
         ParseNodeBuffer inlineNodes = default;
-        Slice<Node> spilledNodes = default;
+        Node[] spilledNodes = null;
         int listLength = 0;
+        try
         {
-            var i = 0;
-            for (; !this.isListTerminator(kind); i++)
             {
-                if (this.isListElement(kind, false))
+                var i = 0;
+                for (; !this.isListTerminator(kind); i++)
                 {
-                    var elt = parseElement(this, listLength, state);
-                    if ((GoRuntime.Len(this.reparseList) != 0))
+                    if (this.isListElement(kind, false))
                     {
+                        var elt = parseElement(this, listLength, state);
+                        if ((GoRuntime.Len(this.reparseList) != 0))
                         {
-                            foreach (var e in GoRuntime.RangeValues(this.reparseList))
                             {
-                                if (((((Ast.IsJSTypeAliasDeclaration(e) || Ast.IsJSImportDeclaration(e))) && (kind != ParsingContext.SourceElements)) && (kind != ParsingContext.BlockStatements)))
+                                foreach (var e in GoRuntime.RangeValues(this.reparseList))
                                 {
-                                    outerReparseList = GoRuntime.Append(outerReparseList, e);
-                                }
-                                else
-                                {
-                                    appendListNode(ref inlineNodes, ref spilledNodes, ref listLength, e);
+                                    if (((((Ast.IsJSTypeAliasDeclaration(e) || Ast.IsJSImportDeclaration(e))) && (kind != ParsingContext.SourceElements)) && (kind != ParsingContext.BlockStatements)))
+                                    {
+                                        outerReparseList = GoRuntime.Append(outerReparseList, e);
+                                    }
+                                    else
+                                    {
+                                        appendListNode(ref inlineNodes, ref spilledNodes, ref listLength, e);
+                                    }
                                 }
                             }
+
+                            this.reparseList = default;
                         }
 
-                        this.reparseList = default;
+                        appendListNode(ref inlineNodes, ref spilledNodes, ref listLength, elt);
+                        continue;
                     }
 
-                    appendListNode(ref inlineNodes, ref spilledNodes, ref listLength, elt);
-                    continue;
-                }
-
-                if (this.abortParsingListOrMoveToNextToken(kind))
-                {
-                    break;
+                    if (this.abortParsingListOrMoveToNextToken(kind))
+                    {
+                        break;
+                    }
                 }
             }
-        }
 
-        this.reparseList = outerReparseList;
-        this.parsingContexts = saveParsingContexts;
-        return this.nodeSliceArena.CloneHeader(spilledNodes.IsNil ? ((ReadOnlySpan<Node>)inlineNodes).Slice(0, listLength) : spilledNodes.AsSpan());
+            this.reparseList = outerReparseList;
+            this.parsingContexts = saveParsingContexts;
+            return this.nodeSliceArena.CloneHeader(spilledNodes is null ? ((ReadOnlySpan<Node>)inlineNodes).Slice(0, listLength) : spilledNodes.AsSpan(0, listLength));
+        }
+        finally
+        {
+            returnListSpill(spilledNodes, listLength);
+        }
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:644:1.
@@ -813,23 +835,52 @@ public partial class Parser
         var saveParsingContexts = this.parsingContexts;
         this.parsingContexts |= (1 << (int)(kind));
         ParseNodeBuffer inlineNodes = default;
-        Slice<Node> spilledNodes = default;
+        Node[] spilledNodes = null;
         int listLength = 0;
-        while (true)
+        try
         {
-            if (this.isListElement(kind, false))
+            while (true)
             {
-                var startPos = this.nodePos();
-                var element = parseElement(this, state);
-                if ((element == null))
+                if (this.isListElement(kind, false))
                 {
-                    this.parsingContexts = saveParsingContexts;
-                    return null;
-                }
+                    var startPos = this.nodePos();
+                    var element = parseElement(this, state);
+                    if ((element == null))
+                    {
+                        this.parsingContexts = saveParsingContexts;
+                        return null;
+                    }
 
-                appendListNode(ref inlineNodes, ref spilledNodes, ref listLength, element);
-                if (this.parseOptional(Kind.CommaToken))
-                {
+                    appendListNode(ref inlineNodes, ref spilledNodes, ref listLength, element);
+                    if (this.parseOptional(Kind.CommaToken))
+                    {
+                        continue;
+                    }
+
+                    if (this.isListTerminator(kind))
+                    {
+                        break;
+                    }
+
+                    if (((this.token != Kind.CommaToken) && (kind == ParsingContext.EnumMembers)))
+                    {
+                        this.parseErrorAtCurrentToken(Diagnostics.An_enum_member_name_must_be_followed_by_a_or);
+                    }
+                    else
+                    {
+                        this.parseExpected(Kind.CommaToken);
+                    }
+
+                    if ((((((kind == ParsingContext.ObjectLiteralMembers) || (kind == ParsingContext.ImportAttributes))) && (this.token == Kind.SemicolonToken)) && !this.hasPrecedingLineBreak()))
+                    {
+                        this.nextToken();
+                    }
+
+                    if ((startPos == this.nodePos()))
+                    {
+                        this.nextToken();
+                    }
+
                     continue;
                 }
 
@@ -838,41 +889,19 @@ public partial class Parser
                     break;
                 }
 
-                if (((this.token != Kind.CommaToken) && (kind == ParsingContext.EnumMembers)))
+                if (this.abortParsingListOrMoveToNextToken(kind))
                 {
-                    this.parseErrorAtCurrentToken(Diagnostics.An_enum_member_name_must_be_followed_by_a_or);
+                    break;
                 }
-                else
-                {
-                    this.parseExpected(Kind.CommaToken);
-                }
-
-                if ((((((kind == ParsingContext.ObjectLiteralMembers) || (kind == ParsingContext.ImportAttributes))) && (this.token == Kind.SemicolonToken)) && !this.hasPrecedingLineBreak()))
-                {
-                    this.nextToken();
-                }
-
-                if ((startPos == this.nodePos()))
-                {
-                    this.nextToken();
-                }
-
-                continue;
             }
 
-            if (this.isListTerminator(kind))
-            {
-                break;
-            }
-
-            if (this.abortParsingListOrMoveToNextToken(kind))
-            {
-                break;
-            }
+            this.parsingContexts = saveParsingContexts;
+            return this.newNodeList(Core.NewTextRange(pos, this.nodePos()), this.nodeSliceArena.CloneHeader(spilledNodes is null ? ((ReadOnlySpan<Node>)inlineNodes).Slice(0, listLength) : spilledNodes.AsSpan(0, listLength)));
         }
-
-        this.parsingContexts = saveParsingContexts;
-        return this.newNodeList(Core.NewTextRange(pos, this.nodePos()), this.nodeSliceArena.CloneHeader(spilledNodes.IsNil ? ((ReadOnlySpan<Node>)inlineNodes).Slice(0, listLength) : spilledNodes.AsSpan()));
+        finally
+        {
+            returnListSpill(spilledNodes, listLength);
+        }
     }
 
     // Return a non-nil (but possibly empty) NodeList if parsing was successful, a missing NodeList if the opening

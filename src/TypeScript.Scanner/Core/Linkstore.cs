@@ -8,6 +8,14 @@ namespace TypeScript.Scanner;
 internal sealed class LinkStore<K, V>
     where K : notnull where V : struct
 {
+    // Checker Node/Symbol keys are Go pointers: use standard reference identity
+    // without virtual object equality/hash dispatch. Preserve Go's generic
+    // comparable-key adaptation for all other K, including value/string keys.
+    // RuntimeHelpers still supplies the managed identity hash; no Go hash claim.
+    private static readonly IEqualityComparer<K> KeyComparer =
+        typeof(K) == typeof(Node) || typeof(K) == typeof(Symbol)
+            ? (IEqualityComparer<K>)(object)ReferenceEqualityComparer.Instance
+            : EqualityComparer<K>.Default;
     private Dictionary<K, ulong>? entries;
     private readonly LinkStoreArena<V> arena = new();
 
@@ -18,7 +26,7 @@ internal sealed class LinkStore<K, V>
     {
         if (entries is not null && entries.TryGetValue(key, out var location))
             return ref arena.Get(location);
-        entries ??= new();
+        entries ??= new(KeyComparer);
         location = arena.New();
         entries[key] = location;
         return ref arena.Get(location);

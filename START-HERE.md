@@ -14,6 +14,11 @@ mandate below authorizes successive no-emit checking campaigns until its final g
 
 ## Current operating procedure: comprehensive allocation rollout
 
+Latest user boundary (2026-10-11): abandon the debugger/runtime-crash and heap-capture
+investigation after repeated platform classifier errors. Preserve existing evidence;
+do not resume that line or attempt a workaround after re-entry. Ordinary allocation
+and performance work remains authorized. Read the latest STATE entry first.
+
 The whole-checker gate was accepted. The user subsequently authorized VS Code
 checking, profiling and comprehensive Go-faithful allocation reduction. Older
 instructions below that defer optimization or stop at checker acceptance are
@@ -93,6 +98,11 @@ Go-faithful opportunities; do not treat committing measured progress as completi
 of that mandate. Keep the accepted checkpoint separate from active work.
 
 ## Current performance target (2026-10-11)
+
+Latest clarification: use **best of five for both Native AOT and pinned Go in the
+same interleaved cohort** as the primary <=1.2x wall-time gate. Median and range are
+secondary variability evidence; do not reject a candidate solely for a worse
+median or compare its best with a slower Go run. Preserve every measured result.
 
 The user set a concrete target: the Linux x64 Native AOT compiler should type-check
 VSCode in no more than **1.2 times the pinned Go compiler's wall time**, under equivalent

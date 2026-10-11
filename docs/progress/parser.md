@@ -30,3 +30,23 @@ dotnet run --project tools/CSharpFormat/CSharpFormat.csproj -- /scratch/*.cs
 ```
 
 - Complete and stopped. Final evidence and mapping are recorded; no unresolved implementation action. See ../STATE.md for acceptance limits and any later mandate.
+
+### Temporary list spill reuse (2026-10-11, integrated correctness verified)
+
+Both generic parseListIndex and parseDelimitedList retain the upstream local16-node
+scratch fast path and required nodeSliceArena.CloneHeader ownership boundary. Their
+private overflow arrays now use standard ArrayPool<Node> leases. Recursive calls own
+independent leases; growth clears and returns the previous written prefix, and finally
+clears/returns the final lease on normal, nil-element and exceptional exits. Only the
+logical node count is cloned; pool bucket capacity never escapes into AST headers.
+This adapts Go's non-escaping temporary append storage, not a claim that upstream
+explicitly pools it. Retained source/token text and AST arena arrays remain owned.
+Independent source review and integration31 integrated correctness passed: 1730
+managed cases with zero failures or skips; Native 3153 foundation records, 87 shared
+controls, 20 utilities, 9 Program controls and all 15,304 original records were exact.
+See the [independent correctness review](../../artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json)
+and [VS Code status](../VSCODE-CHECK-STATUS.md). This verifies the integrated implementation;
+it does not attribute an isolated gain to pooled spills. The [final independent timing review](../../artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json)
+verified the observed target pass: best-of-five Native 6.95s / pinned Go 6.06s =
+1.1469x (14.7% slower), scoped to AVX2, matched eight checkers and explicit
+NoGCRegion. This is not a portable-default or universal performance guarantee.

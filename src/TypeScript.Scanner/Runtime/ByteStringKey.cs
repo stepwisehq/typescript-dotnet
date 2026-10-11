@@ -53,6 +53,10 @@ public readonly struct ByteStringKey : IEquatable<ByteStringKey>, IComparable<By
         return value.Length.CompareTo(other.value.Length);
     }
 
+    // CLR map implementation adaptation: standard XXH3 truncated to Dictionary's
+    // int hash replaces XXH32, without changing logical Go byte keys or equality.
+    // Go's runtime string-map hash is not XXH3; these hash bits are not compiler
+    // cache identities. Retained and alternate keys share this exact operation.
     // A static standard hash has no per-lookup state object. Latin1 represents
     // the raw byte-character compatibility owner exactly, never UTF8/WTF8-decodes
     // it. Non-byte public strings cannot equal byte owners and retain ordinal
@@ -61,7 +65,7 @@ public readonly struct ByteStringKey : IEquatable<ByteStringKey>, IComparable<By
     private static int ContentHash(ByteStringValue key)
     {
         if (key.IsNull) throw new ArgumentNullException(nameof(key));
-        if (key.IsBytes) return unchecked((int)XxHash32.HashToUInt32(key.ByteSpan));
+        if (key.IsBytes) return unchecked((int)XxHash3.HashToUInt64(key.ByteSpan));
         var chars = key.CharSpan;
         if (!GoString.IsByteText(chars))
             return string.GetHashCode(chars, StringComparison.Ordinal);
@@ -71,7 +75,7 @@ public readonly struct ByteStringKey : IEquatable<ByteStringKey>, IComparable<By
         try
         {
             Encoding.Latin1.GetBytes(chars, bytes);
-            return unchecked((int)XxHash32.HashToUInt32(bytes));
+            return unchecked((int)XxHash3.HashToUInt64(bytes));
         }
         finally
         {

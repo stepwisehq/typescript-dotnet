@@ -6,7 +6,7 @@ using TypeScript.Checking;
 using TypeScript.Scanner;
 using TsScanner = TypeScript.Scanner.Scanner;
 
-const string usage = "Usage: tscheck --runtime-info | --inspect-program <tsconfig> | --inspect-project <tsconfig> | --inspect-config <tsconfig> | --config <tsconfig> [--json] [--noEmit] | --project <tscheck.json> [--json]";
+const string usage = "Usage: tscheck --runtime-info | --inspect-program <tsconfig> | --inspect-project <tsconfig> | --inspect-config <tsconfig> | --config <tsconfig> [--json] [--noEmit] [--no-gc-region] | --project <tscheck.json> [--json]";
 // Authored runtime probe; reports the executing runtime rather than build intent.
 if (args.Length == 1 && args[0] == "--runtime-info")
 {
@@ -21,21 +21,9 @@ if (args.Length == 1 && args[0] is "--help" or "-h")
     return 0;
 }
 
-// This authored CLI accepts only its existing modes plus the source noEmit
-// override for ordinary --config checking; it is not a general flag parser.
-bool json = false, noEmit = false;
-bool validArguments = args.Length >= 2 && args[0] is
-    "--project" or "--config" or "--inspect-config" or "--inspect-project" or "--inspect-program";
-if (validArguments)
-    foreach (string argument in args.Skip(2))
-    {
-        if (argument == "--json" && !json)
-            json = true;
-        else if (argument == "--noEmit" && args[0] == "--config" && !noEmit)
-            noEmit = true;
-        else
-            validArguments = false;
-    }
+// The optional region is an authored one-shot execution policy, not a compiler option.
+bool validArguments = CliArguments.TryParse(args, out var options);
+bool json = options.Json, noEmit = options.NoEmit;
 if (!validArguments)
 {
     Console.Error.WriteLine(usage);
@@ -104,6 +92,7 @@ try
         return output.ExitCode;
     }
 
+    using var noGcRegion = options.NoGcRegion ? new NoGcRegionPolicy() : null;
     Project project = fullConfiguration ? Project.LoadConfiguration(args[1], noEmit ? new CompilerOptions { NoEmit = Tristate.True } : null) : Project.Load(args[1]);
     IReadOnlyList<Diagnostic> diagnostics = project.Check();
     var checkedOutput = new CliResult

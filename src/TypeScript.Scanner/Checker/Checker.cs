@@ -9257,7 +9257,7 @@ public sealed partial class Checker
     private sealed class ObjectLiteralDiscriminator(Checker c, Slice<Node> props, Slice<Symbol> members) : Discriminator
     {
         public int len() => GoRuntime.Len(props) + GoRuntime.Len(members);
-        public string name(int index) => index < GoRuntime.Len(props) ? props[index].Symbol().Name : members[index - GoRuntime.Len(props)].Name;
+        public ByteStringValue name(int index) => index < GoRuntime.Len(props) ? props[index].Symbol().NameValue : members[index - GoRuntime.Len(props)].NameValue;
         public bool matches(int index, Type t)
         {
             Type propType;
@@ -38317,7 +38317,7 @@ public sealed partial class Checker
                 var parentType = this.getContextualType(declaration.Parent, contextFlags);
                 if (((parentType != null) && (parentType.symbol != this.getSymbolOfDeclaration(declaration.Parent))))
                 {
-                    return this.getTypeOfPropertyOfContextualType(parentType, this.getSymbolOfDeclaration(declaration).Name);
+                    return this.getTypeOfPropertyOfContextualType(parentType, this.getSymbolOfDeclaration(declaration).NameValue);
                 }
             }
         }

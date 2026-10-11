@@ -630,14 +630,14 @@ public sealed partial class Checker
     private interface Discriminator
     {
         int len();
-        string name(int index);
+        ByteStringValue name(int index);
         bool matches(int index, Type t);
     }
 
     private sealed class TypeDiscriminator(Checker c, Slice<Symbol> props, Func<Type, Type, Ternary> isRelatedTo) : Discriminator
     {
         public int len() => props.Count;
-        public string name(int index) => props[index].Name;
+        public ByteStringValue name(int index) => props[index].NameValue;
         // checker/relater.go:1044. Go ranges over nil for a never property type.
         public bool matches(int index, Type t)
         {
