@@ -1,0 +1,844 @@
+{
+  "status": "selected-dependency-applicability-record-with-explicit-remaining-channels",
+  "scope": "Compile/MatchString chosen engines and NFD.String actual worker closure; mixed APIs require explicit selected assertion channels, not whole-function credit",
+  "separateFromTypeScriptTestInventory": true,
+  "functions": 86,
+  "entries": [
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestGoodCompile",
+      "line": 70,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestBadCompile",
+      "line": 76,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestMatch",
+      "line": 101,
+      "disposition": "selected-MatchString-original-boolean-channel-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestMatchFunction",
+      "line": 117,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestMatchFunction requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestCopyMatch",
+      "line": 136,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestCopyMatch requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestReplaceAll",
+      "line": 269,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestReplaceAll requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestReplaceAllLiteral",
+      "line": 290,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestReplaceAllLiteral requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestReplaceAllFunc",
+      "line": 335,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestReplaceAllFunc requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestQuoteMeta",
+      "line": 386,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestQuoteMeta requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestLiteralPrefix",
+      "line": 416,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestLiteralPrefix requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestSubexp",
+      "line": 458,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestSubexp requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestSplit",
+      "line": 518,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestSplit requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestParseAndCompile",
+      "line": 541,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestParseAndCompile requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestOnePassCutoff",
+      "line": 567,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestSwitchBacktrack",
+      "line": 583,
+      "disposition": "selected-MatchString-setup-adaptation-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestDeepEqual",
+      "line": 918,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestDeepEqual requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestMinInputLen",
+      "line": 959,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/all_test.go",
+      "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
+      "function": "TestUnmarshalText",
+      "line": 969,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestUnmarshalText requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/exec2_test.go",
+      "sourceSha256": "6e60356cc5532dcc1265776736916d5ee927d3601bb0958ae8d1b5b7f16cc120",
+      "function": "TestRE2Exhaustive",
+      "line": 15,
+      "disposition": "selected-streamed-boolean-full-partial-longest-channels-managed-and-Native-passed-dependency23-original-Short-skip-retained-capture-index-assertions-excluded"
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/exec_test.go",
+      "sourceSha256": "0b10ad15dd1f878c2c1b5ef265c570c7d74421c25736a7cb880130e68e810c04",
+      "function": "TestRE2Search",
+      "line": 66,
+      "disposition": "selected-streamed-boolean-full-partial-longest-channels-managed-and-Native-passed-dependency23-capture-index-assertions-excluded"
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/exec_test.go",
+      "sourceSha256": "0b10ad15dd1f878c2c1b5ef265c570c7d74421c25736a7cb880130e68e810c04",
+      "function": "TestFowler",
+      "line": 316,
+      "disposition": "selected-original-compile-admission-and-MatchString-channels-managed-and-Native-passed-dependency23-capture-index-assertions-excluded"
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/exec_test.go",
+      "sourceSha256": "0b10ad15dd1f878c2c1b5ef265c570c7d74421c25736a7cb880130e68e810c04",
+      "function": "TestLongest",
+      "line": 712,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestLongest requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/exec_test.go",
+      "sourceSha256": "0b10ad15dd1f878c2c1b5ef265c570c7d74421c25736a7cb880130e68e810c04",
+      "function": "TestProgramTooLongForBacktrack",
+      "line": 728,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFind",
+      "line": 167,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFind requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindString",
+      "line": 195,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindString requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindIndex",
+      "line": 237,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindIndex requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindStringIndex",
+      "line": 243,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindStringIndex requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindReaderIndex",
+      "line": 249,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindReaderIndex requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindAll",
+      "line": 257,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindAll requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindAllString",
+      "line": 286,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindAllString requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindAllIndex",
+      "line": 332,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindAllIndex requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindAllStringIndex",
+      "line": 338,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindAllStringIndex requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindSubmatch",
+      "line": 371,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindSubmatch requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindStringSubmatch",
+      "line": 409,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindStringSubmatch requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindSubmatchIndex",
+      "line": 454,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindSubmatchIndex requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindStringSubmatchIndex",
+      "line": 460,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindStringSubmatchIndex requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindReaderSubmatchIndex",
+      "line": 466,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindReaderSubmatchIndex requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindAllSubmatch",
+      "line": 474,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindAllSubmatch requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindAllStringSubmatch",
+      "line": 494,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindAllStringSubmatch requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindAllSubmatchIndex",
+      "line": 531,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindAllSubmatchIndex requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/find_test.go",
+      "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
+      "function": "TestFindAllStringSubmatchIndex",
+      "line": 537,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFindAllStringSubmatchIndex requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/onepass_test.go",
+      "sourceSha256": "d849c5acbc51979260c9802a352302fe971d163300428bfa15cb0d1f5ef491ef",
+      "function": "TestMergeRuneSet",
+      "line": 125,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/onepass_test.go",
+      "sourceSha256": "d849c5acbc51979260c9802a352302fe971d163300428bfa15cb0d1f5ef491ef",
+      "function": "TestCompileOnePass",
+      "line": 180,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp",
+      "source": "tools/.cache/go/src/regexp/onepass_test.go",
+      "sourceSha256": "d849c5acbc51979260c9802a352302fe971d163300428bfa15cb0d1f5ef491ef",
+      "function": "TestRunOnePass",
+      "line": 212,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp/syntax",
+      "source": "tools/.cache/go/src/regexp/syntax/parse_test.go",
+      "sourceSha256": "4cd14979742f9b43d287c0c27f62bacead4b1e4e6fe56f8d47570cfff9481d2b",
+      "function": "TestParseSimple",
+      "line": 227,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp/syntax",
+      "source": "tools/.cache/go/src/regexp/syntax/parse_test.go",
+      "sourceSha256": "4cd14979742f9b43d287c0c27f62bacead4b1e4e6fe56f8d47570cfff9481d2b",
+      "function": "TestParseFoldCase",
+      "line": 243,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp/syntax",
+      "source": "tools/.cache/go/src/regexp/syntax/parse_test.go",
+      "sourceSha256": "4cd14979742f9b43d287c0c27f62bacead4b1e4e6fe56f8d47570cfff9481d2b",
+      "function": "TestParseLiteral",
+      "line": 251,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp/syntax",
+      "source": "tools/.cache/go/src/regexp/syntax/parse_test.go",
+      "sourceSha256": "4cd14979742f9b43d287c0c27f62bacead4b1e4e6fe56f8d47570cfff9481d2b",
+      "function": "TestParseMatchNL",
+      "line": 262,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp/syntax",
+      "source": "tools/.cache/go/src/regexp/syntax/parse_test.go",
+      "sourceSha256": "4cd14979742f9b43d287c0c27f62bacead4b1e4e6fe56f8d47570cfff9481d2b",
+      "function": "TestParseNoMatchNL",
+      "line": 273,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp/syntax",
+      "source": "tools/.cache/go/src/regexp/syntax/parse_test.go",
+      "sourceSha256": "4cd14979742f9b43d287c0c27f62bacead4b1e4e6fe56f8d47570cfff9481d2b",
+      "function": "TestFoldConstants",
+      "line": 433,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp/syntax",
+      "source": "tools/.cache/go/src/regexp/syntax/parse_test.go",
+      "sourceSha256": "4cd14979742f9b43d287c0c27f62bacead4b1e4e6fe56f8d47570cfff9481d2b",
+      "function": "TestAppendRangeCollapse",
+      "line": 449,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp/syntax",
+      "source": "tools/.cache/go/src/regexp/syntax/parse_test.go",
+      "sourceSha256": "4cd14979742f9b43d287c0c27f62bacead4b1e4e6fe56f8d47570cfff9481d2b",
+      "function": "TestParseInvalidRegexps",
+      "line": 532,
+      "disposition": "complete-original-assertions-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "Go1.27.1 regexp/syntax",
+      "source": "tools/.cache/go/src/regexp/syntax/parse_test.go",
+      "sourceSha256": "4cd14979742f9b43d287c0c27f62bacead4b1e4e6fe56f8d47570cfff9481d2b",
+      "function": "TestToStringEquivalentParse",
+      "line": 559,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestToStringEquivalentParse requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp/syntax",
+      "source": "tools/.cache/go/src/regexp/syntax/parse_test.go",
+      "sourceSha256": "4cd14979742f9b43d287c0c27f62bacead4b1e4e6fe56f8d47570cfff9481d2b",
+      "function": "TestString",
+      "line": 623,
+      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestString requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+    },
+    {
+      "package": "Go1.27.1 regexp/syntax",
+      "source": "tools/.cache/go/src/regexp/syntax/prog_test.go",
+      "sourceSha256": "1f9a15f540211053c4b5f66e07469aee37715894dff0da223334c8e3049977f8",
+      "function": "TestCompile",
+      "line": 109,
+      "disposition": "complete-original-16-program-string-assertions-managed-and-Native-passed-dependency23-test-only-source-faithful-dump-observer"
+    },
+    {
+      "package": "Go1.27.1 regexp/syntax",
+      "source": "tools/.cache/go/src/regexp/syntax/simplify_test.go",
+      "sourceSha256": "c8aba87a1d6eec462b63fea3eea13dedcfc61d7f5580842c7c10219898f37c50",
+      "function": "TestSimplify",
+      "line": 141,
+      "disposition": "outside-selected-public-API-original-wrapper-asserts-unselected-RegexNode.String-serialization",
+      "reason": "Simplify algorithm remains complete and used by Compile/MatchString. Root explicitly retains serialization-dependent wrapper as excluded; no substitute whole-function assertion."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/composition_test.go",
+      "sourceSha256": "5d608de630e05519c35d44be484ca9d3663c285976cca6ce7f2e83546821adb6",
+      "function": "TestFlush",
+      "line": 50,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFlush observes composition forms; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/composition_test.go",
+      "sourceSha256": "5d608de630e05519c35d44be484ca9d3663c285976cca6ce7f2e83546821adb6",
+      "function": "TestInsert",
+      "line": 96,
+      "disposition": "original-output-length-channel-adapted-NFD.String-setup-managed-and-Native-passed-dependency23"
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/composition_test.go",
+      "sourceSha256": "5d608de630e05519c35d44be484ca9d3663c285976cca6ce7f2e83546821adb6",
+      "function": "TestDecomposition",
+      "line": 115,
+      "disposition": "selected-five-NFD-output-length-rows-adapted-String-setup-managed-and-Native-passed-dependency23-NFKD-excluded"
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/composition_test.go",
+      "sourceSha256": "5d608de630e05519c35d44be484ca9d3663c285976cca6ce7f2e83546821adb6",
+      "function": "TestComposition",
+      "line": 132,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestComposition observes composition forms; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/composition_test.go",
+      "sourceSha256": "5d608de630e05519c35d44be484ca9d3663c285976cca6ce7f2e83546821adb6",
+      "function": "TestCompositionAfterHangul",
+      "line": 140,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestCompositionAfterHangul observes composition forms; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/composition_test.go",
+      "sourceSha256": "5d608de630e05519c35d44be484ca9d3663c285976cca6ce7f2e83546821adb6",
+      "function": "TestCompositionBlockedByStarter",
+      "line": 186,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestCompositionBlockedByStarter observes composition forms; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/composition_test.go",
+      "sourceSha256": "5d608de630e05519c35d44be484ca9d3663c285976cca6ce7f2e83546821adb6",
+      "function": "TestCompositionSupplementaryPlane",
+      "line": 210,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestCompositionSupplementaryPlane observes composition forms; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/forminfo_test.go",
+      "sourceSha256": "734eee87c28d87a757c4a0de3e1c12ec7ac83fa4eb23c3bd9646483825ea34c5",
+      "function": "TestProperties",
+      "line": 11,
+      "disposition": "selected-canonical-worker-properties-channel-managed-and-Native-passed-dependency23-composing-and-compatibility-observations-excluded"
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/iter_test.go",
+      "sourceSha256": "ea16c2b78d70bd83c93dd318ce9da634ec208e2d46d0273dadbdeed376310a60",
+      "function": "TestIterNext",
+      "line": 32,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestIterNext observes unselected IterNext API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/iter_test.go",
+      "sourceSha256": "ea16c2b78d70bd83c93dd318ce9da634ec208e2d46d0273dadbdeed376310a60",
+      "function": "TestIterSegmentation",
+      "line": 83,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestIterSegmentation observes unselected IterSegmentation API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+      "function": "TestDecomposeSegment",
+      "line": 155,
+      "disposition": "complete-original-20-rows-managed-and-Native-passed-initial-dependency-gate",
+      "executionEvidence": {
+        "path": "validation/results/language-services-dependencies-initial.json",
+        "sha256": "54b26a3e2c3159c544e5a51e35b7bc856cf0058aa6c9d98693124611d39f4401"
+      }
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+      "function": "TestFirstBoundary",
+      "line": 190,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestFirstBoundary observes unselected FirstBoundary API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+      "function": "TestNextBoundary",
+      "line": 195,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestNextBoundary observes unselected NextBoundary API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+      "function": "TestDecomposeToLastBoundary",
+      "line": 312,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestDecomposeToLastBoundary observes unselected DecomposeToLastBoundary API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+      "function": "TestLastBoundary",
+      "line": 373,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestLastBoundary observes unselected LastBoundary API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+      "function": "TestSpan",
+      "line": 488,
+      "disposition": "selected-38-NFD-quickSpan-and-source-error-projection-rows-managed-and-Native-passed-dependency23-other-forms-and-public-byte-API-excluded"
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+      "function": "TestIsNormal",
+      "line": 566,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestIsNormal observes unselected IsNormal API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+      "function": "TestIsNormalString",
+      "line": 579,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestIsNormalString observes unselected IsNormalString API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+      "function": "TestAppend",
+      "line": 903,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestAppend observes unselected Append API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+      "function": "TestAppendString",
+      "line": 909,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestAppendString observes unselected AppendString API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+      "function": "TestBytes",
+      "line": 915,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestBytes observes unselected Bytes API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+      "function": "TestString",
+      "line": 924,
+      "disposition": "selected-109-cross-form-NFD-bootstrap-invariants-managed-and-Native-passed-dependency23-empty-AppendString-setup-adapted-to-NFD.String",
+      "reason": "Direct original NFD table is empty; selected NFD bootstrap from other three form tables retained. Other forms and public AppendString excluded."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+      "function": "TestLinking",
+      "line": 956,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestLinking observes Go binary linking; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/readwriter_test.go",
+      "sourceSha256": "c5f2c396eb5cb5da8bbed3a13ca3d13904c0c0d71d168aa5c1090817455e9da6",
+      "function": "TestReader",
+      "line": 29,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestReader observes unselected Reader API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/readwriter_test.go",
+      "sourceSha256": "c5f2c396eb5cb5da8bbed3a13ca3d13904c0c0d71d168aa5c1090817455e9da6",
+      "function": "TestWriter",
+      "line": 51,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestWriter observes unselected Writer API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/transform_test.go",
+      "sourceSha256": "6f2728a5dd5c7780d59ffc15c44854ecc7eaa81297a8649fec1c0c786bcf4472",
+      "function": "TestTransform",
+      "line": 14,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestTransform observes unselected Transform API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/transform_test.go",
+      "sourceSha256": "6f2728a5dd5c7780d59ffc15c44854ecc7eaa81297a8649fec1c0c786bcf4472",
+      "function": "TestTransformNorm",
+      "line": 104,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestTransformNorm observes unselected TransformNorm API or worker; no whole-function pass claimed."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/ucd_test.go",
+      "sourceSha256": "e369e2e87fc8562b8d8f67602ce6cddec01f8ba79110ba9cda8e37090ee9844f",
+      "function": "TestCharacterByCharacter",
+      "line": 220,
+      "disposition": "selected-official-Unicode17-NFD.String-conformance-channel-managed-and-Native-passed-dependency23",
+      "originalGoDisposition": "skipped-prevent-download-unless-long-local-or-UNICODE_DIR",
+      "reason": "Exact official17 fixture losslessly embedded; other forms/API channels excluded, not whole-function credit."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/ucd_test.go",
+      "sourceSha256": "e369e2e87fc8562b8d8f67602ce6cddec01f8ba79110ba9cda8e37090ee9844f",
+      "function": "TestStandardTests",
+      "line": 246,
+      "disposition": "selected-official-Unicode17-NFD.String-conformance-channel-managed-and-Native-passed-dependency23",
+      "originalGoDisposition": "skipped-prevent-download-unless-long-local-or-UNICODE_DIR",
+      "reason": "Exact official17 fixture losslessly embedded; other forms/API channels excluded, not whole-function credit."
+    },
+    {
+      "package": "x/text v0.42.0 unicode/norm",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/ucd_test.go",
+      "sourceSha256": "e369e2e87fc8562b8d8f67602ce6cddec01f8ba79110ba9cda8e37090ee9844f",
+      "function": "TestPerformance",
+      "line": 258,
+      "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
+      "reason": "Original TestPerformance observes performance rather than selected correctness; no whole-function pass claimed.",
+      "originalGoDisposition": "skipped-prevent-download-unless-long-local-or-UNICODE_DIR"
+    }
+  ],
+  "referenceEvidence": {
+    "regexp": "artifacts/language-services/integration-1/regexp-original-go.jsonl",
+    "regexpCounts": {
+      "testFunctions": 44,
+      "exampleFunctions": 31,
+      "syntaxTestFunctions": 12,
+      "skips": 0
+    },
+    "norm": "artifacts/language-services/integration-1/nfd-original-go.jsonl",
+    "normCounts": {
+      "testFunctions": 29,
+      "exampleFunctions": 2,
+      "skippedTestFunctions": 3,
+      "sourceOnlyBuildTaggedTestProperties": 1
+    },
+    "qualification": "Reference-only example/unused-API assertions do not increase C# coverage; default norm run excludes build-tagged TestProperties."
+  },
+  "latestManagedEvidence": {
+    "trx": "artifacts/language-services/integration-1/tests/dependencies-6.trx",
+    "trxSha256": "0556884d2681c9ab152889ddfab2ed8c626226649d53144d0eb54226cab995e9",
+    "scope": "All142 ordinary xUnit cases passed, zero skips, against clean build23. All current22 regexp groups, authored module-regex group and7 added selected NFD channels passed. Actual refreshed Native execution remains pending.",
+    "corpusCounters": {
+      "RE2Search": {
+        "consumed": 1888,
+        "matched": 1804,
+        "matchAssertions": 7216,
+        "unsupportedByteEscapeSkips": 80,
+        "utf8ByteBoundarySkips": 4,
+        "failures": 0
+      },
+      "RE2Exhaustive": {
+        "consumed": 5716884,
+        "matched": 5202968,
+        "matchAssertions": 20811872,
+        "unsupportedByteEscapeSkips": 511220,
+        "utf8ByteBoundarySkips": 2696,
+        "failures": 0
+      },
+      "Fowler": {
+        "consumed": 347,
+        "matched": 346,
+        "originalCompileRejections": 1,
+        "sourceControlRowsExcludedBeforeConsumedCount": 17
+      }
+    }
+  },
+  "priorManagedEvidence": {
+    "trx": "artifacts/language-services/integration-1/tests/dependencies-5.trx",
+    "trxSha256": "0a65a2ffdb9783d35427b82d95be638a06601082328372c5e5c47798cf62696c",
+    "scope": "All22 regexp groups, authored module-regex group, all7 added selected NFD channels passed. Combined142 cases had139passes and3 unrelated formatting failures; no whole dependency acceptance or Native refresh claimed.",
+    "corpusCounters": {
+      "RE2Search": {
+        "consumed": 1888,
+        "matched": 1804,
+        "matchAssertions": 7216,
+        "unsupportedByteEscapeSkips": 80,
+        "utf8ByteBoundarySkips": 4,
+        "failures": 0
+      },
+      "RE2Exhaustive": {
+        "consumed": 5716884,
+        "matched": 5202968,
+        "matchAssertions": 20811872,
+        "unsupportedByteEscapeSkips": 511220,
+        "utf8ByteBoundarySkips": 2696,
+        "failures": 0
+      },
+      "Fowler": {
+        "consumed": 347,
+        "matched": 346,
+        "originalCompileRejections": 1,
+        "sourceControlRowsExcludedBeforeConsumedCount": 17
+      }
+    }
+  },
+  "latestNativeEvidence": {
+    "proof": "validation/results/language-services-dependencies-23.json",
+    "proofSha256": "257f0027aea78d97351e33a851a83a9c4892773a3f02904b66b849b761dcb759",
+    "log": "artifacts/language-services/integration-1/native-run-23.log",
+    "status": "selected-dependency-assertion-packet-Native-passed",
+    "qualification": "Unused APIs/mixed original functions remain excluded; no LS/server or retained-regression acceptance."
+  }
+}

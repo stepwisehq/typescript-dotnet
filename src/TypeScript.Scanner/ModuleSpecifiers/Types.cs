@@ -25,29 +25,43 @@ internal sealed class ModuleSpecifiersResult
 }
 
 internal readonly record struct ModulePath(RootedFilePath FileName, bool IsInNodeModules, bool IsRedirect);
-internal enum ImportModuleSpecifierPreference
+internal readonly record struct ImportModuleSpecifierPreference
 {
-    None,
-    Shortest,
-    ProjectRelative,
-    Relative,
-    NonRelative
+    private readonly string value;
+    internal ImportModuleSpecifierPreference(string value) => this.value = value;
+    internal string Value => value ?? "";
+
+    public bool Equals(ImportModuleSpecifierPreference other) => Value == other.Value;
+    public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(Value);
+    public override string ToString() => Value;
+    internal static readonly ImportModuleSpecifierPreference None = new("");
+    internal static readonly ImportModuleSpecifierPreference Shortest = new("shortest");
+    internal static readonly ImportModuleSpecifierPreference ProjectRelative = new("project-relative");
+    internal static readonly ImportModuleSpecifierPreference Relative = new("relative");
+    internal static readonly ImportModuleSpecifierPreference NonRelative = new("non-relative");
 }
 
-internal enum ImportModuleSpecifierEndingPreference
+internal readonly record struct ImportModuleSpecifierEndingPreference
 {
-    None,
-    Auto,
-    Minimal,
-    Index,
-    Js
+    private readonly string value;
+    internal ImportModuleSpecifierEndingPreference(string value) => this.value = value;
+    internal string Value => value ?? "";
+
+    public bool Equals(ImportModuleSpecifierEndingPreference other) => Value == other.Value;
+    public override int GetHashCode() => StringComparer.Ordinal.GetHashCode(Value);
+    public override string ToString() => Value;
+    internal static readonly ImportModuleSpecifierEndingPreference None = new("");
+    internal static readonly ImportModuleSpecifierEndingPreference Auto = new("auto");
+    internal static readonly ImportModuleSpecifierEndingPreference Minimal = new("minimal");
+    internal static readonly ImportModuleSpecifierEndingPreference Index = new("index");
+    internal static readonly ImportModuleSpecifierEndingPreference Js = new("js");
 }
 
-internal sealed class UserPreferences
+internal struct UserPreferences
 {
     internal ImportModuleSpecifierPreference ImportModuleSpecifierPreference;
     internal ImportModuleSpecifierEndingPreference ImportModuleSpecifierEnding;
-    internal List<string>? AutoImportSpecifierExcludeRegexes = null;
+    internal Slice<string> AutoImportSpecifierExcludeRegexes;
 }
 
 internal sealed class ModuleSpecifierOptions

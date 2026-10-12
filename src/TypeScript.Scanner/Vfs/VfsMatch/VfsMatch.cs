@@ -79,7 +79,7 @@ public static class VfsMatch
 
     internal static (GlobPattern? Pattern, bool Ok) compileGlobPattern(ByteStringValue spec, RootedDirectoryPath basePath, Usage usage, CaseSensitivity sensitivity)
     {
-        var parts = TsPath.ReducePathComponents(TsPath.GetPathComponents(TsPath.CombinePaths(basePath.AsValue(), spec)));
+        var parts = TsPath.ReducePathComponents(TsPath.GetPathComponents(TsPath.CombinePaths(basePath.AsValue().IsNull ? ByteStringValue.FromString("") : basePath.AsValue(), spec)));
         if (parts[0].StartsWith("^/~ts-uri~/"u8))
             sensitivity = CaseSensitivity.CaseSensitive;
         if (usage != Usage.Exclude && parts[parts.Length - 1].EqualsBytes("**"u8))
@@ -436,6 +436,8 @@ public static class VfsMatch
         }
         return patterns.Length == 0 ? null : new SpecMatcher(patterns);
     }
+    internal static SpecMatcher? NewSpecMatcher(Slice<string> specs, RootedDirectoryPath path, Usage usage, CaseSensitivity sensitivity) =>
+        newSpecMatcher(specs.AsSpan(), path, usage, sensitivity, static value => ByteStringValue.FromString(value));
     public static SpecMatcher? NewSpecMatcher(List<string>? specs, RootedDirectoryPath path, Usage usage, CaseSensitivity sensitivity) =>
         newSpecMatcher(Borrow(specs), path, usage, sensitivity, static value => ByteStringValue.FromString(value));
     public static SpecMatcher? NewSpecMatcher(List<PathPattern>? specs, RootedDirectoryPath path, Usage usage, CaseSensitivity sensitivity) =>

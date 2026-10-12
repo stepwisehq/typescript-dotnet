@@ -1,0 +1,34 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "status": "assertion-source-written-not-executed",
+  "originalFunctionsPorted": [
+    "TestProcessChanges",
+    "TestOverlayFSFileSystem",
+    "TestSnapshotFSBuilderCachesReturnedSourceHandle",
+    "TestSnapshotFSBuilder",
+    "TestSnapshotFS",
+    "TestSourceFS",
+    "TestRealpathAliasLifecycle",
+    "TestExpandAndFilterWatchEvents"
+  ],
+  "pending": [
+    {
+      "function": "TestAutoImportBuilderFS",
+      "dependency": "genuine autoImportBuilderFS owner"
+    }
+  ],
+  "adaptations": [
+    "Original parallel subtest scheduling becomes sequential; explicit concurrent fifty-call assertion remains concurrent.",
+    "Original vfstest.FromMap uses linked accepted compiler baseline read/symlink fixture and explicit finite mutation adapter. Original rooted paths, case policy, contents and expectations retained.",
+    "Original package-internal fields remain internal under shared friend access; no public assertion-only APIs."
+  ],
+  "sources": {
+    "upstream/TypeScript/tsc/internal/project/overlayfs_test.go": "3a90d7f460cd805bf9fd8995db0542b0eea91c339e99070ecde93bc2084feb65",
+    "upstream/TypeScript/tsc/internal/project/snapshotfs_test.go": "93c4a9ea209838fab985f95aa20d1cda66d2f66e2888238c67e0044421ab805a",
+    "validation/LanguageServices.Checks/ProjectOverlayChecks.cs": "e7deb15c0fa338e022bd72196364a57895933d34343a5d07a4beecf5090db9d6",
+    "validation/LanguageServices.Checks/ProjectSnapshotChecks.cs": "5e96a1250f7dc5609412b6d4bd1dd94417d5cc38c7901ee99ff27d2e4d19d624",
+    "validation/LanguageServices.Checks/ProjectSnapshotAliasChecks.cs": "1c6b33396e92e41bb6a5513962bddfd1a8a11bf86bb1c55fee91ae5a680494ba",
+    "validation/LanguageServices.Checks/ProjectSnapshotSourceHandleChecks.cs": "5e476538d059e7afa863bb9a540b2174ad3e97738c55b5e57ac0fdda7e305e09",
+    "validation/LanguageServices.Checks/ProjectTestFileSystem.cs": "12fd27a32f5a025a8a98aaf3caf3ce0a4a07234bd0cff8d44ff7f0922d45d70b"
+  }
+}

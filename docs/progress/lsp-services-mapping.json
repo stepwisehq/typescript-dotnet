@@ -1,0 +1,224 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "status": "source-written-with-scoped-managed-and-Native23-dependency-evidence-not-service-acceptance",
+  "entries": [
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/checker/services.go",
+      "port": "src/TypeScript.Scanner/Checker/Services.cs",
+      "upstreamFunctions": 66,
+      "scope": "complete workers; IsArgumentsSymbol retains existing genuine counterpart",
+      "upstreamSha256": "81d269e01aab93a981ee170af2a675a79756e326f39fa617db4a62c05da7d547",
+      "portSha256": "124043369797d2080b8245bee920379187c0abb8810a80303c82875b264185f1",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/checker/exports.go",
+      "port": "src/TypeScript.Scanner/Checker/ServiceExports.cs",
+      "upstreamFunctions": 95,
+      "scope": "remaining73 functions;22 existing counterpart declarations retained",
+      "upstreamSha256": "28a08d1a69e9cdfeffa900bead4b2792a167076f8d01d8061d18243b12ce8dbf",
+      "portSha256": "b05a48b3664afc8e0df1ee6d46ed94863a1319504bcedb351e94cf8dce3f7b14",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/checker/nodebuilder_hover.go",
+      "port": "src/TypeScript.Scanner/Checker/NodeBuilderHover.cs",
+      "upstreamFunctions": 18,
+      "scope": "complete18 hover workers plus demanded expansion predicates from nodebuilderimpl",
+      "upstreamSha256": "2c71303baec8a2e8fe5fa3f78cb8a945dfcffd2762408694275cc75d112c8ff4",
+      "portSha256": "fd07dca29970bf4c7ad73699670e151adb719021537c12d15009914162e34754",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/astnav/tokens.go",
+      "port": "src/TypeScript.Scanner/AstNav/Tokens.cs",
+      "upstreamFunctions": 18,
+      "scope": "complete token navigation workers and package constants",
+      "upstreamSha256": "b0ab046b632d49503166bfe4dac1fc59dfda16dfb4300c10472823aa437fbbd9",
+      "portSha256": "88ee1c600d96ced9bf35043696ae382ce54979fbede12f7bbf76c8703d2c8085",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/core/binarysearch.go",
+      "port": "src/TypeScript.Scanner/Core/BinarySearch.cs",
+      "upstreamFunctions": 1,
+      "scope": "complete BinarySearchUniqueFunc",
+      "upstreamSha256": "0d965e9924f4c2364049638ed6569c5f9940515ab5e35583ddfb6fa6062e88ca",
+      "portSha256": "220d66df275c64a41c71d51012edd639ac11e4420d00dc7eb657f3529d4163d5",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/lsutil/asi.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Utilities/Asi.cs",
+      "upstreamFunctions": 7,
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "75d4778cc14a3ea9d2402485d59f5698382b7a60fb2242fc7ed5beafd2d2e305",
+      "portSha256": "6326f4252295cbb744d8c970789f034d729da4a62939c9bcecbd4f8a95b19500",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/lsutil/children.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Utilities/Children.cs",
+      "upstreamFunctions": 5,
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "30c665dabf2dea115f9e7373c76fa9b081579401e66c42159104effbec46470d",
+      "portSha256": "1913b1b5838a22db3c9544a7816610e188c3deab7a265c73c7567062cce9d488",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/lsutil/completednode.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Utilities/CompletedNode.cs",
+      "upstreamFunctions": 4,
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "f3865778b6721355f9ccd2864f97134d07130901c47f35f737c299caaa3fea7c",
+      "portSha256": "69c77af83f03d725fbcbc38e94cef439595540b59d3435c2168f3930a0e9aaeb",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/lsutil/formatcodeoptions.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Utilities/FormatCodeOptions.cs",
+      "upstreamFunctions": 3,
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "9b177574a774eecdac39041a641c2c55dbf9be4960cc6c6a01f2cd7cd927b73e",
+      "portSha256": "c6a135666294c67ebc9f6532eccd3236c4d3b96374d09eb75ecf576895bb40cf",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/lsutil/organizeimports.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Utilities/OrganizeImports.cs",
+      "upstreamFunctions": 37,
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "e4051d6c5742a0383292f606b0121129f4b0db24e11aab3d50443ac050731cce",
+      "portSha256": "4b32c09e2038c139b875760b3f30ed5a14799169a065aeeb1b9e5487025fe593",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/lsutil/symbol_display.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Utilities/SymbolDisplay.cs",
+      "upstreamFunctions": 9,
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "f543cde4da34a7e7cb20bb2eb097a97361bcad9f183a5461bebe396a833a8cd3",
+      "portSha256": "165bc91184e31d40e351854ac529e482b44c1a46585a6529c1d2e47c787e87a0",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/lsutil/userpreferences.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Utilities/UserPreferences.cs",
+      "upstreamFunctions": 14,
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "b2098789b98ca0047d4201a89c4db8be80bad790efaa9c0815e5904984c9f100",
+      "portSha256": "0ae5186d645102e7b809bb86681eb2b18b4e172162e9301205b7902395118bb3",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/lsutil/userpreferences_generated.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Utilities/UserPreferences.Generated.cs",
+      "upstreamFunctions": 19,
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "d1b0d843e8fae92e9baa0fab99de57ad1ee932a5a18ea95b06847f90a6a3c91b",
+      "portSha256": "e878372a8d529813022a4da7f4eeb53f127d755b0f62458d6f2e90633e3cfe62",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+      "additionalPorts": [
+        {
+          "port": "src/TypeScript.Scanner/LanguageServices/Utilities/UserPreferences.Models.cs",
+          "portSha256": "d3bebcf3f2736ea326c4d73edc4b27f6244f6747e335712cd2bfb51f21c4c712",
+          "scope": "generated value models corresponding to the same upstream generated file; not extra upstream functions"
+        }
+      ]
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/lsutil/utilities.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Utilities/Utilities.cs",
+      "upstreamFunctions": 7,
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "ce65ed9a191fcb00cbe8e86d732f5c8fafec06bfb28e2dfef5968ef84d72a834",
+      "portSha256": "dc31f6c246f40e2bae1c8ddb077d6e11ce34e4f34e25f09fb2618afdd75fbd83",
+      "status": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/stringutil/compare.go",
+      "port": "src/TypeScript.Scanner/StringUtil/ServiceComparison.cs",
+      "upstreamFunctions": 11,
+      "portedFunctions": 7,
+      "scope": "seven required comparison/equality/query workers; three prefix/suffix workers retain existing Compare.cs counterparts; CompareStringsCaseInsensitiveThenSensitive not yet ported, so no whole compare.go completion claim",
+      "upstreamSha256": "532e42f123dbc846b8ef35b36feef12b8a1dd5d807ea8ce40f94d78eea44814a",
+      "portSha256": "e8b1a4c5b06534e0ad5aef7128c8e92a589c844da017973c69bbfa5fe5613eab",
+      "status": "focused-selected-workers-written-and-covered-by-LSUtil-dependent-assertions"
+    }
+  ],
+  "focusedOwners": [
+    "src/TypeScript.Scanner/Checker/NodeBuilder.cs",
+    "src/TypeScript.Scanner/Checker/NodeBuilder.Service.cs",
+    "src/TypeScript.Scanner/Checker/NodeBuilderImpl.cs",
+    "src/TypeScript.Scanner/Checker/Printer.cs",
+    "src/TypeScript.Scanner/Checker/Printer.Services.cs",
+    "src/TypeScript.Scanner/Checker/TypeFormatFlags.cs",
+    "src/TypeScript.Scanner/Checker/Checker.cs",
+    "src/TypeScript.Scanner/Checker/Relater.cs",
+    "src/TypeScript.Scanner/Checker/EmitApi.cs"
+  ],
+  "limits": [
+    "Broad language-service consumers, real server transport and retained full compiler regressions remain pending.",
+    "AstNav four Go JSON baseline channels and three token subtests passed; TypeScript differential and remaining original subtests are not silently credited.",
+    "Query/hover controls are authored and original LSUtil/preferences functions are separate; dependent assertions do not establish exhaustive private-worker coverage.",
+    "NodeBuilderImpl/Printer focused configured expansion completion is not whole-file source acceptance.",
+    "Regex/NFD selected external mappings and precise original-test dispositions are in lsp-service-standard-library-mapping.json and lsp-standard-library-tests.json.",
+    "Future autoimport/LS core sources remain outside compile glob drafts; not represented by dependency23 candidate."
+  ],
+  "focusedOwnerBindings": [
+    {
+      "port": "src/TypeScript.Scanner/Checker/NodeBuilder.cs",
+      "portSha256": "d964dc98aa2edda90cb55ce390c6ca3313852578f9ad04f4cfaf475ca145b3c6",
+      "scope": "focused genuine query/hover/cache/visibility or leaf relocation join; no whole-file completion credit"
+    },
+    {
+      "port": "src/TypeScript.Scanner/Checker/NodeBuilder.Service.cs",
+      "portSha256": "8661c6613c4a3427d8bcd2f9140afa63ef3c9017baa567cd80dce1b8d9d4551a",
+      "scope": "focused genuine query/hover/cache/visibility or leaf relocation join; no whole-file completion credit"
+    },
+    {
+      "port": "src/TypeScript.Scanner/Checker/NodeBuilderImpl.cs",
+      "portSha256": "6df0c3ba409a8c225ea9b832ba19a4e94e11d97aff677b9ca588d01f127cfb33",
+      "scope": "focused genuine query/hover/cache/visibility or leaf relocation join; no whole-file completion credit"
+    },
+    {
+      "port": "src/TypeScript.Scanner/Checker/Printer.cs",
+      "portSha256": "ea99f6bf702aec7b6a184e117d6b76bc37db3d2313e2ae7cd0d6a3bfe0b327ec",
+      "scope": "focused genuine query/hover/cache/visibility or leaf relocation join; no whole-file completion credit"
+    },
+    {
+      "port": "src/TypeScript.Scanner/Checker/Printer.Services.cs",
+      "portSha256": "72e67c475e1560d5bb274fec49801208a4c5ea363afb1f5c934b5e0411116c97",
+      "scope": "focused genuine query/hover/cache/visibility or leaf relocation join; no whole-file completion credit"
+    },
+    {
+      "port": "src/TypeScript.Scanner/Checker/TypeFormatFlags.cs",
+      "portSha256": "e12f92f5feff1e9ce5df26d2111092cca4e0e4c7acea6381446601cd132e2b60",
+      "scope": "focused genuine query/hover/cache/visibility or leaf relocation join; no whole-file completion credit"
+    },
+    {
+      "port": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "portSha256": "1fc3ae2be7d2a0e3b15591a703eec403ff1b8169328fda6feff047981f29967b",
+      "scope": "focused genuine query/hover/cache/visibility or leaf relocation join; no whole-file completion credit"
+    },
+    {
+      "port": "src/TypeScript.Scanner/Checker/Relater.cs",
+      "portSha256": "6bcf21b8969463fca60f3486683fbdd894794a162ec6b71728671f21210ebff5",
+      "scope": "focused genuine query/hover/cache/visibility or leaf relocation join; no whole-file completion credit"
+    },
+    {
+      "port": "src/TypeScript.Scanner/Checker/EmitApi.cs",
+      "portSha256": "74ce725a3b72cae7584a38f483034ea13a3acf63835e4b9bcc3e6857ffa47c2d",
+      "scope": "focused genuine query/hover/cache/visibility or leaf relocation join; no whole-file completion credit"
+    }
+  ],
+  "executionEvidence": {
+    "proof": "validation/results/language-services-dependencies-23.json",
+    "proofSha256": "257f0027aea78d97351e33a851a83a9c4892773a3f02904b66b849b761dcb759",
+    "scope": "dependency142ordinary+8depth managed and actual Native packet; original functions/partial channels/authored controls separately recorded by proof; no whole service/server or retained regression acceptance"
+  },
+  "independentReviews": [
+    "docs/progress/lsp-checker-query-review.md",
+    "docs/progress/lsp-preferences-review.md"
+  ]
+}

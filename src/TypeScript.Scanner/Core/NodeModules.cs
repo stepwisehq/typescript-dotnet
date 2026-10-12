@@ -94,6 +94,10 @@ internal static partial class Core
     internal static bool ContainsUnprefixedNodeCoreModule(ByteStringValue name) => !name.IsNull && name.ContainsIn(UnprefixedNodeCoreModules);
     internal static bool ContainsExclusivelyPrefixedNodeCoreModule(ByteStringValue name) => !name.IsNull && name.ContainsIn(ExclusivelyPrefixedNodeCoreModules);
 
+    // Existing package-name worker with a retained byte header for project ATA consumers.
+    internal static ByteStringValue NonRelativeModuleNameForTypingCache(ByteStringValue moduleName) =>
+        ContainsNodeCoreModule(moduleName) ? ByteStringValue.FromString("node") : moduleName;
+
     public static string NonRelativeModuleNameForTypingCache(string moduleName) =>
         ContainsNodeCoreModule(ByteStringValue.FromString(moduleName)) ? "node" : moduleName;
 }

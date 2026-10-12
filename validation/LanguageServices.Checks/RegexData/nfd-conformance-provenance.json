@@ -1,0 +1,8 @@
+{
+  "url": "https://www.unicode.org/Public/17.0.0/ucd/NormalizationTest.txt",
+  "unicodeVersion": "17.0.0",
+  "sourceSha256": "5019ffd530751a741900c849c0e010332f142a3612234639bd200b82138a87db",
+  "resourceSha256": "b2fd8cc8d31f77ac482f5c7c0c06f35ad58663acfceb01612f86ab7f5414fbc3",
+  "license": "licenses/Unicode-LICENSE.txt",
+  "scope": "original TestStandardTests and TestCharacterByCharacter NFD.String assertion channels only; original other forms/APIs and long-test skip remain separate"
+}

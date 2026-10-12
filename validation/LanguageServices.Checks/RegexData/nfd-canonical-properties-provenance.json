@@ -1,0 +1,9 @@
+{
+  "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/data17.0.0_test.go",
+  "sourceSha256": "d8e929b03989912d45c1e9dcf2fe1ad71bdfb3d47ca81c4c526718da637ef9b7",
+  "resource": "validation/LanguageServices.Checks/RegexData/nfd-canonical-properties.bin.gz",
+  "resourceSha256": "691488de70e4964d70f3c74d8453c8ae9ccb407b96555e883e6acaf8e5d33900",
+  "rows": 7718,
+  "scope": "original TestProperties canonical CCC/combinesBackward/nonstarter counts/decomposition assertion channel; compatibility/composing observations excluded",
+  "transport": "exact little-endian primitive fields and original UTF8 canonical decomposition bytes, gzip mtime0"
+}

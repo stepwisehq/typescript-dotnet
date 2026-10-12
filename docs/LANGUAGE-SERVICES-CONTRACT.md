@@ -5,7 +5,7 @@ performance `9b8fa74a`; its human-readable summary is preserved at `e003f22f`.
 Reference: `fed0bf24149fb1ed36039212648bafdafc1ea10e` in
 [pinned TypeScript](../upstream/TypeScript/tsc/). Completion means the implemented
 upstream editor subsystem described here, not every feature in the LSP schema or
-every historical JavaScript TypeScript service. No implementation is accepted yet.
+every historical JavaScript TypeScript service. The first shared-dependency execution gate has passed; complete subsystem and epic acceptance remain pending.
 
 ## Capability and ownership
 
@@ -32,7 +32,9 @@ Complete these upstream responsibilities, including their supporting algorithms:
    inlay hints; formatting/on-type; automatic insertion and JSDoc snippets; call
    hierarchy; code lenses/resolve; organize imports and the upstream registered
    code-action/fix-all families. Preserve both successful and failure behavior.
-5. **Actual server.** Initialization and accurate capability negotiation, ordered
+5. **Actual server.** Planned public launch is `tscheck --lsp --stdio`, dispatched
+   before the existing one-shot compilation policy. This command is not implemented
+   yet. Initialization and accurate capability negotiation, ordered
    document mutations, concurrent snapshot-backed requests, cancellation, correlated
    client requests, registration/progress/logging, stale-result rules, shutdown/EOF,
    signal and parent-process lifecycle, and real stdio transport. Editor-facing
@@ -81,6 +83,20 @@ foundations require a concrete dependency or defect and retained regression cove
 Preserve UTF-8 borrowing, Go slice ownership/copies, callback reuse and accepted
 runtime adaptations. The optional one-shot CLI no-GC policy is not a server default.
 
+Concrete supporting dependencies identified during implementation: auto-import
+exclusion patterns require Go `regexp.Compile`/`MatchString` semantics, including
+syntax rejection and the selected matching workers; import sorting requires the
+pinned `x/text` NFD normalization workers/tables. The actual caller removes Mn
+characters after NFD, but stream-safe boundaries can still change the order of
+retained Mc characters. A plain .NET Regex/FormD substitution is therefore not
+assumed equivalent. Port these required dependency closures with exact source pins,
+licenses, direct mappings and applicable original assertions. The server stack
+sanitizer additionally requires original capture replacement and
+index observations; complete that concrete closure before its consumer. Unused
+standard-library find-all APIs remain outside the caller closure. This dependency decision
+does not authorize an unrelated general-purpose library project. Source-grounded
+compatibility findings still require behavioral verification.
+
 ## Acceptance
 
 Implementation completeness and verification completeness are separate gates:
@@ -118,15 +134,46 @@ connection instructions, reproducible acceptance commands, complete test disposi
 updated mappings, implementation/evidence limitations and observed effort. Do not
 narrow this contract to claim success or stop at internal milestones.
 
+## Initial test inventory (not execution)
+
+A source scan separates actual `Test*` entries from `TestMain` package lifecycle:
+
+| Source family (recursive) | Test entries | Lifecycle functions |
+| --- | ---: | ---: |
+| project | 107 | 2 |
+| ls | 41 | 1 |
+| lsp | 79 | 1 |
+| format | 7 | 0 |
+| astnav | 5 | 1 |
+| modulespecifiers | 10 | 0 |
+| fourslash | 4,571 | 1 |
+
+The [per-file/function inventory](./language-services-upstream-tests.json) records
+4,442 source test files, their hashes and 4,820 test entrypoints. One concrete core
+BFS dependency was added afterward. The inventory now records 86 original TypeScript
+functions passed at the dependency gate; remaining execution and detailed
+dispositions are still work.
+These are function identities, not table-row, assertion or pass counts. The original
+investigations also report raw `Test`-prefixed declaration counts; those include
+lifecycle functions and must not be used as executed-test totals. Dependency tests
+outside these packages will be added when the corresponding concrete joins are
+identified. Per-test dispositions and original assertions remain acceptance work.
+
 ## Dependency order and current status
 
 | Internal milestone | Complete owners before consumers | Status |
 | --- | --- | --- |
 | Shared foundations | Protocol/codecs/converters; checker queries/hover; AST navigation; project ownership utilities | In progress |
-| Reusable project environment | Overlays, snapshots, caches, graph/pool, session lifecycle, preferences, hosts | Missing |
-| Shared editing and indexing | Formatting, change tracking, autoimport, display/source maps | Missing |
+| Reusable project environment | Overlays, snapshots, caches, graph/pool, session lifecycle, preferences, hosts | In progress; dependency assertions passed, graph source-reviewed; Snapshot/Session consumers unfinished |
+| Shared editing and indexing | Formatting, change tracking, autoimport, display/source maps | In progress; formatting source-reviewed and original tests passed managed/Native; change/autoimport consumers pending |
 | Semantic services | All listed upstream request algorithms and cross-project interactions | Missing |
 | Server and full acceptance | Real dispatch/transport, direct/fourslash comparisons, Native AOT, review and regressions | Missing |
+
+Concrete implementation dependencies refine this sequence: formatting precedes
+change tracking, which precedes full autoimport support. Real autoimport and the
+LanguageService core must be available before Snapshot/Session consumers can finish.
+Their work therefore proceeds alongside the reusable project environment rather
+than waiting for a falsely complete project milestone.
 
 The [project investigation](./progress/lsp-project-investigation.md),
 [service investigation](./progress/lsp-services-investigation.md) and

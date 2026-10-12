@@ -1,0 +1,232 @@
+{
+  "status": "implementation-in-progress-not-accepted",
+  "pins": {
+    "TypeScript": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+    "GoToolchain": "Go1.27.1",
+    "xText": "v0.42.0",
+    "Unicode": "17.0.0"
+  },
+  "sources": [
+    {
+      "sourcePackage": "golang.org/x/text v0.42.0",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize.go",
+      "sourceSha256": "f1363700e71a35f9c966492f10dc6f3405cd824f2cc03b08ee64b24503d56f39",
+      "managed": "src/TypeScript.Scanner/UnicodeNormalization/Normalize.cs",
+      "managedSha256": "6de5054ff3b15aa067773e74ae15d45612d423b83a68cdae5df4729055dff6ab",
+      "status": "selected-original-and-authored-managed-native-passed-initial-dependency-gate",
+      "scope": "selected NFD.String canonical worker closure only; nonselected composing/compatibility/public Transform/Append/iterator APIs excluded",
+      "currentDelta": "QuickSpan private-to-internal visibility only for selected original span worker assertions; unchanged body; new channels pending integration"
+    },
+    {
+      "sourcePackage": "golang.org/x/text v0.42.0",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/composition.go",
+      "sourceSha256": "326e91fea709726d884e475db9b7a61ad17829e32d795f182cdcfcfdf64d9bf6",
+      "managed": "src/TypeScript.Scanner/UnicodeNormalization/Composition.cs",
+      "managedSha256": "26b212c2fd7204c52885ed1b8838ea8e2d9ff34948af10ad4c4d7e1fcf67d4bd",
+      "status": "selected-original-and-authored-managed-native-passed-initial-dependency-gate",
+      "scope": "selected NFD.String canonical worker closure only; nonselected composing/compatibility/public Transform/Append/iterator APIs excluded"
+    },
+    {
+      "sourcePackage": "golang.org/x/text v0.42.0",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/forminfo.go",
+      "sourceSha256": "b53ecff9ab5a83fd45598f54dfc9ea03849a3bcf4617ef02cf43225c71acc1e3",
+      "managed": "src/TypeScript.Scanner/UnicodeNormalization/Properties.cs",
+      "managedSha256": "8590779775d3e18a5277a0154ae6e3513b041e1210bae562452427e6995b722f",
+      "status": "selected-original-and-authored-managed-native-passed-initial-dependency-gate",
+      "scope": "selected NFD.String canonical worker closure only; nonselected composing/compatibility/public Transform/Append/iterator APIs excluded"
+    },
+    {
+      "sourcePackage": "golang.org/x/text v0.42.0",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/trie.go",
+      "sourceSha256": "d87793d558251ee8824954f0b7bc5564803e4c9d59a8c4eebb4c3c5cfbd19492",
+      "managed": "src/TypeScript.Scanner/UnicodeNormalization/Trie.cs",
+      "managedSha256": "b85c7408adbfb0bf7149e6be41e030a544e564b402e3346888fd65086ae699f2",
+      "status": "selected-original-and-authored-managed-native-passed-initial-dependency-gate",
+      "scope": "selected NFD.String canonical worker closure only; nonselected composing/compatibility/public Transform/Append/iterator APIs excluded"
+    },
+    {
+      "sourcePackage": "golang.org/x/text v0.42.0",
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/tables17.0.0.go",
+      "sourceSha256": "dade3c78c0b36426a6966f46926f2ab61c484ae425feb175a07fbe1ee8f855fa",
+      "managed": "src/TypeScript.Scanner/UnicodeNormalization/Tables.Generated.cs",
+      "managedSha256": "d0b2e0f5766bf9bcabe2094fd95e214023df5b1a7bc0f3e7263449ecec1c6b5b",
+      "status": "selected-original-and-authored-managed-native-passed-initial-dependency-gate",
+      "scope": "selected NFD.String canonical worker closure only; nonselected composing/compatibility/public Transform/Append/iterator APIs excluded"
+    },
+    {
+      "sourcePackage": "Go1.27.1 regexp matching support",
+      "source": "tools/.cache/go/src/unicode/tables.go",
+      "sourceSha256": "ac0e5d5d1b58ed4b02d7cb4a0085bdefbdb4f7aae6fadddbc9477f8463da8bd8",
+      "managed": "src/TypeScript.Scanner/RegularExpressions/Syntax/UnicodeTables.Generated.cs",
+      "managedSha256": "63f02df14165e59d23e941ba0f30a6a03a1f9eb043a13d6aac16765ad9d6a44d",
+      "status": "source-written-unverified-after-build7",
+      "scope": "exact Unicode17 Categories/Scripts/FoldCategory/FoldScript/CategoryAliases selected matching maps and ranges; existing Mn/Lu owners reused"
+    },
+    {
+      "sourcePackage": "Go1.27.1",
+      "source": "/home/greg/projects/typescript-dotnet/tools/.cache/go/src/regexp/regexp.go",
+      "sourceSha256": "a3e6d904aba2f2e5e4fb8fbbdbe817b317f9ce4bd1e1f1edfe4bcb0b0c552fcc",
+      "managed": "src/TypeScript.Scanner/RegularExpressions/Regexp.cs",
+      "managedSha256": "8a2d333c4cf0823129711f8e91f7ded0670a744521c12b33fc40105a429d0f7d",
+      "status": "production-compiled-build14-behavior-review-pending",
+      "scope": "Compile/MatchString; actual string input, machine pools and minimum-input workers; unused public find/capture/replacement/reader APIs excluded"
+    },
+    {
+      "sourcePackage": "Go1.27.1",
+      "source": "/home/greg/projects/typescript-dotnet/tools/.cache/go/src/regexp/exec.go",
+      "sourceSha256": "5b6b8516900648fdd657d7fc464b7c51bd358012fa632aa5e73a4daa9831df74",
+      "managed": "src/TypeScript.Scanner/RegularExpressions/Exec.cs",
+      "managedSha256": "eb5f384b4c31e532dc3bf87a3e5f7506e5e0bf1bdd4c6346baef1afcc69a0b49",
+      "status": "production-compiled-build14-behavior-review-pending",
+      "scope": "complete selected NFA and one-pass execution closure; LazyFlag.cs contains actual lazy flag worker"
+    },
+    {
+      "sourcePackage": "Go1.27.1",
+      "source": "/home/greg/projects/typescript-dotnet/tools/.cache/go/src/regexp/onepass.go",
+      "sourceSha256": "fd0e29803438c6ea3021c78227d4f69de163f693e82c155dc62d721eaacbd24b",
+      "managed": "src/TypeScript.Scanner/RegularExpressions/OnePass.cs",
+      "managedSha256": "f1b6a43ea39f04427e190b85e7903b136608b48f9b7819fbaa769a8e24bb1d26",
+      "status": "production-compiled-build14-behavior-review-pending",
+      "scope": "complete one-pass analysis/copy/dispatch workers"
+    },
+    {
+      "sourcePackage": "Go1.27.1",
+      "source": "/home/greg/projects/typescript-dotnet/tools/.cache/go/src/regexp/backtrack.go",
+      "sourceSha256": "ac5a1e4cf49b1c7f4372c0a7c2e8d156100c17d3a114fcf9539f55d223d06092",
+      "managed": "src/TypeScript.Scanner/RegularExpressions/Backtrack.cs",
+      "managedSha256": "36dc951ffe5d6429f354ddc974a99d4b8a5253034731545ec06d0053805a0576",
+      "status": "production-compiled-build14-behavior-review-pending",
+      "scope": "complete selected bit-state/backtracking engine"
+    },
+    {
+      "sourcePackage": "Go1.27.1",
+      "source": "/home/greg/projects/typescript-dotnet/tools/.cache/go/src/regexp/syntax/parse.go",
+      "sourceSha256": "f93b85f4b63a6f6ecb5c1452a6c0ded1fef5953f9c73e5d814dfc08207e7d1b6",
+      "managed": "src/TypeScript.Scanner/RegularExpressions/Syntax/Parse.cs",
+      "managedSha256": "eadcc0444bd74955ae8ced40170eaf3b5dcb4198f02fa76aae27f47ccd49eb11",
+      "status": "production-compiled-build14-behavior-review-pending",
+      "scope": "complete parser and lexical/class/factoring/error closure, private inline owner adaptation"
+    },
+    {
+      "sourcePackage": "Go1.27.1",
+      "source": "/home/greg/projects/typescript-dotnet/tools/.cache/go/src/regexp/syntax/regexp.go",
+      "sourceSha256": "72fad4645d96cf8b0ef0ea4a9dae21f09e7bea090d1bdd500732d811982b2192",
+      "managed": "src/TypeScript.Scanner/RegularExpressions/Syntax/Regexp.cs",
+      "managedSha256": "edd316c9c89888534218a28013b374136facd121da1502149ec3e7cf0e2b145e",
+      "status": "production-compiled-build14-behavior-review-pending",
+      "scope": "tree/capture equality owner closure; unused public String printer excluded"
+    },
+    {
+      "sourcePackage": "Go1.27.1",
+      "source": "/home/greg/projects/typescript-dotnet/tools/.cache/go/src/regexp/syntax/prog.go",
+      "sourceSha256": "7a24ebd22eec504ceaeffbd33641ae330d3ca666d54f6a29ce6d96fc127e6c64",
+      "managed": "src/TypeScript.Scanner/RegularExpressions/Syntax/Prog.cs",
+      "managedSha256": "73505d4d5e8574d3efd803245f2c25fbe81d6dac16d1af77d89a57558f08806e",
+      "status": "production-compiled-build14-behavior-review-pending",
+      "scope": "instruction/program matching and prefix/context workers"
+    },
+    {
+      "sourcePackage": "Go1.27.1",
+      "source": "/home/greg/projects/typescript-dotnet/tools/.cache/go/src/regexp/syntax/compile.go",
+      "sourceSha256": "2e1f753be77bf1fa54aed2a7f98932394324b82c91109e19d93283f482f7ee01",
+      "managed": "src/TypeScript.Scanner/RegularExpressions/Syntax/Compile.cs",
+      "managedSha256": "00b6cf0e5028edea63d3d2dae5995e2afe5f5352109ff4c57bc498cb564d42ed",
+      "status": "production-compiled-build14-behavior-review-pending",
+      "scope": "complete instruction compiler"
+    },
+    {
+      "sourcePackage": "Go1.27.1",
+      "source": "/home/greg/projects/typescript-dotnet/tools/.cache/go/src/regexp/syntax/simplify.go",
+      "sourceSha256": "d22b48ecde668bc22cd8998492c752ec088da5d027d61b7f04f7a9298796eec0",
+      "managed": "src/TypeScript.Scanner/RegularExpressions/Syntax/Simplify.cs",
+      "managedSha256": "19b234aa504eb8b1c2f3cc9c6c89de8f49999bcbde531bb1d36eb7b76191bb42",
+      "status": "production-compiled-build14-behavior-review-pending",
+      "scope": "complete simplifier with required value copies"
+    },
+    {
+      "sourcePackage": "Go1.27.1",
+      "source": "/home/greg/projects/typescript-dotnet/tools/.cache/go/src/regexp/syntax/perl_groups.go",
+      "sourceSha256": "d060a0645b60b210eaec7c3dba6d554dc297c14fe71cdbcc9c25b4fc7562c3a4",
+      "managed": "src/TypeScript.Scanner/RegularExpressions/Syntax/PerlGroups.Generated.cs",
+      "managedSha256": "b7c16bcb329d8808e59165c94b2e84db01e6078b1cb56eb8c4765dd4408974f2",
+      "status": "production-compiled-build14-behavior-review-pending",
+      "scope": "exact generated Perl character groups"
+    }
+  ],
+  "assertionDispositions": [
+    {
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "originalFunction": "TestDecomposeSegment",
+      "managed": "validation/LanguageServices.Checks/NormalizationChecks.cs",
+      "rows": 20,
+      "status": "complete-original-assertions-managed-and-actual-linux-x64-native-passed",
+      "executionEvidence": {
+        "path": "validation/results/language-services-dependencies-initial.json",
+        "sha256": "54b26a3e2c3159c544e5a51e35b7bc856cf0058aa6c9d98693124611d39f4401"
+      }
+    },
+    {
+      "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+      "originalFunction": "TestString",
+      "status": "multi-form-wrapper-not-ported-as-whole; NFD original table empty; authored8 public String witnesses distinct"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/lsutil/userpreferences_test.go",
+      "functions": 10,
+      "status": "complete-original-assertions-managed-and-actual-linux-x64-native-passed",
+      "scheduling": "Go T.Parallel hints adapted to sequential shared bodies; no equivalent scheduling claim",
+      "executionEvidence": {
+        "path": "validation/results/language-services-dependencies-initial.json",
+        "sha256": "54b26a3e2c3159c544e5a51e35b7bc856cf0058aa6c9d98693124611d39f4401"
+      }
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/lsutil/utilities_test.go",
+      "functions": 3,
+      "status": "complete-original-assertions-managed-and-actual-linux-x64-native-passed",
+      "executionEvidence": {
+        "path": "validation/results/language-services-dependencies-initial.json",
+        "sha256": "54b26a3e2c3159c544e5a51e35b7bc856cf0058aa6c9d98693124611d39f4401"
+      }
+    }
+  ],
+  "independentReview": "preferences clear: docs/progress/lsp-preferences-review.md; selected NFD workers/tables/original20 + authored8 source review clear: docs/progress/lsp-nfd-review.md; regexp full closure pending",
+  "limits": [
+    "No local compile/test/native execution performed.",
+    "Standard-library original tests are separate from TypeScript4820 raw inventory.",
+    "Full regexp parser, Unicode classes and all original selected execution engines remain in progress."
+  ],
+  "testInventory": "docs/progress/lsp-standard-library-tests.json",
+  "regexpExecution": {
+    "production": "complete selected parser/compiler/NFA/one-pass/backtracking and actual module-specifier caller compiled clean build16; independent selected source review clear",
+    "managed": "15 whole original functions +1 MatchString selected channel passed in16 initial groups; additional packet unexecuted",
+    "currentAssertionPacket": {
+      "groups": 22,
+      "wholeOriginalFunctions": 17,
+      "selectedAdaptedChannels": 5,
+      "authoredModuleRegexGroups": 1
+    },
+    "native": "selected regexp behavior/rooting pending",
+    "review": "docs/progress/lsp-regexp-review.md"
+  },
+  "additionalNfdAssertions": {
+    "channels": 7,
+    "status": "source-written-integration-pending",
+    "scope": "canonical property fields,38 span rows,8 insertion/5 decomposition rows with String setup,Unicode17 conformance2 channels,109 cross-form bootstrap invariants",
+    "originalWholeFunctionCredit": false,
+    "directGoConformance": "default reference skipped CharacterByCharacter/StandardTests to prevent download; official17 fixture embedded explicitly"
+  },
+  "testDispositions": "docs/progress/lsp-standard-library-tests.json",
+  "latestManagedEvidence": {
+    "testInventory": "docs/progress/lsp-standard-library-tests.json",
+    "trx": "artifacts/language-services/integration-1/tests/dependencies-6.trx",
+    "scope": "All142 ordinary xUnit cases passed on build23; current complete selected external assertion packet passed managed. Refreshed actual Native execution remains pending."
+  },
+  "latestNativeEvidence": {
+    "proof": "validation/results/language-services-dependencies-23.json",
+    "proofSha256": "257f0027aea78d97351e33a851a83a9c4892773a3f02904b66b849b761dcb759",
+    "log": "artifacts/language-services/integration-1/native-run-23.log",
+    "status": "selected-dependency-assertion-packet-Native-passed",
+    "qualification": "Unused APIs/mixed original functions remain excluded; no LS/server or retained-regression acceptance."
+  }
+}

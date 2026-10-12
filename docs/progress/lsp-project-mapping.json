@@ -1,0 +1,629 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "baseline": "9b8fa74a",
+  "entries": [
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/dirty/box.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Dirty/Box.cs",
+      "upstreamFunctions": 10,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "portSha256": "b38fbdfbcbbdbf822649fd0638c5b026503b6244d3bffaf1a4a29b51006e69f3"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/dirty/cloneablemap.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Dirty/CloneableMap.cs",
+      "upstreamFunctions": 1,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "portSha256": "82040b87c53a8a5e47da827664656ec71b45e76f79e641479c6dd2d1a3bb3215"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/dirty/entry.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Dirty/Entry.cs",
+      "upstreamFunctions": 4,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "portSha256": "7078d19d46b3d7fbcfe04ae860a327a452fdc2631d5f541c62826ff82deda352"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/dirty/interfaces.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Dirty/Interfaces.cs",
+      "upstreamFunctions": 0,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "portSha256": "c447614f0a863a6f49295039cdfb9f634b30a5fc433370336c801080d3683fd0"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/dirty/map.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Dirty/Map.cs",
+      "upstreamFunctions": 14,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "portSha256": "ea8e5bb668fed216740dfff188804bde33e620a1528a4cf98088fedda8408030"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/dirty/mapbuilder.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Dirty/MapBuilder.cs",
+      "upstreamFunctions": 6,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "portSha256": "2ff55e8c1914450629ca9291b6f9877ad2aa1f6ecd00496900a2f2ba05b9805c"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/dirty/syncmap.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Dirty/SyncMap.cs",
+      "upstreamFunctions": 25,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "portSha256": "81ac8b0559d4c3d782dbb7474354a6c11d4a2e1d49719cbdf889244456aaf6c6"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/dirty/util.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Dirty/Util.cs",
+      "upstreamFunctions": 1,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "portSha256": "7ce6549bc0ca1fa9e149e2af4c4249db6175cc290d3e2109d5d6b5e95586a832"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/refcountcache.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/RefCountCache.cs",
+      "upstreamFunctions": 8,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "portSha256": "e2a832359cb1ff291f6cbd2b81425043ae86dbf99cc2e73a80ed030fd360e8d4"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/ownercache.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/OwnerCache.cs",
+      "upstreamFunctions": 7,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "portSha256": "801fb382f513ac0cda3aab3bbb2c0f251a41024a066cc34ba179d303f51766f4"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/parsecache.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/ParseCache.cs",
+      "upstreamFunctions": 8,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "portSha256": "64c24b9b26db074564242b6e67304cfc6fe624ac93f219e3db0fade5ffd9aecd"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/extendedconfigcache.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/ExtendedConfigCache.cs",
+      "upstreamFunctions": 2,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "portSha256": "8665bdb2d9a2bbfcb83adccd455f35f33a7f1ad1eab53459e43445a13cb07379"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/background/queue.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Background/Queue.cs",
+      "upstreamFunctions": 4,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "portSha256": "8bf48390bc3bfff8ade5220b8b7b9fa9412039ee35458b99917ea1efdc7ac127"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/overlayfs.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/OverlayFS.cs",
+      "upstreamFunctions": 52,
+      "scope": "complete FileBase/CachedFile/Overlay, layered filesystem composition, directory masks and ordered processChanges",
+      "status": "source-written-integration-pending",
+      "portSha256": "616bb0ab9676969dfb235ca56f8f6c337f774a66842e403bcc68044e5ffab440"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/snapshotfs.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/SnapshotFS.cs",
+      "upstreamFunctions": 59,
+      "scope": "complete immutable SnapshotFS, cached layered owner, realpath aliases, builder finalization/reload/invalidation/watch filtering/open-close conversion and SourceFS tracking",
+      "status": "source-written-integration-pending",
+      "portSha256": "97e0c9ccbe7d5af7059c6c2cc62d31b19d6d11d4b29883d4c4f9ea2d67cb7182"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/logging/logger.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Logging/Logger.cs",
+      "upstreamFunctions": 14,
+      "scope": "complete source counterpart; focused formatter boundary in Logging/LogFormat.cs",
+      "status": "source-written-integration-pending",
+      "portSha256": "25606f2f24cd8a944c9020a7337c381306a57714df763468b7eccd2a4b48f6d6"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/logging/logcollector.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Logging/LogCollector.cs",
+      "upstreamFunctions": 2,
+      "scope": "complete source counterpart; focused formatter boundary in Logging/LogFormat.cs",
+      "status": "source-written-integration-pending",
+      "portSha256": "6bfe0c78a315b53af0547f5ff1b684dd7ccaa8a8b696dacd41748f9e6598c111"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/logging/logtree.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Logging/LogTree.cs",
+      "upstreamFunctions": 18,
+      "scope": "complete source counterpart; focused formatter boundary in Logging/LogFormat.cs",
+      "status": "source-written-integration-pending",
+      "portSha256": "9e3b2a395ea5afb0cea9ccb81db202ea27b680ccf8be82be40b0ec214c0e5a51"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/filechange.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/FileChange.cs",
+      "upstreamFunctions": 6,
+      "scope": "complete source counterpart",
+      "status": "source-written-integration-pending",
+      "adaptations": [
+        "nullable HashSet value-header owners retain nil; Clone copies all four sets; explicit ref summary preserves Go pointer mutation"
+      ],
+      "portSha256": "526f76f88981ed0b5dc8c7e7be5c3138d1a8aa7c670a9a21792226c2eba13b81"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/core/textchange.go",
+      "port": "src/TypeScript.Scanner/Core/TextChange.cs",
+      "upstreamFunctions": 2,
+      "scope": "complete required text edit owner",
+      "status": "source-written-integration-pending",
+      "adaptations": [
+        "borrowed ByteStringValue input/output; required concatenation/builder owned bytes preserve Go ordering and copies"
+      ],
+      "portSha256": "105a6d8c1840c4203b4fef720ea71610cf819460f603906856b336e5f686b4df"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/vfs/osvfs/os.go",
+      "port": "src/TypeScript.Scanner/Vfs/OsVfs/Mutations.cs",
+      "upstreamFunctions": 3,
+      "scope": "AppendFile176/Remove180/Chtimes186 required editor leaves; append joins existing Write.cs owner",
+      "status": "source-written-integration-pending",
+      "adaptations": [
+        "optional actual mutation capability; same package semaphore; Linux atomic timestamps/native byte syscall boundary; other-platform managed IO fallback unverified"
+      ],
+      "portSha256": "e6222698cc508ce5e53345c893ca373749fb8a0e790ac23e07233236dbcaebf2"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/bundled/embed.go",
+      "port": "src/TypeScript.Scanner/Bundled/Embed.cs",
+      "upstreamFunctions": 3,
+      "scope": "required AppendFile/Remove/Chtimes forwards with exact embedded-path panics",
+      "status": "source-written-integration-pending",
+      "portSha256": "332fe0d668b060d7e497a66c3e4fbd83d7349fac2828cbb244be0c5a548608b6"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/vfs/cachedvfs/cachedvfs.go",
+      "port": "src/TypeScript.Scanner/Vfs/CachedVfs/CachedVfs.cs",
+      "upstreamFunctions": 3,
+      "scope": "required mutation forwards without fabricated read-cache invalidation",
+      "status": "source-written-integration-pending",
+      "portSha256": "d27e6653bdcb8f2ce8216c2f5a8623b81505e6fd76970eacda41e211e7c996ce"
+    },
+    {
+      "upstream": "Go1.27.1/src/os/removeall_at.go; path_unix.go; file_unix.go",
+      "port": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxMutations.cs",
+      "scope": "focused required Linux removal/timestamp transport, no general os package completeness claim",
+      "status": "source-written-review-pending",
+      "adaptations": [
+        "fd-relative unlinkat/openat, bounded directory names with reopen, strict existing scalar path transport; Linux64 ABI only, no runtime redesign"
+      ],
+      "portSha256": "fde55e1c373e5f808a5998e086a4921c5ea0756065de5842a0f35ab12986d6fd"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/watch.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Watch.cs",
+      "upstreamFunctions": 22,
+      "scope": "complete watcher registry/refcounts/pending state, immutable watcher clones, resolution/typings grouping and recursive patterns",
+      "status": "source-written-integration-pending",
+      "portSha256": "da2f9d09075f0057e9d9a47b6cd4cecdc617cd4d663d60dfeb487a58a08e67e0"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/client.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Client.cs",
+      "upstreamFunctions": 0,
+      "scope": "complete actual project client interface; explicit request context and generated telemetry alias",
+      "status": "source-written-integration-pending",
+      "portSha256": "c7d20b402b579e7fbb5d7c307f8f3a98eb76b7b0b9007cf3168c6aac9ebd7074"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/tspath/rooted_path.go",
+      "port": "src/TypeScript.Scanner/TsPath/RootedPath.cs",
+      "upstreamFunctions": 1,
+      "scope": "required GetCommonParentDirectories only, original lines664\u2013700",
+      "status": "source-written-integration-pending",
+      "portSha256": "e02904b1f856334185cdd8bcbc1e1a4863cbcc3f54b193f1a336f784770003a9"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/tspath/path.go",
+      "port": "src/TypeScript.Scanner/TsPath/RootedPath.cs",
+      "upstreamFunctions": 1,
+      "scope": "required getCommonParentsWorker only, original lines1238\u20131300; borrowed byte components and concat/clip ownership",
+      "status": "source-written-integration-pending",
+      "portSha256": "e02904b1f856334185cdd8bcbc1e1a4863cbcc3f54b193f1a336f784770003a9"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/configfileregistry.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/ConfigFileRegistry.cs",
+      "upstreamFunctions": 15,
+      "scope": "complete registry, entries, content-mapper aggregation and test observation owners",
+      "status": "source-written-integration-pending",
+      "portSha256": "341cea78bc190f4f7b1092d898c0b267faa8c198d7fad050de35bd592616a8cc"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/project.go",
+      "upstreamFunctions": 44,
+      "scope": "complete source counterpart; established command-line List boundary copies and caller-grounded diagnostic equality explicitly adapted",
+      "status": "production-build16-passed-graph-authored-managed-passed-full-session-tests-and-review-pending",
+      "ports": [
+        {
+          "port": "src/TypeScript.Scanner/ProjectSystem/Project.cs",
+          "portSha256": "6981d60771d5fd2df74f117a5d01bff3a85375f4623f3db29ff6bbd46a4375e6"
+        }
+      ]
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/programcounter.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/ProgramCounter.cs",
+      "upstreamFunctions": 3,
+      "scope": "complete identity reference-count owner",
+      "status": "source-written-integration-pending",
+      "portSha256": "e0b6b1fea308315fe12d761808d24487a95d0e5cc00888d5fd07035833947c1e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/session.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/SessionOptions.cs",
+      "upstreamFunctions": 0,
+      "scope": "SessionOptions immutable input owner only; Session methods remain unported",
+      "status": "source-written-integration-pending",
+      "portSha256": "15626bc72db3fdc6c53fd273cf1560ae1bcdd9bfc073f03888aabf401167dcc0"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/checkerpool.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/SessionOptions.cs",
+      "upstreamFunctions": 0,
+      "scope": "CheckerPoolOptions value input only; full pool owner is next",
+      "status": "source-written-integration-pending",
+      "portSha256": "15626bc72db3fdc6c53fd273cf1560ae1bcdd9bfc073f03888aabf401167dcc0"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/checkerpool.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/CheckerPool.cs",
+      "upstreamFunctions": 17,
+      "scope": "complete diagnostics/query/persistent checker owners, affinities, cancellation cleanup, monotonic idle cleanup and accumulated diagnostic state; CLR synchronization/timer/context adaptations",
+      "status": "source-written-integration-pending",
+      "portSha256": "aa96d83e356bfa5c0501e177c8248a6e007866937b18e3362be4d8a7ba46687c"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/projectcollection.go",
+      "upstreamFunctions": 20,
+      "scope": "complete source counterpart; established command-line List boundary copies and caller-grounded diagnostic equality explicitly adapted",
+      "status": "production-build16-passed-graph-authored-managed-passed-full-session-tests-and-review-pending",
+      "upstreamSha256": "71dcdafdbfc07f7529bee6da72728f842c9789fcf0bcf75ae42eea34a25734fd",
+      "ports": [
+        {
+          "port": "src/TypeScript.Scanner/ProjectSystem/ProjectCollection.cs",
+          "portSha256": "8c70cd08e4e5dcc119071d9c890bc58a92cd9db11da099486c34b6d2dc85f1c0"
+        }
+      ]
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/snapshot.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/ModuleResolverFactory.cs",
+      "upstreamFunctions": 0,
+      "scope": "complete ModuleResolverFactory contract only; Snapshot owner remains next",
+      "status": "source-written-integration-pending",
+      "portSha256": "26857bca5cd76192544cb185e6f09f15577a560678ce7ec2e243e0762a9e8a51",
+      "upstreamSha256": "7b270b0d176f7a988dc6b6aa15fd4e386e09b0ebd9a57b3872c1d4fdc12dc12f"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/crossproject.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Project.cs",
+      "upstreamFunctions": 0,
+      "scope": "complete three-method Project contract only; cross-project service family unported",
+      "status": "production-build16-passed-graph-authored-managed-passed-full-session-tests-and-review-pending",
+      "portSha256": "e26ead8f7fd63eace2c231f0db9b21725ad626a6e8e6317e74bf8dccb080e000",
+      "upstreamSha256": "48cf96e0992a6cd90560ad28af2b0218ec404e6125dc2ad9a68f306a052cf63f"
+    },
+    {
+      "upstream": "tools/.cache/go/src/os/root_unix.go",
+      "port": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxMutations.cs",
+      "upstreamFunctions": 0,
+      "scope": "focused rootOpenDir/checkSymlink/readlinkat error classification and full retry/growth closure for RemoveAll; not a general os.Root port",
+      "status": "source-written-integration-pending",
+      "portSha256": "fde55e1c373e5f808a5998e086a4921c5ea0756065de5842a0f35ab12986d6fd",
+      "upstreamSha256": "f1e303059d837c46c1be94b44ac1e65073c6f6c8278a2056776092aee297bf67"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/ata/validatepackagename.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Ata/ValidatePackageName.cs",
+      "upstreamFunctions": 3,
+      "scope": "complete package validation and owned failure-message counterpart; QueryEscape equality uses exact unreserved-byte predicate from pinned Go toolchain",
+      "status": "initial-dependency-managed-native-assertions-passed-full-project-consumers-pending",
+      "portSha256": "3b589be3670e478e3b8ed26470ba52fb42f06f90221bdda2cefab16b6116af6e",
+      "dependencySource": "tools/.cache/go/src/net/url/gen_encoding_table.go",
+      "dependencySha256": "cd0f5020e4a5aa9741411afb4ab1bf73b9e9f40cd950e2bb9b369a773fdd9033"
+    },
+    {
+      "upstream": "internal/project/ata/ata.go",
+      "upstreamFunctions": 17,
+      "ports": [
+        "src/TypeScript.Scanner/ProjectSystem/Ata/Types.cs",
+        "src/TypeScript.Scanner/ProjectSystem/Ata/TypingsInstaller.cs",
+        "src/TypeScript.Scanner/ProjectSystem/Ata/InstallNpmPackages.cs"
+      ],
+      "scope": "Complete17 functions and actual ATA model owners; typed JSON generic union adapted into closed decoders; injected NpmExecutor retained; upstream event/latest TODOs preserved",
+      "status": "initial-dependency-managed-native-assertions-passed-full-project-consumers-pending",
+      "upstreamSha256": "90db3da2d4dbc652a21cbeebb136f1e940e9962a24db905919e5f1f270fcb251",
+      "portHashes": {
+        "src/TypeScript.Scanner/ProjectSystem/Ata/Types.cs": "5b46ab3d85fe89a4ad1d91b2e5adf02aa90af61aa76286bf59e9afc5067a85ec",
+        "src/TypeScript.Scanner/ProjectSystem/Ata/TypingsInstaller.cs": "159cb08f3eacfaba3b6c41ce353e49154e3542fbeeff8d47f38ce4f89dba4bae",
+        "src/TypeScript.Scanner/ProjectSystem/Ata/InstallNpmPackages.cs": "cc4062ffa17536f6f428b1d642a3da8ac2365d8dcc7d1008090b8e3e413ab0a4"
+      }
+    },
+    {
+      "upstream": "internal/project/ata/discovertypings.go",
+      "upstreamFunctions": 7,
+      "ports": [
+        "src/TypeScript.Scanner/ProjectSystem/Ata/DiscoverTypings.cs"
+      ],
+      "scope": "Complete seven algorithms, retained raw-name/map keys and path headers, explicit capacities; existing compiler option List owners borrowed directly",
+      "status": "initial-dependency-managed-native-assertions-passed-full-project-consumers-pending",
+      "upstreamSha256": "08520b0a2a9caa74c8a5522a3f9396747971eae9fff76c716f972d81ab15a138",
+      "portHashes": {
+        "src/TypeScript.Scanner/ProjectSystem/Ata/DiscoverTypings.cs": "60528e98bb8ec7f6338e7801fab8b398432ef1b60d6ead6c448e11ac2801fb5f"
+      }
+    },
+    {
+      "upstream": "internal/project/ata/typesmap.go",
+      "upstreamFunctions": 0,
+      "ports": [
+        "src/TypeScript.Scanner/ProjectSystem/Ata/TypesMap.cs"
+      ],
+      "scope": "All459 active map entries; commented regex safelist inactive upstream",
+      "status": "initial-dependency-managed-native-assertions-passed-full-project-consumers-pending",
+      "upstreamSha256": "23a7d25c67e5f1aa6da8390bdb9d8f75e224c69bcad9805ce657a06fa17ca4b7",
+      "portHashes": {
+        "src/TypeScript.Scanner/ProjectSystem/Ata/TypesMap.cs": "55cb307da611c6b37d7518db5f198b718058b502bb6227e061c55ed521440c36"
+      }
+    },
+    {
+      "upstream": "internal/core/workgroup.go",
+      "upstreamFunctions": 3,
+      "ports": [
+        "src/TypeScript.Scanner/Core/ThrottleGroup.cs"
+      ],
+      "scope": "Only complete ThrottleGroup closure lines92\u2013123; accepted WorkGroup unchanged. Derived errgroup cancellation context discarded upstream; shared semaphore acquisition unconditional, first error and completion retained",
+      "status": "initial-dependency-managed-native-assertions-passed-full-project-consumers-pending",
+      "upstreamSha256": "3a7cdb6ec7932d1c7572dac0b4cec3ef937fbd941a0572c733f519547e3e9266",
+      "portHashes": {
+        "src/TypeScript.Scanner/Core/ThrottleGroup.cs": "590db7a626f7dfd2e537c9e7cb499552cac6f80e1cce61986f8ef897435f5c42"
+      }
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/compilerhost.go",
+      "upstreamFunctions": 10,
+      "scope": "complete source counterpart; established command-line List boundary copies and caller-grounded diagnostic equality explicitly adapted",
+      "status": "production-build16-passed-graph-authored-managed-passed-full-session-tests-and-review-pending",
+      "ports": [
+        {
+          "port": "src/TypeScript.Scanner/ProjectSystem/ProjectCompilerHost.cs",
+          "portSha256": "1e8c6900a4ddcc07d93efe7f316129af9e91ade54eff43bc265a3f88666bc58b"
+        }
+      ]
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/configfileregistrybuilder.go",
+      "upstreamFunctions": 26,
+      "scope": "complete source counterpart; established command-line List boundary copies and caller-grounded diagnostic equality explicitly adapted",
+      "status": "production-build16-passed-graph-authored-managed-passed-full-session-tests-and-review-pending",
+      "ports": [
+        {
+          "port": "src/TypeScript.Scanner/ProjectSystem/ConfigFileRegistryBuilder.cs",
+          "portSha256": "71e52ebd0988f3b41597b906b73b840bdbc98899c15f13833bbab6321b6794a2"
+        }
+      ]
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/projectcollectionbuilder.go",
+      "upstreamFunctions": 44,
+      "scope": "complete source counterpart; established command-line List boundary copies and caller-grounded diagnostic equality explicitly adapted",
+      "status": "production-build16-passed-graph-authored-managed-passed-full-session-tests-and-review-pending",
+      "ports": [
+        {
+          "port": "src/TypeScript.Scanner/ProjectSystem/ProjectCollectionBuilder.cs",
+          "portSha256": "a9f5c76076d38cde92b0ab3646e8d32dc81f89ccf436f67b8a07aebe7093dc6f"
+        },
+        {
+          "port": "src/TypeScript.Scanner/ProjectSystem/ProjectDiagnosticEquality.cs",
+          "portSha256": "b4d210f691cc753f3ecd65ebb9790189531aa12ae131892822ad0f56b6f6d8a3"
+        }
+      ]
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/core/bfs.go",
+      "port": "src/TypeScript.Scanner/Core/BreadthFirstSearch.cs",
+      "portSha256": "056f88a427bad22bbff03377f8311b9692232a14a52ed4e5d2fa9b53141237ab",
+      "upstreamFunctions": 6,
+      "scope": "complete BFS source counterpart; original test function with five unchanged leaves",
+      "status": "build16-production-clean-original-managed-passed-native-pending"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/format/api.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Formatting/Api.cs",
+      "upstreamFunctions": 12,
+      "scope": "complete source counterpart",
+      "status": "source-review-clear-managed-and-native-dependency-assertions-passed",
+      "portSha256": "e04eab09ebc7fb915446716360cd36245ebf120eea535bf804270b431890262a",
+      "upstreamSha256": "432fc294bb4566da21cad626e7704f22b4d51df35c1cdf0dab8ad204c146e3e5"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/format/context.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Formatting/Context.cs",
+      "upstreamFunctions": 11,
+      "scope": "complete source counterpart",
+      "status": "source-review-clear-managed-and-native-dependency-assertions-passed",
+      "portSha256": "e28851640b81aa494ae0a38bf2f84261dc90e8f16efacc1468199b3ebd4fd701",
+      "upstreamSha256": "e2069c50bad554e5737184acc990db9920c5d99f07b80a76d57f2676f51ddd25"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/format/indent.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Formatting/Indent.cs",
+      "upstreamFunctions": 32,
+      "scope": "complete source counterpart",
+      "status": "source-review-clear-managed-and-native-dependency-assertions-passed",
+      "portSha256": "6810ac942eb33c74ba2b093b1f4c2df843513d7eeeef606fd8e44aa215763988",
+      "upstreamSha256": "d71024887c72e2b086cbea628b9a2608fff67d26b4dc83f246ef897caa845d3a"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/format/rule.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Formatting/Rule.cs",
+      "upstreamFunctions": 6,
+      "scope": "complete source counterpart",
+      "status": "source-review-clear-managed-and-native-dependency-assertions-passed",
+      "portSha256": "f01aa9aeda8db5dcbae3db2dd5810b8a477bb50f41ac0ff7289bdee523c2aa0b",
+      "upstreamSha256": "491aa5b7ac1ad3eb8d390463c8cf7ff94667351db40a81e5d1b2c1ce54305224"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/format/rulecontext.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Formatting/RuleContext.cs",
+      "upstreamFunctions": 88,
+      "scope": "complete source counterpart",
+      "status": "source-review-clear-managed-and-native-dependency-assertions-passed",
+      "portSha256": "c876ab956e5062f92870167bb050e0af550c2ec23ce986fb73654e78713eb2ed",
+      "upstreamSha256": "e1680a242c6ef5a16b477e21aea0cd69c3e7c6f43da853aafcb00ec4c80ab606"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/format/rules.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Formatting/Rules.cs",
+      "upstreamFunctions": 4,
+      "scope": "complete source counterpart",
+      "status": "source-review-clear-managed-and-native-dependency-assertions-passed",
+      "portSha256": "f193dfca7d9ded841a11fe9b52d52c7fc78700f4c3924ba84f61143fb589f56d",
+      "upstreamSha256": "6042e71a404d16cb1e305454811fec00babe75f56c34897dde185bb407de6ac8"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/format/rulesmap.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Formatting/RulesMap.cs",
+      "upstreamFunctions": 7,
+      "scope": "complete source counterpart",
+      "status": "source-review-clear-managed-and-native-dependency-assertions-passed",
+      "portSha256": "93fc504455108816e984f7188b4b04a183636800f8e81365aca4be6ce09aab58",
+      "upstreamSha256": "f47f323a1b23acada40c72aba96331124df97f9795e817ba367b63b88d25c5a9"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/format/scanner.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Formatting/Scanner.cs",
+      "upstreamFunctions": 23,
+      "scope": "complete source counterpart",
+      "status": "source-review-clear-managed-and-native-dependency-assertions-passed",
+      "portSha256": "cd07e8489bad0cd10c7da650ed7cacea9dff7daf580be73f7dacc65aa1caaccf",
+      "upstreamSha256": "0bae5670f00513eeaf7adc4186b51667eabe99bb4874b326a560fffde5441018"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/format/span.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Formatting/Span.cs",
+      "upstreamFunctions": 44,
+      "scope": "complete source counterpart",
+      "status": "source-review-clear-managed-and-native-dependency-assertions-passed",
+      "portSha256": "a981041ce3a95c5030dbeb013a7340cd82e009478d5562fb973ffe45fa596c7c",
+      "upstreamSha256": "74bf0d81aa3f59ddd82f52e36c0efdee8e80587eecd15cc66e7d194553ad5f60"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/format/util.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Formatting/Utilities.cs",
+      "upstreamFunctions": 8,
+      "scope": "complete source counterpart",
+      "status": "source-review-clear-managed-and-native-dependency-assertions-passed",
+      "portSha256": "eab4f6059cfde7e0444097fd763060e9825e5be1ce2727d29d7e623383bffcb6",
+      "upstreamSha256": "f6df3237020bc8da0b4d8d4c236abd0196210f2e57093e679a56446cd95ccc96"
+    }
+  ],
+  "adaptations": [
+    {
+      "port": "src/TypeScript.Scanner/Collections/SyncMap.cs",
+      "scope": "optional comparer constructor preserves caller key identity; explicit-state synchronous Range overload preserves existing mutation-tolerant captured-entry traversal"
+    },
+    {
+      "port": "src/TypeScript.Scanner/ProjectSystem/Logging/LogFormat.cs",
+      "scope": "logging-scoped explicit byte/numeric/quote/duration/collection formatting; structured owner projections required; unknown verbs fail loudly, not a complete Go fmt replacement"
+    }
+  ],
+  "tests": {
+    "originalFunctions": 12,
+    "families": [
+      {
+        "upstream": "internal/project/refcountcache_test.go",
+        "port": "validation/LanguageServices.Checks/ProjectCacheChecks.cs",
+        "originalFunctions": 6,
+        "pending": "TestRefCountingCaches needs actual Session"
+      },
+      {
+        "upstream": "internal/project/dirty/syncmap_test.go",
+        "port": "validation/LanguageServices.Checks/ProjectDirtyChecks.cs",
+        "originalFunctions": 1,
+        "subtests": 4
+      },
+      {
+        "upstream": "internal/project/background/queue_test.go",
+        "port": "validation/LanguageServices.Checks/ProjectBackgroundChecks.cs",
+        "originalFunctions": 1,
+        "subtests": 5
+      },
+      {
+        "upstream": "internal/project/logging/logtree_test.go",
+        "port": "validation/LanguageServices.Checks/ProjectLoggingChecks.cs",
+        "originalFunctions": 2,
+        "limits": "One compile/interface assertion and one empty original body; authored behavior controls reported separately."
+      },
+      {
+        "upstream": "internal/project/ata/installnpmpackages_test.go",
+        "port": "validation/LanguageServices.Checks/AtaInstallChecks.cs",
+        "originalFunctions": 1,
+        "subtests": 2,
+        "inputs": 485,
+        "status": "initial-dependency-managed-native-passed"
+      },
+      {
+        "upstream": "internal/project/ata/discovertypings_test.go",
+        "port": "validation/LanguageServices.Checks/AtaDiscoveryChecks.cs",
+        "originalFunctions": 1,
+        "subtests": 9,
+        "status": "initial-dependency-managed-native-passed",
+        "adaptation": "accepted virtual fixture filesystem in place of vfstest.FromMap; no Session substitute"
+      }
+    ],
+    "testMainLifecycleFunctionsInProjectTree": 2,
+    "authoredControls": 2,
+    "managedExecution": "initial dependency assertions and graph/BFS assertions passed; full Session/project lifecycle originals pending",
+    "nativeExecution": "initial dependency assertions including ATA passed; Native23 shared graph/BFS assertions passed; full Session/project lifecycle originals pending",
+    "formatting": {
+      "originalFunctions": 7,
+      "managed": "passed combined142 ordinary assertions",
+      "native": "passed Native23 shared assertions",
+      "review": "clear235 functions; ten counterparts"
+    }
+  },
+  "status": "draft-source-mapping-not-acceptance",
+  "externalRuntimeAdaptations": [
+    {
+      "source": "tools/.cache/go/src/os/removeall_at.go",
+      "runtimeVersion": "Go1.27.1",
+      "sourceSha256": "77d5ea8558ccf4d1018ac6baad111d67d6bc39ab120cf6efe18065700b6d14eb",
+      "port": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxMutations.cs",
+      "scope": "focused Linux remove-all first-error/no-follow traversal, not full os package",
+      "status": "source-written-review-pending",
+      "portSha256": "8d12370c9ef6616b8a517803ead22dc42dc969e4aa2c600fc94164bd32c22352"
+    },
+    {
+      "source": "tools/.cache/go/src/os/dir_unix.go",
+      "runtimeVersion": "Go1.27.1",
+      "sourceSha256": "0de1bd5b40affb85fb104b4f04589fcaad093cd4b8165f6b2161427f7935bad0",
+      "port": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxMutations.cs",
+      "scope": "bounded directory read behavior used by RemoveAll, native libc dirent ABI adaptation",
+      "status": "source-written-review-pending",
+      "portSha256": "8d12370c9ef6616b8a517803ead22dc42dc969e4aa2c600fc94164bd32c22352"
+    }
+  ],
+  "reviews": {
+    "projectGraph": "docs/progress/lsp-project-graph-review.md",
+    "projectGraphSha256": "9a51d837da4835d079e3c34c52462d517f896ba4e317a6d9d9a18d659faa8430",
+    "formatting": "artifacts/language-services/source-review/formatting.json",
+    "formattingSha256": "3743ad1cc397fbca5a6701dd9b05911d78844a0ef588fafa355666a69db2c604"
+  }
+}

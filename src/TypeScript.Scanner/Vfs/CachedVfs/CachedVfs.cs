@@ -6,7 +6,7 @@ using TypeScript.Scanner;
 using TypeScript.Collections;
 
 namespace TypeScript.Vfs.CachedVfs;
-public sealed class FS : IFS, ISourceTextFileSystem, IOutputTextFileSystem
+public sealed class FS : IFS, ISourceTextFileSystem, IOutputTextFileSystem, IMutableFileSystem
 {
     private readonly IFS fs;
     private int enabled;
@@ -15,7 +15,6 @@ public sealed class FS : IFS, ISourceTextFileSystem, IOutputTextFileSystem
     private readonly SyncMap<RootedDirectoryPath, Entries> getAccessibleEntriesCache = new();
     private readonly SyncMap<RootedPath, RootedPath> realpathCache = new();
     private readonly SyncMap<RootedPath, TypeScript.Vfs.FileInfo?> statCache = new();
-
     private FS(IFS fs) => this.fs = fs;
     public static FS From(IFS fs)
     {
@@ -41,16 +40,20 @@ public sealed class FS : IFS, ISourceTextFileSystem, IOutputTextFileSystem
     }
 
     // cachedvfs.go:145. Writes forward; upstream does not invalidate read caches.
+    public Exception? AppendFile(RootedFilePath path, ByteStringValue data) => FileSystemMutations.AppendFile(fs, path, data);
+    public Exception? Remove(RootedPath path) => FileSystemMutations.Remove(fs, path);
+    public Exception? Chtimes(RootedPath path, DateTimeOffset accessTime, DateTimeOffset modificationTime) => FileSystemMutations.Chtimes(fs, path, accessTime, modificationTime);
     public Exception? WriteFile(RootedFilePath path, string data) => fs.WriteFile(path, data);
     public Exception? WriteOutputText(RootedFilePath path, ByteStringValue data) => OutputTextWriters.Write(fs, path, data);
-
     public bool DirectoryExists(RootedDirectoryPath path)
     {
         if (Volatile.Read(ref enabled) != 0)
         {
-            var (cached, ok) = directoryExistsCache.Load(path);
-            if (ok) return cached;
+            var(cached, ok) = directoryExistsCache.Load(path);
+            if (ok)
+                return cached;
         }
+
         var result = fs.DirectoryExists(path);
         if (Volatile.Read(ref enabled) != 0)
             directoryExistsCache.Store(path, result);
@@ -61,9 +64,11 @@ public sealed class FS : IFS, ISourceTextFileSystem, IOutputTextFileSystem
     {
         if (Volatile.Read(ref enabled) != 0)
         {
-            var (cached, ok) = fileExistsCache.Load(path);
-            if (ok) return cached;
+            var(cached, ok) = fileExistsCache.Load(path);
+            if (ok)
+                return cached;
         }
+
         var result = fs.FileExists(path);
         if (Volatile.Read(ref enabled) != 0)
             fileExistsCache.Store(path, result);
@@ -74,9 +79,11 @@ public sealed class FS : IFS, ISourceTextFileSystem, IOutputTextFileSystem
     {
         if (Volatile.Read(ref enabled) != 0)
         {
-            var (cached, ok) = getAccessibleEntriesCache.Load(path);
-            if (ok) return cached;
+            var(cached, ok) = getAccessibleEntriesCache.Load(path);
+            if (ok)
+                return cached;
         }
+
         var result = fs.GetAccessibleEntries(path);
         if (Volatile.Read(ref enabled) != 0)
             getAccessibleEntriesCache.Store(path, result);
@@ -87,9 +94,11 @@ public sealed class FS : IFS, ISourceTextFileSystem, IOutputTextFileSystem
     {
         if (Volatile.Read(ref enabled) != 0)
         {
-            var (cached, ok) = realpathCache.Load(path);
-            if (ok) return cached;
+            var(cached, ok) = realpathCache.Load(path);
+            if (ok)
+                return cached;
         }
+
         var result = fs.Realpath(path);
         if (Volatile.Read(ref enabled) != 0)
             realpathCache.Store(path, result);
@@ -100,9 +109,11 @@ public sealed class FS : IFS, ISourceTextFileSystem, IOutputTextFileSystem
     {
         if (Volatile.Read(ref enabled) != 0)
         {
-            var (cached, ok) = statCache.Load(path);
-            if (ok) return cached;
+            var(cached, ok) = statCache.Load(path);
+            if (ok)
+                return cached;
         }
+
         var result = fs.Stat(path);
         if (Volatile.Read(ref enabled) != 0)
             statCache.Store(path, result);
@@ -112,5 +123,4 @@ public sealed class FS : IFS, ISourceTextFileSystem, IOutputTextFileSystem
     public (string Contents, bool Ok) ReadFile(RootedFilePath path) => fs.ReadFile(path);
     (ByteStringView Contents, bool Ok) ISourceTextFileSystem.ReadSourceText(RootedFilePath path) => SourceTextReaders.Read(fs, path);
     public CaseSensitivity CaseSensitivity() => fs.CaseSensitivity();
-
 }

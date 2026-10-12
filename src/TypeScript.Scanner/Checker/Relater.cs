@@ -1682,7 +1682,7 @@ public sealed partial class Checker
     // * See signatureRelatedTo, compareSignaturesIdentical
     //
     // Upstream upstream/TypeScript/tsc/internal/checker/relater.go:2200:1.
-    private Ternary compareSignaturesIdentical(Signature source, Signature target, bool partialMatch, bool ignoreThisTypes, bool ignoreReturnTypes, Func<Type, Type, Ternary> compareTypes)
+    internal Ternary compareSignaturesIdentical(Signature source, Signature target, bool partialMatch, bool ignoreThisTypes, bool ignoreReturnTypes, Func<Type, Type, Ternary> compareTypes)
     {
         if ((source == target))
         {

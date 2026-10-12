@@ -10,10 +10,10 @@ public static partial class OsVfs
     // os.go:24/28. Limits apply across all owners, matching package-level Go semaphores.
     private static readonly SemaphoreSlim blockingWriteDirectorySema = new(128, 128);
     private static readonly SemaphoreSlim writeSema = new(32, 32);
-    private sealed partial class OsFS : IOutputTextFileSystem
+    private sealed partial class OsFS : IOutputTextFileSystem, IMutableFileSystem
     {
         // os.go:140. The synchronous byte writer has no Unicode content conversion.
-        private static Exception? writeFileWithFlag(string path, ByteStringValue content)
+        private static Exception? writeFileWithFlag(string path, ByteStringValue content, bool append = false)
         {
             writeSema.Wait();
             FileStream? file = null;
@@ -22,12 +22,12 @@ public static partial class OsVfs
                 if (OperatingSystem.IsLinux())
                 {
                     if (content.IsBytes)
-                        return LinuxWritePaths.WriteFile(path, content.ByteSpan);
+                        return LinuxWritePaths.WriteFile(path, content.ByteSpan, append);
                     byte[] rawBytes = ArrayPool<byte>.Shared.Rent(content.Length);
                     try
                     {
                         int length = System.Text.Encoding.Latin1.GetBytes(content.CharSpan, rawBytes);
-                        return LinuxWritePaths.WriteFile(path, rawBytes.AsSpan(0, length));
+                        return LinuxWritePaths.WriteFile(path, rawBytes.AsSpan(0, length), append);
                     }
                     finally
                     {
@@ -35,7 +35,7 @@ public static partial class OsVfs
                     }
                 }
 
-                file = new FileStream(path, System.IO.FileMode.Create, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete, bufferSize: 1);
+                file = new FileStream(path, append ? System.IO.FileMode.Append : System.IO.FileMode.Create, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete, bufferSize: 1);
                 if (content.IsBytes)
                     file.Write(content.ByteSpan);
                 else
@@ -102,7 +102,10 @@ public static partial class OsVfs
         }
 
         // os.go:162. Every first write failure attempts parent creation, then retries exactly once.
-        public Exception? WriteOutputText(RootedFilePath path, ByteStringValue content)
+        public Exception? WriteOutputText(RootedFilePath path, ByteStringValue content) => WriteFileEnsuringDirectory(path, content, false);
+        // os.go:176. The same retry/directory owner uses APPEND instead of TRUNC.
+        public Exception? AppendFile(RootedFilePath path, ByteStringValue content) => WriteFileEnsuringDirectory(path, content, true);
+        private Exception? WriteFileEnsuringDirectory(RootedFilePath path, ByteStringValue content, bool append)
         {
             string native;
             try
@@ -114,7 +117,7 @@ public static partial class OsVfs
                 return encodingError;
             }
 
-            if (writeFileWithFlag(native, content)is null)
+            if (writeFileWithFlag(native, content, append)is null)
                 return null;
             // os.go:166: the directory path is evaluated only after the first
             // write fails. Successful writes do not decode an unused parent.
@@ -129,7 +132,7 @@ public static partial class OsVfs
             }
 
             var error = ensureDirectoryExists(directory);
-            return error ?? writeFileWithFlag(native, content);
+            return error ?? writeFileWithFlag(native, content, append);
         }
 
         // os.go:172. O_WRONLY|O_CREATE|O_TRUNC corresponds to FileMode.Create above.

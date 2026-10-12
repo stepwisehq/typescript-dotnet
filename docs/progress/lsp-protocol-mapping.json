@@ -1,0 +1,221 @@
+{
+  "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "entries": [
+    {
+      "upstream": "tsc/internal/jsonrpc/baseproto.go",
+      "destination": "src/TypeScript.Scanner/JsonRpc/BaseProtocol.cs",
+      "additionalDestinations": [],
+      "status": "source-written-dependency-gate-passed",
+      "scope": "Complete framing reader/writer; original four framing functions are shared separately from27 codec functions.",
+      "upstreamSha256": "a24b7a34b5fa88bcf96643c1a52caeace838727287ae6c5413f251e59ed65f4a",
+      "destinationHashes": {
+        "src/TypeScript.Scanner/JsonRpc/BaseProtocol.cs": "500332328d7fa59ec16a6305c5cc360d1b3ddac9f15c371a44a32166137459ee"
+      },
+      "excludedSymbols": []
+    },
+    {
+      "upstream": "tsc/internal/jsonrpc/jsonrpc.go",
+      "destination": "src/TypeScript.Scanner/JsonRpc/JsonRpc.cs",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/JsonRpc/GenericMessages.cs",
+        "src/TypeScript.Scanner/JsonRpc/ID.Protocol.cs",
+        "src/TypeScript.Scanner/JsonRpc/JsonValue.cs",
+        "src/TypeScript.Scanner/JsonRpc/RawJsonValue.Protocol.cs"
+      ],
+      "status": "source-written-dependency-gate-passed",
+      "scope": "Complete generic message/version/ID/error/raw-value owners; partial files preserve prior public wrappers and required raw nil distinction.",
+      "upstreamSha256": "2cd101bc6a2230e10bd3456757c0df77f5f89694a65f1194c2ab94d75b9104cc",
+      "destinationHashes": {
+        "src/TypeScript.Scanner/JsonRpc/JsonRpc.cs": "10449f4dc4657816294b73f16bac65e027f8039604835d7648ee0b5e93cc53c8",
+        "src/TypeScript.Scanner/JsonRpc/GenericMessages.cs": "f88d003c568345f9485d323aa9214e3a6171bfa42a50183c6ff6f16173f3702a",
+        "src/TypeScript.Scanner/JsonRpc/ID.Protocol.cs": "09b796c8f18536d1f283e261b82c06893cd9070f1dc4421d554444ba1a024a7d",
+        "src/TypeScript.Scanner/JsonRpc/JsonValue.cs": "777ca9473bd156f36b225af6cb9d875cc02e587c8b22ae9ea5b4e918ad2aa29d",
+        "src/TypeScript.Scanner/JsonRpc/RawJsonValue.Protocol.cs": "423666f13208f6e03cbc49179b40ca947d0c107ec01f468687221d21bc4566e6"
+      },
+      "excludedSymbols": []
+    },
+    {
+      "upstream": "tsc/internal/lsp/lsproto/baseproto.go",
+      "destination": "src/TypeScript.Scanner/Lsp/Protocol/BaseProtocol.cs",
+      "additionalDestinations": [],
+      "status": "source-written-dependency-gate-passed",
+      "scope": "Complete protocol wrappers over genuine JSON-RPC framing.",
+      "upstreamSha256": "d08e59093c3866b1a45dc4dc21a35f7f5f61c31581ec638cdec0cb491c4d4be4",
+      "destinationHashes": {
+        "src/TypeScript.Scanner/Lsp/Protocol/BaseProtocol.cs": "2159062ed614ef88c13759256c2b8e37d42949436fa21db66ea434051bee1039"
+      },
+      "excludedSymbols": []
+    },
+    {
+      "upstream": "tsc/internal/lsp/lsproto/lsp.go",
+      "destination": "src/TypeScript.Scanner/Lsp/Protocol/Scalars.cs",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/Lsp/Protocol/DocumentUri.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/Interfaces.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolErrors.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolMethodInfo.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/RequestContext.cs"
+      ],
+      "status": "source-written-dependency-gate-passed",
+      "scope": "Complete URI/interfaces/method metadata/generic params-result/error/context responsibilities. Generic RequestInfo/NotificationInfo become explicit closed descriptors; request context derives immutable values/cancellation.",
+      "upstreamSha256": "8ffe2aeb8196ea9b3f7ef6c39ee28962630ad9e37415d1cb40b6bab5e6fc296c",
+      "destinationHashes": {
+        "src/TypeScript.Scanner/Lsp/Protocol/Scalars.cs": "3e0f2c35c993b9916d5fa07cd2d7d136ce6e18e69f7c8e9164dfa6c334e57c9f",
+        "src/TypeScript.Scanner/Lsp/Protocol/DocumentUri.cs": "de27304ff2e36141a638ccc3acad17d5af5249e12a2787b2509c73424db93698",
+        "src/TypeScript.Scanner/Lsp/Protocol/Interfaces.cs": "ed42da863d6969af004a89c4fc670dd1dfd3de2ea0655bf5cd6e02234bf3ef78",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolErrors.cs": "e084657d0e95e32ca1ea49ce44acd8bc088ad3283a7193ab84870b0b9ebab161",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolMethodInfo.cs": "c4bdec191a2d304fdc698226b8d75cbfaabc747d4813a5bb5d88811fdedd6abd",
+        "src/TypeScript.Scanner/Lsp/Protocol/RequestContext.cs": "42c1f0f874571f9e8bdf7df2a4d103670dfe8df470d814f602eb0ecc2dfdfac2"
+      },
+      "excludedSymbols": []
+    },
+    {
+      "upstream": "tsc/internal/lsp/lsproto/jsonrpc.go",
+      "destination": "src/TypeScript.Scanner/Lsp/Protocol/ProtocolMessages.cs",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolRpcCodec.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolScalarCodec.cs"
+      ],
+      "status": "source-written-dependency-gate-passed",
+      "scope": "Complete typed messages and custom JSON roles; deferred raw values copy only at upstream retained-value boundaries.",
+      "upstreamSha256": "10b903665ee3d059871c802ebdedf8fa47544dda22acd3fd99f9b1bdad47d1f0",
+      "destinationHashes": {
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolMessages.cs": "f9cc1b9e855683fb4d7eacd4c8c93be4f2dade71fa427412c9ee5c346ca4c52d",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolRpcCodec.cs": "8735b42bb8d912519a8404536d7a78c26e060b16ea1ab3171892a9261e8a4e13",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolScalarCodec.cs": "345f60992d7d8209eac027c8fd6114e83ad88b108903e849cb614575a003c079"
+      },
+      "excludedSymbols": []
+    },
+    {
+      "upstream": "tsc/internal/lsp/lsproto/structcodec.go",
+      "destination": "src/TypeScript.Scanner/Lsp/Protocol/ProtocolStructCodec.cs",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolObjectHelpers.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolSemanticError.cs"
+      ],
+      "status": "source-written-dependency-gate-passed",
+      "scope": "Complete required/nullable metadata and struct/custom discriminator algorithms; closed generated field workers replace reflection.",
+      "upstreamSha256": "3eef765f8508a0d8aae73abf645bf95ef3088bbd76112af7ddd660c3f4d3adea",
+      "destinationHashes": {
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolStructCodec.cs": "8bcae70e4798e8dbce510f0576cf3f5db2cf0417405eba229747e11a6bb04ec3",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolObjectHelpers.cs": "560659f3b01183e2c0fca5b3ac0faf54dcb42e5633317618834ec34bef4f7a51",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolSemanticError.cs": "22695694d3d7cda55db481a2bc0e38aae2b662cf32997780ca56ebb24c361633"
+      },
+      "excludedSymbols": []
+    },
+    {
+      "upstream": "tsc/internal/lsp/lsproto/util.go",
+      "destination": "src/TypeScript.Scanner/Lsp/Protocol/Utilities.cs",
+      "additionalDestinations": [],
+      "status": "source-written-dependency-gate-passed",
+      "scope": "Complete position/range/diagnostic comparison/string utilities.",
+      "upstreamSha256": "fa42ac33d267dc6d955c3db3af6625ad5d830b387c447c01da5b0b6298de14e1",
+      "destinationHashes": {
+        "src/TypeScript.Scanner/Lsp/Protocol/Utilities.cs": "4a7221c1ee58792eac2a3739d33f09b2c9f141435dc4b3d78673fb6f026282cf"
+      },
+      "excludedSymbols": []
+    },
+    {
+      "upstream": "tsc/internal/lsp/lsproto/lsp_generated.go",
+      "destination": "src/TypeScript.Scanner/Lsp/Protocol/Models.Generated.cs",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/Lsp/Protocol/Capabilities.Generated.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/Members.Generated.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/EnumNames.Generated.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/Methods.Generated.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolCodec.Generated.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/MethodInfos.Generated.cs"
+      ],
+      "status": "source-written-dependency-gate-passed",
+      "scope": "Complete728 declaration models,79 capability resolvers,71 projections,30 enum-name functions,105 method constants,599 readers/writers and104 typed method infos. SemanticTokens parent constant has no original Info; full/delta/range do.",
+      "upstreamSha256": "b8574199af20f6a84cce3225d05123eaa265d622fd9d209f9200f842c1aaa2ef",
+      "destinationHashes": {
+        "src/TypeScript.Scanner/Lsp/Protocol/Models.Generated.cs": "1ec47dda78484976005bcd0788c81c02614ff8f64ca3d33ae3ce80e110056bca",
+        "src/TypeScript.Scanner/Lsp/Protocol/Capabilities.Generated.cs": "0b328b1be0f75f8e147efad3f9d4d574248cc6d688c3cab143956e2f03698804",
+        "src/TypeScript.Scanner/Lsp/Protocol/Members.Generated.cs": "615d872e9bcb76cdfefad78eb1067b4ddef4c57ab1234b4257d75b04fbfec412",
+        "src/TypeScript.Scanner/Lsp/Protocol/EnumNames.Generated.cs": "9782bfc96c6bc55f01d9e03d21abffe9039151f3e9095371a557768fff5c2e1e",
+        "src/TypeScript.Scanner/Lsp/Protocol/Methods.Generated.cs": "05aa25984999eaacb1d37acc330ed796f4f8603200432e811014d97083b23e9a",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolCodec.Generated.cs": "f7fec11f77517390df6916c6858d3aa8a7a940d4d56391b36e4b9532922aa772",
+        "src/TypeScript.Scanner/Lsp/Protocol/MethodInfos.Generated.cs": "ac7c12b98465a57b630be8e0344bf9baa6c2e309da792411420cacb7de2f722e"
+      },
+      "excludedSymbols": []
+    },
+    {
+      "upstream": "tsc/internal/ls/lsconv/linemap.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Lsconv/LineMap.cs",
+      "additionalDestinations": [],
+      "status": "source-written-dependency-gate-passed",
+      "scope": "Complete LSP line map/UTF8 line starts owner.",
+      "upstreamSha256": "bbfc46d0a9fc9c3a1f8f6c73ea6a3ea9b3420ebe6dabaf404204d14d50de2cd7",
+      "destinationHashes": {
+        "src/TypeScript.Scanner/LanguageServices/Lsconv/LineMap.cs": "1345745f79ce32ccdde09e48497a4e2a8df2054210b89cd73621389704faab39"
+      },
+      "excludedSymbols": []
+    },
+    {
+      "upstream": "tsc/internal/ls/lsconv/converters.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Lsconv/Script.cs",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/LanguageServices/Lsconv/Converters.cs",
+        "src/TypeScript.Scanner/LanguageServices/Lsconv/Diagnostics.cs"
+      ],
+      "status": "source-written-dependency-gate-passed",
+      "scope": "Complete script/conversion/URI/mapping/diagnostic roles. uint32 coordinates cast and arithmetic preserve original TextPos int32 behavior.",
+      "upstreamSha256": "1a55afacec541e6c1c570e42b75742ca7365a40e6b08e4b4164104d03fcd52ff",
+      "destinationHashes": {
+        "src/TypeScript.Scanner/LanguageServices/Lsconv/Script.cs": "9134abc5b7761514b06ff5d2bfce01d2290d3dceff83f6c47d04c3d35cfda25c",
+        "src/TypeScript.Scanner/LanguageServices/Lsconv/Converters.cs": "bbb1ac1b223bc06b487b19ea095543fe4cb15eef014cfa38011dc476d0272920",
+        "src/TypeScript.Scanner/LanguageServices/Lsconv/Diagnostics.cs": "f8251bc086fe88661b2d39e25dd3f86fbcb8236e0d5f9352259fc6a90b41086d"
+      },
+      "excludedSymbols": []
+    },
+    {
+      "upstream": "tsc/internal/core/context.go",
+      "destination": "src/TypeScript.Scanner/Core/Context.cs",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/Lsp/Protocol/RequestContext.cs"
+      ],
+      "status": "source-written-dependency-gate-passed",
+      "scope": "Complete required With/Get request ID and checker lifetime functions; context derived values retain explicit scoped owners. Additional locale/capability/format fields map their actual package sources rather than ambient context.",
+      "upstreamSha256": "d34cd970b3d1b588923628f34c4eb9d241eeb7516e8f3a43d89bc129743386b9",
+      "destinationHashes": {
+        "src/TypeScript.Scanner/Core/Context.cs": "f73b644d24051b421c4a3d4cec0ef10cb8b8182c07cdc5065b132201f8009e49",
+        "src/TypeScript.Scanner/Lsp/Protocol/RequestContext.cs": "42c1f0f874571f9e8bdf7df2a4d103670dfe8df470d814f602eb0ecc2dfdfac2"
+      },
+      "excludedSymbols": []
+    }
+  ],
+  "authoredClosedCodecSupport": {
+    "destinations": [
+      "src/TypeScript.Scanner/Lsp/Protocol/Owners.cs",
+      "src/TypeScript.Scanner/Lsp/Protocol/ProtocolMap.Cycle.cs",
+      "src/TypeScript.Scanner/Lsp/Protocol/ProtocolType.cs",
+      "src/TypeScript.Scanner/Lsp/Protocol/RootDescriptors.Generated.cs",
+      "src/TypeScript.Scanner/Lsp/Protocol/ModelFacades.Generated.cs",
+      "src/TypeScript.Scanner/Lsp/Protocol/IntrinsicValues.Generated.cs",
+      "src/TypeScript.Scanner/Lsp/Protocol/IntrinsicReaders.Generated.cs",
+      "src/TypeScript.Scanner/Lsp/Protocol/DynamicTypes.Generated.cs",
+      "src/TypeScript.Scanner/Lsp/Protocol/ProtocolDynamicTypes.cs",
+      "src/TypeScript.Scanner/Lsp/Protocol/ProtocolDecoder.cs",
+      "src/TypeScript.Scanner/Lsp/Protocol/ProtocolEncoder.cs"
+    ],
+    "sourceResponsibilities": "Closed Native AOT counterpart of lsproto reflection/root metadata and internal/json JSON-v2 transport. Explicit749 lazy root shapes retain Go value/pointer distinctions; closed intrinsic/dynamic dispatch, field workers and UTF8 decoder/encoder have no reflection/eager global registry. Semantic admission, duplicate/error/partial mutation and retained raw ownership source-bound; authored support is not an extra original Go source file.",
+    "generatorInputs": [
+      "tools/lsp/generate-protocol.py",
+      "tools/lsp/generate-codecs.py",
+      "tools/lsp/model-schema.json",
+      "tools/lsp/codecs/"
+    ],
+    "generatorUpstream": "upstream/TypeScript/tsc/internal/lsp/lsproto/lsp_generated.go and handwritten lsproto custom roles",
+    "supportDependencies": {
+      "FileUri.cs": "Demanded Go1.27.1 net/url file-URI Parse/authority/host/unescape projection; explicitly does not claim full net/url package.",
+      "JsonCodec.cs": "Focused accepted quote worker access plus ParseDictionary/deterministic output for actual preferences; does not blanket-complete runtime JSON file.",
+      "TsPath": "Already accepted Dynamic.cs reused; focused Path.Lsconv.cs required prefix/string helpers retain borrowed bytes."
+    }
+  },
+  "testProvenance": {
+    "original": "31 lsproto functions total:4 framing previously covered +27 newly preserved codec/URI functions. Six lsconv originals preserved separately.",
+    "authored": "JSON7,map3,zero5,depth8,coordinate4 and focused adapters remain separate from original counts.",
+    "currentQualification": "Root reports managed ordinary142 and actual Native23 dependency groups passed; isolated model4998/any10000 pass. Full codec independent review closing; no server acceptance. OptionalArm Title test-only metadata fixed after Native23 snapshot."
+  }
+}

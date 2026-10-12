@@ -18,42 +18,52 @@ public sealed partial class Checker
     // checker.go:19952 selects WriteArrayAsGenericType without the default alias flags.
     private string typeToStringWriteArrayAsGenericType(Type t) => typeToStringEx(t, null, flags: TypeScript.NodeBuilding.Flags.WriteArrayAsGenericType);
     // printer.go:47/59. Preserve diagnostic flags and the compiler's truncation
-    // option; service verbosity remains outside the diagnostic entry point.
+    // option; configured service calls additionally carry the original verbosity owner.
     private string typeToString(Type t, Node enclosingDeclaration) => typeToStringEx(t, enclosingDeclaration);
-    private string typeToStringEx(Type t, Node enclosingDeclaration, bool fullyQualified = false, bool noTypeReduction = false, TypeScript.NodeBuilding.Flags? flags = null)
+    private string typeToStringEx(Type t, Node enclosingDeclaration, bool fullyQualified = false, bool noTypeReduction = false, TypeScript.NodeBuilding.Flags? flags = null, VerbosityContext verbosity = null)
     {
         if (serializationLevel >= 2)
             return "?";
         if (t.checker != this)
             throw new ArgumentException("Type belongs to a different checker");
-        var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
+        var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter((flags.GetValueOrDefault() & TypeScript.NodeBuilding.Flags.MultilineObjectLiterals) != 0 ? "\n" : "", 0);
         var nodeBuilder = getNodeBuilder();
+        var oldVerbosity = nodeBuilder.verbosity;
+        nodeBuilder.verbosity = verbosity;
         try
         {
-        serializationLevel++;
-        var noTruncation = compilerOptions.NoErrorTruncation == Tristate.True ||
-            (flags.GetValueOrDefault() & TypeScript.NodeBuilding.Flags.NoTruncation) != 0;
-        var combinedFlags = (flags ?? (TypeScript.NodeBuilding.Flags.AllowUniqueESSymbolType |
-            TypeScript.NodeBuilding.Flags.UseAliasDefinedOutsideCurrentScope |
-            (fullyQualified ? TypeScript.NodeBuilding.Flags.UseFullyQualifiedType : 0) |
-            (noTypeReduction ? TypeScript.NodeBuilding.Flags.NoTypeReduction : 0))) |
-            TypeScript.NodeBuilding.Flags.IgnoreErrors;
-        if (noTruncation)
-            combinedFlags |= TypeScript.NodeBuilding.Flags.NoTruncation;
-        var typeNode = nodeBuilder.TypeToTypeNode(t, enclosingDeclaration, combinedFlags, TypeScript.NodeBuilding.InternalFlags.None, null);
-        serializationLevel--;
-        if (typeNode == null)
-            throw new InvalidOperationException("should always get typenode");
-        // printer.go:97: only the bare unresolved type retains synthesized comments.
-        var printer = new TypeScript.DiagnosticPrinting.Printer(nodeBuilder.EmitContext(), t != unresolvedType);
-        printer.Write(typeNode, writer, enclosingDeclaration != null ? Ast.GetSourceFileOfNode(enclosingDeclaration) : null);
-        var result = writer.String();
-        var maxLength = (noTruncation ? NodeBuilderImpl.noTruncationMaximumTruncationLength :
-            NodeBuilderImpl.defaultMaximumTruncationLength) * 2;
-        return result.Length >= maxLength ? result[..(maxLength - 3)] + "..." : result;
+            serializationLevel++;
+            var noTruncation = ((verbosity == null || verbosity.MaxTruncationLength == 0) && compilerOptions.NoErrorTruncation == Tristate.True) || (flags.GetValueOrDefault() & TypeScript.NodeBuilding.Flags.NoTruncation) != 0;
+            var combinedFlags = (flags ?? (TypeScript.NodeBuilding.Flags.AllowUniqueESSymbolType | TypeScript.NodeBuilding.Flags.UseAliasDefinedOutsideCurrentScope | (fullyQualified ? TypeScript.NodeBuilding.Flags.UseFullyQualifiedType : 0) | (noTypeReduction ? TypeScript.NodeBuilding.Flags.NoTypeReduction : 0))) | TypeScript.NodeBuilding.Flags.IgnoreErrors;
+            if (noTruncation)
+                combinedFlags |= TypeScript.NodeBuilding.Flags.NoTruncation;
+            var typeNode = nodeBuilder.TypeToTypeNode(t, enclosingDeclaration, combinedFlags, TypeScript.NodeBuilding.InternalFlags.None, null);
+            serializationLevel--;
+            if (typeNode == null)
+                throw new InvalidOperationException("should always get typenode");
+            // printer.go:97: only the bare unresolved type retains synthesized comments.
+            var printer = new TypeScript.DiagnosticPrinting.Printer(nodeBuilder.EmitContext(), t != unresolvedType);
+            printer.Write(typeNode, writer, enclosingDeclaration != null ? Ast.GetSourceFileOfNode(enclosingDeclaration) : null);
+            var result = writer.String();
+            var maxLength = NodeBuilderImpl.defaultMaximumTruncationLength * 2;
+            if (verbosity != null && verbosity.MaxTruncationLength > 0)
+                maxLength = verbosity.MaxTruncationLength * 10;
+            if (noTruncation)
+                maxLength = NodeBuilderImpl.noTruncationMaximumTruncationLength * 2;
+            if (maxLength > 0 && result.Length != 0 && result.Length >= maxLength)
+            {
+                if (verbosity != null)
+                    verbosity.Truncated = true;
+                return result[..(maxLength - 3)] + "...";
+            }
 
+            return result;
         }
-        finally { releaseNodeBuilderNodes(); }
+        finally
+        {
+            nodeBuilder.verbosity = oldVerbosity;
+            releaseNodeBuilderNodes();
+        }
     }
 
     // printer.go:120–177. Public display returns scalar strings; producer arguments and output retain Go bytes.
@@ -78,14 +88,16 @@ public sealed partial class Checker
         var nodeBuilder = getNodeBuilder();
         try
         {
-        var sourceFile = enclosingDeclaration == null ? null : Ast.GetSourceFileOfNode(enclosingDeclaration);
-        var printer = new TypeScript.DiagnosticPrinting.Printer(nodeBuilder.EmitContext(), true, true, enclosingDeclaration != null && enclosingDeclaration.Kind == Kind.SourceFile);
-        var entity = (flags & SymbolFormatFlags.AllowAnyNodeKind) != 0 ? nodeBuilder.SymbolToNode(symbol, meaning, enclosingDeclaration, nodeFlags, internalNodeFlags, null) : nodeBuilder.SymbolToEntityName(symbol, meaning, enclosingDeclaration, nodeFlags, internalNodeFlags, null);
-        printer.Write(entity, writer, sourceFile);
-        return writer.String();
-
+            var sourceFile = enclosingDeclaration == null ? null : Ast.GetSourceFileOfNode(enclosingDeclaration);
+            var printer = new TypeScript.DiagnosticPrinting.Printer(nodeBuilder.EmitContext(), true, true, enclosingDeclaration != null && enclosingDeclaration.Kind == Kind.SourceFile);
+            var entity = (flags & SymbolFormatFlags.AllowAnyNodeKind) != 0 ? nodeBuilder.SymbolToNode(symbol, meaning, enclosingDeclaration, nodeFlags, internalNodeFlags, null) : nodeBuilder.SymbolToEntityName(symbol, meaning, enclosingDeclaration, nodeFlags, internalNodeFlags, null);
+            printer.Write(entity, writer, sourceFile);
+            return writer.String();
         }
-        finally { releaseNodeBuilderNodes(); }
+        finally
+        {
+            releaseNodeBuilderNodes();
+        }
     }
 
     // printer.go:180/224. Default signature and predicate diagnostic flags.
@@ -95,13 +107,15 @@ public sealed partial class Checker
         var builder = getNodeBuilder();
         try
         {
-        var node = builder.SignatureToSignatureDeclaration(signature, isConstructor ? Kind.ConstructSignature : Kind.CallSignature, null, TypeScript.NodeBuilding.Flags.IgnoreErrors | TypeScript.NodeBuilding.Flags.WriteTypeParametersInQualifiedName);
-        var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
-        new TypeScript.DiagnosticPrinting.Printer(builder.EmitContext(), true, true, true).Write(node, writer, null);
-        return writer.String();
-
+            var node = builder.SignatureToSignatureDeclaration(signature, isConstructor ? Kind.ConstructSignature : Kind.CallSignature, null, TypeScript.NodeBuilding.Flags.IgnoreErrors | TypeScript.NodeBuilding.Flags.WriteTypeParametersInQualifiedName);
+            var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
+            new TypeScript.DiagnosticPrinting.Printer(builder.EmitContext(), true, true, true).Write(node, writer, null);
+            return writer.String();
         }
-        finally { releaseNodeBuilderNodes(); }
+        finally
+        {
+            releaseNodeBuilderNodes();
+        }
     }
 
     private string typePredicateToString(TypePredicate predicate)
@@ -109,13 +123,15 @@ public sealed partial class Checker
         var builder = getNodeBuilder();
         try
         {
-        var node = builder.TypePredicateToTypePredicateNode(predicate, null, TypeScript.NodeBuilding.Flags.UseAliasDefinedOutsideCurrentScope | TypeScript.NodeBuilding.Flags.IgnoreErrors | TypeScript.NodeBuilding.Flags.WriteTypeParametersInQualifiedName);
-        var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
-        new TypeScript.DiagnosticPrinting.Printer(builder.EmitContext()).Write(node, writer, null);
-        return writer.String();
-
+            var node = builder.TypePredicateToTypePredicateNode(predicate, null, TypeScript.NodeBuilding.Flags.UseAliasDefinedOutsideCurrentScope | TypeScript.NodeBuilding.Flags.IgnoreErrors | TypeScript.NodeBuilding.Flags.WriteTypeParametersInQualifiedName);
+            var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
+            new TypeScript.DiagnosticPrinting.Printer(builder.EmitContext()).Write(node, writer, null);
+            return writer.String();
         }
-        finally { releaseNodeBuilderNodes(); }
+        finally
+        {
+            releaseNodeBuilderNodes();
+        }
     }
 
     // checker/printer.go:253. Boolean grouping and nullable suffix ordering.

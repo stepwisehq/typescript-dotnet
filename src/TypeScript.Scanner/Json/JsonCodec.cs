@@ -18,13 +18,28 @@ public static class JsonCodec
     private static readonly UTF8Encoding strictUtf8 = new(false, true);
     public static (object? Value, Exception? Error) Parse(string goBytes, bool allowDuplicateNames = false) => parse(goBytes, allowDuplicateNames, 0, "");
     public static (object? Value, Exception? Error) Parse(JsonValue value, bool allowDuplicateNames = false) => parse(GoString.FromBytes(value.Bytes), allowDuplicateNames, value.SourceOffset, value.Pointer);
+    public static (object? Value, Exception? Error) ParseDictionary(string goBytes, bool allowDuplicateNames = false)
+    {
+        // json/v2's map arshaler reads one token before admitting only object or
+        // null. Preserve its semantic error instead of decoding an any root.
+        var (handled, error) = JsonDiagnosticReader.ReadNonObjectToken(goBytes, null, "map[string]interface {}");
+        return handled ? (null, error) : parse(goBytes, allowDuplicateNames, 0, "", dictionaryObjects: true);
+    }
+    private static void SetObjectField(object owner, string name, object? value)
+    {
+        if (owner is Dictionary<string, object?> dictionary)
+            dictionary[name] = value;
+        else
+            ((OrderedMap<string, object?>)owner).Set(name, value);
+    }
+
     private sealed class ReadFrame(object value)
     {
         internal readonly object Value = value;
         internal string Name = "";
     }
 
-    private static (object? Value, Exception? Error) parse(string goBytes, bool allowDuplicateNames, int sourceOffset, string pointer)
+    private static (object? Value, Exception? Error) parse(string goBytes, bool allowDuplicateNames, int sourceOffset, string pointer, bool dictionaryObjects = false)
     {
         object? root = null;
         var frames = new Stack<ReadFrame>();
@@ -36,7 +51,7 @@ public static class JsonCodec
             else if (frames.Peek().Value is List<object?> items)
                 items.Add(value);
             else
-                ((OrderedMap<string, object?>)frames.Peek().Value).Set(frames.Peek().Name, value);
+                SetObjectField(frames.Peek().Value, frames.Peek().Name, value);
         }
 
         try
@@ -50,7 +65,7 @@ public static class JsonCodec
                 switch (last)
                 {
                     case JsonTokenType.StartObject:
-                        var fields = new OrderedMap<string, object?>();
+                        object fields = dictionaryObjects ? new Dictionary<string, object?>(StringComparer.Ordinal) : new OrderedMap<string, object?>();
                         Attach(fields);
                         frames.Push(new ReadFrame(fields));
                         break;
@@ -66,11 +81,11 @@ public static class JsonCodec
                     case JsonTokenType.PropertyName:
                         string name = readString(ref reader);
                         var frame = frames.Peek();
-                        var map = (OrderedMap<string, object?>)frame.Value;
-                        if (!allowDuplicateNames && map.Has(name))
+                        bool hasName = frame.Value is Dictionary<string, object?> dictionary ? dictionary.ContainsKey(name) : ((OrderedMap<string, object?>)frame.Value).Has(name);
+                        if (!allowDuplicateNames && hasName)
                             throw new JsonException("duplicate object member name");
                         frame.Name = name;
-                        map.Set(name, null);
+                        SetObjectField(frame.Value, name, null);
                         break;
                     case JsonTokenType.String:
                         Attach(null);
@@ -78,7 +93,7 @@ public static class JsonCodec
                         if (frames.Count != 0 && frames.Peek().Value is List<object?> list)
                             list[^1] = text;
                         else if (frames.Count != 0)
-                            ((OrderedMap<string, object?>)frames.Peek().Value).Set(frames.Peek().Name, text);
+                            SetObjectField(frames.Peek().Value, frames.Peek().Name, text);
                         else
                             root = text;
                         break;
@@ -90,7 +105,7 @@ public static class JsonCodec
                         if (frames.Count != 0 && frames.Peek().Value is List<object?> numbers)
                             numbers[^1] = number;
                         else if (frames.Count != 0)
-                            ((OrderedMap<string, object?>)frames.Peek().Value).Set(frames.Peek().Name, number);
+                            SetObjectField(frames.Peek().Value, frames.Peek().Name, number);
                         else
                             root = number;
                         break;
@@ -115,7 +130,7 @@ public static class JsonCodec
             // Reconstruct only the partial value on a failed .NET read. The
             // selected source token grammar commits completed tokens before a
             // following delimiter error and retains original partial containers.
-            var partial = JsonDiagnosticReader.Decode(goBytes, allowDuplicateNames, sourcePointer: pointer, sourceOffset: sourceOffset);
+            var partial = JsonDiagnosticReader.Decode(goBytes, allowDuplicateNames, sourcePointer: pointer, sourceOffset: sourceOffset, dictionaryObjects: dictionaryObjects);
             return (partial.Value, partial.Error ?? error);
         }
     }
@@ -237,11 +252,20 @@ public static class JsonCodec
         {
             int start = checked((int)token.TokenStartIndex);
             int end;
-            try { using var document = JsonDocument.ParseValue(ref token); end = checked((int)token.BytesConsumed); }
-            catch (JsonException) { return JsonDiagnosticReader.AnalyzeRawValue(input[start..], sourcePointer: pointer, sourceOffset: start); }
+            try
+            {
+                using var document = JsonDocument.ParseValue(ref token);
+                end = checked((int)token.BytesConsumed);
+            }
+            catch (JsonException)
+            {
+                return JsonDiagnosticReader.AnalyzeRawValue(input[start..], sourcePointer: pointer, sourceOffset: start);
+            }
+
             string raw = input[start..end];
             var lexical = JsonDiagnosticReader.AnalyzeRawValue(raw, sourcePointer: pointer, sourceOffset: start);
-            if (lexical is not null) return lexical;
+            if (lexical is not null)
+                return lexical;
             string kind = raw[0] == '"' ? "string" : raw[0] == '[' ? "array" : raw[0] == '{' ? "object" : raw[0] is 'f' or 't' ? "boolean" : raw[0] == 'n' ? "null" : "number";
             string? error = null;
             string value = "";
@@ -253,55 +277,99 @@ public static class JsonCodec
                 bool allDigits = digits.All(ch => ch is >= '0' and <= '9');
                 bool parsed = ulong.TryParse(digits, NumberStyles.None, CultureInfo.InvariantCulture, out ulong number);
                 error = !allDigits ? "invalid syntax" : !parsed || number > (negative ? 2147483648UL : 2147483647UL) ? "value out of range" : null;
-                if (error is null) return null;
+                if (error is null)
+                    return null;
             }
+
             return JsonTextErrors.AsException(JsonTextErrors.SemanticError("unmarshal", kind, value, type, pointer, start, error));
         }
+
         bool Read(ref Utf8JsonReader token) => token.Read();
         try
         {
-            if (!Read(ref reader)) return (null, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false));
+            if (!Read(ref reader))
+                return (null, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false));
             if (reader.TokenType == JsonTokenType.Null)
             {
-                if (Read(ref reader)) return (null, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false));
+                if (Read(ref reader))
+                    return (null, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false));
                 return (null, null);
             }
-            if (reader.TokenType != JsonTokenType.StartArray) return (null, Semantic(ref reader, "[][]int32", "", false));
+
+            if (reader.TokenType != JsonTokenType.StartArray)
+                return (null, Semantic(ref reader, "[][]int32", "", false));
             result = [];
             while (true)
             {
                 bool read;
-                try { read = Read(ref reader); }
-                catch (JsonException) { result.Add(null); throw; }
-                if (!read) { result.Add(null); break; }
-                if (reader.TokenType == JsonTokenType.EndArray) break;
+                try
+                {
+                    read = Read(ref reader);
+                }
+                catch (JsonException)
+                {
+                    result.Add(null);
+                    throw;
+                }
+
+                if (!read)
+                {
+                    result.Add(null);
+                    break;
+                }
+
+                if (reader.TokenType == JsonTokenType.EndArray)
+                    break;
                 int rowIndex = result.Count;
                 string pointer = "/" + rowIndex.ToString(CultureInfo.InvariantCulture);
                 result.Add(null);
-                if (reader.TokenType == JsonTokenType.Null) continue;
-                if (reader.TokenType != JsonTokenType.StartArray) return (result, Semantic(ref reader, "[]int32", pointer, false));
-                var row = new List<int>(); result[rowIndex] = row;
+                if (reader.TokenType == JsonTokenType.Null)
+                    continue;
+                if (reader.TokenType != JsonTokenType.StartArray)
+                    return (result, Semantic(ref reader, "[]int32", pointer, false));
+                var row = new List<int>();
+                result[rowIndex] = row;
                 while (true)
                 {
-                    try { read = Read(ref reader); }
-                    catch (JsonException) { row.Add(0); throw; }
-                    if (!read) { row.Add(0); return (result, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false)); }
-                    if (reader.TokenType == JsonTokenType.EndArray) break;
-                    int column = row.Count; row.Add(0);
+                    try
+                    {
+                        read = Read(ref reader);
+                    }
+                    catch (JsonException)
+                    {
+                        row.Add(0);
+                        throw;
+                    }
+
+                    if (!read)
+                    {
+                        row.Add(0);
+                        return (result, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false));
+                    }
+
+                    if (reader.TokenType == JsonTokenType.EndArray)
+                        break;
+                    int column = row.Count;
+                    row.Add(0);
                     string elementPointer = pointer + "/" + column.ToString(CultureInfo.InvariantCulture);
-                    if (reader.TokenType == JsonTokenType.Null) continue;
+                    if (reader.TokenType == JsonTokenType.Null)
+                        continue;
                     bool number = reader.TokenType == JsonTokenType.Number;
                     int start = checked((int)reader.TokenStartIndex);
                     string raw = number ? input[start..checked((int)reader.BytesConsumed)] : "";
                     var error = Semantic(ref reader, "int32", elementPointer, true);
-                    if (error is not null) return (result, error);
-                    if (number) row[column] = int.Parse(raw, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+                    if (error is not null)
+                        return (result, error);
+                    if (number)
+                        row[column] = int.Parse(raw, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
                 }
             }
-            if (Read(ref reader)) return (result, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false));
+
+            if (Read(ref reader))
+                return (result, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false));
             return (result, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false));
         }
-        catch (Exception error) when (error is JsonException or DecoderFallbackException or InvalidOperationException or FormatException or OverflowException)
+        catch (Exception error)when (error is JsonException or DecoderFallbackException or InvalidOperationException or FormatException or OverflowException)
         {
             return (result, JsonDiagnosticReader.Analyze(input, allowDuplicateNames: false, validateNumbers: false) ?? error);
         }
@@ -426,8 +494,17 @@ public static class JsonCodec
         return writer.String();
     }
 
+    // json/v2 Deterministic sorts actual map names by raw Go string bytes;
+    // declared struct field order remains unchanged.
+    public static string MarshalStringDeterministic(object? value)
+    {
+        var writer = new GoBuilder();
+        writeValue(writer, value, deterministic: true);
+        return writer.String();
+    }
+
     private readonly record struct WriteJob(object? Value, int Depth, string Pointer, int Kind = 0, string Prefix = "");
-    private static void writeValue(GoBuilder writer, object? root)
+    private static void writeValue(GoBuilder writer, object? root, bool deterministic = false)
     {
         // Go's stack grows; managed stacks do not. Explicit work preserves the
         // same ordered container traversal for the complete legal JSON depth.
@@ -514,9 +591,11 @@ public static class JsonCodec
                     active.Add(owner);
             }
 
-            void PushObject(IEnumerable<(string Key, object? Value)> entries)
+            void PushObject(IEnumerable<(string Key, object? Value)> entries, bool isMap = false)
             {
                 var fields = entries.ToList();
+                if (deterministic && isMap)
+                    fields.Sort(static (left, right) => StringComparer.Ordinal.Compare(left.Key, right.Key));
                 if (fields.Count == 0)
                 {
                     WritePrefix();
@@ -577,8 +656,10 @@ public static class JsonCodec
                     quote(writer, text);
                     continue;
                 case ByteStringValue byteText:
-                    if (byteText.IsNull) writer.WriteString("null");
-                    else quote(writer, byteText.Materialize()!);
+                    if (byteText.IsNull)
+                        writer.WriteString("null");
+                    else
+                        QuoteToBuilder(writer, byteText);
                     continue;
                 case StrongBox<long> pointer:
                     PushValue(pointer.Value);
@@ -662,16 +743,16 @@ public static class JsonCodec
                     quote(writer, Convert.ToBase64String(bytes));
                     continue;
                 case OrderedMap<string, object?> fields:
-                    PushObject(fields.Entries());
+                    PushObject(fields.Entries(), isMap: true);
                     continue;
                 case Dictionary<string, object?> fields:
-                    PushObject(fields.Select(entry => (entry.Key, entry.Value)));
+                    PushObject(fields.Select(entry => (entry.Key, entry.Value)), isMap: true);
                     continue;
                 case OrderedMap<string, JsonValue> fields:
-                    PushObject(fields.Entries().Select(entry => (entry.Key, (object?)entry.Value)));
+                    PushObject(fields.Entries().Select(entry => (entry.Key, (object? )entry.Value)), isMap: true);
                     continue;
                 case OrderedMap<string, List<string>?> fields:
-                    PushObject(fields.Entries().Select(entry => (entry.Key, (object? )entry.Value)));
+                    PushObject(fields.Entries().Select(entry => (entry.Key, (object? )entry.Value)), isMap: true);
                     continue;
                 case CompilerOptions options:
                     PushObject(optionFields(options, OptionFields.CompilerOptions));
@@ -799,12 +880,16 @@ public static class JsonCodec
         return (GoString.Bytes(output.String()), null);
     }
 
-    private static void quote(GoBuilder writer, string bytes)
+    private static void quote(GoBuilder writer, string bytes) => QuoteToBuilder(writer, ByteStringValue.FromString(bytes));
+    // Focused protocol consumer join: same json/v2 quotation worker, retaining
+    // the caller's Go UTF8 header rather than materializing a Latin1 string.
+    // Invalid UTF8 replacement remains Marshal-only; decoding validates strictly.
+    internal static void QuoteToBuilder(GoBuilder writer, ByteStringValue bytes)
     {
         writer.WriteString("\"");
         for (int offset = 0; offset < bytes.Length;)
         {
-            var(rune, size) = Utf8.DecodeRuneInString(bytes.AsSpan(offset));
+            var(rune, size) = bytes.IsBytes ? Utf8.DecodeRuneInString(bytes.ByteSpan[offset..]) : Utf8.DecodeRuneInString(bytes.CharSpan[offset..]);
             offset += size;
             switch (rune)
             {

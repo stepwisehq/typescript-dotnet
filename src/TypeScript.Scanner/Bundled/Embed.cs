@@ -20,71 +20,112 @@ public static partial class Bundled
         var files = new Dictionary<ByteStringKey, ByteStringView>(ByteStringKey.Comparer);
         foreach (string name in LibNames)
         {
-            using Stream input = typeof(Bundled).Assembly.GetManifestResourceStream("TypeScript.Bundled.Libs." + name)
-                ?? throw new InvalidDataException("Bundled library resource is missing: " + name);
+            using Stream input = typeof(Bundled).Assembly.GetManifestResourceStream("TypeScript.Bundled.Libs." + name) ?? throw new InvalidDataException("Bundled library resource is missing: " + name);
             using var bytes = new MemoryStream();
             input.CopyTo(bytes);
             files.Add(ByteStringKey.FromString("libs/" + name), ByteStringView.FromOwnedBytes(bytes.ToArray()));
         }
+
         return files;
     });
-
     // LibNames is declared in another generated partial. The static constructor
     // runs after all field initializers and publishes one shared immutable header.
     private static readonly Slice<ByteStringValue> libNameValues;
     static Bundled() => libNameValues = Core.MapSlice(LibNames, static name => ByteStringValue.FromString(name));
-
-    private sealed class WrappedFS(IFS fs) : IFS, ISourceTextFileSystem, IOutputTextFileSystem
+    private sealed class WrappedFS(IFS fs) : IFS, ISourceTextFileSystem, IOutputTextFileSystem, IMutableFileSystem
     {
         public CaseSensitivity CaseSensitivity() => fs.CaseSensitivity();
         // embed.go:106. Embedded files are not writable, matching the original panic.
+        public Exception? AppendFile(RootedFilePath path, ByteStringValue data)
+        {
+            if (SplitPath(path.AsValue()).Ok)
+                throw new InvalidOperationException("cannot write to embedded file system");
+            return FileSystemMutations.AppendFile(fs, path, data);
+        }
+
+        public Exception? Remove(RootedPath path)
+        {
+            if (SplitPath(path.AsValue()).Ok)
+                throw new InvalidOperationException("cannot remove from embedded file system");
+            return FileSystemMutations.Remove(fs, path);
+        }
+
+        public Exception? Chtimes(RootedPath path, DateTimeOffset accessTime, DateTimeOffset modificationTime)
+        {
+            if (SplitPath(path.AsValue()).Ok)
+                throw new InvalidOperationException("cannot change times on embedded file system");
+            return FileSystemMutations.Chtimes(fs, path, accessTime, modificationTime);
+        }
+
         public Exception? WriteFile(RootedFilePath path, string data) => WriteOutputText(path, ByteStringValue.FromString(data));
         public Exception? WriteOutputText(RootedFilePath path, ByteStringValue data)
         {
-            if (SplitPath(path.AsValue()).Ok) throw new InvalidOperationException("cannot write to embedded file system");
+            if (SplitPath(path.AsValue()).Ok)
+                throw new InvalidOperationException("cannot write to embedded file system");
             return OutputTextWriters.Write(fs, path, data);
         }
 
         public bool FileExists(RootedFilePath path)
         {
-            var (rest, ok) = SplitPath(path.AsValue());
+            var(rest, ok) = SplitPath(path.AsValue());
             return ok ? embeddedContents.Value.ContainsKey(ByteStringKey.FromValue(rest)) : fs.FileExists(path);
         }
+
         public (string Contents, bool Ok) ReadFile(RootedFilePath path)
         {
-            var (rest, ok) = SplitPath(path.AsValue());
-            if (!ok) return fs.ReadFile(path);
+            var(rest, ok) = SplitPath(path.AsValue());
+            if (!ok)
+                return fs.ReadFile(path);
             return rest.TryGetValue(embeddedContents.Value, out var content) ? (content.Materialize(), true) : ("", false);
         }
+
         public (ByteStringView Contents, bool Ok) ReadSourceText(RootedFilePath path)
         {
-            var (rest, ok) = SplitPath(path.AsValue());
-            if (!ok) return SourceTextReaders.Read(fs, path);
+            var(rest, ok) = SplitPath(path.AsValue());
+            if (!ok)
+                return SourceTextReaders.Read(fs, path);
             return rest.TryGetValue(embeddedContents.Value, out var content) ? (content, true) : (default, false);
         }
+
         public bool DirectoryExists(RootedDirectoryPath path)
         {
-            var (rest, ok) = SplitPath(path.AsValue());
+            var(rest, ok) = SplitPath(path.AsValue());
             return ok ? rest.EqualsBytes("libs"u8) : fs.DirectoryExists(path);
         }
+
         public Entries GetAccessibleEntries(RootedDirectoryPath path)
         {
-            var (rest, ok) = SplitPath(path.AsValue());
-            if (!ok) return fs.GetAccessibleEntries(path);
+            var(rest, ok) = SplitPath(path.AsValue());
+            if (!ok)
+                return fs.GetAccessibleEntries(path);
             var result = new Entries();
-            if (rest.Length == 0) result.Directories = Slice<ByteStringValue>.FromArray([ByteStringValue.FromString("libs")]);
-            else if (rest.EqualsBytes("libs"u8)) result.Files = libNameValues;
+            if (rest.Length == 0)
+                result.Directories = Slice<ByteStringValue>.FromArray([ByteStringValue.FromString("libs")]);
+            else if (rest.EqualsBytes("libs"u8))
+                result.Files = libNameValues;
             return result;
         }
+
         public FileInfo? Stat(RootedPath path)
         {
-            var (rest, ok) = SplitPath(path.AsValue());
-            if (!ok) return fs.Stat(path);
-            if (rest.Length == 0 || rest.EqualsBytes("libs"u8)) return new EmbeddedFileInfo { name = rest, mode = FileMode.Dir };
+            var(rest, ok) = SplitPath(path.AsValue());
+            if (!ok)
+                return fs.Stat(path);
+            if (rest.Length == 0 || rest.EqualsBytes("libs"u8))
+                return new EmbeddedFileInfo
+                {
+                    name = rest,
+                    mode = FileMode.Dir
+                };
             if (rest.TryGetValue(embeddedContents.Value, out var lib))
-                return new EmbeddedFileInfo { name = rest.StartsWith("libs/"u8) ? rest.Slice(5) : rest, size = lib.Length };
+                return new EmbeddedFileInfo
+                {
+                    name = rest.StartsWith("libs/"u8) ? rest.Slice(5) : rest,
+                    size = lib.Length
+                };
             return null;
         }
+
         public RootedPath Realpath(RootedPath path) => IsBundled(path.AsValue()) ? path : fs.Realpath(path);
     }
 

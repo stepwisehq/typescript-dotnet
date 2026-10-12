@@ -1,0 +1,13 @@
+{
+  "source": "/home/greg/go/pkg/mod/golang.org/x/text@v0.42.0/unicode/norm/normalize_test.go",
+  "sourceSha256": "939e96cab806e3f62435e5eff311731734545e8f41ef1cb59b132c460d26baca",
+  "resourceSha256": "23f9eb0530c5e91547545c4f0e18529d032c0b085f78b72bd14eaac7fb34bf0e",
+  "rows": 109,
+  "tables": {
+    "appendTestsNFC": 19,
+    "appendTestsNFKC": 76,
+    "appendTestsNFKD": 14
+  },
+  "scope": "original TestString selected NFD cross-form bootstrap invariant; original empty NFD direct table, other forms excluded; empty AppendString setup replaced by equivalent NFD.String(left)",
+  "textAttribution": "Source fixture retains original txt_vn/kr/jp/cn CC attribution references at normalize_test.go:1244 onward"
+}

@@ -53,7 +53,7 @@ internal static class JsonDiagnosticReader
             return (false, null);
         // Original custom UnmarshalJSONFrom rejects after just ReadToken; it
         // does not validate the remainder or convert number tokens to float64.
-        string kind = type == "struct" ? token[0] == '[' ? "array" : token[0] == '"' ? "string" : token[0] is 'f' or 't' ? "boolean" : "number" : "";
+        string kind = (type == "struct" || type == "map[string]interface {}") ? token[0] == '[' ? "array" : token[0] == '"' ? "string" : token[0] is 'f' or 't' ? "boolean" : "number" : "";
         return (true, JsonTextErrors.AsException(JsonTextErrors.SemanticError("unmarshal", kind, "", type, "", start, nonObjectError)));
     }
 
@@ -88,13 +88,21 @@ internal static class JsonDiagnosticReader
 
     internal static Exception? Analyze(string input, bool allowDuplicateNames, bool validateNumbers = true, string sourcePointer = "", int sourceOffset = 0) => Decode(input, allowDuplicateNames, validateNumbers, sourcePointer, sourceOffset, assemble: false).Error;
     internal static Exception? AnalyzeRawValue(string input, bool allowDuplicateNames = false, bool writing = false, bool allowInvalidUtf8 = false, string sourcePointer = "", int sourceOffset = 0, int depth = 0) => Decode(input, allowDuplicateNames, false, sourcePointer, sourceOffset, assemble: false, rawValue: true, writing, allowInvalidUtf8, depth).Error;
-    internal static (object? Value, Exception? Error) Decode(string input, bool allowDuplicateNames, bool validateNumbers = true, string sourcePointer = "", int sourceOffset = 0, bool assemble = true, bool rawValue = false, bool writing = false, bool allowInvalidUtf8 = false, int depth = 0)
+    internal static (object? Value, Exception? Error) Decode(string input, bool allowDuplicateNames, bool validateNumbers = true, string sourcePointer = "", int sourceOffset = 0, bool assemble = true, bool rawValue = false, bool writing = false, bool allowInvalidUtf8 = false, int depth = 0, bool dictionaryObjects = false)
     {
         // Explicit frames preserve source depth semantics without consuming the
         // managed call stack on legal 10,000-level inputs or rejected deeper ones.
         var stack = new List<Frame>();
         object? root = null;
         bool discard = false;
+        void SetObjectField(object owner, string name, object? value)
+        {
+            if (owner is Dictionary<string, object?> dictionary)
+                dictionary[name] = value;
+            else
+                ((OrderedMap<string, object?>)owner).Set(name, value);
+        }
+
         void Set(object? value)
         {
             if (!assemble || discard)
@@ -104,7 +112,7 @@ internal static class JsonDiagnosticReader
             else if (stack[^1].Data is List<object?> values)
                 values[^1] = value;
             else
-                ((OrderedMap<string, object?>)stack[^1].Data!).Set(stack[^1].Name, value);
+                SetObjectField(stack[^1].Data!, stack[^1].Name, value);
         }
 
         void Slot()
@@ -116,7 +124,7 @@ internal static class JsonDiagnosticReader
             else if (stack[^1].Data is List<object?> values)
                 values.Add(null);
             else
-                ((OrderedMap<string, object?>)stack[^1].Data!).Set(stack[^1].Name, null);
+                SetObjectField(stack[^1].Data!, stack[^1].Name, null);
         }
 
         int position = 0;
@@ -162,7 +170,7 @@ internal static class JsonDiagnosticReader
             {
                 case '{':
                 case '[':
-                    object? data = assemble ? kind == '{' ? new OrderedMap<string, object?>() : new List<object?>() : null;
+                    object? data = !assemble ? null : kind != '{' ? new List<object?>() : dictionaryObjects ? new Dictionary<string, object?>(StringComparer.Ordinal) : new OrderedMap<string, object?>();
                     Set(data);
                     if (stack.Count + depth == 10000)
                     {
@@ -279,7 +287,7 @@ internal static class JsonDiagnosticReader
                     }
 
                     if (assemble)
-                        ((OrderedMap<string, object?>)frame.Data!).Set(frame.Name, null);
+                        SetObjectField(frame.Data!, frame.Name, null);
                     frame.Stage = 1;
                 }
                 else

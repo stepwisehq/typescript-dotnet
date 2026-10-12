@@ -1,0 +1,18 @@
+[
+  {
+    "source": "tools/.cache/go/src/regexp/testdata/re2-search.txt",
+    "sourceSha256": "b6876d87b65a31a3d909f58f7100d9f7b501dfd4c79c3e6a73c50868de434c9d",
+    "resource": "validation/LanguageServices.Checks/RegexData/re2-search.txt.gz",
+    "resourceSha256": "d057d095c5332d9bdbf3c3894b7fae6144d2541d91270cca973ce2824cc3ba75",
+    "lines": 3779,
+    "adaptation": "original quoted Go literals decoded exactly to raw bytes and base64 encoded; every nonliteral line retained byte-for-byte; no expected result changes"
+  },
+  {
+    "source": "tools/.cache/go/src/regexp/testdata/re2-exhaustive.txt.bz2",
+    "sourceSha256": "f1253bff45157cd2a71d7729e11a19ad8ae15efdc0af00fe0939289e6e1a4ec8",
+    "resource": "validation/LanguageServices.Checks/RegexData/re2-exhaustive.txt.gz",
+    "resourceSha256": "be266e22209671a2398c02976e13d214dd6ee0093793fad18e00a1d55c5a5b45",
+    "lines": 5826402,
+    "adaptation": "original quoted Go literals decoded exactly to raw bytes and base64 encoded; every nonliteral line retained byte-for-byte; no expected result changes"
+  }
+]

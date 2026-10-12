@@ -4,5 +4,6 @@
     <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable>
     <IsAotCompatible>true</IsAotCompatible><TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <ItemGroup><ProjectReference Include="../../src/TypeScript.Scanner/TypeScript.Scanner.csproj" /></ItemGroup>
+  <ItemGroup><ProjectReference Include="../../src/TypeScript.Scanner/TypeScript.Scanner.csproj" /><Compile Include="../Program.Checks/CompilerBaselineFileSystem.cs" Link="CompilerBaselineFileSystem.cs" /></ItemGroup>
+  <ItemGroup><EmbeddedResource Include="RegexData/*.gz" /></ItemGroup>
 </Project>

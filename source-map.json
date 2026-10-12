@@ -4026,7 +4026,14 @@
       "upstreamSha256": "81d269e01aab93a981ee170af2a675a79756e326f39fa617db4a62c05da7d547",
       "projectsCampaignState": "accepted-projects-contract",
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
-      "projectsCampaignEvidence": "validation/results/projects-verified.json"
+      "projectsCampaignEvidence": "validation/results/projects-verified.json",
+      "languageServicesCampaign": {
+        "scope": "complete workers; IsArgumentsSymbol retains existing genuine counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "upstreamFunctionCount": 66,
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "verification": "Integration build and behavioral execution pending; source presence is not acceptance."
+      }
     },
     {
       "upstream": "tsc/internal/modulespecifiers/types.go",
@@ -4352,7 +4359,18 @@
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
       "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
-      "allocationRolloutAdaptation": "Implemented and independently reviewed: retained typed-path ownership uses borrowed byte descriptors with content equality/hash, derived path headers and key/cache/resolver/Program/VFS/configuration consumers. Actual changed normalization and external Unicode/display projection preserved. Integration14 Linux x64 Native AOT VS Code matches ten complete diagnostics; broad regression acceptance pending. See docs/STATE.md."
+      "allocationRolloutAdaptation": "Implemented and independently reviewed: retained typed-path ownership uses borrowed byte descriptors with content equality/hash, derived path headers and key/cache/resolver/Program/VFS/configuration consumers. Actual changed normalization and external Unicode/display projection preserved. Integration14 Linux x64 Native AOT VS Code matches ten complete diagnostics; broad regression acceptance pending. See docs/STATE.md.",
+      "languageServicesCampaign": {
+        "scope": "required GetCommonParentDirectories only, original lines664–700",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/TsPath/RootedPath.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 1
+      }
     },
     {
       "upstream": "tsc/internal/tspath/source_map_location.go",
@@ -5340,7 +5358,18 @@
         "Chtimes"
       ],
       "programCampaignEvidence": "validation/results/program-verified.json",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "languageServicesCampaign": {
+        "scope": "required AppendFile/Remove/Chtimes forwards with exact embedded-path panics",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/Bundled/Embed.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 3
+      }
     },
     {
       "upstream": "tsc/internal/bundled/libs_generated.go",
@@ -5443,6 +5472,20 @@
         "independentReview": "artifacts/emit/source-review/workgroup-nested-liveness.json",
         "evidence": "validation/results/emit-verified.json",
         "publicationReview": "artifacts/emit/source-review/workgroup-native-direct-evidence.json"
+      },
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/Core/ThrottleGroup.cs"
+      ],
+      "languageServicesCampaign": {
+        "scope": "Only complete ThrottleGroup closure lines92–123; accepted WorkGroup unchanged. Derived errgroup cancellation context discarded upstream; shared semaphore acquisition unconditional, first error and completion retained",
+        "sourceStatus": "initial-dependency-managed-native-assertions-passed-full-project-consumers-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/Core/ThrottleGroup.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 3
       }
     },
     {
@@ -5489,7 +5532,18 @@
         "AppendFile"
       ],
       "programCampaignEvidence": "validation/results/program-verified.json",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "languageServicesCampaign": {
+        "scope": "required mutation forwards without fabricated read-cache invalidation",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/Vfs/CachedVfs/CachedVfs.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 3
+      }
     },
     {
       "upstream": "tsc/internal/compiler/host.go",
@@ -5976,7 +6030,21 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/StringUtil/ServiceComparison.cs"
+      ],
+      "languageServicesCampaign": {
+        "scope": "seven required comparison/equality/query workers; three prefix/suffix workers retain existing Compare.cs counterparts; CompareStringsCaseInsensitiveThenSensitive not yet ported, so no whole compare.go completion claim",
+        "sourceStatus": "focused-selected-workers-written-and-covered-by-LSUtil-dependent-assertions",
+        "destinations": [
+          "src/TypeScript.Scanner/StringUtil/ServiceComparison.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 11
+      }
     },
     {
       "upstream": "tsc/internal/checker/jsdoc.go",
@@ -6799,7 +6867,21 @@
       "upstreamFunctionCount": 66,
       "excludedSymbols": [],
       "emitReviewedPortion": "GetConstantValue only",
-      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json"
+      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/Checker/Services.cs"
+      ],
+      "languageServicesCampaign": {
+        "scope": "complete workers; IsArgumentsSymbol retains existing genuine counterpart",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/Checker/Services.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 66
+      }
     },
     {
       "upstream": null,
@@ -7745,9 +7827,1571 @@
       ],
       "emitCampaignState": "Verified runtime adaptation: same compiler lock scopes and transferable ownership; actual Linux x64 Native controls, full retained comparisons and scoped emit performance target. Other native platforms unverified.",
       "emitCampaignEvidence": "validation/results/vscode-emit-performance.json"
+    },
+    {
+      "upstream": "tsc/internal/project/dirty/box.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Dirty/Box.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "15c41faa60cd6a80bf74d2d8d0df9ee729513f2615a5a65b711b90e1be253cc9",
+      "upstreamFunctionCount": 10,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Dirty/Box.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 10
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/dirty/cloneablemap.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Dirty/CloneableMap.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "2b984c1dc694083d71c0bbf4688b92e92edd0de27b54f7138b61ba862595f3c3",
+      "upstreamFunctionCount": 1,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Dirty/CloneableMap.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 1
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/dirty/entry.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Dirty/Entry.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "a7c30a0cb4528676c351693c8860ae747c6829147dec7554c7f69dce20cc66e2",
+      "upstreamFunctionCount": 4,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Dirty/Entry.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 4
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/dirty/interfaces.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Dirty/Interfaces.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "9d015c5e4c46f16b963fc08e17a469145346f569a75f46c0649c8e84857ef02b",
+      "upstreamFunctionCount": 0,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Dirty/Interfaces.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 0
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/dirty/map.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Dirty/Map.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "c44a2a707fa506906e6d66dbccbe45b13431346e18d452e6595e4832f492ddda",
+      "upstreamFunctionCount": 14,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Dirty/Map.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 14
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/dirty/mapbuilder.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Dirty/MapBuilder.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "8f914248a55a4a22e9b049dc95cfd2da5b1995e776e8daf8d90f651962329fb5",
+      "upstreamFunctionCount": 6,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Dirty/MapBuilder.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 6
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/dirty/syncmap.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Dirty/SyncMap.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "6d6b828a63fa73460d17aa2de5380cc1568ba2f3b5c441c8abdc16fb8054819d",
+      "upstreamFunctionCount": 25,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Dirty/SyncMap.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 25
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/dirty/util.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Dirty/Util.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "a124c9de7cbaa3809e84536e504fb94e59939610924beb30df4b6e479dc5ae97",
+      "upstreamFunctionCount": 1,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Dirty/Util.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 1
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/refcountcache.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/RefCountCache.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "564c6e2f0b0cb4ec427df1905cb2e171a5b94bd95913928e92a0a8cb1e57520d",
+      "upstreamFunctionCount": 8,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/RefCountCache.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 8
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/ownercache.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/OwnerCache.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "981b450da65bee3ed34d7c66b6119f2700c20dc63d2cb1b2d162200e58a4630d",
+      "upstreamFunctionCount": 7,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/OwnerCache.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 7
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/parsecache.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/ParseCache.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "e8232d5a710d1d747e8d1c13fb5012b354dd0c42d81c66b317b82796ad5e7013",
+      "upstreamFunctionCount": 8,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/ParseCache.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 8
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/extendedconfigcache.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/ExtendedConfigCache.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "7da3c59566128e4c4638c701200c9af2c4ca7f4360a0bf743b1e89e7323f0670",
+      "upstreamFunctionCount": 2,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/ExtendedConfigCache.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 2
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/background/queue.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Background/Queue.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "337342376d33f953f6df687c2b2a3c07cafc9a8ad3cb1b34eb4c3bd99738391d",
+      "upstreamFunctionCount": 4,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Background/Queue.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 4
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/overlayfs.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/OverlayFS.cs",
+      "status": "integration-pending",
+      "scope": "complete FileBase/CachedFile/Overlay, layered filesystem composition, directory masks and ordered processChanges",
+      "upstreamSha256": "51607822c3c22ce2eda7da7a68998d4e15d8b32c66133621bfc654199a92f1b6",
+      "upstreamFunctionCount": 52,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete FileBase/CachedFile/Overlay, layered filesystem composition, directory masks and ordered processChanges",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/OverlayFS.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 52
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/snapshotfs.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/SnapshotFS.cs",
+      "status": "integration-pending",
+      "scope": "complete immutable SnapshotFS, cached layered owner, realpath aliases, builder finalization/reload/invalidation/watch filtering/open-close conversion and SourceFS tracking",
+      "upstreamSha256": "cb381637f5a65596cf50adeb44824308913a42038227ef524bbc48204d7099bf",
+      "upstreamFunctionCount": 59,
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesState": "source-mapped; shared dependency gate passed; subsystem acceptance pending",
+      "languageServicesMapping": "docs/progress/lsp-project-mapping.json",
+      "verification": "See languageServicesCampaign.dependencyEvidence for actual scoped managed/Native execution; full subsystem acceptance is pending.",
+      "languageServicesCampaign": {
+        "scope": "complete immutable SnapshotFS, cached layered owner, realpath aliases, builder finalization/reload/invalidation/watch filtering/open-close conversion and SourceFS tracking",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/SnapshotFS.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 59
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/logging/logger.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Logging/Logger.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart; focused formatter boundary in Logging/LogFormat.cs",
+      "upstreamSha256": "8a8007abbb096bbeccae378ad83485b74efe01199cfb98e97d931a430615f09c",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart; focused formatter boundary in Logging/LogFormat.cs",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Logging/Logger.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 14
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 14
+    },
+    {
+      "upstream": "tsc/internal/project/logging/logcollector.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Logging/LogCollector.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart; focused formatter boundary in Logging/LogFormat.cs",
+      "upstreamSha256": "e502b264d845ec2d16ce0b02d438332a3091461daf4eeaad5dbc52b5522bc02d",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart; focused formatter boundary in Logging/LogFormat.cs",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Logging/LogCollector.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 2
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 2
+    },
+    {
+      "upstream": "tsc/internal/project/logging/logtree.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Logging/LogTree.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart; focused formatter boundary in Logging/LogFormat.cs",
+      "upstreamSha256": "7cd06d77439567af520a0780634d3dc816505b06adc11e7f9dbb476ca6fbfad7",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart; focused formatter boundary in Logging/LogFormat.cs",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Logging/LogTree.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 18
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 18
+    },
+    {
+      "upstream": "tsc/internal/project/filechange.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/FileChange.cs",
+      "status": "integration-pending",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "5a0afc6e888d41c51f6319252731287b705b6b0dd31d5c1ed373777ce80c27d0",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/FileChange.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 6
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 6
+    },
+    {
+      "upstream": "tsc/internal/core/textchange.go",
+      "destination": "src/TypeScript.Scanner/Core/TextChange.cs",
+      "status": "integration-pending",
+      "scope": "complete required text edit owner",
+      "upstreamSha256": "09491c3d1d8c09a4b83d91f2c1cbda69dc956fce9f1535644b69dc4ce391c8c6",
+      "languageServicesCampaign": {
+        "scope": "complete required text edit owner",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/Core/TextChange.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 2
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 2
+    },
+    {
+      "upstream": "tsc/internal/checker/exports.go",
+      "destination": "src/TypeScript.Scanner/Checker/ServiceExports.cs",
+      "status": "integration-pending",
+      "scope": "remaining73 functions;22 existing counterpart declarations retained",
+      "upstreamSha256": "28a08d1a69e9cdfeffa900bead4b2792a167076f8d01d8061d18243b12ce8dbf",
+      "languageServicesCampaign": {
+        "scope": "remaining73 functions;22 existing counterpart declarations retained",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/Checker/ServiceExports.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 95
+      }
+    },
+    {
+      "upstream": "tsc/internal/checker/nodebuilder_hover.go",
+      "destination": "src/TypeScript.Scanner/Checker/NodeBuilderHover.cs",
+      "status": "integration-pending",
+      "scope": "complete18 hover workers plus demanded expansion predicates from nodebuilderimpl",
+      "upstreamSha256": "2c71303baec8a2e8fe5fa3f78cb8a945dfcffd2762408694275cc75d112c8ff4",
+      "languageServicesCampaign": {
+        "scope": "complete18 hover workers plus demanded expansion predicates from nodebuilderimpl",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/Checker/NodeBuilderHover.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 18
+      }
+    },
+    {
+      "upstream": "tsc/internal/astnav/tokens.go",
+      "destination": "src/TypeScript.Scanner/AstNav/Tokens.cs",
+      "status": "integration-pending",
+      "scope": "complete token navigation workers and package constants",
+      "upstreamSha256": "b0ab046b632d49503166bfe4dac1fc59dfda16dfb4300c10472823aa437fbbd9",
+      "languageServicesCampaign": {
+        "scope": "complete token navigation workers and package constants",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/AstNav/Tokens.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 18
+      }
+    },
+    {
+      "upstream": "tsc/internal/core/binarysearch.go",
+      "destination": "src/TypeScript.Scanner/Core/BinarySearch.cs",
+      "status": "integration-pending",
+      "scope": "complete BinarySearchUniqueFunc",
+      "upstreamSha256": "0d965e9924f4c2364049638ed6569c5f9940515ab5e35583ddfb6fa6062e88ca",
+      "languageServicesCampaign": {
+        "scope": "complete BinarySearchUniqueFunc",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/Core/BinarySearch.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 1
+      }
+    },
+    {
+      "upstream": "tsc/internal/vfs/osvfs/os.go",
+      "destination": "src/TypeScript.Scanner/Vfs/OsVfs/Mutations.cs",
+      "status": "integration-pending",
+      "scope": "AppendFile176/Remove180/Chtimes186 required editor leaves; append joins existing Write.cs owner",
+      "upstreamSha256": "c81584fd673a9d17a7e3631714ada7755b657b7f425274952760248f1e5140f8",
+      "languageServicesCampaign": {
+        "scope": "AppendFile176/Remove180/Chtimes186 required editor leaves; append joins existing Write.cs owner",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/Vfs/OsVfs/Mutations.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 3
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 3
+    },
+    {
+      "upstream": "tsc/internal/project/watch.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Watch.cs",
+      "status": "integration-pending",
+      "scope": "complete watcher registry/refcounts/pending state, immutable watcher clones, resolution/typings grouping and recursive patterns",
+      "upstreamSha256": "093d404d7e18d7349373df31605bf2cdc6ad17cefff1fd03502c11f86ab854ac",
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesCampaign": {
+        "scope": "complete watcher registry/refcounts/pending state, immutable watcher clones, resolution/typings grouping and recursive patterns",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Watch.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 22
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 22
+    },
+    {
+      "upstream": "tsc/internal/project/client.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Client.cs",
+      "status": "integration-pending",
+      "scope": "complete actual project client interface; explicit request context and generated telemetry alias",
+      "upstreamSha256": "f1b91c132c0f1320c6d7621fb35683c4ea5b0ee0f6e5979749f0431c95dae667",
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesCampaign": {
+        "scope": "complete actual project client interface; explicit request context and generated telemetry alias",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Client.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 0
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 0
+    },
+    {
+      "upstream": "tsc/internal/tspath/path.go",
+      "destination": "src/TypeScript.Scanner/TsPath/RootedPath.cs",
+      "status": "integration-pending",
+      "scope": "required getCommonParentsWorker only, original lines1238–1300; borrowed byte components and concat/clip ownership",
+      "upstreamSha256": "6c5a8537f800a388555289c311dec38a47696ec88619b8d758edaed18d9a3328",
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesCampaign": {
+        "scope": "required getCommonParentsWorker only, original lines1238–1300; borrowed byte components and concat/clip ownership",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/TsPath/RootedPath.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 1
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 1
+    },
+    {
+      "upstream": "tsc/internal/project/configfileregistry.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/ConfigFileRegistry.cs",
+      "status": "integration-pending",
+      "scope": "complete registry, entries, content-mapper aggregation and test observation owners",
+      "upstreamSha256": "db140136938a0a23e301cb02cce7ac8eaed9b4ed0ed41310722f7746b503953b",
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesCampaign": {
+        "scope": "complete registry, entries, content-mapper aggregation and test observation owners",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/ConfigFileRegistry.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 15
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 15
+    },
+    {
+      "upstream": "tsc/internal/project/project.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Project.cs",
+      "status": "integration-pending",
+      "scope": "identifier value/parse/JSON functions and graph enums only, original lines32–150; Project state methods pending",
+      "upstreamSha256": "5312b4fb333b766ad3d69259c3af55e6efc4570e83232b6eafe7c2bb92aadfcd",
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart; established command-line List boundary copies and caller-grounded diagnostic equality explicitly adapted",
+        "sourceStatus": "production-build16-passed-graph-authored-managed-passed-full-session-tests-and-review-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Project.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 44
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 14
+    },
+    {
+      "upstream": "tsc/internal/project/programcounter.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/ProgramCounter.cs",
+      "status": "integration-pending",
+      "scope": "complete identity reference-count owner",
+      "upstreamSha256": "1539c4f797bc8c56804ca3c62cb136d51b14abbcd3e07455d580a53af59dcaa1",
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesCampaign": {
+        "scope": "complete identity reference-count owner",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/ProgramCounter.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 3
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 3
+    },
+    {
+      "upstream": "tsc/internal/project/session.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/SessionOptions.cs",
+      "status": "integration-pending",
+      "scope": "SessionOptions immutable input owner only; Session methods remain unported",
+      "upstreamSha256": "4d71cb61927bc255f4820c56c2ed0b1508de8e7378d3e9735f2d22f8e2a84a2f",
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesCampaign": {
+        "scope": "SessionOptions immutable input owner only; Session methods remain unported",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/SessionOptions.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 0
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 0
+    },
+    {
+      "upstream": "tsc/internal/project/checkerpool.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/SessionOptions.cs",
+      "status": "integration-pending",
+      "scope": "CheckerPoolOptions value input only; full pool owner is next",
+      "upstreamSha256": "dc7aeab2a3ab5dff624815308b36303fa155394f576552281624958471b97ccb",
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesCampaign": {
+        "scope": "CheckerPoolOptions value input only; full pool owner is next",
+        "sourceStatus": "source-written-integration-pending",
+        "upstreamFunctionCount": 0,
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "verification": "Integration build and behavioral execution pending; source presence is not acceptance."
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 0
+    },
+    {
+      "upstream": "tsc/internal/project/checkerpool.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/CheckerPool.cs",
+      "status": "integration-pending",
+      "scope": "complete diagnostics/query/persistent checker owners, affinities, cancellation cleanup, monotonic idle cleanup and accumulated diagnostic state; CLR synchronization/timer/context adaptations",
+      "upstreamSha256": "dc7aeab2a3ab5dff624815308b36303fa155394f576552281624958471b97ccb",
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesCampaign": {
+        "scope": "complete diagnostics/query/persistent checker owners, affinities, cancellation cleanup, monotonic idle cleanup and accumulated diagnostic state; CLR synchronization/timer/context adaptations",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/CheckerPool.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 17
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 17,
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/ProjectSystem/SessionOptions.cs"
+      ]
+    },
+    {
+      "upstream": "tsc/internal/project/projectcollection.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/ProjectCollection.cs",
+      "status": "integration-pending",
+      "scope": "complete APIState value/copy/equality dependency only; ProjectCollection graph remains next",
+      "upstreamSha256": "71dcdafdbfc07f7529bee6da72728f842c9789fcf0bcf75ae42eea34a25734fd",
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart; established command-line List boundary copies and caller-grounded diagnostic equality explicitly adapted",
+        "sourceStatus": "production-build16-passed-graph-authored-managed-passed-full-session-tests-and-review-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/ProjectCollection.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 20
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 2
+    },
+    {
+      "upstream": "tsc/internal/project/snapshot.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/ModuleResolverFactory.cs",
+      "status": "integration-pending",
+      "scope": "complete ModuleResolverFactory contract only; Snapshot owner remains next",
+      "upstreamSha256": "7b270b0d176f7a988dc6b6aa15fd4e386e09b0ebd9a57b3872c1d4fdc12dc12f",
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesCampaign": {
+        "scope": "complete ModuleResolverFactory contract only; Snapshot owner remains next",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/ModuleResolverFactory.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 0
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 0
+    },
+    {
+      "upstream": "tsc/internal/ls/crossproject.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Project.cs",
+      "status": "integration-pending",
+      "scope": "complete three-method Project contract only; cross-project service family unported",
+      "upstreamSha256": "48cf96e0992a6cd90560ad28af2b0218ec404e6125dc2ad9a68f306a052cf63f",
+      "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+      "languageServicesCampaign": {
+        "scope": "complete three-method Project contract only; cross-project service family unported",
+        "sourceStatus": "production-build16-passed-graph-authored-managed-passed-full-session-tests-and-review-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Project.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 0
+      },
+      "languageServicesState": "source-written-integration-pending",
+      "upstreamFunctionCount": 0
+    },
+    {
+      "upstream": "Go1.27.1/src/os/removeall_at.go; path_unix.go; file_unix.go",
+      "destination": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxMutations.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "focused required Linux removal/timestamp transport, no general os package completeness claim",
+      "languageServicesCampaign": {
+        "scope": "focused required Linux removal/timestamp transport, no general os package completeness claim",
+        "sourceStatus": "source-written-review-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/Vfs/OsVfs/LinuxMutations.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
+      }
+    },
+    {
+      "upstream": "tools/.cache/go/src/os/root_unix.go",
+      "destination": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxMutations.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "focused rootOpenDir/checkSymlink/readlinkat error classification and full retry/growth closure for RemoveAll; not a general os.Root port",
+      "languageServicesCampaign": {
+        "scope": "focused rootOpenDir/checkSymlink/readlinkat error classification and full retry/growth closure for RemoveAll; not a general os.Root port",
+        "sourceStatus": "source-written-integration-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/Vfs/OsVfs/LinuxMutations.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 0
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/ata/validatepackagename.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Ata/ValidatePackageName.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete package validation and owned failure-message counterpart; QueryEscape equality uses exact unreserved-byte predicate from pinned Go toolchain",
+      "upstreamSha256": "cda6159c62873edbcd7bb361bc9e80e53a732715b847356c25be56b618c41272",
+      "languageServicesCampaign": {
+        "scope": "complete package validation and owned failure-message counterpart; QueryEscape equality uses exact unreserved-byte predicate from pinned Go toolchain",
+        "sourceStatus": "initial-dependency-managed-native-assertions-passed-full-project-consumers-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Ata/ValidatePackageName.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 3
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/ata/ata.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Ata/Types.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "Complete17 functions and actual ATA model owners; typed JSON generic union adapted into closed decoders; injected NpmExecutor retained; upstream event/latest TODOs preserved",
+      "upstreamSha256": "90db3da2d4dbc652a21cbeebb136f1e940e9962a24db905919e5f1f270fcb251",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/ProjectSystem/Ata/TypingsInstaller.cs",
+        "src/TypeScript.Scanner/ProjectSystem/Ata/InstallNpmPackages.cs"
+      ],
+      "languageServicesCampaign": {
+        "scope": "Complete17 functions and actual ATA model owners; typed JSON generic union adapted into closed decoders; injected NpmExecutor retained; upstream event/latest TODOs preserved",
+        "sourceStatus": "initial-dependency-managed-native-assertions-passed-full-project-consumers-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Ata/Types.cs",
+          "src/TypeScript.Scanner/ProjectSystem/Ata/TypingsInstaller.cs",
+          "src/TypeScript.Scanner/ProjectSystem/Ata/InstallNpmPackages.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 17
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/ata/discovertypings.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Ata/DiscoverTypings.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "Complete seven algorithms, retained raw-name/map keys and path headers, explicit capacities; existing compiler option List owners borrowed directly",
+      "upstreamSha256": "08520b0a2a9caa74c8a5522a3f9396747971eae9fff76c716f972d81ab15a138",
+      "languageServicesCampaign": {
+        "scope": "Complete seven algorithms, retained raw-name/map keys and path headers, explicit capacities; existing compiler option List owners borrowed directly",
+        "sourceStatus": "initial-dependency-managed-native-assertions-passed-full-project-consumers-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Ata/DiscoverTypings.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 7
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/ata/typesmap.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Ata/TypesMap.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "All459 active map entries; commented regex safelist inactive upstream",
+      "upstreamSha256": "23a7d25c67e5f1aa6da8390bdb9d8f75e224c69bcad9805ce657a06fa17ca4b7",
+      "languageServicesCampaign": {
+        "scope": "All459 active map entries; commented regex safelist inactive upstream",
+        "sourceStatus": "initial-dependency-managed-native-assertions-passed-full-project-consumers-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Ata/TypesMap.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 0
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/compilerhost.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/ProjectCompilerHost.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete source counterpart; established command-line List boundary copies and caller-grounded diagnostic equality explicitly adapted",
+      "upstreamSha256": "5717393f3446a91a2f6b2d636c76162e8e00cdc925a428d6bb5f618637bbbb92",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart; established command-line List boundary copies and caller-grounded diagnostic equality explicitly adapted",
+        "sourceStatus": "production-build16-passed-graph-authored-managed-passed-full-session-tests-and-review-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/ProjectCompilerHost.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 10
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/configfileregistrybuilder.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/ConfigFileRegistryBuilder.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete source counterpart; established command-line List boundary copies and caller-grounded diagnostic equality explicitly adapted",
+      "upstreamSha256": "ffdc3799551bd405cba82e6a720f024c61de141855924fcecc1818c94fa7f522",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart; established command-line List boundary copies and caller-grounded diagnostic equality explicitly adapted",
+        "sourceStatus": "production-build16-passed-graph-authored-managed-passed-full-session-tests-and-review-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/ConfigFileRegistryBuilder.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 26
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/projectcollectionbuilder.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/ProjectCollectionBuilder.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete source counterpart; established command-line List boundary copies and caller-grounded diagnostic equality explicitly adapted",
+      "upstreamSha256": "b831f2c35b54cf8e06db990b81ec9a9cc4c180566963f352a3aa17a64c382306",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/ProjectSystem/ProjectDiagnosticEquality.cs"
+      ],
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart; established command-line List boundary copies and caller-grounded diagnostic equality explicitly adapted",
+        "sourceStatus": "production-build16-passed-graph-authored-managed-passed-full-session-tests-and-review-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/ProjectCollectionBuilder.cs",
+          "src/TypeScript.Scanner/ProjectSystem/ProjectDiagnosticEquality.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 44
+      }
+    },
+    {
+      "upstream": "tsc/internal/core/bfs.go",
+      "destination": "src/TypeScript.Scanner/Core/BreadthFirstSearch.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete BFS source counterpart; original test function with five unchanged leaves",
+      "upstreamSha256": "c5d66954becabbd3fb6770a2ef193c8b0e27005367231f0ab0c3e1eafbb4e5f6",
+      "languageServicesCampaign": {
+        "scope": "complete BFS source counterpart; original test function with five unchanged leaves",
+        "sourceStatus": "build16-production-clean-original-managed-passed-native-pending",
+        "destinations": [
+          "src/TypeScript.Scanner/Core/BreadthFirstSearch.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 6
+      }
+    },
+    {
+      "upstream": "tsc/internal/format/api.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Formatting/Api.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "432fc294bb4566da21cad626e7704f22b4d51df35c1cdf0dab8ad204c146e3e5",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-review-clear-managed-and-native-dependency-assertions-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Formatting/Api.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 12
+      }
+    },
+    {
+      "upstream": "tsc/internal/format/context.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Formatting/Context.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "e2069c50bad554e5737184acc990db9920c5d99f07b80a76d57f2676f51ddd25",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-review-clear-managed-and-native-dependency-assertions-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Formatting/Context.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 11
+      }
+    },
+    {
+      "upstream": "tsc/internal/format/indent.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Formatting/Indent.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "d71024887c72e2b086cbea628b9a2608fff67d26b4dc83f246ef897caa845d3a",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-review-clear-managed-and-native-dependency-assertions-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Formatting/Indent.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 32
+      }
+    },
+    {
+      "upstream": "tsc/internal/format/rule.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Formatting/Rule.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "491aa5b7ac1ad3eb8d390463c8cf7ff94667351db40a81e5d1b2c1ce54305224",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-review-clear-managed-and-native-dependency-assertions-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Formatting/Rule.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 6
+      }
+    },
+    {
+      "upstream": "tsc/internal/format/rulecontext.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Formatting/RuleContext.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "e1680a242c6ef5a16b477e21aea0cd69c3e7c6f43da853aafcb00ec4c80ab606",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-review-clear-managed-and-native-dependency-assertions-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Formatting/RuleContext.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 88
+      }
+    },
+    {
+      "upstream": "tsc/internal/format/rules.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Formatting/Rules.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "6042e71a404d16cb1e305454811fec00babe75f56c34897dde185bb407de6ac8",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-review-clear-managed-and-native-dependency-assertions-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Formatting/Rules.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 4
+      }
+    },
+    {
+      "upstream": "tsc/internal/format/rulesmap.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Formatting/RulesMap.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "f47f323a1b23acada40c72aba96331124df97f9795e817ba367b63b88d25c5a9",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-review-clear-managed-and-native-dependency-assertions-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Formatting/RulesMap.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 7
+      }
+    },
+    {
+      "upstream": "tsc/internal/format/scanner.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Formatting/Scanner.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "0bae5670f00513eeaf7adc4186b51667eabe99bb4874b326a560fffde5441018",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-review-clear-managed-and-native-dependency-assertions-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Formatting/Scanner.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 23
+      }
+    },
+    {
+      "upstream": "tsc/internal/format/span.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Formatting/Span.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "74bf0d81aa3f59ddd82f52e36c0efdee8e80587eecd15cc66e7d194553ad5f60",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-review-clear-managed-and-native-dependency-assertions-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Formatting/Span.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 44
+      }
+    },
+    {
+      "upstream": "tsc/internal/format/util.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Formatting/Utilities.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete source counterpart",
+      "upstreamSha256": "f6df3237020bc8da0b4d8d4c236abd0196210f2e57093e679a56446cd95ccc96",
+      "languageServicesCampaign": {
+        "scope": "complete source counterpart",
+        "sourceStatus": "source-review-clear-managed-and-native-dependency-assertions-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Formatting/Utilities.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-project-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 8
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/lsutil/asi.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Utilities/Asi.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "75d4778cc14a3ea9d2402485d59f5698382b7a60fb2242fc7ed5beafd2d2e305",
+      "languageServicesCampaign": {
+        "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Utilities/Asi.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 7
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/lsutil/children.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Utilities/Children.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "30c665dabf2dea115f9e7373c76fa9b081579401e66c42159104effbec46470d",
+      "languageServicesCampaign": {
+        "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Utilities/Children.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 5
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/lsutil/completednode.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Utilities/CompletedNode.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "f3865778b6721355f9ccd2864f97134d07130901c47f35f737c299caaa3fea7c",
+      "languageServicesCampaign": {
+        "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Utilities/CompletedNode.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 4
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/lsutil/formatcodeoptions.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Utilities/FormatCodeOptions.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "9b177574a774eecdac39041a641c2c55dbf9be4960cc6c6a01f2cd7cd927b73e",
+      "languageServicesCampaign": {
+        "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Utilities/FormatCodeOptions.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 3
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/lsutil/organizeimports.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Utilities/OrganizeImports.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "e4051d6c5742a0383292f606b0121129f4b0db24e11aab3d50443ac050731cce",
+      "languageServicesCampaign": {
+        "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Utilities/OrganizeImports.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 37
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/lsutil/symbol_display.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Utilities/SymbolDisplay.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "f543cde4da34a7e7cb20bb2eb097a97361bcad9f183a5461bebe396a833a8cd3",
+      "languageServicesCampaign": {
+        "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Utilities/SymbolDisplay.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 9
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/lsutil/userpreferences.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Utilities/UserPreferences.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "b2098789b98ca0047d4201a89c4db8be80bad790efaa9c0815e5904984c9f100",
+      "languageServicesCampaign": {
+        "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Utilities/UserPreferences.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 14
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/lsutil/userpreferences_generated.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Utilities/UserPreferences.Generated.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "d1b0d843e8fae92e9baa0fab99de57ad1ee932a5a18ea95b06847f90a6a3c91b",
+      "languageServicesCampaign": {
+        "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Utilities/UserPreferences.Generated.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 19
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/lsutil/utilities.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Utilities/Utilities.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+      "upstreamSha256": "ce65ed9a191fcb00cbe8e86d732f5c8fafec06bfb28e2dfef5968ef84d72a834",
+      "languageServicesCampaign": {
+        "scope": "complete direct counterpart; actual function boundaries/embedded preference values and byte/Slice owners retained",
+        "sourceStatus": "source-written-compiled-with-scoped-managed-and-Native23-dependency-evidence",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Utilities/Utilities.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-services-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
+        "upstreamFunctionCount": 7
+      }
+    },
+    {
+      "upstream": "tsc/internal/jsonrpc/baseproto.go",
+      "destination": "src/TypeScript.Scanner/JsonRpc/BaseProtocol.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "Complete framing reader/writer; original four framing functions are shared separately from27 codec functions.",
+      "upstreamSha256": "a24b7a34b5fa88bcf96643c1a52caeace838727287ae6c5413f251e59ed65f4a",
+      "languageServicesCampaign": {
+        "scope": "Complete framing reader/writer; original four framing functions are shared separately from27 codec functions.",
+        "sourceStatus": "source-written-dependency-gate-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/JsonRpc/BaseProtocol.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-protocol-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
+      }
+    },
+    {
+      "upstream": "tsc/internal/jsonrpc/jsonrpc.go",
+      "destination": "src/TypeScript.Scanner/JsonRpc/JsonRpc.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "Complete generic message/version/ID/error/raw-value owners; partial files preserve prior public wrappers and required raw nil distinction.",
+      "upstreamSha256": "2cd101bc6a2230e10bd3456757c0df77f5f89694a65f1194c2ab94d75b9104cc",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/JsonRpc/GenericMessages.cs",
+        "src/TypeScript.Scanner/JsonRpc/ID.Protocol.cs",
+        "src/TypeScript.Scanner/JsonRpc/JsonValue.cs",
+        "src/TypeScript.Scanner/JsonRpc/RawJsonValue.Protocol.cs"
+      ],
+      "languageServicesCampaign": {
+        "scope": "Complete generic message/version/ID/error/raw-value owners; partial files preserve prior public wrappers and required raw nil distinction.",
+        "sourceStatus": "source-written-dependency-gate-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/JsonRpc/JsonRpc.cs",
+          "src/TypeScript.Scanner/JsonRpc/GenericMessages.cs",
+          "src/TypeScript.Scanner/JsonRpc/ID.Protocol.cs",
+          "src/TypeScript.Scanner/JsonRpc/JsonValue.cs",
+          "src/TypeScript.Scanner/JsonRpc/RawJsonValue.Protocol.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-protocol-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
+      }
+    },
+    {
+      "upstream": "tsc/internal/lsp/lsproto/baseproto.go",
+      "destination": "src/TypeScript.Scanner/Lsp/Protocol/BaseProtocol.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "Complete protocol wrappers over genuine JSON-RPC framing.",
+      "upstreamSha256": "d08e59093c3866b1a45dc4dc21a35f7f5f61c31581ec638cdec0cb491c4d4be4",
+      "languageServicesCampaign": {
+        "scope": "Complete protocol wrappers over genuine JSON-RPC framing.",
+        "sourceStatus": "source-written-dependency-gate-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/Lsp/Protocol/BaseProtocol.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-protocol-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
+      }
+    },
+    {
+      "upstream": "tsc/internal/lsp/lsproto/lsp.go",
+      "destination": "src/TypeScript.Scanner/Lsp/Protocol/Scalars.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "Complete URI/interfaces/method metadata/generic params-result/error/context responsibilities. Generic RequestInfo/NotificationInfo become explicit closed descriptors; request context derives immutable values/cancellation.",
+      "upstreamSha256": "8ffe2aeb8196ea9b3f7ef6c39ee28962630ad9e37415d1cb40b6bab5e6fc296c",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/Lsp/Protocol/DocumentUri.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/Interfaces.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolErrors.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolMethodInfo.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/RequestContext.cs"
+      ],
+      "languageServicesCampaign": {
+        "scope": "Complete URI/interfaces/method metadata/generic params-result/error/context responsibilities. Generic RequestInfo/NotificationInfo become explicit closed descriptors; request context derives immutable values/cancellation.",
+        "sourceStatus": "source-written-dependency-gate-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/Lsp/Protocol/Scalars.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/DocumentUri.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/Interfaces.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/ProtocolErrors.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/ProtocolMethodInfo.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/RequestContext.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-protocol-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
+      }
+    },
+    {
+      "upstream": "tsc/internal/lsp/lsproto/jsonrpc.go",
+      "destination": "src/TypeScript.Scanner/Lsp/Protocol/ProtocolMessages.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "Complete typed messages and custom JSON roles; deferred raw values copy only at upstream retained-value boundaries.",
+      "upstreamSha256": "10b903665ee3d059871c802ebdedf8fa47544dda22acd3fd99f9b1bdad47d1f0",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolRpcCodec.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolScalarCodec.cs"
+      ],
+      "languageServicesCampaign": {
+        "scope": "Complete typed messages and custom JSON roles; deferred raw values copy only at upstream retained-value boundaries.",
+        "sourceStatus": "source-written-dependency-gate-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/Lsp/Protocol/ProtocolMessages.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/ProtocolRpcCodec.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/ProtocolScalarCodec.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-protocol-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
+      }
+    },
+    {
+      "upstream": "tsc/internal/lsp/lsproto/structcodec.go",
+      "destination": "src/TypeScript.Scanner/Lsp/Protocol/ProtocolStructCodec.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "Complete required/nullable metadata and struct/custom discriminator algorithms; closed generated field workers replace reflection.",
+      "upstreamSha256": "3eef765f8508a0d8aae73abf645bf95ef3088bbd76112af7ddd660c3f4d3adea",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolObjectHelpers.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolSemanticError.cs"
+      ],
+      "languageServicesCampaign": {
+        "scope": "Complete required/nullable metadata and struct/custom discriminator algorithms; closed generated field workers replace reflection.",
+        "sourceStatus": "source-written-dependency-gate-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/Lsp/Protocol/ProtocolStructCodec.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/ProtocolObjectHelpers.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/ProtocolSemanticError.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-protocol-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
+      }
+    },
+    {
+      "upstream": "tsc/internal/lsp/lsproto/util.go",
+      "destination": "src/TypeScript.Scanner/Lsp/Protocol/Utilities.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "Complete position/range/diagnostic comparison/string utilities.",
+      "upstreamSha256": "fa42ac33d267dc6d955c3db3af6625ad5d830b387c447c01da5b0b6298de14e1",
+      "languageServicesCampaign": {
+        "scope": "Complete position/range/diagnostic comparison/string utilities.",
+        "sourceStatus": "source-written-dependency-gate-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/Lsp/Protocol/Utilities.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-protocol-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
+      }
+    },
+    {
+      "upstream": "tsc/internal/lsp/lsproto/lsp_generated.go",
+      "destination": "src/TypeScript.Scanner/Lsp/Protocol/Models.Generated.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "Complete728 declaration models,79 capability resolvers,71 projections,30 enum-name functions,105 method constants,599 readers/writers and104 typed method infos. SemanticTokens parent constant has no original Info; full/delta/range do.",
+      "upstreamSha256": "b8574199af20f6a84cce3225d05123eaa265d622fd9d209f9200f842c1aaa2ef",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/Lsp/Protocol/Capabilities.Generated.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/Members.Generated.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/EnumNames.Generated.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/Methods.Generated.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/ProtocolCodec.Generated.cs",
+        "src/TypeScript.Scanner/Lsp/Protocol/MethodInfos.Generated.cs"
+      ],
+      "languageServicesCampaign": {
+        "scope": "Complete728 declaration models,79 capability resolvers,71 projections,30 enum-name functions,105 method constants,599 readers/writers and104 typed method infos. SemanticTokens parent constant has no original Info; full/delta/range do.",
+        "sourceStatus": "source-written-dependency-gate-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/Lsp/Protocol/Models.Generated.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/Capabilities.Generated.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/Members.Generated.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/EnumNames.Generated.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/Methods.Generated.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/ProtocolCodec.Generated.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/MethodInfos.Generated.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-protocol-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/lsconv/linemap.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Lsconv/LineMap.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "Complete LSP line map/UTF8 line starts owner.",
+      "upstreamSha256": "bbfc46d0a9fc9c3a1f8f6c73ea6a3ea9b3420ebe6dabaf404204d14d50de2cd7",
+      "languageServicesCampaign": {
+        "scope": "Complete LSP line map/UTF8 line starts owner.",
+        "sourceStatus": "source-written-dependency-gate-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Lsconv/LineMap.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-protocol-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/lsconv/converters.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Lsconv/Script.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "Complete script/conversion/URI/mapping/diagnostic roles. uint32 coordinates cast and arithmetic preserve original TextPos int32 behavior.",
+      "upstreamSha256": "1a55afacec541e6c1c570e42b75742ca7365a40e6b08e4b4164104d03fcd52ff",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/LanguageServices/Lsconv/Converters.cs",
+        "src/TypeScript.Scanner/LanguageServices/Lsconv/Diagnostics.cs"
+      ],
+      "languageServicesCampaign": {
+        "scope": "Complete script/conversion/URI/mapping/diagnostic roles. uint32 coordinates cast and arithmetic preserve original TextPos int32 behavior.",
+        "sourceStatus": "source-written-dependency-gate-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Lsconv/Script.cs",
+          "src/TypeScript.Scanner/LanguageServices/Lsconv/Converters.cs",
+          "src/TypeScript.Scanner/LanguageServices/Lsconv/Diagnostics.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-protocol-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
+      }
+    },
+    {
+      "upstream": "tsc/internal/core/context.go",
+      "destination": "src/TypeScript.Scanner/Core/Context.cs",
+      "status": "source-mapped-subsystem-in-progress",
+      "scope": "Complete required With/Get request ID and checker lifetime functions; context derived values retain explicit scoped owners. Additional locale/capability/format fields map their actual package sources rather than ambient context.",
+      "upstreamSha256": "d34cd970b3d1b588923628f34c4eb9d241eeb7516e8f3a43d89bc129743386b9",
+      "additionalDestinations": [
+        "src/TypeScript.Scanner/Lsp/Protocol/RequestContext.cs"
+      ],
+      "languageServicesCampaign": {
+        "scope": "Complete required With/Get request ID and checker lifetime functions; context derived values retain explicit scoped owners. Additional locale/capability/format fields map their actual package sources rather than ambient context.",
+        "sourceStatus": "source-written-dependency-gate-passed",
+        "destinations": [
+          "src/TypeScript.Scanner/Core/Context.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/RequestContext.cs"
+        ],
+        "mappingPacket": "docs/progress/lsp-protocol-mapping.json",
+        "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
+        "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
+      }
     }
   ],
-  "activePhase": "Emit performance verified in documented Linux x64 VS Code scope; final review and commit delivery. No further implementation campaign implicitly authorized.",
+  "activePhase": "Language-services and LSP epic from accepted emit/performance 9b8fa74a: comprehensive dependency-first implementation, review, original tests and actual Linux x64 Native AOT transport acceptance. Shared dependency execution passed; complete services and server remain unfinished.",
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
     "sourceTreeSha256": "3649d542b4bf031beb995de72c02fe9852e205dd4233b94ea7426250d38a30fd"
@@ -8166,5 +9810,64 @@
       "Warm-input five-run results on one host; portable defaults and other platforms not performance-verified.",
       "Go runtime scheduling/fairness is not reproduced; compiler algorithms, lock scopes and required ownership/copies preserved."
     ]
+  },
+  "languageServicesCampaign": {
+    "baseline": "9b8fa74a",
+    "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+    "state": "active dependency implementation; no service/server acceptance yet",
+    "sourceMappingPolicy": "New owners mapped as integration-pending until reviewed and verified; partial model/interface counterparts remain explicit.",
+    "dependencyExecution": "validation/results/language-services-dependencies-23.json",
+    "verification": "Reviewed dependency23 managed/Native execution, including isolated decode-depth controls; full services, actual server transport and retained comprehensive regressions remain pending. The result explicitly qualifies one post-run test-metadata correction.",
+    "mappingPackets": [
+      "docs/progress/lsp-project-mapping.json",
+      "docs/progress/lsp-services-mapping.json",
+      "docs/progress/lsp-service-standard-library-mapping.json",
+      "docs/progress/lsp-protocol-mapping.json"
+    ],
+    "dependencyReviews": [
+      "docs/progress/lsp-project-owner-review.md",
+      "docs/progress/lsp-checker-query-review.md",
+      "docs/progress/lsp-preferences-review.md",
+      "docs/progress/lsp-nfd-review.md",
+      "docs/progress/lsp-regexp-review.md",
+      "docs/progress/lsp-project-graph-review.md",
+      "docs/progress/lsp-formatting-review.md",
+      "docs/progress/lsp-codec-review.md",
+      "docs/progress/lsp-dependencies-23-review.json"
+    ],
+    "initialDependencyExecution": "validation/results/language-services-dependencies-initial.json"
+  },
+  "languageServicesRuntimeDependencies": {
+    "src/TypeScript.Scanner/Vfs/OsVfs/LinuxMutations.cs": {
+      "upstream": "Go1.27.1/src/os/removeall_at.go; path_unix.go; file_unix.go",
+      "port": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxMutations.cs",
+      "scope": "focused required Linux removal/timestamp transport, no general os package completeness claim",
+      "status": "source-written-review-pending",
+      "adaptations": [
+        "fd-relative unlinkat/openat, bounded directory names with reopen, strict existing scalar path transport; Linux64 ABI only, no runtime redesign"
+      ],
+      "portSha256": "8d12370c9ef6616b8a517803ead22dc42dc969e4aa2c600fc94164bd32c22352",
+      "mappingPacket": "docs/progress/lsp-project-mapping.json",
+      "sourceFiles": {
+        "tools/.cache/go/src/os/removeall_at.go": {
+          "source": "tools/.cache/go/src/os/removeall_at.go",
+          "runtimeVersion": "Go1.27.1",
+          "sourceSha256": "77d5ea8558ccf4d1018ac6baad111d67d6bc39ab120cf6efe18065700b6d14eb",
+          "port": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxMutations.cs",
+          "scope": "focused Linux remove-all first-error/no-follow traversal, not full os package",
+          "status": "source-written-review-pending",
+          "portSha256": "8d12370c9ef6616b8a517803ead22dc42dc969e4aa2c600fc94164bd32c22352"
+        },
+        "tools/.cache/go/src/os/dir_unix.go": {
+          "source": "tools/.cache/go/src/os/dir_unix.go",
+          "runtimeVersion": "Go1.27.1",
+          "sourceSha256": "0de1bd5b40affb85fb104b4f04589fcaad093cd4b8165f6b2161427f7935bad0",
+          "port": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxMutations.cs",
+          "scope": "bounded directory read behavior used by RemoveAll, native libc dirent ABI adaptation",
+          "status": "source-written-review-pending",
+          "portSha256": "8d12370c9ef6616b8a517803ead22dc42dc969e4aa2c600fc94164bd32c22352"
+        }
+      }
+    }
   }
 }

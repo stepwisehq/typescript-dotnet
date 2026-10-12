@@ -19,15 +19,32 @@ public interface IFS
     RootedPath Realpath(RootedPath path);
 }
 
+// Editor-required mutation contract. Optional capability preserves existing
+// read-only hosts; unavailable operations return an explicit error, never success.
+internal interface IMutableFileSystem
+{
+    Exception? AppendFile(RootedFilePath path, ByteStringValue data);
+    Exception? Remove(RootedPath path);
+    Exception? Chtimes(RootedPath path, DateTimeOffset accessTime, DateTimeOffset modificationTime);
+}
+
+internal static class FileSystemMutations
+{
+    internal static Exception? AppendFile(IFS fs, RootedFilePath path, ByteStringValue data) => fs is IMutableFileSystem mutable ? mutable.AppendFile(path, data) : Unavailable("AppendFile");
+    internal static Exception? Remove(IFS fs, RootedPath path) => fs is IMutableFileSystem mutable ? mutable.Remove(path) : Unavailable("Remove");
+    internal static Exception? Chtimes(IFS fs, RootedPath path, DateTimeOffset accessTime, DateTimeOffset modificationTime) => fs is IMutableFileSystem mutable ? mutable.Chtimes(path, accessTime, modificationTime) : Unavailable("Chtimes");
+    private static Exception Unavailable(string operation) => new NotSupportedException($"Filesystem does not support {operation}.");
+}
+
 // Internal output transport retains writer-owned byte headers across genuine FS wrappers.
 internal interface IOutputTextFileSystem
 {
     Exception? WriteOutputText(RootedFilePath path, ByteStringValue data);
 }
+
 internal static class OutputTextWriters
 {
-    internal static Exception? Write(IFS fs, RootedFilePath path, ByteStringValue data) =>
-        fs is IOutputTextFileSystem output ? output.WriteOutputText(path, data) : fs.WriteFile(path, data.Materialize()!);
+    internal static Exception? Write(IFS fs, RootedFilePath path, ByteStringValue data) => fs is IOutputTextFileSystem output ? output.WriteOutputText(path, data) : fs.WriteFile(path, data.Materialize()!);
 }
 
 // Optional internal transport for privately owned immutable source bytes. The
@@ -43,7 +60,7 @@ internal static class SourceTextReaders
     {
         if (fs is ISourceTextFileSystem sourceText)
             return sourceText.ReadSourceText(path);
-        var (contents, ok) = fs.ReadFile(path);
+        var(contents, ok) = fs.ReadFile(path);
         return ok ? (ByteStringView.FromGoBytes(contents), true) : (default, false);
     }
 }

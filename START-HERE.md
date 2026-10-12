@@ -6,6 +6,11 @@ Read the active top of [STATE.md](./docs/STATE.md). This mandate supersedes all
 historical "await the next mandate" instructions below. Continue autonomously across
 implementation, review, verification and committed subsystem checkpoints.
 
+For routine re-entry, start with this active section, the active STATE section and
+your current owner note linked there. The remaining sections preserve historical
+mandates; read them when a concrete dependency calls for that history rather than
+reloading the whole history on every compaction.
+
 Astra coordinates; GPT-6.1 Sol implements and independently reviews. Port pinned
 upstream document/project snapshots, invalidation, semantic services and LSP transport
 faithfully, building complete dependencies before consumers. No empty-success

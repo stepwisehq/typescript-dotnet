@@ -15,7 +15,7 @@ internal sealed partial class NodeBuilderImpl
     internal const int defaultMaximumTruncationLength = 160;
     internal const int noTruncationMaximumTruncationLength = 1_000_000;
     internal readonly Checker ch;
-    private readonly NodeFactory f;
+    internal readonly NodeFactory f;
     private readonly NodeVisitor cloneBindingNameVisitor;
     internal readonly TypeScript.DiagnosticPrinting.EmitContext e;
     private readonly Dictionary<Node, Symbol> idToSymbol;
@@ -27,7 +27,9 @@ internal sealed partial class NodeBuilderImpl
     {
         internal IModuleSpecifierGenerationHost host;
         internal Node enclosingDeclaration;
-        internal int depth = 0, maxExpansionDepth = -1;
+        internal int depth = 0, maxExpansionDepth = -1, maxTruncationLength;
+        internal bool canIncreaseExpansionDepth, expansionTruncated;
+        internal Slice<Type> typeStack;
         internal SourceFile enclosingFile;
         internal int approximateLength;
         internal bool truncating, encounteredError, reportedDiagnostic, suppressReportInferenceFallback;
@@ -102,7 +104,8 @@ internal sealed partial class NodeBuilderImpl
     private NodeBuilderLinks nilLinks;
     private ref NodeBuilderLinks getLinks(Node node)
     {
-        if (node == null) return ref nilLinks;
+        if (node == null)
+            return ref nilLinks;
         return ref links.Get(node);
     }
 
@@ -150,7 +153,7 @@ internal sealed partial class NodeBuilderImpl
         pc = PseudoChecker.NewPseudoChecker(checker.strictNullChecks, checker.exactOptionalPropertyTypes);
     }
 
-    // typeToTypeNode (3358): selected scalar, alias, reference and composite branches; default expansion is disabled.
+    // nodebuilderimpl.go:3358. Ordinary callers disable expansion; service contexts track depth and cycles.
     internal Node typeToTypeNode(Type t)
     {
         var inTypeAlias = ctx.flags & NodeBuilderFlags.InTypeAlias;
@@ -168,302 +171,346 @@ internal sealed partial class NodeBuilderImpl
         }
 
         t = Checker.getNonDistributedTypeParameter(t);
-        if ((ctx.flags & NodeBuilderFlags.NoTypeReduction) == 0)
-            t = ch.getReducedType(t);
-        if ((t.flags & TypeFlags.Any) != 0)
+        bool trackingExpansion = ctx.maxExpansionDepth >= 0;
+        bool expandingAlias = false;
+        if (trackingExpansion)
+            ctx.typeStack = ctx.typeStack.Append(t);
+        try
         {
-            if (t.alias != null)
-                return aliasToTypeReferenceNode(t.alias);
-            if (t == ch.unresolvedType)
-                return e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword), Kind.MultiLineCommentTrivia, "unresolved", false);
-            approximateLength += 3;
-            return f.NewKeywordTypeNode(t == ch.intrinsicMarkerType ? Kind.IntrinsicKeyword : Kind.AnyKeyword);
-        }
-
-        if ((t.flags & TypeFlags.Unknown) != 0)
-            return f.NewKeywordTypeNode(Kind.UnknownKeyword);
-        if ((t.flags & TypeFlags.String) != 0)
-        {
-            approximateLength += 6;
-            return f.NewKeywordTypeNode(Kind.StringKeyword);
-        }
-
-        if ((t.flags & TypeFlags.Number) != 0)
-        {
-            approximateLength += 6;
-            return f.NewKeywordTypeNode(Kind.NumberKeyword);
-        }
-
-        if ((t.flags & TypeFlags.BigInt) != 0)
-        {
-            approximateLength += 6;
-            return f.NewKeywordTypeNode(Kind.BigIntKeyword);
-        }
-
-        if ((t.flags & TypeFlags.Boolean) != 0 && t.alias == null)
-        {
-            approximateLength += 7;
-            return f.NewKeywordTypeNode(Kind.BooleanKeyword);
-        }
-
-        // nodebuilderimpl.go:3417. Enum members retain their parent reference
-        // and actual member spelling; enum unions expand only when requested.
-        bool expandingEnum = false;
-        if ((t.flags & TypeFlags.EnumLike) != 0)
-        {
-            if ((t.symbol.Flags & SymbolFlags.EnumMember) != 0)
+            if ((ctx.flags & NodeBuilderFlags.NoTypeReduction) == 0)
+                t = ch.getReducedType(t);
+            if ((t.flags & TypeFlags.Any) != 0)
             {
-                var parent = ch.getParentOfSymbol(t.symbol);
-                var parentName = symbolToTypeNode(parent, SymbolFlags.Type, null);
-                if (ch.getDeclaredTypeOfSymbol(parent) == t)
-                    return parentName;
-                var memberName = Ast.SymbolNameValue(t.symbol);
-                if (TypeScript.Scanner.Scanner.IsIdentifierTextByteString(memberName, LanguageVariant.Standard))
-                    return appendReferenceToType(parentName, f.NewTypeReferenceNode(f.NewIdentifierWithTextValue(memberName), null));
-                if (Ast.IsImportTypeNode(parentName))
-                {
-                    parentName.AsImportTypeNode().IsTypeOf = true;
-                    return f.NewIndexedAccessTypeNode(parentName, f.NewLiteralTypeNode(newStringLiteral(memberName)));
-                }
-                if (Ast.IsTypeReferenceNode(parentName))
-                    return f.NewIndexedAccessTypeNode(f.NewTypeQueryNode(parentName.AsTypeReferenceNode().TypeName, null),
-                        f.NewLiteralTypeNode(newStringLiteral(memberName)));
-                throw new InvalidOperationException("Unhandled enum parent type node kind");
-            }
-            if ((t.flags & TypeFlags.Union) == 0 || !shouldExpandType(t, false))
-                return symbolToTypeNode(t.symbol, SymbolFlags.Type, null);
-            expandingEnum = true;
-        }
-
-        if ((t.flags & TypeFlags.StringLiteral) != 0)
-        {
-            var value = t.AsLiteralType().StringValue();
-            approximateLength += value.Length + 2;
-            var lit = newStringLiteral(value);
-            e.AddEmitFlags(lit, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
-            return f.NewLiteralTypeNode(lit);
-        }
-
-        if ((t.flags & TypeFlags.NumberLiteral) != 0)
-        {
-            var value = (JsNum.Number)t.AsLiteralType().value;
-            var text = value.String();
-            approximateLength += text.Length;
-            if (value.Value < 0)
-                return f.NewLiteralTypeNode(f.NewPrefixUnaryExpression(Kind.MinusToken, f.NewNumericLiteral(text[1..], TokenFlags.None)));
-            return f.NewLiteralTypeNode(f.NewNumericLiteral(text, TokenFlags.None));
-        }
-
-        if ((t.flags & TypeFlags.BigIntLiteral) != 0)
-        {
-            var text = Checker.pseudoBigIntToString(Checker.getBigIntLiteralValue(t));
-            approximateLength += text.Length + 1;
-            return f.NewLiteralTypeNode(f.NewBigIntLiteral(text + "n", TokenFlags.None));
-        }
-
-        if ((t.flags & TypeFlags.BooleanLiteral) != 0)
-        {
-            bool value = (bool)t.AsLiteralType().value;
-            approximateLength += value ? 4 : 5;
-            return f.NewLiteralTypeNode(f.NewKeywordExpression(value ? Kind.TrueKeyword : Kind.FalseKeyword));
-        }
-
-        // nodebuilderimpl.go:3470. Default diagnostic flags allow the unique
-        // operator; declaration reuse also preserves the accessible-symbol arm.
-        if ((t.flags & TypeFlags.UniqueESSymbol) != 0)
-        {
-            if ((ctx.flags & NodeBuilderFlags.AllowUniqueESSymbolType) == 0)
-            {
-                if (ch.IsValueSymbolAccessible(t.symbol, ctx.enclosingDeclaration))
-                {
-                    approximateLength += 6;
-                    return symbolToTypeNode(t.symbol, SymbolFlags.Value, null);
-                }
-
-                ctx.tracker.ReportInaccessibleUniqueSymbolError();
+                if (t.alias != null)
+                    return aliasToTypeReferenceNode(t.alias);
+                if (t == ch.unresolvedType)
+                    return e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword), Kind.MultiLineCommentTrivia, "unresolved", false);
+                approximateLength += 3;
+                return f.NewKeywordTypeNode(t == ch.intrinsicMarkerType ? Kind.IntrinsicKeyword : Kind.AnyKeyword);
             }
 
-            approximateLength += 13;
-            return f.NewTypeOperatorNode(Kind.UniqueKeyword, f.NewKeywordTypeNode(Kind.SymbolKeyword));
-        }
-
-        if ((t.flags & TypeFlags.Void) != 0)
-        {
-            approximateLength += 4;
-            return f.NewKeywordTypeNode(Kind.VoidKeyword);
-        }
-
-        if ((t.flags & TypeFlags.Undefined) != 0)
-        {
-            approximateLength += 9;
-            return f.NewKeywordTypeNode(Kind.UndefinedKeyword);
-        }
-
-        if ((t.flags & TypeFlags.Null) != 0)
-        {
-            approximateLength += 4;
-            return f.NewLiteralTypeNode(f.NewKeywordExpression(Kind.NullKeyword));
-        }
-
-        if ((t.flags & TypeFlags.Never) != 0)
-        {
-            approximateLength += 5;
-            return f.NewKeywordTypeNode(Kind.NeverKeyword);
-        }
-
-        if ((t.flags & TypeFlags.ESSymbol) != 0)
-        {
-            approximateLength += 6;
-            return f.NewKeywordTypeNode(Kind.SymbolKeyword);
-        }
-
-        if ((t.flags & TypeFlags.NonPrimitive) != 0)
-        {
-            approximateLength += 6;
-            return f.NewKeywordTypeNode(Kind.ObjectKeyword);
-        }
-
-        if ((t.flags & TypeFlags.TypeParameter) != 0 && t.AsTypeParameter().isThisType)
-        {
-            if (inObjectTypeLiteral)
+            if ((t.flags & TypeFlags.Unknown) != 0)
+                return f.NewKeywordTypeNode(Kind.UnknownKeyword);
+            if ((t.flags & TypeFlags.String) != 0)
             {
-                if (!encounteredError && (ctx.flags & NodeBuilderFlags.AllowThisInObjectLiteral) == 0)
-                    encounteredError = true;
-                ctx.tracker.ReportInaccessibleThisError();
+                approximateLength += 6;
+                return f.NewKeywordTypeNode(Kind.StringKeyword);
             }
 
-            approximateLength += 4;
-            return f.NewThisTypeNode();
-        }
-
-        // nodebuilderimpl.go:3516. Default diagnostics allow aliases from outside
-        // the current scope; other selected contexts use actual accessibility.
-        if (inTypeAlias == 0 && t.alias != null && ((ctx.flags & NodeBuilderFlags.UseAliasDefinedOutsideCurrentScope) != 0 || ch.IsTypeSymbolAccessible(t.alias.Symbol(), ctx.enclosingDeclaration)))
-        {
-            // Configured structural expansion is a service-only consumer. Ordinary
-            // diagnostics preserve the source alias/member-name and array branches.
-            var symbol = t.alias.Symbol();
-            var typeArgumentNodes = mapToTypeNodes(t.alias.TypeArguments(), false);
-            if (Checker.isReservedMemberName(symbol.NameValue) && (symbol.Flags & SymbolFlags.Class) == 0)
-                return f.NewTypeReferenceNode(f.NewIdentifier(""), typeArgumentNodes);
-            if (typeArgumentNodes?.Nodes.Count == 1 && symbol == ch.globalArrayType.symbol)
-                return f.NewArrayTypeNode(typeArgumentNodes.Nodes[0]);
-            return symbolToTypeNode(symbol, SymbolFlags.Type, typeArgumentNodes);
-        }
-        if ((t.objectFlags & ObjectFlags.Reference) != 0)
-        {
-            if (ch.isArrayOrTupleType(t))
-                return visitAndTransformType(t, arrayOrTupleTypeToNode);
-            if (t.AsTypeReference().node != null)
-                return visitAndTransformType(t, typeReferenceToTypeNode);
-            return typeReferenceToTypeNode(t);
-        }
-
-        if ((t.flags & TypeFlags.TypeParameter) != 0 || (t.objectFlags & ObjectFlags.ClassOrInterface) != 0)
-        {
-            if ((t.flags & TypeFlags.TypeParameter) != 0 && Core.Some(ctx.inferTypeParameters, parameter => ReferenceEquals(parameter, t)))
+            if ((t.flags & TypeFlags.Number) != 0)
             {
-                approximateLength += Ast.SymbolNameValue(t.symbol).Length + 6;
-                Node constraintNode = null;
-                var constraint = ch.getConstraintOfTypeParameter(t);
-                if (constraint != null)
+                approximateLength += 6;
+                return f.NewKeywordTypeNode(Kind.NumberKeyword);
+            }
+
+            if ((t.flags & TypeFlags.BigInt) != 0)
+            {
+                approximateLength += 6;
+                return f.NewKeywordTypeNode(Kind.BigIntKeyword);
+            }
+
+            if ((t.flags & TypeFlags.Boolean) != 0 && t.alias == null)
+            {
+                approximateLength += 7;
+                return f.NewKeywordTypeNode(Kind.BooleanKeyword);
+            }
+
+            // nodebuilderimpl.go:3417. Enum members retain their parent reference
+            // and actual member spelling; enum unions expand only when requested.
+            bool expandingEnum = false;
+            if ((t.flags & TypeFlags.EnumLike) != 0)
+            {
+                if ((t.symbol.Flags & SymbolFlags.EnumMember) != 0)
                 {
-                    var inferredConstraint = ch.getInferredTypeParameterConstraint(t, true);
-                    if (inferredConstraint == null || !ch.isTypeIdenticalTo(constraint, inferredConstraint))
+                    var parent = ch.getParentOfSymbol(t.symbol);
+                    var parentName = symbolToTypeNode(parent, SymbolFlags.Type, null);
+                    if (ch.getDeclaredTypeOfSymbol(parent) == t)
+                        return parentName;
+                    var memberName = Ast.SymbolNameValue(t.symbol);
+                    if (TypeScript.Scanner.Scanner.IsIdentifierTextByteString(memberName, LanguageVariant.Standard))
+                        return appendReferenceToType(parentName, f.NewTypeReferenceNode(f.NewIdentifierWithTextValue(memberName), null));
+                    if (Ast.IsImportTypeNode(parentName))
                     {
-                        approximateLength += 9;
-                        constraintNode = typeToTypeNode(constraint);
+                        parentName.AsImportTypeNode().IsTypeOf = true;
+                        return f.NewIndexedAccessTypeNode(parentName, f.NewLiteralTypeNode(newStringLiteral(memberName)));
+                    }
+
+                    if (Ast.IsTypeReferenceNode(parentName))
+                        return f.NewIndexedAccessTypeNode(f.NewTypeQueryNode(parentName.AsTypeReferenceNode().TypeName, null), f.NewLiteralTypeNode(newStringLiteral(memberName)));
+                    throw new InvalidOperationException("Unhandled enum parent type node kind");
+                }
+
+                if ((t.flags & TypeFlags.Union) == 0 || !shouldExpandType(t, false))
+                    return symbolToTypeNode(t.symbol, SymbolFlags.Type, null);
+                expandingEnum = true;
+            }
+
+            if ((t.flags & TypeFlags.StringLiteral) != 0)
+            {
+                var value = t.AsLiteralType().StringValue();
+                approximateLength += value.Length + 2;
+                var lit = newStringLiteral(value);
+                e.AddEmitFlags(lit, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
+                return f.NewLiteralTypeNode(lit);
+            }
+
+            if ((t.flags & TypeFlags.NumberLiteral) != 0)
+            {
+                var value = (JsNum.Number)t.AsLiteralType().value;
+                var text = value.String();
+                approximateLength += text.Length;
+                if (value.Value < 0)
+                    return f.NewLiteralTypeNode(f.NewPrefixUnaryExpression(Kind.MinusToken, f.NewNumericLiteral(text[1..], TokenFlags.None)));
+                return f.NewLiteralTypeNode(f.NewNumericLiteral(text, TokenFlags.None));
+            }
+
+            if ((t.flags & TypeFlags.BigIntLiteral) != 0)
+            {
+                var text = Checker.pseudoBigIntToString(Checker.getBigIntLiteralValue(t));
+                approximateLength += text.Length + 1;
+                return f.NewLiteralTypeNode(f.NewBigIntLiteral(text + "n", TokenFlags.None));
+            }
+
+            if ((t.flags & TypeFlags.BooleanLiteral) != 0)
+            {
+                bool value = (bool)t.AsLiteralType().value;
+                approximateLength += value ? 4 : 5;
+                return f.NewLiteralTypeNode(f.NewKeywordExpression(value ? Kind.TrueKeyword : Kind.FalseKeyword));
+            }
+
+            // nodebuilderimpl.go:3470. Default diagnostic flags allow the unique
+            // operator; declaration reuse also preserves the accessible-symbol arm.
+            if ((t.flags & TypeFlags.UniqueESSymbol) != 0)
+            {
+                if ((ctx.flags & NodeBuilderFlags.AllowUniqueESSymbolType) == 0)
+                {
+                    if (ch.IsValueSymbolAccessible(t.symbol, ctx.enclosingDeclaration))
+                    {
+                        approximateLength += 6;
+                        return symbolToTypeNode(t.symbol, SymbolFlags.Value, null);
+                    }
+
+                    ctx.tracker.ReportInaccessibleUniqueSymbolError();
+                }
+
+                approximateLength += 13;
+                return f.NewTypeOperatorNode(Kind.UniqueKeyword, f.NewKeywordTypeNode(Kind.SymbolKeyword));
+            }
+
+            if ((t.flags & TypeFlags.Void) != 0)
+            {
+                approximateLength += 4;
+                return f.NewKeywordTypeNode(Kind.VoidKeyword);
+            }
+
+            if ((t.flags & TypeFlags.Undefined) != 0)
+            {
+                approximateLength += 9;
+                return f.NewKeywordTypeNode(Kind.UndefinedKeyword);
+            }
+
+            if ((t.flags & TypeFlags.Null) != 0)
+            {
+                approximateLength += 4;
+                return f.NewLiteralTypeNode(f.NewKeywordExpression(Kind.NullKeyword));
+            }
+
+            if ((t.flags & TypeFlags.Never) != 0)
+            {
+                approximateLength += 5;
+                return f.NewKeywordTypeNode(Kind.NeverKeyword);
+            }
+
+            if ((t.flags & TypeFlags.ESSymbol) != 0)
+            {
+                approximateLength += 6;
+                return f.NewKeywordTypeNode(Kind.SymbolKeyword);
+            }
+
+            if ((t.flags & TypeFlags.NonPrimitive) != 0)
+            {
+                approximateLength += 6;
+                return f.NewKeywordTypeNode(Kind.ObjectKeyword);
+            }
+
+            if ((t.flags & TypeFlags.TypeParameter) != 0 && t.AsTypeParameter().isThisType)
+            {
+                if (inObjectTypeLiteral)
+                {
+                    if (!encounteredError && (ctx.flags & NodeBuilderFlags.AllowThisInObjectLiteral) == 0)
+                        encounteredError = true;
+                    ctx.tracker.ReportInaccessibleThisError();
+                }
+
+                approximateLength += 4;
+                return f.NewThisTypeNode();
+            }
+
+            // nodebuilderimpl.go:3516. Default diagnostics allow aliases from outside
+            // the current scope; other selected contexts use actual accessibility.
+            if (inTypeAlias == 0 && t.alias != null && ((ctx.flags & NodeBuilderFlags.UseAliasDefinedOutsideCurrentScope) != 0 || ch.IsTypeSymbolAccessible(t.alias.Symbol(), ctx.enclosingDeclaration)))
+            {
+                if (!shouldExpandType(t, true))
+                {
+                    var symbol = t.alias.Symbol();
+                    var typeArgumentNodes = mapToTypeNodes(t.alias.TypeArguments(), false);
+                    if (Checker.isReservedMemberName(symbol.NameValue) && (symbol.Flags & SymbolFlags.Class) == 0)
+                        return f.NewTypeReferenceNode(f.NewIdentifier(""), typeArgumentNodes);
+                    if (typeArgumentNodes?.Nodes.Count == 1 && symbol == ch.globalArrayType.symbol)
+                        return f.NewArrayTypeNode(typeArgumentNodes.Nodes[0]);
+                    return symbolToTypeNode(symbol, SymbolFlags.Type, typeArgumentNodes);
+                }
+
+                ctx.depth++;
+                expandingAlias = true;
+            }
+
+            if ((t.objectFlags & ObjectFlags.Reference) != 0)
+            {
+                if (shouldExpandType(t, false))
+                {
+                    ctx.depth++;
+                    try
+                    {
+                        return createAnonymousTypeNodeEx(t, true, true);
+                    }
+                    finally
+                    {
+                        ctx.depth--;
                     }
                 }
 
-                return f.NewInferTypeNode(typeParameterToDeclarationWithConstraint(t, constraintNode));
+                if (ch.isArrayOrTupleType(t))
+                    return visitAndTransformType(t, arrayOrTupleTypeToNode);
+                if (t.AsTypeReference().node != null)
+                    return visitAndTransformType(t, typeReferenceToTypeNode);
+                return typeReferenceToTypeNode(t);
             }
 
-
-            if ((ctx.flags & NodeBuilderFlags.GenerateNamesForShadowedTypeParams) != 0 && (t.flags & TypeFlags.TypeParameter) != 0)
+            if ((t.flags & TypeFlags.TypeParameter) != 0 || (t.objectFlags & ObjectFlags.ClassOrInterface) != 0)
             {
-                var parameterName = typeParameterToName(t);
-                approximateLength += parameterName.TextValue().Length;
-                return f.NewTypeReferenceNode(newIdentifier(parameterName.TextValue(), t.symbol), null);
+                if ((t.objectFlags & ObjectFlags.ClassOrInterface) != 0 && shouldExpandType(t, false))
+                {
+                    ctx.depth++;
+                    try
+                    {
+                        return createAnonymousTypeNodeEx(t, true, true);
+                    }
+                    finally
+                    {
+                        ctx.depth--;
+                    }
+                }
+
+                if ((t.flags & TypeFlags.TypeParameter) != 0 && Core.Some(ctx.inferTypeParameters, parameter => ReferenceEquals(parameter, t)))
+                {
+                    approximateLength += Ast.SymbolNameValue(t.symbol).Length + 6;
+                    Node constraintNode = null;
+                    var constraint = ch.getConstraintOfTypeParameter(t);
+                    if (constraint != null)
+                    {
+                        var inferredConstraint = ch.getInferredTypeParameterConstraint(t, true);
+                        if (inferredConstraint == null || !ch.isTypeIdenticalTo(constraint, inferredConstraint))
+                        {
+                            approximateLength += 9;
+                            constraintNode = typeToTypeNode(constraint);
+                        }
+                    }
+
+                    return f.NewInferTypeNode(typeParameterToDeclarationWithConstraint(t, constraintNode));
+                }
+
+                if ((ctx.flags & NodeBuilderFlags.GenerateNamesForShadowedTypeParams) != 0 && (t.flags & TypeFlags.TypeParameter) != 0)
+                {
+                    var parameterName = typeParameterToName(t);
+                    approximateLength += parameterName.TextValue().Length;
+                    return f.NewTypeReferenceNode(newIdentifier(parameterName.TextValue(), t.symbol), null);
+                }
+
+                if (t.symbol != null)
+                    return symbolToTypeNode(t.symbol, SymbolFlags.Type, null);
+                string name;
+                if ((t == ch.markerSuperTypeForCheck || t == ch.markerSubTypeForCheck) && ch.varianceTypeParameter?.symbol != null)
+                    name = (t == ch.markerSubTypeForCheck ? "sub-" : "super-") + Ast.SymbolName(ch.varianceTypeParameter.symbol);
+                else
+                    name = "?";
+                return f.NewTypeReferenceNode(newIdentifier(name, null), null);
             }
 
-            if (t.symbol != null)
-                return symbolToTypeNode(t.symbol, SymbolFlags.Type, null);
-            string name;
-            if ((t == ch.markerSuperTypeForCheck || t == ch.markerSubTypeForCheck) &&
-                ch.varianceTypeParameter?.symbol != null)
-                name = (t == ch.markerSubTypeForCheck ? "sub-" : "super-") + Ast.SymbolName(ch.varianceTypeParameter.symbol);
-            else
-                name = "?";
-            return f.NewTypeReferenceNode(newIdentifier(name, null), null);
-        }
-
-        if ((t.flags & TypeFlags.Union) != 0 && t.AsUnionType().origin != null)
-            t = t.AsUnionType().origin;
-        if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
-        {
-            var types = (t.flags & TypeFlags.Union) != 0 ? ch.formatUnionTypes(t.Types(), expandingEnum) : t.Types();
-            if (types.Count == 1)
-                return typeToTypeNode(types[0]);
-            var nodes = mapToTypeNodes(types, true);
-            if (nodes != null && nodes.Nodes is { Count: > 0 })
-                return (t.flags & TypeFlags.Union) != 0 ? f.NewUnionTypeNode(nodes) : f.NewIntersectionTypeNode(nodes);
-            if (!encounteredError && (ctx.flags & NodeBuilderFlags.AllowEmptyUnionOrIntersection) == 0)
-                encounteredError = true;
-            return null;
-        }
-
-        if ((t.objectFlags & (ObjectFlags.Anonymous | ObjectFlags.Mapped)) != 0)
-            return createAnonymousTypeNode(t);
-        if ((t.flags & TypeFlags.Index) != 0)
-        {
-            approximateLength += 6;
-            return f.NewTypeOperatorNode(Kind.KeyOfKeyword, typeToTypeNode(t.Target()));
-        }
-
-        // nodebuilderimpl.go:3634. Internal template keys retain real placeholder types.
-        if ((t.flags & TypeFlags.TemplateLiteral) != 0)
-        {
-            var texts = t.AsTemplateLiteralType().texts;
-            var types = t.AsTemplateLiteralType().types;
-            var head = f.NewTemplateHeadWithTextValue(texts[0], default, TokenFlags.None);
-            e.AddEmitFlags(head, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
-            var spans = f.NewNodeList(Core.MapIndexSlice(types, (type, i) =>
+            if ((t.flags & TypeFlags.Union) != 0 && t.AsUnionType().origin != null)
+                t = t.AsUnionType().origin;
+            if ((t.flags & TypeFlags.UnionOrIntersection) != 0)
             {
-                var literal = i < types.Count - 1 ? f.NewTemplateMiddleWithTextValue(texts[i + 1], default, TokenFlags.None) : f.NewTemplateTailWithTextValue(texts[i + 1], default, TokenFlags.None);
-                e.AddEmitFlags(literal, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
-                return f.NewTemplateLiteralTypeSpan(typeToTypeNode(type), literal);
-            }));
-            approximateLength += 2;
-            return f.NewTemplateLiteralTypeNode(head, spans);
-        }
+                var types = (t.flags & TypeFlags.Union) != 0 ? ch.formatUnionTypes(t.Types(), expandingEnum) : t.Types();
+                if (types.Count == 1)
+                    return typeToTypeNode(types[0]);
+                var nodes = mapToTypeNodes(types, true);
+                if (nodes != null && nodes.Nodes is { Count: > 0 })
+                    return (t.flags & TypeFlags.Union) != 0 ? f.NewUnionTypeNode(nodes) : f.NewIntersectionTypeNode(nodes);
+                if (!encounteredError && (ctx.flags & NodeBuilderFlags.AllowEmptyUnionOrIntersection) == 0)
+                    encounteredError = true;
+                return null;
+            }
 
-        if ((t.flags & TypeFlags.StringMapping) != 0)
+            if ((t.objectFlags & (ObjectFlags.Anonymous | ObjectFlags.Mapped)) != 0)
+                return createAnonymousTypeNode(t);
+            if ((t.flags & TypeFlags.Index) != 0)
+            {
+                approximateLength += 6;
+                return f.NewTypeOperatorNode(Kind.KeyOfKeyword, typeToTypeNode(t.Target()));
+            }
+
+            // nodebuilderimpl.go:3634. Internal template keys retain real placeholder types.
+            if ((t.flags & TypeFlags.TemplateLiteral) != 0)
+            {
+                var texts = t.AsTemplateLiteralType().texts;
+                var types = t.AsTemplateLiteralType().types;
+                var head = f.NewTemplateHeadWithTextValue(texts[0], default, TokenFlags.None);
+                e.AddEmitFlags(head, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
+                var spans = f.NewNodeList(Core.MapIndexSlice(types, (type, i) =>
+                {
+                    var literal = i < types.Count - 1 ? f.NewTemplateMiddleWithTextValue(texts[i + 1], default, TokenFlags.None) : f.NewTemplateTailWithTextValue(texts[i + 1], default, TokenFlags.None);
+                    e.AddEmitFlags(literal, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
+                    return f.NewTemplateLiteralTypeSpan(typeToTypeNode(type), literal);
+                }));
+                approximateLength += 2;
+                return f.NewTemplateLiteralTypeNode(head, spans);
+            }
+
+            if ((t.flags & TypeFlags.StringMapping) != 0)
+            {
+                var typeNode = typeToTypeNode(t.Target());
+                return symbolToTypeNode(t.symbol, SymbolFlags.Type, f.NewNodeList(Slice<Node>.FromArray([typeNode])));
+            }
+
+            if ((t.flags & TypeFlags.IndexedAccess) != 0)
+            {
+                var objectType = typeToTypeNode(t.AsIndexedAccessType().objectType);
+                var indexType = typeToTypeNode(t.AsIndexedAccessType().indexType);
+                approximateLength += 2;
+                return f.NewIndexedAccessTypeNode(objectType, indexType);
+            }
+
+            if ((t.flags & TypeFlags.Conditional) != 0)
+                return visitAndTransformType(t, conditionalTypeToTypeNode);
+            if ((t.flags & TypeFlags.Substitution) != 0)
+            {
+                var typeNode = typeToTypeNode(t.AsSubstitutionType().baseType);
+                if (!ch.isNoInferType(t))
+                    return typeNode;
+                var noInferSymbol = ch.getGlobalTypeAliasSymbol("NoInfer", 1, false);
+                return noInferSymbol != null ? symbolToTypeNode(noInferSymbol, SymbolFlags.Type, f.NewNodeList(Slice<Node>.FromArray([typeNode]))) : typeNode;
+            }
+
+            throw Checker.unsupported("typeToTypeNode: type payload");
+        }
+        finally
         {
-            var typeNode = typeToTypeNode(t.Target());
-            return symbolToTypeNode(t.symbol, SymbolFlags.Type, f.NewNodeList(Slice<Node>.FromArray([typeNode])));
+            if (expandingAlias)
+                ctx.depth--;
+            if (trackingExpansion)
+                ctx.typeStack = ctx.typeStack.Slice2(0, ctx.typeStack.Count - 1);
         }
-
-        if ((t.flags & TypeFlags.IndexedAccess) != 0)
-        {
-            var objectType = typeToTypeNode(t.AsIndexedAccessType().objectType);
-            var indexType = typeToTypeNode(t.AsIndexedAccessType().indexType);
-            approximateLength += 2;
-            return f.NewIndexedAccessTypeNode(objectType, indexType);
-        }
-
-        if ((t.flags & TypeFlags.Conditional) != 0)
-            return visitAndTransformType(t, conditionalTypeToTypeNode);
-        if ((t.flags & TypeFlags.Substitution) != 0)
-        {
-            var typeNode = typeToTypeNode(t.AsSubstitutionType().baseType);
-            if (!ch.isNoInferType(t))
-                return typeNode;
-            var noInferSymbol = ch.getGlobalTypeAliasSymbol("NoInfer", 1, false);
-            return noInferSymbol != null ? symbolToTypeNode(noInferSymbol, SymbolFlags.Type, f.NewNodeList(Slice<Node>.FromArray([typeNode]))) : typeNode;
-        }
-
-        throw Checker.unsupported("typeToTypeNode: type payload");
     }
 
     // nodebuilderimpl.go:3696/641. Type-alias identity is retained in syntax.
@@ -490,37 +537,37 @@ internal sealed partial class NodeBuilderImpl
             var targetFile = Ast.GetSourceFileOfModule(chain[0]);
             moduleSpecifierResult result = default;
             var importModeOverride = ResolutionMode.None;
-            if (ch.compilerOptions.GetModuleResolutionKind() is ModuleResolutionKind.Node16 or ModuleResolutionKind.NodeNext)
+            if (ch.compilerOptions.GetModuleResolutionKind()is ModuleResolutionKind.Node16 or ModuleResolutionKind.NodeNext)
             {
-                if (targetFile != null && contextFile != null &&
-                    ch.program.GetEmitModuleFormatOfFile(targetFile) == ModuleKind.ESNext &&
-                    ch.program.GetEmitModuleFormatOfFile(targetFile) != ch.program.GetEmitModuleFormatOfFile(contextFile))
+                if (targetFile != null && contextFile != null && ch.program.GetEmitModuleFormatOfFile(targetFile) == ModuleKind.ESNext && ch.program.GetEmitModuleFormatOfFile(targetFile) != ch.program.GetEmitModuleFormatOfFile(contextFile))
                 {
                     result = getSpecifierForModuleSymbol(chain[0], ResolutionMode.ESNext);
                     importModeOverride = ResolutionMode.ESNext;
                 }
             }
+
             if (result.specifier.Length == 0)
                 result = getSpecifierForModuleSymbol(chain[0], ResolutionMode.None);
             if ((ctx.flags & NodeBuilderFlags.AllowNodeModulesRelativePaths) == 0 && result.specifier.Contains("/node_modules/"u8))
             {
                 var oldResult = result;
-                if (ch.compilerOptions.GetModuleResolutionKind() is ModuleResolutionKind.Node16 or ModuleResolutionKind.NodeNext)
+                if (ch.compilerOptions.GetModuleResolutionKind()is ModuleResolutionKind.Node16 or ModuleResolutionKind.NodeNext)
                 {
-                    var swappedMode = ch.program.GetEmitModuleFormatOfFile(contextFile) == ModuleKind.ESNext
-                        ? ResolutionMode.CommonJS : ResolutionMode.ESNext;
+                    var swappedMode = ch.program.GetEmitModuleFormatOfFile(contextFile) == ModuleKind.ESNext ? ResolutionMode.CommonJS : ResolutionMode.ESNext;
                     result = getSpecifierForModuleSymbol(chain[0], swappedMode);
                     if (result.specifier.Contains("/node_modules/"u8))
                         result = oldResult;
                     else
                         importModeOverride = swappedMode;
                 }
+
                 if (importModeOverride == ResolutionMode.None)
                 {
                     ctx.encounteredError = true;
                     ctx.tracker.ReportLikelyUnsafeImportRequiredError(oldResult.specifier.Materialize(), symbol.Name);
                 }
             }
+
             var attributes = createImportAttributesForModuleSpecifier(result, importModeOverride);
             var literal = f.NewLiteralTypeNode(newStringLiteral(result.specifier));
             approximateLength += result.specifier.Length + 10;
@@ -742,8 +789,7 @@ internal sealed partial class NodeBuilderImpl
 
     // newStringLiteral/newStringLiteralEx (3681); default double quote context.
     private Node newStringLiteral(string text) => newStringLiteralEx(text, false);
-    private Node newStringLiteral(ByteStringValue text) => f.NewStringLiteralWithTextValue(text,
-        (ctx.flags & NodeBuilderFlags.UseSingleQuotesForStringLiteralType) != 0 ? TokenFlags.SingleQuote : TokenFlags.None);
+    private Node newStringLiteral(ByteStringValue text) => f.NewStringLiteralWithTextValue(text, (ctx.flags & NodeBuilderFlags.UseSingleQuotesForStringLiteralType) != 0 ? TokenFlags.SingleQuote : TokenFlags.None);
     private Node newStringLiteralEx(ByteStringValue text, bool singleQuote) => f.NewStringLiteralWithTextValue(text, singleQuote || (ctx.flags & NodeBuilderFlags.UseSingleQuotesForStringLiteralType) != 0 ? TokenFlags.SingleQuote : TokenFlags.None);
     private Node newStringLiteralEx(string text, bool singleQuote) => f.NewStringLiteral(text, singleQuote || (ctx.flags & NodeBuilderFlags.UseSingleQuotesForStringLiteralType) != 0 ? TokenFlags.SingleQuote : TokenFlags.None);
     // nodebuilderimpl.go:585. Computed-property requests preserve real declarations
@@ -755,8 +801,10 @@ internal sealed partial class NodeBuilderImpl
             if (symbol.ValueDeclaration != null)
             {
                 var name = Ast.GetNameOfDeclaration(symbol.ValueDeclaration);
-                if (name != null && Ast.IsComputedPropertyName(name)) return name;
+                if (name != null && Ast.IsComputedPropertyName(name))
+                    return name;
             }
+
             if (ch.valueSymbolLinks.Has(symbol))
             {
                 var nameType = ch.valueSymbolLinks.Get(symbol).nameType;
@@ -770,8 +818,10 @@ internal sealed partial class NodeBuilderImpl
                 }
             }
         }
+
         return symbolToExpression(symbol, meaning);
     }
+
     internal Node symbolToExpression(Symbol symbol, SymbolFlags mask)
     {
         ctx.tracker.TrackSymbol(symbol, ctx.enclosingDeclaration, mask);
@@ -922,8 +972,7 @@ internal sealed partial class NodeBuilderImpl
                 ByteStringValue text => text,
                 string text => ByteStringValue.FromString(text),
                 JsNum.Number number => ByteStringValue.FromString(number.String()),
-                _ => ByteStringValue.FromString("")
-            };
+                _ => ByteStringValue.FromString("")};
             if (!TypeScript.Scanner.Scanner.IsIdentifierTextByteString(name, LanguageVariant.Standard) && !Checker.isNumericLiteralName(name))
                 return ByteStringValue.FromString(Checker.ValueToString(nameType.AsLiteralType().value));
             if (Checker.isNumericLiteralName(name) && name.StartsWith("-"u8))
@@ -1020,8 +1069,7 @@ internal sealed partial class NodeBuilderImpl
     {
         if (truncating)
             return truncating;
-        var maxLength = (ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ?
-            noTruncationMaximumTruncationLength : defaultMaximumTruncationLength;
+        var maxLength = (ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ? noTruncationMaximumTruncationLength : ctx.maxTruncationLength > 0 ? ctx.maxTruncationLength : defaultMaximumTruncationLength;
         truncating = approximateLength > maxLength;
         return truncating;
     }
@@ -1030,10 +1078,7 @@ internal sealed partial class NodeBuilderImpl
     private Node createElidedInformationPlaceholder()
     {
         approximateLength += 3;
-        return (ctx.flags & NodeBuilderFlags.NoTruncation) == 0 ?
-            f.NewTypeReferenceNode(f.NewIdentifier("..."), null) :
-            e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword),
-                Kind.MultiLineCommentTrivia, "elided", false);
+        return (ctx.flags & NodeBuilderFlags.NoTruncation) == 0 ? f.NewTypeReferenceNode(f.NewIdentifier("..."), null) : e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword), Kind.MultiLineCommentTrivia, "elided", false);
     }
 
     private Node createCyclicStructurePlaceholder()
@@ -1049,12 +1094,8 @@ internal sealed partial class NodeBuilderImpl
 
     // nodebuilderimpl.go:350. Generated elision nodes and named references
     // retain the original truncation and name-collision branches.
-    private NodeList mapToTypeNodes(List<Type> list, bool isBareList) =>
-        mapToTypeNodes((ReadOnlySpan<Type>)System.Runtime.InteropServices.CollectionsMarshal.AsSpan(list), isBareList);
-
-    private NodeList mapToTypeNodes(Slice<Type> list, bool isBareList) =>
-        mapToTypeNodes(list.AsSpan(), isBareList);
-
+    private NodeList mapToTypeNodes(List<Type> list, bool isBareList) => mapToTypeNodes((ReadOnlySpan<Type>)System.Runtime.InteropServices.CollectionsMarshal.AsSpan(list), isBareList);
+    private NodeList mapToTypeNodes(Slice<Type> list, bool isBareList) => mapToTypeNodes(list.AsSpan(), isBareList);
     private NodeList mapToTypeNodes(ReadOnlySpan<Type> list, bool isBareList)
     {
         if (list.Length == 0)
@@ -1063,19 +1104,14 @@ internal sealed partial class NodeBuilderImpl
         {
             if (!isBareList)
             {
-                var node = (ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ?
-                    e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword),
-                        Kind.MultiLineCommentTrivia, "elided", false) :
-                    f.NewTypeReferenceNode(f.NewIdentifier("..."), null);
+                var node = (ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ? e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword), Kind.MultiLineCommentTrivia, "elided", false) : f.NewTypeReferenceNode(f.NewIdentifier("..."), null);
                 return f.NewNodeList(Slice<Node>.FromArray([node]));
             }
+
             if (list.Length > 2)
             {
                 var nodes = Slice<Node>.FromArray([typeToTypeNode(list[0]), null, typeToTypeNode(list[^1])]);
-                nodes[1] = (ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ?
-                    e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword),
-                        Kind.MultiLineCommentTrivia, $"... {list.Length - 2} more elided ...", false) :
-                    f.NewTypeReferenceNode(f.NewIdentifier($"... {list.Length - 2} more ..."), null);
+                nodes[1] = (ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ? e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword), Kind.MultiLineCommentTrivia, $"... {list.Length - 2} more elided ...", false) : f.NewTypeReferenceNode(f.NewIdentifier($"... {list.Length - 2} more ..."), null);
                 return f.NewNodeList(nodes);
             }
         }
@@ -1087,10 +1123,7 @@ internal sealed partial class NodeBuilderImpl
             int displayIndex = i + 1;
             if (checkTruncationLength() && displayIndex + 2 < list.Length - 1)
             {
-                result = result.Append((ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ?
-                    e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword),
-                        Kind.MultiLineCommentTrivia, $"... {list.Length - displayIndex} more elided ...", false) :
-                    f.NewTypeReferenceNode(f.NewIdentifier($"... {list.Length - displayIndex} more ..."), null));
+                result = result.Append((ctx.flags & NodeBuilderFlags.NoTruncation) != 0 ? e.AddSyntheticLeadingComment(f.NewKeywordTypeNode(Kind.AnyKeyword), Kind.MultiLineCommentTrivia, $"... {list.Length - displayIndex} more elided ...", false) : f.NewTypeReferenceNode(f.NewIdentifier($"... {list.Length - displayIndex} more ..."), null));
                 var last = typeToTypeNode(list[^1]);
                 if (last != null)
                     result = result.Append(last);
@@ -1127,9 +1160,7 @@ internal sealed partial class NodeBuilderImpl
 
     // nodebuilderimpl.go:482. Instantiations of the same named type do not
     // require qualification solely because their type objects differ.
-    private static bool typesAreSameReference(Type a, Type b) =>
-        a == b || a.symbol != null && a.symbol == b.symbol || a.alias != null && a.alias == b.alias;
-
+    private static bool typesAreSameReference(Type a, Type b) => a == b || a.symbol != null && a.symbol == b.symbol || a.alias != null && a.alias == b.alias;
     // nodebuilderimpl.go:2469, static property-name branch.
     private enum propertyNameNodeKind
     {
@@ -1138,8 +1169,7 @@ internal sealed partial class NodeBuilderImpl
         StringLiteral
     }
 
-    private static propertyNameNodeKind classifyPropertyName(string name, bool stringNamed, bool isMethod) =>
-        classifyPropertyName(ByteStringValue.FromString(name), stringNamed, isMethod);
+    private static propertyNameNodeKind classifyPropertyName(string name, bool stringNamed, bool isMethod) => classifyPropertyName(ByteStringValue.FromString(name), stringNamed, isMethod);
     private static propertyNameNodeKind classifyPropertyName(ByteStringValue name, bool stringNamed, bool isMethod)
     {
         if (isMethod && name.EqualsBytes("new"u8))
@@ -1149,8 +1179,7 @@ internal sealed partial class NodeBuilderImpl
         return !stringNamed && name.EqualsString(JsNum.FromString(name).String()) && JsNum.FromString(name).Value >= 0 ? propertyNameNodeKind.NumericLiteral : propertyNameNodeKind.StringLiteral;
     }
 
-    private Node createPropertyNameNodeForIdentifierOrLiteral(string name, bool singleQuote, bool stringNamed, bool isMethod, Symbol symbol) =>
-        createPropertyNameNodeForIdentifierOrLiteral(ByteStringValue.FromString(name), singleQuote, stringNamed, isMethod, symbol);
+    private Node createPropertyNameNodeForIdentifierOrLiteral(string name, bool singleQuote, bool stringNamed, bool isMethod, Symbol symbol) => createPropertyNameNodeForIdentifierOrLiteral(ByteStringValue.FromString(name), singleQuote, stringNamed, isMethod, symbol);
     private Node createPropertyNameNodeForIdentifierOrLiteral(ByteStringValue name, bool singleQuote, bool stringNamed, bool isMethod, Symbol symbol)
     {
         switch (classifyPropertyName(name, stringNamed, isMethod))
@@ -1200,6 +1229,7 @@ internal sealed partial class NodeBuilderImpl
                 digits++;
             name = ByteStringValue.Concat(ByteStringValue.FromString("__#private"), name.Slice(digits));
         }
+
         return createPropertyNameNodeForIdentifierOrLiteral(name, singleQuote, stringNamed, (symbol.Flags & SymbolFlags.Method) != 0, symbol);
     }
 
@@ -1227,6 +1257,7 @@ internal sealed partial class NodeBuilderImpl
                 return result;
             }
         }
+
         if ((nameType.flags & TypeFlags.StringOrNumberLiteral) != 0)
         {
             var name = Checker.getPropertyNameValueFromType(nameType);
@@ -1266,7 +1297,6 @@ internal sealed partial class NodeBuilderImpl
             }
         }
 
-
         bool requiresAddingUndefined = declaration != null && (declaration.Kind is Kind.Parameter or Kind.PropertySignature or Kind.PropertyDeclaration) && ch.requiresAddingImplicitUndefined(declaration, symbol, ctx.enclosingDeclaration);
         if (requiresAddingUndefined && Ast.IsParameterDeclaration(declaration))
             t = ch.getOptionalType(t, false);
@@ -1275,9 +1305,7 @@ internal sealed partial class NodeBuilderImpl
             ctx.flags |= NodeBuilderFlags.AllowUniqueESSymbolType;
         Node result = null;
         bool reportedInferenceFallback = false;
-        if (!isActivelyExpanding() && tryReuse && ctx.enclosingDeclaration != null && declaration != null &&
-            (Ast.IsAccessor(declaration) || Ast.HasInferredType(declaration) && !Ast.NodeIsSynthesized(declaration) &&
-                (t.objectFlags & ObjectFlags.RequiresWidening) == 0))
+        if (!isActivelyExpanding() && tryReuse && ctx.enclosingDeclaration != null && declaration != null && (Ast.IsAccessor(declaration) || Ast.HasInferredType(declaration) && !Ast.NodeIsSynthesized(declaration) && (t.objectFlags & ObjectFlags.RequiresWidening) == 0))
         {
             var remove = symbol != null ? addSymbolTypeToContext(symbol, t) : null;
             var pt = Ast.IsAccessor(declaration) ? pc.GetTypeOfAccessor(declaration) : pc.GetTypeOfDeclaration(declaration);
@@ -1339,7 +1367,6 @@ internal sealed partial class NodeBuilderImpl
     // nodebuilderimpl.go:2581. Serialize data properties and accessors with their original declaration context.
     private Slice<Node> addPropertyToElementList(Symbol propertySymbol, Slice<Node> typeElements)
     {
-
         bool propertyIsReverseMapped = (propertySymbol.CheckFlags & CheckFlags.ReverseMapped) != 0;
         var propertyType = shouldUsePlaceholderForProperty(propertySymbol) ? ch.anyType : ch.getNonMissingTypeOfSymbol(propertySymbol);
         var saveEnclosingDeclaration = ctx.enclosingDeclaration;
@@ -1354,8 +1381,7 @@ internal sealed partial class NodeBuilderImpl
                     if (Ast.IsBinaryExpression(declaration))
                     {
                         var name = Ast.GetNameOfDeclaration(declaration);
-                        if (name != null && Ast.IsElementAccessExpression(name) &&
-                            Ast.IsPropertyAccessEntityNameExpression(name.AsElementAccessExpression().ArgumentExpression, false))
+                        if (name != null && Ast.IsElementAccessExpression(name) && Ast.IsPropertyAccessEntityNameExpression(name.AsElementAccessExpression().ArgumentExpression, false))
                             trackComputedName(name.AsElementAccessExpression().ArgumentExpression, saveEnclosingDeclaration);
                     }
                     else
@@ -1365,6 +1391,7 @@ internal sealed partial class NodeBuilderImpl
             else
                 ctx.tracker.ReportNonSerializableProperty(ch.symbolToString(propertySymbol));
         }
+
         if (propertySymbol.ValueDeclaration != null)
             ctx.enclosingDeclaration = propertySymbol.ValueDeclaration;
         else if (propertySymbol.Declarations is { Count: > 0 } && propertySymbol.Declarations[0] != null)
@@ -1396,6 +1423,7 @@ internal sealed partial class NodeBuilderImpl
                         setCommentRange(getter, getterDeclaration);
                         typeElements = typeElements.Append(getter);
                     }
+
                     var setterDeclaration = Ast.GetDeclarationOfKind(propertySymbol, Kind.SetAccessor);
                     if (setterDeclaration != null)
                     {
@@ -1406,8 +1434,10 @@ internal sealed partial class NodeBuilderImpl
                         setCommentRange(setter, setterDeclaration);
                         typeElements = typeElements.Append(setter);
                     }
+
                     return typeElements;
                 }
+
                 if (classMember && propertyDeclaration != null && Core.Some(propertyDeclaration.ModifierNodes(), m => m.Kind == Kind.AccessorKeyword))
                 {
                     var getter = ch.newSignature(SignatureFlags.None, null, default, null, default, propertyType, null, 0);
@@ -1434,6 +1464,7 @@ internal sealed partial class NodeBuilderImpl
                 setCommentRange(methodDeclaration, signature.declaration ?? propertySymbol.ValueDeclaration);
                 typeElements = typeElements.Append(methodDeclaration);
             }
+
             if (GoRuntime.Len(signatures) != 0 || optionalToken == null)
                 return typeElements;
         }
@@ -1489,6 +1520,7 @@ internal sealed partial class NodeBuilderImpl
                         bailed = true;
                         return null;
                     }
+
                     trackComputedName(element.Name().Expression(), ctx.enclosingDeclaration);
                     ModifierList modifiers = info.isReadonly ? f.NewModifierList(Slice<Node>.FromArray([f.NewModifier(Kind.ReadonlyKeyword)])) : null;
                     var postfixToken = element.PostfixToken()?.Clone(f);
@@ -1501,6 +1533,7 @@ internal sealed partial class NodeBuilderImpl
                     return results;
             }
         }
+
         return Slice<Node>.FromArray([indexInfoToIndexSignatureDeclarationHelper(info, typeNode)]);
     }
 
@@ -1532,11 +1565,12 @@ internal sealed partial class NodeBuilderImpl
             if ((ctx.flags & NodeBuilderFlags.NoTruncation) != 0)
             {
                 var element = f.NewNotEmittedTypeElement();
-                return f.NewNodeList(Slice<Node>.FromArray([e.AddSyntheticTrailingComment(element,
-                    Kind.MultiLineCommentTrivia, "elided", false)]));
+                return f.NewNodeList(Slice<Node>.FromArray([e.AddSyntheticTrailingComment(element, Kind.MultiLineCommentTrivia, "elided", false)]));
             }
+
             return f.NewNodeList(Slice<Node>.FromArray([f.NewPropertySignatureDeclaration(null, f.NewIdentifier("..."), null, null, null)]));
         }
+
         Slice<Node> elements = default;
         foreach (var signature in resolved.CallSignaturesSlice())
             elements = elements.Append(signatureToSignatureDeclarationHelper(signature, Kind.CallSignature, null));
@@ -1555,20 +1589,24 @@ internal sealed partial class NodeBuilderImpl
         int i = 0;
         foreach (var property in properties)
         {
+            // nodebuilderimpl.go:2755. Hover expansion omits prototype members.
+            if (isExpanding(ctx) && (property.Flags & SymbolFlags.Prototype) != 0)
+                continue;
             i++;
             if ((ctx.flags & NodeBuilderFlags.WriteClassExpressionAsTypeLiteral) != 0)
             {
-                if ((property.Flags & SymbolFlags.Prototype) != 0) continue;
+                if ((property.Flags & SymbolFlags.Prototype) != 0)
+                    continue;
                 if ((Checker.getDeclarationModifierFlagsFromSymbol(property) & (ModifierFlags.Private | ModifierFlags.Protected)) != 0)
                     ctx.tracker.ReportPrivateInBaseOfClassExpression(property.Name);
                 if (Checker.IsPrivateIdentifierSymbol(property))
                     ctx.tracker.ReportPrivateInBaseOfClassExpression(Ast.SymbolName(property));
             }
+
             if (checkTruncationLength() && i + 2 < properties.Count - 1)
             {
                 if ((ctx.flags & NodeBuilderFlags.NoTruncation) != 0)
-                    elements[^1] = e.AddSyntheticTrailingComment(elements[^1],
-                        Kind.MultiLineCommentTrivia, $"... {properties.Count - i} more elided ...", false);
+                    elements[^1] = e.AddSyntheticTrailingComment(elements[^1], Kind.MultiLineCommentTrivia, $"... {properties.Count - i} more elided ...", false);
                 else
                     elements = elements.Append(f.NewPropertySignatureDeclaration(null, f.NewIdentifier($"... {properties.Count - i} more ..."), null, null, null));
                 elements = addPropertyToElementList(properties[^1], elements);
@@ -1649,10 +1687,12 @@ internal sealed partial class NodeBuilderImpl
                     if (typeNode != null)
                         return typeNode;
                 }
+
                 if (visitedTypes.Contains(typeId))
                     return createCyclicStructurePlaceholder();
                 return visitAndTransformType(t, createTypeNodeFromObjectType);
             }
+
             var instanceSide = isClassInstanceSide(ch, t) ? SymbolFlags.Type : SymbolFlags.Value;
             var(emitTypeOf, emittedSymbol) = shouldEmitTypeOfSymbol(forceExpansion, forceClassExpansion, instanceSide, symbol, typeId);
             if (emitTypeOf)
@@ -1727,13 +1767,7 @@ internal sealed partial class NodeBuilderImpl
     {
         if (forceExpansion)
             return (false, symbol);
-        bool classReference = (symbol.Flags & SymbolFlags.Class) != 0 && !forceClassExpansion &&
-            ch.getBaseTypeVariableOfClass(symbol) == null &&
-            !(symbol.ValueDeclaration != null && Ast.IsClassLike(symbol.ValueDeclaration) &&
-              (ctx.flags & NodeBuilderFlags.WriteClassExpressionAsTypeLiteral) != 0 &&
-              (!Ast.IsClassDeclaration(symbol.ValueDeclaration) ||
-               ch.IsSymbolAccessible(symbol, ctx.enclosingDeclaration, isInstanceType, false).Accessibility !=
-                   TypeScript.DiagnosticPrinting.SymbolAccessibility.Accessible));
+        bool classReference = (symbol.Flags & SymbolFlags.Class) != 0 && !forceClassExpansion && ch.getBaseTypeVariableOfClass(symbol) == null && !(symbol.ValueDeclaration != null && Ast.IsClassLike(symbol.ValueDeclaration) && (ctx.flags & NodeBuilderFlags.WriteClassExpressionAsTypeLiteral) != 0 && (!Ast.IsClassDeclaration(symbol.ValueDeclaration) || ch.IsSymbolAccessible(symbol, ctx.enclosingDeclaration, isInstanceType, false).Accessibility != TypeScript.DiagnosticPrinting.SymbolAccessibility.Accessible));
         if (classReference || (symbol.Flags & (SymbolFlags.Enum | SymbolFlags.ValueModule)) != 0)
             return (true, symbol);
         return shouldWriteTypeOfFunctionSymbol(symbol, typeId);
@@ -1765,7 +1799,7 @@ internal sealed partial class NodeBuilderImpl
         if (visitedTypes.Contains(typeId))
             return createCyclicStructurePlaceholder();
         var key = new CompositeTypeCacheIdentity(typeId, ctx.flags, ctx.internalFlags, GoRuntime.Len(ctx.inferTypeParameters) != 0 ? Checker.getTypeListKey(ctx.inferTypeParameters) : default);
-        if (ctx.enclosingDeclaration != null && links.Has(ctx.enclosingDeclaration) && links.Get(ctx.enclosingDeclaration).serializedTypes?.TryGetValue(key, out var cachedResult) == true)
+        if (ctx.maxExpansionDepth < 0 && ctx.enclosingDeclaration != null && links.Has(ctx.enclosingDeclaration) && links.Get(ctx.enclosingDeclaration).serializedTypes?.TryGetValue(key, out var cachedResult) == true)
         {
             foreach (var arg in cachedResult.trackedSymbols)
                 ctx.tracker.TrackSymbol(arg.symbol, arg.enclosingDeclaration, arg.meaning);
@@ -1775,14 +1809,8 @@ internal sealed partial class NodeBuilderImpl
             return f.DeepCloneNode(cachedResult.node);
         }
 
-        bool isConstructorObject = (t.objectFlags & ObjectFlags.Anonymous) != 0 && t.symbol != null &&
-            (t.symbol.Flags & SymbolFlags.Class) != 0;
-        CompositeSymbolIdentity? symbolId = isArrayOrTuple ? null :
-            (t.objectFlags & ObjectFlags.Reference) != 0 && t.AsTypeReference().node != null ?
-                new(false, 0, Ast.GetNodeId(t.AsTypeReference().node)) :
-            (t.flags & TypeFlags.Conditional) != 0 ?
-                new(false, 0, Ast.GetNodeId(t.AsConditionalType().root.node.AsNode())) :
-            t.symbol != null ? new(isConstructorObject, Ast.GetSymbolId(t.symbol), 0) : null;
+        bool isConstructorObject = (t.objectFlags & ObjectFlags.Anonymous) != 0 && t.symbol != null && (t.symbol.Flags & SymbolFlags.Class) != 0;
+        CompositeSymbolIdentity? symbolId = isArrayOrTuple ? null : (t.objectFlags & ObjectFlags.Reference) != 0 && t.AsTypeReference().node != null ? new(false, 0, Ast.GetNodeId(t.AsTypeReference().node)) : (t.flags & TypeFlags.Conditional) != 0 ? new(false, 0, Ast.GetNodeId(t.AsConditionalType().root.node.AsNode())) : t.symbol != null ? new(isConstructorObject, Ast.GetSymbolId(t.symbol), 0) : null;
         CompositeSymbolIdentity? reverseOrigin = null;
         int reverseDepth = 0;
         if ((t.objectFlags & ObjectFlags.ReverseMapped) != 0)
@@ -1819,7 +1847,7 @@ internal sealed partial class NodeBuilderImpl
             int startLength = approximateLength;
             var result = transform(t);
             int addedLength = approximateLength - startLength;
-            if (!ctx.reportedDiagnostic && !encounteredError)
+            if (ctx.maxExpansionDepth < 0 && !ctx.reportedDiagnostic && !encounteredError)
             {
                 ref var cell = ref getLinks(ctx.enclosingDeclaration);
                 (cell.serializedTypes ??= new())[key] = new(result, truncating, addedLength, ctx.trackedSymbols);
@@ -1861,6 +1889,7 @@ internal sealed partial class NodeBuilderImpl
             if (result != null)
                 return result;
         }
+
         return null;
     }
 
@@ -2045,6 +2074,7 @@ internal sealed partial class NodeBuilderImpl
             var element = visited.AsBindingElement();
             visited = f.UpdateBindingElement(element, element.DotDotDotToken, element.PropertyName, element.Name(), null);
         }
+
         if (!Ast.NodeIsSynthesized(visited))
             visited = f.DeepCloneNode(visited);
         e.SetEmitFlags(visited, TypeScript.DiagnosticPrinting.EmitFlags.SingleLine | TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
@@ -2610,7 +2640,7 @@ internal sealed partial class NodeBuilderImpl
                 var name = this.typeParameterToName(newConstraintParam);
                 var target = t.Target();
                 newTypeVariable = this.f.NewTypeReferenceNode(name.AsNode(), null);
-                templateType = this.ch.instantiateType(this.ch.getTemplateTypeFromMappedType(target), Checker.newTypeMapper(Slice<Type>.FromArray([ this.ch.getTypeParameterFromMappedType(target), this.ch.getModifiersTypeFromMappedType(target) ]), Slice<Type>.FromArray([ typeParameter, newConstraintParam ])));
+                templateType = this.ch.instantiateType(this.ch.getTemplateTypeFromMappedType(target), Checker.newTypeMapper(Slice<Type>.FromArray([this.ch.getTypeParameterFromMappedType(target), this.ch.getModifiersTypeFromMappedType(target)]), Slice<Type>.FromArray([typeParameter, newConstraintParam])));
             }
 
             var indexTarget = newTypeVariable;
@@ -2636,7 +2666,7 @@ internal sealed partial class NodeBuilderImpl
             }
         }
 
-        var cleanup = this.enterNewScope(mapped.declaration.AsNode(), default, Slice<Type>.FromArray([ this.ch.getTypeParameterFromMappedType(t) ]), default, null);
+        var cleanup = this.enterNewScope(mapped.declaration.AsNode(), default, Slice<Type>.FromArray([this.ch.getTypeParameterFromMappedType(t)]), default, null);
         var typeParameterDeclarationNode = this.typeParameterToDeclarationWithConstraint(typeParameter, appropriateConstraintTypeNode);
         Node nameTypeNode = default;
         if ((mapped.declaration.NameType != null))
@@ -3135,9 +3165,31 @@ internal sealed partial class NodeBuilderImpl
     // nodebuilderimpl.go:240. No public selected API enables expansion depth.
     private void checkTypeExpandability(Type t)
     {
-        if (ctx.maxExpansionDepth < 0 || t == null)
+        if (ctx.maxExpansionDepth < 0 || t is null || ctx.canIncreaseExpansionDepth)
             return;
-        throw Checker.unsupported("checkTypeExpandability: configured expansion depth");
+        ctx.typeStack = ctx.typeStack.Append(t);
+        try
+        {
+            if (isTypeOnStack(t))
+                return;
+            if (t.alias is not null)
+                shouldExpandType(t, true);
+            if (!ctx.canIncreaseExpansionDepth)
+                shouldExpandType(t, false);
+            if (ctx.canIncreaseExpansionDepth)
+                return;
+            if ((t.objectFlags & ObjectFlags.Reference) != 0)
+                foreach (var argument in ch.getTypeArguments(t))
+                {
+                    checkTypeExpandability(argument);
+                    if (ctx.canIncreaseExpansionDepth)
+                        return;
+                }
+        }
+        finally
+        {
+            ctx.typeStack = ctx.typeStack.Slice2(0, ctx.typeStack.Count - 1);
+        }
     }
 }
 
@@ -3171,9 +3223,12 @@ internal sealed partial class NodeBuilderImpl
     // default diagnostic APIs; retain the actual disabled early-return arm.
     private bool shouldExpandType(Type t, bool isAlias)
     {
-        if (ctx.maxExpansionDepth < 0)
+        if (ctx.maxExpansionDepth < 0 || !isExpandableType(t, isAlias) || isTypeOnStack(t))
             return false;
-        throw Checker.unsupported("shouldExpandType: configured hover expansion");
+        if (ctx.depth < ctx.maxExpansionDepth)
+            return true;
+        ctx.canIncreaseExpansionDepth = true;
+        return false;
     }
 
     // nodebuilderimpl.go:2372. Reverse-mapped placeholders are display-only.
@@ -3246,6 +3301,7 @@ internal sealed partial class NodeBuilderImpl
         result = result.Append(ch.getOuterTypeParametersOfClassOrInterface(symbol));
         return result.Append(ch.getLocalTypeParametersOfClassOrInterfaceOrTypeAlias(symbol));
     }
+
     private NodeList lookupInstantiatedTypeArgumentNodes(Slice<Symbol> chain, int index)
     {
         if (!shouldWriteTypeParametersInQualifiedName(chain, index))
@@ -3267,7 +3323,6 @@ internal sealed partial class NodeBuilderImpl
     }
 
     internal Slice<Node> symbolToTypeParameterDeclarations(Symbol symbol) => typeParametersToTypeParameterDeclarations(symbol);
-
     // nodebuilderimpl.go:1812. Preserve the upstream expression serialization path.
     internal Node serializeTypeForExpression(Node expr)
     {
@@ -3468,10 +3523,7 @@ internal sealed partial class NodeBuilderImpl
 internal sealed partial class NodeBuilderImpl
 {
     // nodebuilderimpl.go:338. Preserve class instance clones as instance-side names.
-    private static bool isClassInstanceSide(Checker checker, Type type) =>
-        type.symbol != null && (type.symbol.Flags & SymbolFlags.Class) != 0 &&
-        (type == checker.getDeclaredTypeOfClassOrInterface(type.symbol) ||
-         (type.flags & TypeFlags.Object) != 0 && (type.objectFlags & ObjectFlags.IsClassInstanceClone) != 0);
+    private static bool isClassInstanceSide(Checker checker, Type type) => type.symbol != null && (type.symbol.Flags & SymbolFlags.Class) != 0 && (type == checker.getDeclaredTypeOfClassOrInterface(type.symbol) || (type.flags & TypeFlags.Object) != 0 && (type.objectFlags & ObjectFlags.IsClassInstanceClone) != 0);
 }
 
 internal sealed partial class NodeBuilderImpl

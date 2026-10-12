@@ -1,42 +1,232 @@
 # Active: language-services and LSP epic (2026-10-12)
 
 Authorized from accepted emit/performance `9b8fa74a`; human performance summary
-preserved separately at `e003f22f`. Contract is being grounded in pinned upstream
+`e003f22f`; contract/re-entry checkpoint `bcd69dab`. Pin:
 `fed0bf24149fb1ed36039212648bafdafc1ea10e`, `upstream/TypeScript/tsc`.
-The latest user mandate requires whole upstream service/protocol capability completion,
-not vertical slices, genuine state/update algorithms, independent Sol review, upstream
-assertions/differentials and actual Linux x64 Native AOT server transport acceptance.
-No old "no active campaign" instruction below applies to this new mandate.
+Follow [LANGUAGE-SERVICES-CONTRACT.md](./LANGUAGE-SERVICES-CONTRACT.md).
+Continue autonomously through complete dependencies, services, real server transport,
+review and acceptance. No historical instruction to await another mandate applies.
+The whole epic and its first subsystem are unfinished; a dependency gate passed below.
 
-Completion contract: [LANGUAGE-SERVICES-CONTRACT.md](./LANGUAGE-SERVICES-CONTRACT.md).
-Root has shared the dependency order and external boundaries with the user.
+## Active owners and immediate continuation
 
-Active disjoint GPT-6.1 Sol implementation owners (no builds yet):
-- `emit_foundation`: project/session, overlays, snapshots, invalidation, caches and host
-  dependencies; implementing complete dirty/ownership-cache/background/logging family,
-  then overlay/filechange/snapshotFS. Namespace TypeScript.ProjectSystem. Investigation
-  `docs/progress/lsp-project-investigation.md`.
-- `emit_inventory`: semantic service responsibilities and checker queries/dependencies;
-  implementing complete Checker/Services, Exports, configured NodeBuilder hover and
-  AstNav/Tokens plus concrete missing workers. Investigation
-  `docs/progress/lsp-services-investigation.md`.
-- `emit_print_maps`: protocol, generated structures, transport, test inventory and
-  end-to-end verification; implementing full jsonrpc/lsproto and lsconv generated
-  models/codecs/framing/positions. Investigation `docs/progress/lsp-protocol-investigation.md`.
-Root owns completion contract, integration, build scheduling and scope decisions.
-Reuse these agents for coherent implementation owners and separate independent review.
-No new implementation is accepted yet. Contract published; foundation owners active.
-Root created shared validation/LanguageServices.Checks and xUnit LanguageServices.Tests
-project plumbing; per-lane check files avoid overlap. Native runner wiring awaits real
-check entrypoints, not a placeholder executable. Preserve original
-assertions; inventories or loading-only success do not establish service completion.
+Astra coordinates; three reused GPT-6.1 Sol lanes own disjoint source families.
+Root centralizes builds/publication/tests; agents implement and independently review.
+The current dependency gate is **build23: passed**, including actual Linux x64
+Native AOT execution. Managed checks passed142 ordinary cases plus8 isolated decoder-
+depth cases; the native executable passed the same shared packet and all8 separate
+process depth probes. See [source-bound evidence](../validation/results/language-services-dependencies-23.json)
+and [independent evidence review](./progress/lsp-dependencies-23-review.json).
+Project graph144 functions, formatting235 functions, and closed protocol codecs have
+clear scoped independent source reviews. No server/whole-epic acceptance is implied.
+There is no running build or publication. Future complete consumer owners remain
+outside compilation until announced integration; the publication freeze is released.
+One post-run test-only optional-string nullability flag was corrected to upstream;
+its non-null original input/assertions are unchanged. The evidence explicitly binds
+the compiled flag and records the unexecuted correction; production is unchanged.
 
-Keep accepted compiler/emit/performance evidence; re-run relevant gates at coherent
-integration boundaries. Prioritize genuine reusable document/project mechanisms,
-then semantic consumers and accurate protocol capabilities. Assess actual upstream
-ATA, watcher and content-mapper dependencies before excluding or expanding them.
-No one-shot optional NoGC region in server by default; assess repeated edit/request
-responsiveness and memory through reproducible in-repository workloads.
+Current work: change tracking; full autoimport and genuine LS core/Host; server queue,
+progress, transport and sanitization. Sanitization concretely requires Go capture
+replacement, so the actual MustCompile/ReplaceAllString/expand/extract/index workers
+and required Unicode/quoting dependencies are being added before the consumer. This
+extends the prior matching-only dependency closure, without substituting .NET regex.
+
+- `emit_foundation`: complete three-file `ls/change` owner family; then return to
+  preserved Snapshot/Session drafts when real autoimport and LS core are available.
+  Project graph and all ten formatting counterparts are source-reviewed; original
+  BFS, project dependency controls and all seven original formatting functions passed
+  managed/Native. Preserve Program.UpdateProgram and parse-cache acquire/ref/deref.
+  [Investigation](./progress/lsp-project-investigation.md),
+  [mapping](./progress/lsp-project-mapping.json),
+  [change progress](./progress/lsp-format-change.md).
+- `emit_inventory`: full autoimport and genuine LS core/Host, plus the concrete
+  sanitizer replacement dependency above. Selected regex parser/compiler/matching
+  engines and pinned NFD workers have passing scoped managed/Native assertions.
+  Source-mapped comparison/Unicode helpers preserve owned and borrowed boundaries.
+  [Investigation](./progress/lsp-services-investigation.md),
+  [mapping](./progress/lsp-services-mapping.json),
+  [standard-library mapping](./progress/lsp-service-standard-library-mapping.json),
+  [autoimport progress](./progress/lsp-autoimport-core.md).
+- `emit_print_maps`: actual server lifecycle dependencies. Complete protocol599
+  readers/599 writers,749 lazy root shapes and104 method infos are source-reviewed;
+  all31 original protocol test functions passed managed/Native. Queue/transport/
+  progress/sanitizer drafts are durable outside compilation. Separate native decoder
+  probes passed through4998 model nodes and10000 arrays; encoder-depth and real
+  server-worker/transport behavior remain unverified. No speculative stack adaptation.
+  [Investigation](./progress/lsp-protocol-investigation.md),
+  [mapping](./progress/lsp-protocol-mapping.json),
+  [codec review](./progress/lsp-codec-review.md).
+
+Planned public `tscheck --lsp --stdio` is **not implemented or advertised**. It must
+bypass the one-shot CLI optional no-GC policy. Long-lived server acceptance remains
+separate from the dependency executable. No external-project evaluation is required.
+
+## Next dependency order (coordinator decision)
+
+The concrete source graph is `format → ls/change → full autoimport`, with Snapshot/
+Session consuming autoimport.Registry and real ls.LanguageService. Formatting is
+verified; `emit_foundation` continues complete change tracking. Preserve Snapshot/
+Session drafts rather than introducing consumer stubs. `emit_inventory` owns full
+autoimport, genuine LS core/Host and newly required replacement workers.
+`emit_print_maps` continues server lifecycle owners on the verified codecs.
+Return to Snapshot/Session integration when these real dependencies are available.
+This reorders the existing contract; it does not remove project-state requirements.
+
+## Current dependency verification (build23; not epic acceptance)
+
+[Execution record](../validation/results/language-services-dependencies-23.json):
+142/142 ordinary xUnit cases plus8/8 isolated decoder cases, zero skipped or failed.
+Native ELF SHA256 `381ba6d6affe82afb9840fa890a02e753fc84ba2a0e6a19289cf911e296390ee`.
+Native shared packet:86 original TypeScript functions;1 original NFD function;
+17 whole original regexp functions plus5 selected/adapted channels;7 further NFD
+channels;4 partial AstNav Go channels plus3 original token subtests;43 authored
+controls, with8 isolated depth controls separately. Counts are different units.
+All tests retain original assertions; selected channels are not whole-test credit.
+The record includes original corpus skips and300 compiled source hashes, with the
+single test-metadata qualification above. Independent evidence review is clear.
+
+Observed integration fixes: formatter range slicing now uses the actual byte-view
+end-offset convention; original large formatter fixture enters as owned UTF8 bytes;
+codec value-union zero owners and duplicate normalized map names follow Go; generated
+structural equality closes all1248 shapes; project lazy-set and BFS nil-header
+ownership follows the reference. Original expectations were not weakened.
+Full server, full service/fourslash corpus, repeated-edit responsiveness and retained
+compiler/emit regression acceptance remain ahead. See [reproduction](./LANGUAGE-SERVICES-VERIFY.md).
+
+## Historical dependency verification (build11 and later managed work)
+
+The following records preserve earlier intermediate evidence. Statements of pending
+work in this historical section are superseded by current build23 evidence above.
+
+[Source-bound execution record](../validation/results/language-services-dependencies-initial.json)
+records178 changed source/check/tool hashes, native executable hash and limitations.
+Build11 is clean (11.80s); managed **73/73 cases**,0 skipped,366ms test duration.
+Actual Linux x64 Native AOT publication and ELF execution passed:
+- 51 original TypeScript dependency test functions;
+- one separate original x/text NFD function with20 original rows;
+- four partial AstNav Go JSON baseline channels and three original token subtests;
+- 26 authored controls, including eight public NFD observations and four signed
+  coordinate cases. These units differ from xUnit cases and assertion counts.
+
+Raw evidence: artifacts/language-services/integration-1, including native-publish.log,
+native-run.log, tests/dependencies-3.trx. Native SHA256:
+`bc5a6a6d22e7be430cab1da44e07bff5e64b459f82cc8885fc6b206412ef8446`.
+Pinned Go additionally admits the authored protocol-depth witness: model chains
+16/256/2048/4998 and default-any arrays16/256/2048/10000,0.041s; see integration-1
+protocol-depth-go.log/overlay. C# depth behavior is still unverified.
+Pinned Go also passed all31 original protocol Test functions and122 subtests
+(`protocol-original-go.jsonl`), with no failures/skips. Seven authored JSON boundary
+observations passed (`protocol-json-go.log`): invalid UTF8 admission/replacement,
+duplicate keys including escaped spellings, retained raw payload ownership, request
+reuse with absent params, and typed-nil result serialization. These are reference
+observations; the closed C# codecs and corresponding Native boundaries are pending.
+Complete Go package reference runs also passed44 regexp tests plus31 examples,
+12 syntax tests, and26 norm tests plus2 examples. Three norm originals skipped
+to avoid downloading Unicode data;23,622 norm subtests passed. Raw JSONL is in
+integration-1/regexp-original-go.jsonl and nfd-original-go.jsonl. Examples are not
+Test-function inventory entries. C# selected assertion channels remain a separate
+claim; the exact official Unicode17 fixture is embedded for its NFD channels.
+
+No full service/server transport, remaining original corpus, comprehensive retained
+compiler/emit gates or final completion review has run for this epic.
+New BFS source/test was added after this frozen result and is not covered by it.
+Native runner now wires52 TypeScript functions (BFS pending),1 external NFD,4+3
+partial channels/subtests and27 authored controls (new graph diagnostic change
+control pending).
+
+Observed corrections are retained rather than concealed: first70-case run had63 passes;
+preference generation omitted two upstream negations (production defect, fixed and
+reviewed); AstNav harness used CLR enum names instead of Go token names (harness
+fix, expected baselines unchanged); NFD authored count was stale6 vs8. Next73-case
+run had71 passes: ATA log projections were missing (complete actual consumer-family
+fix, then all73 passed). Earlier NFD authored full-string expectation omitted the31st
+mark after CGJ; actual pinned Go established the correction. Original20 rows unchanged.
+Core.TextPos is int32: converter unsigned/widened arithmetic differed from upstream;
+signed casts/overflow restored and four actual Go/managed/Native observations passed.
+
+## Review, inventory and next gates
+
+Independent source reviews are scoped and hash-bound, not blanket acceptance:
+[cache/dirty](./progress/lsp-project-owner-review.md),
+[queries/AstNav](./progress/lsp-checker-query-review.md),
+[preferences](./progress/lsp-preferences-review.md),
+[NFD](./progress/lsp-nfd-review.md),
+[selected regexp](./progress/lsp-regexp-review.md). The latter covers all selected
+parser/engine workers and219 newly generated Unicode range owners; Native and
+complete applicable assertions remain separate gates. Preference review records its initial
+miss and the corrected negation re-review. Configured hover, complete protocol codecs,
+new logging/VFS/project owners and broader completion still require independent review.
+
+[TypeScript test inventory](./language-services-upstream-tests.json): initial4,442files/
+4,820 Test entries plus one newly required core BFS file/function.51 original functions
+have managed/Native assertion passes; four AstNav functions retain partial passing Go
+channels with original JavaScript channels pending. New BFS is unexecuted. TestMain
+lifecycle, empty original logging bodies and scheduling adaptations stay explicit.
+[External dependency tests](./progress/lsp-standard-library-tests.json):30 norm,
+12 regexp/syntax and44 regexp Test entries; selected/mixed/external dispositions
+are still being reconciled. Do not equate written tests or totals with completeness.
+
+[Verification design](./progress/lsp-verification-design.md) accounts for real fixture
+FS/config/state/non-wire joins. Never use a shadow Go Session to satisfy C# assertions.
+Assess direct original harness port versus capture once transport is coherent; no new
+framework now. Actual Native public transport, edits/invalidation/cancellation, complete
+applicable assertions, independent review and retained regressions remain mandatory.
+
+## Operating lessons and fixed adaptations
+
+- Preserve Go UTF8/Slice ownership, actual copies and accepted performance adaptations.
+  Direct foreach over Slice<T>, no Values/ToList bridge. C# tuple Rest is reserved;
+  use Remainder. Resolve real namespaces/overload order across caller and callee.
+- Existing immutable snapshots, speculative acquire rollback and genuine pool/Program
+  reuse remain required. Go package-shared mutable owners must not become readonly
+  unless their complete consumer behavior justifies it.
+- NFD uses x/text v0.42.0/Unicode17; regex selected closure uses Go1.27.1. Exact source
+  pins, BSD notices and mappings are required. No approximate Regex/FormD fallback.
+  Nonselected replacement/find-all and normalization forms are explicitly external.
+- Source reviews follow a coherent compile where practical. Build shared Checks before
+  wrappers when using BuildProjectReferences=false; saved library permits diagnostic
+  tests while agents continue source. Freeze source and metadata for Native publication;
+  refresh actual dependency references, and do not commit during publication.
+  Wait for explicit owner freeze ACK before compiling: crossing promotions caused
+  avoidable checks/API diagnostics while an earlier DLL was intentionally reused.
+- Twenty-two central production diagnostic builds started so far; build16 is fully clean
+  (production/Checks/xUnit,11.50s).
+  Shared checks/wrapper then built in1.86s/1.65s using saved production DLLs.
+  Managed run4 passed82/83 (0skip,691ms), with TestMinInputLen `(aa){3,5}` failing;
+  independently traced to importer reading5 inside quantifier instead of original6.
+  Generator fixed to read the numeric field after the literal; production unchanged.
+  New BFS and graph diagnostic-change controls passed. After corrected fixtures and
+  eight additional syntax functions, managed regex run1 passed16/16 groups (0skip,
+  720ms):15complete original functions +one selected TestMatch channel. Remaining
+  external-test dispositions and Native behavior are pending. Raw logs/TRX retained.
+  Build17 stopped at two formatter alias/accessibility errors (2.04s); those were
+  corrected. Build18 reached the complete new family and reported49 errors (12.25s),
+  assigned by owner. No assertions have run against the new combined family yet.
+  Build19 stopped on two redundant Debug.Assert methods (3.29s): accepted overloads
+  already existed in other partial declarations. Redundant additions removed;
+  original assertions unchanged. Use repository-wide symbol searches across partial
+  owners before declaring an API missing. Build20 reached two still-unfixed generated
+  value-union allocation sites (12.49s); generator read/write paths must both be
+  checked in final generated output before claiming their fix.
+  Production21 passed (15.48s including subsequent Checks alias failure). Checks21
+  exposed absent generated nested equality workers; generator now closes over1248
+  shapes for749 public roots and verifies every helper reference. Checks21b exposed
+  reused C# pattern local names; all649 RHS names are now unique. Checks21c passed
+  in5.35s; wrapper21 passed in1.67s. Original field-by-field comparisons preserved.
+  Known review defects surfaced before execution, so their batch was fixed before
+  running the combined assertions rather than knowingly rerunning bad inputs.
+- Declarations/body/API joins were
+  corrected without stubs, source exclusions or warning suppression. Whole gates are
+  deferred to coherent completion; current focused reruns addressed actual failures.
+- Two Sol lane turns ended with temporary selected-model capacity errors; restarted
+  the same GPT-6.1 Sol lanes from durable work, with no model substitution/re-audit.
+- The next external-dependency test packet includes applicable RE2/Fowler matching
+  and NFD conformance channels. Preserve exact original data in compressed resources;
+  matching-only channels do not establish capture-result APIs or whole original
+  functions. Root will build once the coherent packet is ready, then overlap its
+  execution with independent review of the new project graph by the services lane.
+- No debugger/heap-capture work, SVG flamegraphs, speculative process framework or
+  unrelated cleanup. Keep source/test/implementation gaps explicit and continue work.
 
 # Emit performance verified; final review and delivery (2026-10-12)
 
@@ -2400,4 +2590,3 @@ exports/re-exports, cycles and cross-file generic calls/diagnostics. It needs a 
 mandate; package/Node resolution, broader libraries and common excluded syntax are
 separate limits. Prior callable state is in
 [CALLABLES-COMPLETION-STATE.md](./CALLABLES-COMPLETION-STATE.md).
-

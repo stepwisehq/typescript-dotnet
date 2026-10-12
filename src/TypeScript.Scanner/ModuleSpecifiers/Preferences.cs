@@ -20,7 +20,7 @@ internal static partial class ModuleSpecifiers
     {
         internal RelativePreferenceKind relativePreference;
         internal Func<ResolutionMode, List<ModuleSpecifierEnding>> getAllowedEndingsInPreferredOrder;
-        internal List<string> excludeRegexes;
+        internal Slice<string> excludeRegexes;
     }
 
     // Program errors validate that `noEmit` or `emitDeclarationOnly` is also set,
@@ -306,21 +306,21 @@ internal static partial class ModuleSpecifiers
         }
         else
         {
-            switch (prefs.ImportModuleSpecifierPreference)
+            switch (prefs.ImportModuleSpecifierPreference.Value)
             {
-                case ImportModuleSpecifierPreference.Relative:
+                case "relative":
                 {
                     relativePreference = RelativePreferenceKind.Relative;
                     break;
                 }
 
-                case ImportModuleSpecifierPreference.NonRelative:
+                case "non-relative":
                 {
                     relativePreference = RelativePreferenceKind.NonRelative;
                     break;
                 }
 
-                case ImportModuleSpecifierPreference.ProjectRelative:
+                case "project-relative":
                 {
                     relativePreference = RelativePreferenceKind.ExternalNonRelative;
                     break;

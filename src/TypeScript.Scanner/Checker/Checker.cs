@@ -1595,7 +1595,7 @@ public sealed partial class Checker
     // checker.go:26291. Original compiler-harness union-ordering assertions use this producer.
     public IEnumerable<Type> UnionTypes() => unionTypes.Values;
 
-    private enum UnionReduction
+    internal enum UnionReduction
     {
         None,
         Literal,
@@ -7733,7 +7733,7 @@ public sealed partial class Checker
     // checker.go:31699. Carry per-operation facts without allocating a bound capture.
     internal Type getTypeWithFacts(Type t, TypeFacts include) =>
         filterType(t, (checker: this, include), static (s, state) => state.checker.hasTypeFacts(s, state.include));
-    private Type GetNonNullableType(Type t) => strictNullChecks ? getAdjustedTypeWithFacts(t, TypeFacts.NEUndefinedOrNull) : t;
+    internal Type GetNonNullableType(Type t) => strictNullChecks ? getAdjustedTypeWithFacts(t, TypeFacts.NEUndefinedOrNull) : t;
     private Type getAdjustedTypeWithFacts(Type t, TypeFacts facts)
     {
         var reduced = recombineUnknownType(getTypeWithFacts(strictNullChecks && (t.flags & TypeFlags.Unknown) != 0 ? unknownUnionType : t, facts));
@@ -8443,7 +8443,7 @@ public sealed partial class Checker
         return resolved.signatures.Slice2(start, end);
     }
 
-    private Slice<IndexInfo> getIndexInfosOfType(Type t) => getIndexInfosOfStructuredType(getReducedApparentType(t));
+    internal Slice<IndexInfo> getIndexInfosOfType(Type t) => getIndexInfosOfStructuredType(getReducedApparentType(t));
     private Slice<IndexInfo> getIndexInfosOfStructuredType(Type t) => (t.flags & TypeFlags.StructuredType) != 0 ? resolveStructuredTypeMembers(t).indexInfos : default;
     private readonly record struct NonExistentPropertyKey(Node node, Type type, bool uncheckedJS);
     private readonly HashSet<NonExistentPropertyKey> nonExistentProperties = new();
@@ -9370,7 +9370,7 @@ public sealed partial class Checker
     // checker.go:26590. Cache keys retain constituent order, flags and aliases.
     private readonly Dictionary<CacheHashKey, Type> intersectionTypes = new();
     internal Type getIntersectionType(List<Type> types) => getIntersectionTypeEx(types, IntersectionFlags.None, null);
-    private Type getIntersectionType(Slice<Type> types) => getIntersectionTypeEx(types.AsSpan(), IntersectionFlags.None, null);
+    internal Type getIntersectionType(Slice<Type> types) => getIntersectionTypeEx(types.AsSpan(), IntersectionFlags.None, null);
     private Type getIntersectionType(ReadOnlySpan<Type> types) => getIntersectionTypeEx(types, IntersectionFlags.None, null);
     private Type getIntersectionTypeEx(Slice<Type> types, IntersectionFlags flags, TypeAlias alias) =>
         getIntersectionTypeEx(types.AsSpan(), flags, alias);
@@ -10517,7 +10517,7 @@ public sealed partial class Checker
         return null;
     }
 
-    private Type getDeclaredTypeOfTypeAlias(Symbol symbol)
+    internal Type getDeclaredTypeOfTypeAlias(Symbol symbol)
     {
         ref var links = ref this.typeAliasLinks.Get(symbol);
         if ((links.declaredType == null))
@@ -11138,7 +11138,7 @@ public sealed partial class Checker
         return d.resolvedTypeArguments;
     }
 
-    private static Type getTargetType(Type t) => (t.objectFlags & ObjectFlags.Reference) != 0 ? t.Target() : t;
+    internal static Type getTargetType(Type t) => (t.objectFlags & ObjectFlags.Reference) != 0 ? t.Target() : t;
     internal Type getTypeWithThisArgument(Type t, Type thisArgument, bool needApparentType)
     {
         if ((t.objectFlags & ObjectFlags.Reference) != 0)
@@ -12753,7 +12753,7 @@ public sealed partial class Checker
     }
 
     private static IndexInfo findIndexInfo(Slice<IndexInfo> infos, Type keyType) => Core.Find(infos, info => info.keyType == keyType);
-    private IndexInfo getIndexInfoOfType(Type t, Type keyType) => findIndexInfo(getIndexInfosOfType(t), keyType);
+    internal IndexInfo getIndexInfoOfType(Type t, Type keyType) => findIndexInfo(getIndexInfosOfType(t), keyType);
     private IndexInfo getApplicableIndexInfo(Type t, Type keyType) => findApplicableIndexInfo(getIndexInfosOfType(t), keyType);
     // Go checker.go:19426. Delay the managed scratch list until two matches require it;
     // zero/one matches retain scalar locals rather than allocating Go's temporary cap-8 slice on the heap.
@@ -21799,7 +21799,7 @@ public sealed partial class Checker
 public sealed partial class Checker
 {
     private readonly Dictionary<JsNum.PseudoBigInt, Type> bigintLiteralTypes = new();
-    private static bool isConstEnumSymbol(Symbol s) => (s.Flags & SymbolFlags.ConstEnum) != 0;
+    internal static bool isConstEnumSymbol(Symbol s) => (s.Flags & SymbolFlags.ConstEnum) != 0;
 }
 
 public sealed partial class Checker
@@ -30345,7 +30345,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Symbol resolveSymbol(Symbol symbol)
+    internal Symbol resolveSymbol(Symbol symbol)
     {
         return this.resolveSymbolEx(symbol, false);
     }
@@ -30550,7 +30550,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Node getDeclarationOfAliasSymbol(Symbol symbol)
+    internal Node getDeclarationOfAliasSymbol(Symbol symbol)
     {
         return Core.FindLast(symbol.Declarations, Ast.IsAliasSymbolDeclaration);
     }
@@ -31572,7 +31572,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Symbol getTargetOfAliasDeclaration(Node node)
+    internal Symbol getTargetOfAliasDeclaration(Node node)
     {
         if ((node == null))
         {
@@ -34180,7 +34180,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private Type getBaseConstructorTypeOfClass(Type t)
+    internal Type getBaseConstructorTypeOfClass(Type t)
     {
         var data = t.AsInterfaceType();
         if (data.resolvedBaseConstructorType != null)

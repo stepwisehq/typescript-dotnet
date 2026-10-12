@@ -27,14 +27,14 @@ internal static partial class LinuxWritePaths
     private static partial int Close(int descriptor);
     // os.OpenFile/os.File.Write: preserve actual errno and original operation/path.
     // Bounded write concurrency and required public-string encoding remain in OsFS.
-    internal static unsafe Exception? WriteFile(string path, ReadOnlySpan<byte> bytes)
+    internal static unsafe Exception? WriteFile(string path, ReadOnlySpan<byte> bytes, bool append = false)
     {
         if (path.Contains('\0'))
             return PathError(path, 22, "open");
         int descriptor;
         do
         {
-            descriptor = Open(path, 1 | 64 | 512 | 0x80000 /* WRONLY|CREAT|TRUNC|CLOEXEC */, 0x1B6 /* 0666 */);
+            descriptor = Open(path, 1 | 64 | (append ? 1024 : 512) | 0x80000 /* WRONLY|CREAT|APPEND/TRUNC|CLOEXEC */, 0x1B6 /* 0666 */);
         }
         while (descriptor < 0 && Marshal.GetLastPInvokeError() == 4);
         if (descriptor < 0)

@@ -1,0 +1,41 @@
+{
+  "status": "clear",
+  "scope": "Independent count/scope/hash sanity review of dependency23 execution record; no whole source re-audit or fresh workloads.",
+  "proof": "validation/results/language-services-dependencies-23.json",
+  "proofSha256": "257f0027aea78d97351e33a851a83a9c4892773a3f02904b66b849b761dcb759",
+  "checked": {
+    "managedOrdinary": {
+      "individualTrxPassed": 142,
+      "failed": 0,
+      "skipped": 0
+    },
+    "managedDepth": {
+      "individualTrxPassed": 8,
+      "failed": 0,
+      "skipped": 0
+    },
+    "native": {
+      "executableSha256": "381ba6d6affe82afb9840fa890a02e753fc84ba2a0e6a19289cf911e296390ee",
+      "format": "ELF64 little-endian",
+      "counts": "Native stdout agrees with86 original TS functions,1 original NFD function,17 whole original regexp functions plus5 selected/adapted channels,7 additional NFD channels,4 partial AstNav channels,3 token subtests and43 authored controls."
+    },
+    "sourceSnapshot": {
+      "records": 300,
+      "unchangedCurrentRecords": 299,
+      "explicitQualifiedPostRunTestOnlyDelta": "OptionalArm compiled204ed92d... currentae4350ca... exactly agrees with proof qualification; corrected metadata not executed in this snapshot."
+    },
+    "ilc": {
+      "path": "validation/LanguageServices.Validation/obj/Release/net10.0/linux-x64/native/LanguageServices.Validation.ilc.rsp",
+      "sha256": "f7fd17bbe4667b334d92f4a41adcad3a4f39fef0ec9d91c026c76131cfb567c0",
+      "actualScannerReferenceSha256": "3fa1904b9ff0b9057687e79863f316cf3071fc7e8cf907676cb3f9e4ed95a058",
+      "actualChecksReferenceSha256": "765aae6687c131cb7f9eaea60a5491957c7692d5ede14b38544229b852e6f33f",
+      "note": "Actual RSP reference paths agree with proof assembly hashes."
+    },
+    "externalCorpus": "RE2 consumed/matched/four-boolean counts and original two skip reasons agree with Native stdout and managed TRX; Fowler347/346/1 plus17 loader exclusions separately retained."
+  },
+  "limits": [
+    "Dependency checkpoint only; transport/services and comprehensive retained compiler/emit regressions are not established.",
+    "Unused standard-library public/capture/form APIs remain excluded; selected channels do not receive whole-function credit.",
+    "Native exit and isolated-depth completion facts are those recorded by root central execution; no reruns were performed."
+  ]
+}

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port of tsc/internal/modulespecifiers/util.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Source naming paths for no-emit display; auto-import service filtering remains external.
+// Source naming and actual cached auto-import exclusion matching.
 #nullable disable
 using System.Diagnostics;
 using TypeScript.Scanner;
@@ -33,16 +33,84 @@ internal static partial class ModuleSpecifiers
         PackageContent
     }
 
-    // Empty exclusions retain source false; nonempty regex evaluation is an external auto-import service consumer.
-    private static bool IsExcludedByRegex(string name, List<string> excludes) => IsExcludedByRegex(ByteStringValue.FromString(name), excludes);
-    private static bool IsExcludedByRegex(ByteStringValue name, List<string> excludes)
+    private readonly record struct RegexPatternCacheKey(ByteStringKey Pattern, bool CaseInsensitive);
+    private static readonly System.Threading.ReaderWriterLockSlim regexPatternCacheMu = new();
+    private static readonly Dictionary<RegexPatternCacheKey, TypeScript.RegularExpressions.GoRegexp> regexPatternCache = new();
+    // Upstream tsc/internal/modulespecifiers/util.go:47.
+    internal static bool IsExcludedByRegex(string name, Slice<string> excludes) => IsExcludedByRegex(ByteStringValue.FromString(name), excludes);
+    internal static bool IsExcludedByRegex(ByteStringValue name, Slice<string> excludes)
     {
-        if (GoRuntime.Len(excludes) == 0)
+        foreach (var pattern in excludes)
         {
-            return false;
+            var regex = stringToRegex(ByteStringValue.FromString(pattern));
+            if (regex != null && regex.MatchString(name))
+                return true;
         }
 
-        throw new NotSupportedException("Auto-import exclusion regex evaluation is outside no-emit checker naming.");
+        return false;
+    }
+
+    // Upstream tsc/internal/modulespecifiers/util.go:60. Scoped RW locks retain
+    // double-checked admission; cached pattern ownership matches strings.Clone.
+    private static TypeScript.RegularExpressions.GoRegexp stringToRegex(ByteStringValue pattern)
+    {
+        bool caseInsensitive = false;
+        if (pattern.Length > 2 && pattern[0] == '/')
+        {
+            int lastSlash = pattern.LastIndexOf('/');
+            if (lastSlash > 0)
+            {
+                bool hasUnescapedMiddleSlash = false;
+                for (int i = 1; i < lastSlash; i++)
+                {
+                    if (pattern[i] == '/' && pattern[i - 1] != '\\')
+                    {
+                        hasUnescapedMiddleSlash = true;
+                        break;
+                    }
+                }
+
+                if (!hasUnescapedMiddleSlash)
+                {
+                    var flags = pattern.Slice(lastSlash + 1);
+                    pattern = pattern.Slice(1, lastSlash);
+                    for (int i = 0; i < flags.Length; i++)
+                        if (flags[i] == 'i')
+                            caseInsensitive = true;
+                }
+            }
+        }
+
+        var key = new RegexPatternCacheKey(ByteStringKey.FromValue(pattern), caseInsensitive);
+        regexPatternCacheMu.EnterReadLock();
+        try
+        {
+            if (regexPatternCache.TryGetValue(key, out var found))
+                return found;
+        }
+        finally
+        {
+            regexPatternCacheMu.ExitReadLock();
+        }
+
+        regexPatternCacheMu.EnterWriteLock();
+        try
+        {
+            if (regexPatternCache.TryGetValue(key, out var found))
+                return found;
+            if (regexPatternCache.Count > 1000)
+                regexPatternCache.Clear();
+            pattern = pattern.Length == 0 ? ByteStringValue.FromString("") : pattern.IsBytes ? ByteStringValue.FromView(ByteStringView.FromOwnedBytes(pattern.ByteSpan.ToArray())) : ByteStringValue.FromString(new string (pattern.CharSpan));
+            key = new RegexPatternCacheKey(ByteStringKey.FromValue(pattern), caseInsensitive);
+            var compilePattern = caseInsensitive ? ByteStringValue.Concat(ByteStringValue.FromString("(?i:"), pattern, ByteStringValue.FromString(")")) : pattern;
+            var(compiled, error) = TypeScript.RegularExpressions.GoRegexp.Compile(compilePattern);
+            regexPatternCache[key] = error == null ? compiled : null;
+            return error == null ? compiled : null;
+        }
+        finally
+        {
+            regexPatternCacheMu.ExitWriteLock();
+        }
     }
 
     // Upstream tsc/internal/modulespecifiers/util.go:30:1.

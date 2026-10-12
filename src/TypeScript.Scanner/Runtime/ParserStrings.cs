@@ -268,7 +268,7 @@ internal static partial class GoStrings
     }
 }
 
-internal static class GoUnicode
+internal static partial class GoUnicode
 {
     // Go unicode.IsSpace's Latin1 fast path and White_Space table.
     public static bool IsSpace(int rune) => rune is 9 or 10 or 11 or 12 or 13 or 32 or 0x85 or 0xa0 or 0x1680 or >= 0x2000 and <= 0x200a or 0x2028 or 0x2029 or 0x202f or 0x205f or 0x3000;
