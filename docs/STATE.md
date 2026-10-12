@@ -1,21 +1,21 @@
-# Language services and LSP: final delivery (2026-10-12)
+# Accepted: language services and LSP (2026-10-12)
 
-The [whole contract](./LANGUAGE-SERVICES-CONTRACT.md) is accepted after independent
-implementation/evidence/claim review. Only the clean delivery commit remains.
-Root alone commits; no builds, tests or publications remain queued.
-Do not restart historical implementation or rerun accepted gates after compaction.
-Latest committed dependency checkpoint is e3908447; all subsequent task changes are
-saved and reviewed in the working tree. Final commit must include the implementation,
-tests, source map, provenance, assessment/reproduction and durable aggregate proof.
+The [whole contract](./LANGUAGE-SERVICES-CONTRACT.md) is accepted and delivered at
+**21cdac7d4d5d28bf220703b62f3c66f2b94c6bfe**. Implementation, assertions, source mapping,
+review records, reproduction and aggregate proof are committed; the working tree was
+confirmed clean immediately after that commit. This documentation-only follow-up
+records delivery for re-entry. No implementation, validation or review work remains.
+Do not restart historical campaigns or rerun acceptance after compaction. Pre-commit
+review/proof fields marking delivery as coordinator-pending are review-time snapshots;
+this delivery record fulfills that action. Await the user's next direction.
 
 Read [assessment](./LANGUAGE-SERVICES-ASSESSMENT.md),
 [verification](./LANGUAGE-SERVICES-VERIFY.md),
 [aggregate evidence](../validation/results/language-services-verified.json) and
 [final independent review](./progress/lsp-final-contract-review.json).
 Astra coordinates; GPT-6.1 Sol implements/reviews. No material blocker or user decision.
-Current owners: Foundation final metadata binding; Inventory proof/source-map;
-Protocol assessment/contract/reproduction/public evidence. Use followup_task for idle
-agents. No concurrent builds or commits during dependent publication.
+All Sol owners completed implementation and independent review; no queued agent work.
+For future work, use followup_task to restart idle agents and coordinate builds centrally.
 
 ## Completed acceptance
 
@@ -98,10 +98,8 @@ Sol workers owned implementation and independent review. Measured durations/samp
 counts are recorded; model-token totals, monetary costs and complete human-effort
 measurements are unavailable. No additional process framework or private-state census.
 
-Acceptance status is final. Commit all task changes after final metadata bindings and
-confirm a clean working tree. Report the committed result with limitations.
-Stop then: this fulfills the language-services/LSP mandate; external project/editor
-or further performance evaluation needs a subsequent user direction.
+This fulfills the language-services/LSP mandate. External project/editor or further
+performance evaluation needs a subsequent user direction.
 
 ## Latest accepted checkpoint: dependency74
 
