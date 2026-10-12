@@ -1,3 +1,24 @@
+# Active epic: language services and LSP
+
+The user authorized comprehensive, dependency-first language-services/LSP completion
+from accepted emit/performance checkpoint `9b8fa74a` (summary checkpoint `e003f22f`).
+Read the active top of [STATE.md](./docs/STATE.md). This mandate supersedes all
+historical "await the next mandate" instructions below. Continue autonomously across
+implementation, review, verification and committed subsystem checkpoints.
+
+Astra coordinates; GPT-6.1 Sol implements and independently reviews. Port pinned
+upstream document/project snapshots, invalidation, semantic services and LSP transport
+faithfully, building complete dependencies before consumers. No empty-success
+responses or repeated full compilation as substitutes for missing service/update
+algorithms. Preserve accepted UTF8/slice/ownership and runtime adaptations. Use
+upstream tests and differential service results, then actual Linux x64 Native AOT
+transport with changing documents, cancellation, diagnostics and repeated requests.
+Keep implementation gaps distinct from evidence limitations and advertised features
+accurate. Large external projects are not required; unrelated build/watch orchestration
+remains outside scope. Do not run the one-shot CLI no-GC policy in a long-lived server
+without a separately justified lifecycle. Share concise updates; stop only for a
+material blocker or decision, not an internal milestone or compaction.
+
 # Resume this project
 
 ## Emit performance: verified, delivery checkpoint

@@ -1,3 +1,43 @@
+# Active: language-services and LSP epic (2026-10-12)
+
+Authorized from accepted emit/performance `9b8fa74a`; human performance summary
+preserved separately at `e003f22f`. Contract is being grounded in pinned upstream
+`fed0bf24149fb1ed36039212648bafdafc1ea10e`, `upstream/TypeScript/tsc`.
+The latest user mandate requires whole upstream service/protocol capability completion,
+not vertical slices, genuine state/update algorithms, independent Sol review, upstream
+assertions/differentials and actual Linux x64 Native AOT server transport acceptance.
+No old "no active campaign" instruction below applies to this new mandate.
+
+Completion contract: [LANGUAGE-SERVICES-CONTRACT.md](./LANGUAGE-SERVICES-CONTRACT.md).
+Root has shared the dependency order and external boundaries with the user.
+
+Active disjoint GPT-6.1 Sol implementation owners (no builds yet):
+- `emit_foundation`: project/session, overlays, snapshots, invalidation, caches and host
+  dependencies; implementing complete dirty/ownership-cache/background/logging family,
+  then overlay/filechange/snapshotFS. Namespace TypeScript.ProjectSystem. Investigation
+  `docs/progress/lsp-project-investigation.md`.
+- `emit_inventory`: semantic service responsibilities and checker queries/dependencies;
+  implementing complete Checker/Services, Exports, configured NodeBuilder hover and
+  AstNav/Tokens plus concrete missing workers. Investigation
+  `docs/progress/lsp-services-investigation.md`.
+- `emit_print_maps`: protocol, generated structures, transport, test inventory and
+  end-to-end verification; implementing full jsonrpc/lsproto and lsconv generated
+  models/codecs/framing/positions. Investigation `docs/progress/lsp-protocol-investigation.md`.
+Root owns completion contract, integration, build scheduling and scope decisions.
+Reuse these agents for coherent implementation owners and separate independent review.
+No new implementation is accepted yet. Contract published; foundation owners active.
+Root created shared validation/LanguageServices.Checks and xUnit LanguageServices.Tests
+project plumbing; per-lane check files avoid overlap. Native runner wiring awaits real
+check entrypoints, not a placeholder executable. Preserve original
+assertions; inventories or loading-only success do not establish service completion.
+
+Keep accepted compiler/emit/performance evidence; re-run relevant gates at coherent
+integration boundaries. Prioritize genuine reusable document/project mechanisms,
+then semantic consumers and accurate protocol capabilities. Assess actual upstream
+ATA, watcher and content-mapper dependencies before excluding or expanding them.
+No one-shot optional NoGC region in server by default; assess repeated edit/request
+responsiveness and memory through reproducible in-repository workloads.
+
 # Emit performance verified; final review and delivery (2026-10-12)
 
 Implementation is frozen; all seven correctness gates passed. Actual Linux x64 Native
