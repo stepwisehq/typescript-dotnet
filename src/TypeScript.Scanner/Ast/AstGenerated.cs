@@ -4899,7 +4899,7 @@ public sealed partial class JSDocParameterOrPropertyTag : NodeData, JSDocTagBase
     }
 }
 
-public sealed partial class NodeFactory
+public partial class NodeFactory
 {
     public Node NewToken(Kind kind)
     {

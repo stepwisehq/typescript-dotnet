@@ -3873,6 +3873,8 @@ public partial class Scanner
     public static byte[] GetShebang(byte[] text) => getShebang(ByteStringView.CopyFrom(text)).ToArray();
     public static int ComputePositionOfLineAndUTF16Character(int[] lineStarts, int line, int character, string text, bool allowEdits) => computePositionOfLineAndUTF16Character(lineStarts, line, character, ByteStringView.FromUnicode(text), allowEdits);
     public static int ComputePositionOfLineAndUTF16Character(int[] lineStarts, int line, int character, byte[] text, bool allowEdits) => computePositionOfLineAndUTF16Character(lineStarts, line, character, ByteStringView.CopyFrom(text), allowEdits);
+    // Source-map hosts retain immutable UTF8 text and byte line starts, as Go does.
+    internal static int ComputePositionOfLineAndUTF16Character(ReadOnlySpan<int> lineStarts, int line, int character, ByteStringView text, bool allowEdits) => computePositionOfLineAndUTF16Character(lineStarts, line, character, text, allowEdits);
     // scanner.go getIdentifierToken: the keyword table uses raw byte strings.
     // Its bounded keys can use .NET's ordinal alternate lookup without owning
     // a temporary token string or encoding non-ASCII source bytes again.

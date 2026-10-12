@@ -29,7 +29,7 @@ public sealed class SyntheticExpression : NodeData, ExpressionBase
     }
 }
 
-public sealed partial class NodeFactory
+public partial class NodeFactory
 {
     public Node NewSyntheticExpression(object typeNode, bool isSpread, Node tupleNameSource) => newNode(Kind.SyntheticExpression, new SyntheticExpression { Type = typeNode, IsSpread = isSpread, TupleNameSource = tupleNameSource });
     public Node UpdateSyntheticExpression(SyntheticExpression node, object typeNode, bool isSpread, Node tupleNameSource)

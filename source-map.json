@@ -139,7 +139,8 @@
         "state": "accepted integration21; independent review, actual Linux x64 Native AOT FIRST and1721 managed/Native controls/full15304 original exact. Reboot continuation8832 original+6472 new;2048 original rows have transparently reconstructed missing result metadata. No repeatable speedup claim.",
         "adaptation": "Concrete AsX performs a direct standard C# checked payload test, with the original data fallback preserving bare-header null and wrong-payload exception behavior. Applicable Node/Type/Mapper forwarding methods join the existing virtual override chain instead of first casting to a payload base. Real nullable interface views and cache algorithms remain. IterChildren overrides expose the already-public inherited operation; both source generators retain the adaptation.",
         "evidence": "artifacts/vscode-allocation-rollout/integration-21/build-1/regressions/final-acceptance-peer-review.json"
-      }
+      },
+      "emitFactoryCompositionAdaptation": "Unsealed NodeFactory partial declarations permit printer factory inheritance matching upstream embedded AST factory; same instance and hooks preserved. Generator template updated; accepted algorithms unchanged."
     },
     {
       "upstream": "tsc/internal/core/options_generated.go",
@@ -259,7 +260,8 @@
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
       "allocationRolloutAdaptation": "Implemented through accepted integration16: Shared explicit-state slice helpers preserve source loops/storage; line-map construction uses borrowed byte decoding without source projection. Combined integration16 behavioral/Native AOT acceptance passed; source-reviewed snapshots and adaptations in docs/STATE.md.",
-      "sourceReuseRolloutAdaptation": "One source spelling-selection algorithm consumes borrowed names/candidates; standard ArrayPool<double> buffers leased across search with finally return and source growth/initialization/tie/limit semantics. Scanner/parser/checker receivers preserve real output projection only. Independently reviewed; integration15 Linux x64 Native AOT VS Code passed with ten exact complete diagnostics; broad regression qualification pending."
+      "sourceReuseRolloutAdaptation": "One source spelling-selection algorithm consumes borrowed names/candidates; standard ArrayPool<double> buffers leased across search with finally return and source growth/initialization/tie/limit semantics. Scanner/parser/checker receivers preserve real output projection only. Independently reviewed; integration15 Linux x64 Native AOT VS Code passed with ten exact complete diagnostics; broad regression qualification pending.",
+      "emitCampaignAdaptation": "Required Slice<T> Splice retains upstream fresh-owner concat semantics and Go64 start+delete bounds."
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
@@ -600,7 +602,8 @@
         "state": "accepted integration21; independent review, actual Linux x64 Native AOT FIRST and1721 managed/Native controls/full15304 original exact. Reboot continuation8832 original+6472 new;2048 original rows have transparently reconstructed missing result metadata. No repeatable speedup claim.",
         "adaptation": "Concrete AsX performs a direct standard C# checked payload test, with the original data fallback preserving bare-header null and wrong-payload exception behavior. Applicable Node/Type/Mapper forwarding methods join the existing virtual override chain instead of first casting to a payload base. Real nullable interface views and cache algorithms remain. IterChildren overrides expose the already-public inherited operation; both source generators retain the adaptation.",
         "evidence": "artifacts/vscode-allocation-rollout/integration-21/build-1/regressions/final-acceptance-peer-review.json"
-      }
+      },
+      "emitFactoryCompositionAdaptation": "Unsealed NodeFactory partial declarations permit printer factory inheritance matching upstream embedded AST factory; same instance and hooks preserved. Generator template updated; accepted algorithms unchanged."
     },
     {
       "upstream": "tsc/internal/ast/nodeflags.go",
@@ -780,7 +783,8 @@
       "destination": "src/TypeScript.Scanner/Ast/Deepclone.cs",
       "status": "ported",
       "scope": "Syntax deep cloning needed by JSDoc reparsing; compiler-owned state excluded.",
-      "upstreamSha256": "7100eff959ac01d9cb285e832b3fe50cf19669bc68dc820ab14ad782be6d628f"
+      "upstreamSha256": "7100eff959ac01d9cb285e832b3fe50cf19669bc68dc820ab14ad782be6d628f",
+      "emitFactoryCompositionAdaptation": "Unsealed NodeFactory partial declarations permit printer factory inheritance matching upstream embedded AST factory; same instance and hooks preserved. Generator template updated; accepted algorithms unchanged."
     },
     {
       "upstream": "tsc/internal/ast/kind_stringer_generated.go",
@@ -2107,7 +2111,8 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "emitCampaignScope": "Required generated-name formatting, ASCII module-name conversion and span helpers added; full printer utility completion pending."
     },
     {
       "upstream": null,
@@ -2371,8 +2376,8 @@
     {
       "upstream": "tsc/internal/printer/emitcontext.go",
       "destination": "src/TypeScript.Scanner/Printer/EmitContext.cs",
-      "status": "partial",
-      "scope": "Actual synthesized display context/hooks, flags, leading/trailing comments and same-enclosing-file comment-range metadata copy used by original baseline/diagnostic serialization. Full transforms/helper output/source-map execution remains external.",
+      "status": "ported",
+      "scope": "Complete pinned file responsibilities; constructor spelling, Go embedding and managed ownership adaptations documented. Whole-emit integration remains pending.",
       "upstreamSha256": "37a9323a77986ddc441007082c46d9271ed52321e1892e55a25af5f3b4e8f25c",
       "objectCheckerCheckpointScope": "Only actual Original/MostOriginal/SetOriginal/SetOriginalEx and per-node flag reads/writes; first original link copies selected flags, supporting cached/cloned diagnostic nodes. General transform/bookkeeping/auto-generated names/emit maps/helpers/source maps excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
@@ -2393,13 +2398,18 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "preEmitCampaignScope": "Actual synthesized display context/hooks, flags, leading/trailing comments and same-enclosing-file comment-range metadata copy used by original baseline/diagnostic serialization. Full transforms/helper output/source-map execution remains external.",
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitFunctionCount": 85,
+      "emitCampaignReview": "docs/progress/emit-foundation.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/emitflags.go",
       "destination": "src/TypeScript.Scanner/Printer/EmitFlags.cs",
-      "status": "partial",
-      "scope": "Source flag values demanded by diagnostic/baseline rendering, including NoTrailingComments bit8 and IndirectCall bit20; no blanket completion of emitter flags or output paths.",
+      "status": "ported",
+      "scope": "Complete pinned file responsibilities; constructor spelling, Go embedding and managed ownership adaptations documented. Whole-emit integration remains pending.",
       "upstreamSha256": "9381afd50eb7e56849400ad7bff6150a2d792b7d0dad3988a6a43c00feb6b02e",
       "objectCheckerCheckpointScope": "Only actual SingleLine and NoAsciiEscaping flag values plus None; remaining flags excluded.",
       "objectCheckerEvidence": "validation/results/object-checker-verified.json",
@@ -2424,7 +2434,12 @@
         "docs/progress/language-support.md"
       ],
       "languageCampaignImplementationSnapshot": "artifacts/language-validation/build8/snapshot.json",
-      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json"
+      "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
+      "preEmitCampaignScope": "Source flag values demanded by diagnostic/baseline rendering, including NoTrailingComments bit8 and IndirectCall bit20; no blanket completion of emitter flags or output paths.",
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitFunctionCount": 0,
+      "emitCampaignReview": "docs/progress/emit-foundation.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
     },
     {
       "upstream": "tsc/internal/pseudochecker/checker.go",
@@ -3329,7 +3344,8 @@
         "state": "accepted integration21; independent review, actual Linux x64 Native AOT FIRST and1721 managed/Native controls/full15304 original exact. Reboot continuation8832 original+6472 new;2048 original rows have transparently reconstructed missing result metadata. No repeatable speedup claim.",
         "adaptation": "Concrete AsX performs a direct standard C# checked payload test, with the original data fallback preserving bare-header null and wrong-payload exception behavior. Applicable Node/Type/Mapper forwarding methods join the existing virtual override chain instead of first casting to a payload base. Real nullable interface views and cache algorithms remain. IterChildren overrides expose the already-public inherited operation; both source generators retain the adaptation.",
         "evidence": "artifacts/vscode-allocation-rollout/integration-21/build-1/regressions/final-acceptance-peer-review.json"
-      }
+      },
+      "emitFactoryCompositionAdaptation": "Unsealed NodeFactory partial declarations permit printer factory inheritance matching upstream embedded AST factory; same instance and hooks preserved. Generator template updated; accepted algorithms unchanged."
     },
     {
       "upstream": null,
@@ -6167,27 +6183,216 @@
         "correctnessEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json",
         "performanceEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json"
       }
+    },
+    {
+      "upstream": "tsc/internal/printer/factory.go",
+      "destination": "src/TypeScript.Scanner/Printer/Factory.cs",
+      "status": "ported",
+      "scope": "Complete pinned file responsibilities; constructor spelling, Go embedding and managed ownership adaptations documented. Whole-emit integration remains pending.",
+      "upstreamSha256": "c63403041eacc96b4e92b5d07d9c5aced9390cc34f28f36634126edcb41cb3e4",
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitFunctionCount": 91,
+      "emitCampaignReview": "docs/progress/emit-foundation.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/printer/namegenerator.go",
+      "destination": "src/TypeScript.Scanner/Printer/NameGenerator.cs",
+      "status": "ported",
+      "scope": "Complete pinned file responsibilities; constructor spelling, Go embedding and managed ownership adaptations documented. Whole-emit integration remains pending.",
+      "upstreamSha256": "dd302d59e463a551a4353fa85a8283b42495d5b15a1262291b607a00960aa549",
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitFunctionCount": 25,
+      "emitCampaignReview": "docs/progress/emit-foundation.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/printer/generatedidentifierflags.go",
+      "destination": "src/TypeScript.Scanner/Printer/GeneratedIdentifierFlags.cs",
+      "status": "ported",
+      "scope": "Complete pinned file responsibilities; constructor spelling, Go embedding and managed ownership adaptations documented. Whole-emit integration remains pending.",
+      "upstreamSha256": "1bcc5a25ef9eac3dba7d97056c7b7a2148fbcdd7e1ff9de6f3683dc9dbb49601",
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitFunctionCount": 9,
+      "emitCampaignReview": "docs/progress/emit-foundation.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/printer/helpers.go",
+      "destination": "src/TypeScript.Scanner/Printer/Helpers.cs",
+      "status": "ported",
+      "scope": "Complete pinned file responsibilities; constructor spelling, Go embedding and managed ownership adaptations documented. Whole-emit integration remains pending.",
+      "upstreamSha256": "0a06fa53b148033394bcbd0d16a32e85a31a0f0205884fa9d11a18da5daa3a0e",
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitFunctionCount": 1,
+      "emitCampaignReview": "docs/progress/emit-foundation.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/transformer.go",
+      "destination": "src/TypeScript.Scanner/Transformers/Transformer.cs",
+      "status": "ported",
+      "scope": "Complete pinned file responsibilities; constructor spelling, Go embedding and managed ownership adaptations documented. Whole-emit integration remains pending.",
+      "upstreamSha256": "d57b5ca62c01860d5d7b472eedcc33228b72dff3fe97dc7356989f85a1fab44d",
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitFunctionCount": 5,
+      "emitCampaignReview": "docs/progress/emit-foundation.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/modifiervisitor.go",
+      "destination": "src/TypeScript.Scanner/Transformers/ModifierVisitor.cs",
+      "status": "ported",
+      "scope": "Complete pinned file responsibilities; constructor spelling, Go embedding and managed ownership adaptations documented. Whole-emit integration remains pending.",
+      "upstreamSha256": "947fb4f831ae9d06663c70a098163efeaf3bdfa733faeb274ab61aaff705f8a1",
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitFunctionCount": 2,
+      "emitCampaignReview": "docs/progress/emit-foundation.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/sourcemap/generator.go",
+      "destination": "src/TypeScript.Scanner/SourceMap/Generator.cs",
+      "status": "ported",
+      "scope": "Complete pinned source-map package counterpart; byte-backed ownership, signed64 mapping arithmetic, UTF16 columns, exact JSON and retained mapping value adaptations documented. Printer/Program output consumers remain pending.",
+      "upstreamSha256": "193f9dfc981c5119336464a7f1f2a655ce9a069dcf43e23366152ebe0041bc77",
+      "emitFunctionCount": 20,
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitCampaignReview": "docs/progress/emit-sourcemap.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/sourcemap/decoder.go",
+      "destination": "src/TypeScript.Scanner/SourceMap/Decoder.cs",
+      "status": "ported",
+      "scope": "Complete pinned source-map package counterpart; byte-backed ownership, signed64 mapping arithmetic, UTF16 columns, exact JSON and retained mapping value adaptations documented. Printer/Program output consumers remain pending.",
+      "upstreamSha256": "05b623fa129c718b826dabc16ba473d0d513d8b6c0eaaa0ba9b21956ce9ef1f1",
+      "emitFunctionCount": 17,
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitCampaignReview": "docs/progress/emit-sourcemap.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/sourcemap/lineinfo.go",
+      "destination": "src/TypeScript.Scanner/SourceMap/LineInfo.cs",
+      "status": "ported",
+      "scope": "Complete pinned source-map package counterpart; byte-backed ownership, signed64 mapping arithmetic, UTF16 columns, exact JSON and retained mapping value adaptations documented. Printer/Program output consumers remain pending.",
+      "upstreamSha256": "d44e097eec05094dc75961c39fe005c501971cda682389846479925c02a8daa0",
+      "emitFunctionCount": 3,
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitCampaignReview": "docs/progress/emit-sourcemap.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/sourcemap/source.go",
+      "destination": "src/TypeScript.Scanner/SourceMap/Source.cs",
+      "status": "ported",
+      "scope": "Complete pinned source-map package counterpart; byte-backed ownership, signed64 mapping arithmetic, UTF16 columns, exact JSON and retained mapping value adaptations documented. Printer/Program output consumers remain pending.",
+      "upstreamSha256": "af4020f11d994527eddc3558d34c45a7cf37894eb88e353940cb59e3ebba6780",
+      "emitFunctionCount": 0,
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitCampaignReview": "docs/progress/emit-sourcemap.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/sourcemap/util.go",
+      "destination": "src/TypeScript.Scanner/SourceMap/Utilities.cs",
+      "status": "ported",
+      "scope": "Complete pinned source-map package counterpart; byte-backed ownership, signed64 mapping arithmetic, UTF16 columns, exact JSON and retained mapping value adaptations documented. Printer/Program output consumers remain pending.",
+      "upstreamSha256": "8e4d1e7791c42f42a45c088363f0c435e9592d1590f4180c88d7b11829423019",
+      "emitFunctionCount": 1,
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitCampaignReview": "docs/progress/emit-sourcemap.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/sourcemap/source_mapper.go",
+      "destination": "src/TypeScript.Scanner/SourceMap/SourceMapper.cs",
+      "status": "ported",
+      "scope": "Complete pinned source-map package counterpart; byte-backed ownership, signed64 mapping arithmetic, UTF16 columns, exact JSON and retained mapping value adaptations documented. Printer/Program output consumers remain pending.",
+      "upstreamSha256": "0ef0ac582f9e1aa400437e5ca7390a49c5cdd658411e1c1f50d807e52e7a94fd",
+      "emitFunctionCount": 11,
+      "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
+      "emitCampaignReview": "docs/progress/emit-sourcemap.md",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/sourcemap/generator_test.go",
+      "destination": "validation/Emit.Checks/SourceMapChecks.cs",
+      "status": "ported",
+      "scope": "32 original generator test functions; assertions preserved in shared xUnit/AOT bodies.",
+      "upstreamSha256": "23fdde51dea304165e8a1b99e98205f71e1ea558d873a2feaea462ac0e8780fd",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/sourcemap/source_mapper_test.go",
+      "destination": "validation/Emit.Checks/SourceMapChecks.cs",
+      "status": "ported",
+      "scope": "10 original mapper test functions; assertions and nested rows preserved. Two Go files share this test counterpart to reuse exact bodies in xUnit/AOT.",
+      "upstreamSha256": "c7c95eb0755a90960959138702491d89151c3c6bb70d7dfb37e5bac0a174f968",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/printer/namegenerator_test.go",
+      "destination": "validation/Emit.Checks/NameGeneratorChecks.cs",
+      "status": "ported",
+      "scope": "36 original test functions and54 active original assertions preserved in shared xUnit/AOT bodies.",
+      "upstreamSha256": "bc8cfc14c252deadbeb41e93be3509f807a8182dc2f6e4d1cbe12730cf4f6125",
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Emit.Checks/FoundationChecks.cs",
+      "status": "authored",
+      "scope": "Authored emit test/reference integration or shared harness access; not ported compiler implementation. See docs/EMIT-TEST-INVENTORY.md."
+    },
+    {
+      "upstream": null,
+      "destination": "tests/Emit.Tests",
+      "status": "authored",
+      "scope": "Authored emit test/reference integration or shared harness access; not ported compiler implementation. See docs/EMIT-TEST-INVENTORY.md."
+    },
+    {
+      "upstream": null,
+      "destination": "validation/Emit.Validation",
+      "status": "authored",
+      "scope": "Authored emit test/reference integration or shared harness access; not ported compiler implementation. See docs/EMIT-TEST-INVENTORY.md."
+    },
+    {
+      "upstream": null,
+      "destination": "tools/emit-oracle",
+      "status": "authored",
+      "scope": "Authored emit test/reference integration or shared harness access; not ported compiler implementation. See docs/EMIT-TEST-INVENTORY.md."
+    },
+    {
+      "upstream": null,
+      "destination": "tools/prepare-emit-overlay.py",
+      "status": "authored",
+      "scope": "Authored emit test/reference integration or shared harness access; not ported compiler implementation. See docs/EMIT-TEST-INVENTORY.md."
+    },
+    {
+      "upstream": null,
+      "destination": "tools/prepare-emit-registry.py",
+      "status": "authored",
+      "scope": "Authored emit test/reference integration or shared harness access; not ported compiler implementation. See docs/EMIT-TEST-INVENTORY.md."
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Runtime/EmitVerificationAccess.cs",
+      "status": "authored",
+      "scope": "Authored emit test/reference integration or shared harness access; not ported compiler implementation. See docs/EMIT-TEST-INVENTORY.md."
     }
   ],
   "activePhase": {
-    "name": "comprehensive-go-faithful-allocation-rollout",
-    "baselineCommit": "b84b436",
-    "procedureCommit": "7a3537e",
-    "status": "Comprehensive established Go-faithful allocation rollout accepted through integration17: integration16 full composite40,451 managed/83Native channels and full15304 originalnoemit retained; final14-guard/10-file Latin1 followthrough independently reviewed,4741affectedmanaged and actualLinuxx64AOT controls/full15304noemit pass. Latest NativeVSCode19.83s exact10. Last sampled managedcapture remains integration16 10.840235GiB (-69.175587%original matchedServerGC); excludes small17successor. No known remaining concrete ownership-family omission from reviewed dominant roles; Go speed parity not achieved.",
+    "name": "whole-emit-dependency-completion",
+    "baselineCommit": "e3131a5b",
+    "status": "Source-map and synthesis prerequisites accepted with independent review, 1107 managed cases and actual Linux x64 Native AOT. Full printer/resolver/transforms/Program output and whole-emit acceptance remain pending.",
+    "contract": "docs/EMIT-CONTRACT.md",
     "state": "docs/STATE.md",
-    "procedure": "START-HERE.md",
-    "boundaries": "Preserve pinned algorithms and genuine Go Clip/Clone/copy/detach operations. Carry borrowed byte text and slice headers through complete internal ownership paths. Actual external output adapters remain explicit. No new emit or language-service functionality.",
-    "verificationTiming": "Coordinated production integration builds during comprehensive implementation; behavioral, Native AOT, regression and performance acceptance at the broader integrated boundary, not per local change.",
-    "lastIntegratedCheckpoint": "integration20/build-2; implementation and acceptance delivered together",
-    "continuation": "Integration20 callback/setup owner closure and standard CLI Speed/LINQ throughput policy accepted after independent source/config/result reviews: frozen compiler8eacff5c, NativeVSCode16.82s all10 exact,1721 mixed-provenance selected managed and full15304 original Native no-emit plus Foundation3153/shared87/utilities20/Program9 pass. Earlier accepted snapshots and rejected Symbol experiment remain distinct. No Go speed parity claim; continue only source-grounded opportunities under comprehensive SOP.",
-    "evidence": "validation/results/allocation-rollout-verified.json",
-    "nativePublicationPolicy": {
-      "optimizationPreference": "Speed",
-      "useSizeOptimizedLinq": false,
-      "serverGC": "existing adaptive ServerGC unchanged",
-      "instructionSet": "default unchanged",
-      "verified": "Actual --Ot/both LINQ false flags/VxsortEnabled archive; installed package MIBC empty, no PGO claim."
-    }
+    "testInventory": "docs/EMIT-TEST-INVENTORY.md",
+    "boundaries": "Complete pinned upstream synthesis, maps, printing, transformations, JS/declaration output and required Program/checker support. Language services and unrelated build/watch orchestration excluded.",
+    "verificationTiming": "Targeted development checks, coordinated integration builds, comprehensive subsystem/final upstream-output and Linux x64 Native AOT gates. External-project evaluations deferred until emit acceptance.",
+    "prerequisiteEvidence": "validation/results/emit-foundation-verified.json"
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
@@ -6522,5 +6727,12 @@
       "Emit/output-induced diagnostics, language services, enabled tracing and incremental builder/cache scheduling are external.",
       "Other native platforms and large-project correctness/performance comparisons remain unverified."
     ]
+  },
+  "acceptedPerformanceCheckpoint": {
+    "commit": "e3131a5b",
+    "summaryCommit": "56ed2a75",
+    "summary": "docs/PERFORMANCE-EPIC-SUMMARY.md",
+    "evidence": "docs/VSCODE-CHECK-STATUS.md",
+    "scope": "Linux x64 AVX2, matched eight checkers, explicit no-GC option; 6.95/6.06 seconds best of five. Preserve original conditions and limitations."
   }
 }

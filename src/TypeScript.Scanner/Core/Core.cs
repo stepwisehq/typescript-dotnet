@@ -5,6 +5,24 @@
 namespace TypeScript.Scanner;
 internal static partial class Core
 {
+    // core.go:315. Splice preserves a no-op header; slices.Concat otherwise
+    // allocates fresh exact-length storage and preserves the required copies.
+    internal static Slice<T> Splice<T>(Slice<T> source, int start, int deleteCount, Slice<T> items)
+    {
+        if (start < 0) start = source.Length + start;
+        start = Math.Clamp(start, 0, source.Length);
+        if (deleteCount < 0) deleteCount = 0;
+        int end = (int)Math.Min((long)start + Math.Max(deleteCount, 0), source.Length);
+        if (start == end && items.Length == 0) return source;
+        int length = checked(start + items.Length + source.Length - end);
+        if (length == 0) return default;
+        var result = Slice<T>.Make(length);
+        source.AsSpan()[..start].CopyTo(result.AsSpan());
+        items.AsSpan().CopyTo(result.AsSpan()[start..]);
+        source.AsSpan()[end..].CopyTo(result.AsSpan()[(start + items.Length)..]);
+        return result;
+    }
+
     // core.go:714. The source caller supplies a valid byte offset.
     public static int IndexAfter(string s, string pattern, int startIndex) =>
         IndexAfter(ByteStringValue.FromString(s ?? ""), ByteStringValue.FromString(pattern ?? ""), startIndex);

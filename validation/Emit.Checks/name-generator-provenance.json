@@ -1,0 +1,14 @@
+{
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "originalSource": "upstream/TypeScript/tsc/internal/printer/namegenerator_test.go",
+  "originalSha256": "bc8cfc14c252deadbeb41e93be3509f807a8182dc2f6e4d1cbe12730cf4f6125",
+  "originalFunctions": 36,
+  "originalAssertions": 54,
+  "sharedPort": "validation/Emit.Checks/NameGeneratorChecks.cs",
+  "classification": "source-ported-not-executed",
+  "adaptations": [
+    "Go t.Parallel omitted; managed theory rows and native direct execution share the same assertions",
+    "Source parsing/binding retained with /main.ts and /main.tsx identities",
+    "Reflection-free function dispatcher; string callback at emitted-name boundary"
+  ]
+}

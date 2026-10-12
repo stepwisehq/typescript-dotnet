@@ -243,7 +243,7 @@ public abstract class CompositeNodeData : NodeData
     }
 }
 
-public sealed partial class NodeFactory : NodeFactoryCoercible
+public partial class NodeFactory : NodeFactoryCoercible
 {
     internal NodeFactoryHooks hooks;
     private int nodeCount, textCount;
@@ -682,7 +682,7 @@ public sealed partial class SourceFile
     public override Node VisitEachChild(NodeVisitor visitor) => visitor.Factory.UpdateSourceFile(this, visitor.visitTopLevelStatements(Statements), visitor.visitToken(EndOfFileToken));
 }
 
-public sealed partial class NodeFactory
+public partial class NodeFactory
 {
     public Node UpdateSourceFile(SourceFile node, NodeList statements, Node endOfFileToken)
     {
@@ -4864,7 +4864,7 @@ public static partial class Ast
     }
 }
 
-public sealed partial class NodeFactory
+public partial class NodeFactory
 {
     public CommentRange NewCommentRange(Kind kind, int pos, int end, bool hasTrailingNewLine) => new(kind, pos, end, hasTrailingNewLine);
 }

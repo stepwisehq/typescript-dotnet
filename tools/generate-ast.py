@@ -191,7 +191,7 @@ for n in concrete:
         parts.append('        yield return new SyntaxField("'+f+'", "'+ft+'", '+cname(f)+');')
     if not any(f in bound_fields for f,t in ff):parts.append('        yield break;')
     parts.append('    }\n}\n')
-parts.append('public sealed partial class NodeFactory\n{')
+parts.append('public partial class NodeFactory\n{')
 count=0
 for (recv,rtype,fn,ps,rt),body in fs:
     if rtype!='NodeFactory' or not fn.startswith('New') or fn=='NewSyntheticExpression':continue

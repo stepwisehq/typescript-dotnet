@@ -1,5 +1,19 @@
 # Resume this project
 
+## Active epic: complete upstream emit
+
+The user authorized whole-emit completion after performance checkpoint `e3131a5b`
+and summary `56ed2a75`. Read [EMIT-CONTRACT.md](./docs/EMIT-CONTRACT.md) and the top
+of [STATE.md](./docs/STATE.md). Complete coherent dependency subsystems upward,
+then JavaScript/declaration emission and Program output; do not return to vertical
+slices or stop after planning/subsystem commits. GPT-6.1 Sol implements and reviews;
+Astra coordinates. Keep accepted performance adaptations and Go ownership behavior.
+Use targeted development checks and comprehensive subsystem/final gates. External
+project evaluation, including VS Code, is deferred until emit acceptance. These
+directions supersede earlier performance-workload-first and completed-work stop
+instructions for this new epic. Native AOT and upstream-output agreement remain
+mandatory. Language services and unrelated build/watch orchestration stay excluded.
+
 To restart work, give the new session this instruction:
 
 > Read START-HERE.md in /home/greg/projects/typescript-dotnet and resume the

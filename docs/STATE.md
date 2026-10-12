@@ -1,3 +1,61 @@
+# Active epic: complete upstream emit (2026-10-11)
+
+User authorized autonomous whole-emit completion from performance `e3131a5b`
+(summary `56ed2a75`). The [fixed contract and dependency roadmap](EMIT-CONTRACT.md)
+govern: complete synthesis/context and source-map prerequisites, printer and shared
+transform machinery, all pinned JS/declaration transforms plus semantic support,
+Program output/invocation, then whole-emit acceptance. No vertical slices or new
+assignment requests between subsystem commits. External-project evaluation is deferred
+until emit acceptance. Preserve the accepted baseline and performance adaptations.
+
+Initial read-only assessment found AST factory/visitor/deepclone already implemented;
+no broad foundation re-audit. Diagnostic printer/context are partial, source maps and
+transformers missing, Program has output-path/blocking foundations but lacks emission.
+Existing no-emit harness intentionally excludes declaration-emit/output observations;
+it remains regression evidence, not emit acceptance.
+
+Active Sol ownership (root owns contract, source-map integration and central builds):
+- `/root/emit_foundation`: complete printer synthesis context/factory/names/helpers/
+  flags, minimal AST factory inheritance adaptation, then core transformer machinery;
+  progress `docs/progress/emit-foundation.md`.
+- `/root/emit_print_maps`: all six upstream source-map files and original 42 direct
+  test functions plus necessary edge controls; progress `docs/progress/emit-sourcemap.md`.
+- `/root/emit_inventory`: complete applicable test inventory and reference/harness
+  integration, shared xUnit/Native wiring, independent first-subsystem review.
+
+The first prerequisite checkpoint is accepted: complete source-map package and
+synthesis/context/factory/names/helpers, plus base Transformer/ModifierVisitor.
+Independent source and original-test review is clear. Managed gate: 90 emit,
+832 checker, 84 type-system and 101 selected no-emit cases passed (1,107 total).
+Actual Linux x64 Native AOT passed the same 78 original test functions plus
+30 authored controls. Three central build attempts (initial integration errors,
+then zero warnings/errors); one successful Native publication. Evidence:
+[emit-foundation-verified.json](../validation/results/emit-foundation-verified.json),
+[verification instructions](EMIT-VERIFY.md). Complete no-emit/output corpus gates
+remain later integrated obligations; this checkpoint does not establish JS or
+DTS output. No external-project/performance evaluation was run.
+
+Next coherent dependencies: full printer/writers/utilities in the print lane;
+genuine Binder ReferenceResolver, checker EmitResolver and required NodeBuilder
+serialization/tracking in the foundation lane; remaining 70 original printer tests
+and reference integration in the inventory lane. Chain/TransformOptions follow
+real resolver contracts, never placeholder objects. Continue immediately after
+the accepted prerequisite commit; no renewed user assignment is needed.
+
+The full-output registry is prepared: 12,824 original fixtures, 15,330 decoded
+configurations, seven original expansion failures preserved separately. Original
+Go full-harness compilation and one smoke (emitClassDeclarationWithConstructorInES6)
+passed all nine original assertion channels; this validates reference machinery,
+not the port. Evidence: `artifacts/emit/reference-infrastructure/result.json`.
+One reused Go cache is about1.5GiB, one harness binary59MiB, prepared registry9.1MiB;
+no giant export or per-fixture builds. Initial direct inventory: printer106,
+source-map42, transform2 original functions; compiler emit file contains two
+benchmarks. Original function counts are distinct from data rows/executed outcomes.
+
+User's documentation tangent is complete: the performance summary now contains
+the preferred chat text, committed separately at `13a89a0b`. Emit source remains
+uncommitted and active; do not interpret that documentation commit as a work stop.
+
 # Accepted final delivery checkpoint (2026-10-11)
 
 Integration31 is accepted: complete integrated correctness gates and the delivered

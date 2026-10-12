@@ -380,7 +380,7 @@ internal sealed partial class Printer
     {
         if ((emitFlags & EmitFlags.NoLeadingComments) != 0)
             return;
-        foreach (var comment in emitContext.GetSyntheticLeadingComments(node) ?? [])
+        foreach (var comment in emitContext.GetSyntheticLeadingComments(node))
             emitLeadingSynthesizedComment(comment);
     }
 
@@ -717,7 +717,7 @@ internal sealed partial class Printer
         var flags = emitContext.EmitFlags(node);
         emitLeadingSyntheticCommentsOfNode(node, flags);
         if ((flags & EmitFlags.NoTrailingComments) == 0)
-            foreach (var comment in emitContext.GetSyntheticTrailingComments(node) ?? [])
+            foreach (var comment in emitContext.GetSyntheticTrailingComments(node))
             {
                 if (comment.HasTrailingNewLine || comment.Kind != Kind.MultiLineCommentTrivia)
                     throw TypeScript.Checking.Checker.unsupported("Printer.emitNotEmittedTypeElement: multiline comment");

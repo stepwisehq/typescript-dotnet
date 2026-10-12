@@ -169,3 +169,43 @@ internal sealed partial class Printer
         b.Append(hex);
     }
 }
+
+// Package-level printer utilities used by synthesis and transformation.
+internal static partial class PrinterUtilities
+{
+    internal static bool hasLeadingHash(string text) => text.Length > 0 && text[0] == '#';
+    internal static string removeLeadingHash(string text) => hasLeadingHash(text) ? text[1..] : text;
+    internal static string ensureLeadingHash(string text) => hasLeadingHash(text) ? text : "#" + text;
+    internal static string FormatGeneratedName(bool privateName, string prefix, string @base, string suffix)
+    {
+        string name = removeLeadingHash(prefix) + removeLeadingHash(@base) + removeLeadingHash(suffix);
+        return privateName ? ensureLeadingHash(name) : name;
+    }
+    private static bool isASCIIWordCharacter(int ch) => ch is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_';
+    internal static string makeIdentifierFromModuleName(string moduleName)
+    {
+        moduleName = TsPath.GetBaseFileName(moduleName);
+        var builder = new StringBuilder(); int start = 0, pos = 0;
+        while (pos < moduleName.Length)
+        {
+            int ch = moduleName[pos];
+            if (pos == 0 && ch is >= '0' and <= '9') builder.Append('_');
+            else if (!isASCIIWordCharacter(ch))
+            {
+                if (start < pos) builder.Append(moduleName.AsSpan(start, pos - start));
+                builder.Append('_'); start = pos + 1;
+            }
+            pos++;
+        }
+        if (start < pos) builder.Append(moduleName.AsSpan(start, pos - start));
+        return builder.ToString();
+    }
+    internal static int findSpanEndWithEmitContext<T>(EmitContext c, Slice<T> array, Func<EmitContext, T, bool> test, int start)
+    {
+        int i = start; while (i < array.Length && test(c, array[i])) i++; return i;
+    }
+    internal static int findSpanEnd<T>(Slice<T> array, Func<T, bool> test, int start)
+    {
+        int i = start; while (i < array.Length && test(array[i])) i++; return i;
+    }
+}

@@ -1,0 +1,133 @@
+{
+  "status": "passed-prerequisite-checkpoint-not-whole-emit",
+  "baseline": "e3131a5b",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "scope": "Complete source-map and synthesis/context/factory/names/helpers; Transformer and ModifierVisitor prerequisites. Full printer/transforms/semantic emit resolver/Program output remain incomplete.",
+  "managed": [
+    {
+      "file": "artifacts/emit/foundation/managed/emit-foundation.trx",
+      "sha256": "7f2f7043499b7db5bf199ace83af1852c229e9d3448df207c077b16d7bf6f558",
+      "counters": {
+        "total": "90",
+        "executed": "90",
+        "passed": "90",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    {
+      "file": "artifacts/emit/foundation/regressions/checker.trx",
+      "sha256": "8ee72b83654bb2b5d3981932f1bcb1548679c5fb9b3e4dd14540c75a6bb01b72",
+      "counters": {
+        "total": "832",
+        "executed": "832",
+        "passed": "832",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    {
+      "file": "artifacts/emit/foundation/regressions/typesystem.trx",
+      "sha256": "2a14e9498b999c0a4022d3b827ebf30e7c23b7bcdf0901cec3c8dbfb462b8ff2",
+      "counters": {
+        "total": "84",
+        "executed": "84",
+        "passed": "84",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    {
+      "file": "artifacts/emit/foundation/regressions/noemit-selected.trx",
+      "sha256": "e041cdef783b39b759582b23f5b8970b9d37ecdcf1e431fa42f1a6d98ce7900d",
+      "counters": {
+        "total": "101",
+        "executed": "101",
+        "passed": "101",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    }
+  ],
+  "managedTotal": 1107,
+  "native": {
+    "platform": "linux-x64",
+    "binary": "artifacts/emit/foundation/native/Emit.Validation",
+    "sha256": "8308b5fc257c16f7556679acc24c568a485fb3293352b59e99155de08567d8b0",
+    "exitCode": 0,
+    "stdout": "Original emit test functions executed: 78\nAuthored emit controls executed: 30\n",
+    "ilcResponseSha256": "db7e625cece89f9a560c8a16492919adc7e2875435e0a1c8d99837285ca45ab2",
+    "actualCompilerInputs": {
+      "/home/greg/projects/typescript-dotnet/validation/Emit.Checks/bin/Release/net10.0/Emit.Checks.dll": "711115d0da9357fd4571539b4be13379e4d420d5986f12c0cc302e2f89f18f64",
+      "/home/greg/projects/typescript-dotnet/src/TypeScript.Scanner/bin/Release/net10.0/TypeScript.Scanner.dll": "860dd1dd18b87cf00c5da6d1dd59937443e3521384fb0587aaeffb2b81fca652"
+    }
+  },
+  "sourceReviews": {
+    "artifacts/emit/source-review/sourcemap.json": "c4512429a91437ff400605cff1508ccf810ed7104097b4d30b3372077e6c013d",
+    "artifacts/emit/source-review/synthesis.json": "c3475fa8d6239d5b6f0eac0533d8b0383e7f72fd40bf2393a65adf33367ac87f",
+    "artifacts/emit/foundation/namegenerator-test-independent-review.json": "9dd785b673e7efcd05dfabe48db03482c09cc663607ce801752dec218e39f3ad"
+  },
+  "originalGo": "artifacts/emit/reference-infrastructure/result.json; sourcemap-original.jsonl and name-generator-original.jsonl",
+  "observedEffort": {
+    "centralManagedBuildAttempts": 3,
+    "initialBuildErrors": [
+      6,
+      7
+    ],
+    "successfulBuildWarnings": 0,
+    "nativePublishAttempts": 1,
+    "emitManagedCases": 90,
+    "retainedManagedCases": 1017,
+    "tokenOrCostMeasurements": null
+  },
+  "limits": [
+    "78 original test functions are distinct from table leaf rows or individual assertions. Native also executes 30 authored controls.",
+    "Only selected retained checker regressions rerun; complete original no-emit and whole-emit corpus remain later integrated gates.",
+    "No external project or performance run. The accepted VSCode performance checkpoint remains historical evidence with unchanged scope.",
+    "Go full-output machinery smoke is reference verification, not proof of emitted-output support in C#."
+  ]
+}

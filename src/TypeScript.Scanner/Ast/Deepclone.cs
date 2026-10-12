@@ -4,7 +4,7 @@
 // Port of tsc/internal/ast/deepclone.go.
 #nullable disable
 namespace TypeScript.Scanner;
-public sealed partial class NodeFactory
+public partial class NodeFactory
 {
     private NodeVisitor getDeepCloneVisitor(bool syntheticLocation)
     {
