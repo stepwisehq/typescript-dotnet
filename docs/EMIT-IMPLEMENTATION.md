@@ -43,6 +43,24 @@ separate. See [printer progress](progress/emit-printer.md),
 [semantic progress](progress/emit-resolver.md), and
 [shared transform progress](progress/emit-transform-shared.md).
 
+## Complete TypeScript transform family
+
+All seven upstream files are now implemented: TypeEraser 5, ImportElision 7,
+RuntimeSyntax 40, Utilities 1, Metadata 19, TypeSerializer 22, LegacyDecorators 48
+(142 functions). Complete MultiMap contributes 11 supporting functions. The former
+single RuntimeSyntax leaf now lives in its direct counterpart. Necessary narrow
+adaptations add borrowed-name/helper overloads and explicitly declare SourceFile's
+existing HasFileName interface; no algorithms or identity boundaries changed.
+
+Independent source review, 1,222 managed cases and actual Linux x64 Native AOT
+(150 original functions plus 87 authored controls) passed. The 20 original import
+elision rows retain original output assertions with documented Program-host adaptation.
+Thirty-four authored stage controls compare exact output and full public diagnostics.
+This is complete TS-family implementation with scoped behavioral evidence, not full
+compiler-output parity. ES, JSX, module and declaration families, Program output and
+the whole original corpus remain ahead. See [verification](EMIT-VERIFY.md) and
+[bound evidence](../validation/results/emit-ts-transforms-verified.json).
+
 ## Package responsibilities
 
 | Upstream file | Lines / functions | Baseline and active disposition |

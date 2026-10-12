@@ -12,6 +12,8 @@ public sealed class PrinterTests
     [Fact]
     public void OriginalTypeEraser() => TypeEraserChecks.TestTypeEraser();
     [Fact]
+    public void OriginalImportElision() => ImportElisionChecks.TestImportElision();
+    [Fact]
     public void AuthoredIntegerRadices() => Assert.Equal(9, FormatUintControls.RunAll());
     [Fact]
     public void AuthoredCommentWhitespace() => Assert.Equal(1, PrinterCommentControls.RunAll());

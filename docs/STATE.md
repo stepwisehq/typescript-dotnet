@@ -14,71 +14,67 @@ transformers missing, Program has output-path/blocking foundations but lacks emi
 Existing no-emit harness intentionally excludes declaration-emit/output observations;
 it remains regression evidence, not emit acceptance.
 
-Active Sol ownership after prerequisite commit `3e78aede` (root owns contract,
-source-map integration and central builds):
-- `/root/emit_foundation`: complete genuine Binder ReferenceResolver, printer
-  EmitResolver contract, checker implementation and NodeBuilder emit serialization,
-  then TransformOptions/Chain; progress `docs/progress/emit-resolver.md`.
-- `/root/emit_print_maps`: full printer, text writers, utilities and syntax/map/
-  comment handlers; progress `docs/progress/emit-printer.md`.
-- `/root/emit_inventory`: remaining70 original printer test functions in shared
-  xUnit/AOT bodies, then shared Transformer Utilities/Destructuring foundations,
-  reference integration and independent source/evidence review.
-  All printer originals now execute with the genuine TypeEraser; direct original
-  table provenance and shared Native bodies are preserved.
+Latest accepted dependency checkpoint: **`34ade775`**, full printer and semantic
+emit prerequisites. Previous synthesis/source-map checkpoint: `3e78aede`.
+Independent source, original-assertion and execution evidence reviews are clear.
+Managed:169 emit +832 checker +84 type-system +101 selectedno-emit =1,186 passed,
+zero failures/skips. Actual Linuxx64 NativeAOT published20.206s and executed149
+original test functions plus46 authored controls successfully. Source mapping and
+reproduction are committed; all build/test processes finished and the tree was clean.
+[Evidence](../validation/results/emit-printer-resolver-verified.json),
+[independent ACK](../artifacts/emit/printer-resolver/acceptance-independent-review.json).
+No whole-emission or external-project claim follows from this dependency checkpoint.
 
-The first prerequisite checkpoint is accepted: complete source-map package and
-synthesis/context/factory/names/helpers, plus base Transformer/ModifierVisitor.
-Independent source and original-test review is clear. Managed gate: 90 emit,
-832 checker, 84 type-system and 101 selected no-emit cases passed (1,107 total).
-Actual Linux x64 Native AOT passed the same 78 original test functions plus
-30 authored controls. Three central build attempts (initial integration errors,
-then zero warnings/errors); one successful Native publication. Evidence:
-[emit-foundation-verified.json](../validation/results/emit-foundation-verified.json),
-[verification instructions](EMIT-VERIFY.md). Complete no-emit/output corpus gates
-remain later integrated obligations; this checkpoint does not establish JS or
-DTS output. No external-project/performance evaluation was run.
+**TypeScript transform family accepted in the checkpoint containing this entry.**
+All seven pinned files (142 functions total) and required MultiMap (11 functions)
+are complete. The old TypeEraser-owned RuntimeSyntax leaf moved to its full mapped
+counterpart. Focused borrowed-name/helper overloads and SourceFile's explicit C#
+HasFileName declaration preserve accepted algorithms and object identity.
+Independent source and assertion reviews are clear. All 205 emit + 832 checker +
+84 type-system + 101 selected no-emit cases passed (1,222 total, no failures/skips).
+Actual Linux x64 Native AOT published in 15.602s and executed in 1.397s, exit0:
+150 original test functions and 87 authored controls. Final independent evidence ACK:
+artifacts/emit/ts-transforms/acceptance-independent-review.json. Original functions, table rows
+and xUnit records are distinct. Evidence: validation/results/emit-ts-transforms-verified.json.
 
-Next coherent dependencies: full printer/writers/utilities in the print lane;
-genuine Binder ReferenceResolver, checker EmitResolver and required NodeBuilder
-serialization/tracking in the foundation lane; remaining 70 original printer tests
-and reference integration in the inventory lane. Chain/TransformOptions follow
-real resolver contracts, never placeholder objects. Continue immediately after
-the accepted prerequisite commit; no renewed user assignment is needed.
+Original ImportElision's 20 output assertions are preserved with an explicitly
+adapted genuine Program host. Authored 34 TS-stage controls now compare full public
+diagnostics as well as exact output, strengthened before acceptance from codes/order
+only. Future families reuse that projector; code arrays are never called complete
+diagnostics. Declaration-emit diagnostics and full compiler emission remain later gates.
+One initial production build and two compile-only test attempts resolved API joins;
+the third test invocation was the first behavior run and passed. No behavior
+expectations were weakened. Retained regression and Native publication passed first try.
 
-Active implementation update: complete printer/writers/utilities, genuine resolver
-and non-hover NodeBuilder serialization/COW/Chain, shared Transformer Utilities
-(22 functions)/Destructuring(28), and complete TypeEraser(5) are independently
-source-reviewed. Managed test5 passed169 cases with no failures/skips, including all
-149 original upstream functions and all69 original TypeEraser rows. Retained832 checker,84 type-system and101 selectedno-emit cases also passed:1,186
-total,zero failures/skips. NativeAOT published20.206s and executed149originalfunctions
-plus46authoredcontrols successfully. Independent review confirms the final
-source-bound proof; root commits this accepted prerequisite packet now. All commands are complete; no
-build or test process remains active. Evidence: `validation/results/emit-printer-resolver-verified.json`.
+**Next coherent subsystem: complete ES transforms.** Release source freeze after
+this TS commit and immediately activate the agreed GPT-6.1 Sol lanes:
+- emit_foundation: ESDecorator and NamedEvaluation (3,286 upstream lines).
+- emit_print_maps: ClassFields and ClassThis (3,646 upstream lines).
+- emit_inventory: remaining 13 counterparts, including Async, ForAwait, Using,
+  ObjectRestSpread, shared Utilities and genuine Definitions (4,319 upstream lines).
+Inventory owns shared full-diagnostic/output harness registration. All lanes agreed
+shared helper APIs and byte-backed names during read-only preparation. No ES source
+edits yet at this commit; release immediately afterward. There are no direct upstream tests in the ES package; authored genuine
+Program/pinned-Go comparisons supplement, never replace, final original compiler tests.
+Each lane reviews another lane independently; root coordinates a whole-family build,
+source-map merge and acceptance. No partial factory placeholders in Definitions.
+Continue through ES, JSX, modules, declarations and Program output to whole-emit
+acceptance; subsystem commits do not end the mandate.
 
-Test1 exposed four failures; test2 and test3 stopped at compile joins; test4 passed
-168/169 with one authored comment expectation mismatch. Genuine Go/C# observations
-proved exact matching comment bytes: the original printer adds one indentation
-space before preserved U+200B. Only the authored expected string changed, independently
-reviewed against Go. No original assertions weakened or production change for it.
-Review earlier closed actual computed-name/mapper omissions, single-quote/context
-flag semantics and accessor comment ranges. Genuine Program Go witnesses are retained.
-Sources/build metadata remain frozen until accepted checkpoint; root owns all builds.
+Retain source and execution reviews from `34ade775`; no broad repeat. Its review
+closed actual computed-name/mapper omissions, quote/context semantics and accessor
+comment ranges. Test1 had four failures; test2/3 stopped on compile joins; test4 had
+one authored expected-comment mismatch. Direct Go/C# bytes proved the implementation
+already matched; only authored expected indentation changed. Final test5 and Native
+passed without weakening originals. There are59 harmless tab-only blank lines in the
+new synthetic test wrapper; staging check reported them at commit. No cleanup campaign
+or behavioral rerun is warranted; formatting may be handled on relevant future edits.
 
-Next assignment is prepared, starts immediately after coherent gate/commit:
-- foundation: complete TS Metadata+TypeSerializer and ES Utilities prerequisites;
-- inventory: ImportElision+all20originalrows, RuntimeSyntax+completeTS Utilities;
-- maps: complete LegacyDecorators48functions.
-All output controls use real Program/resolver and actual pinned-Go transform order;
-ES chain definitions wait for actual full ES transform factories, never stand-ins.
-Root integrates shared registrations and future complete output/Program gates.
-
-Latest user clarifications: retain meaningful Go file/line anchors in new ports;
-historical methods are not uniformly anchored and no broad cleanup is requested.
-Do not stop after answering tangents. Earliest retained allocation evidence confirms
-52,015,179,472 sampled cumulative bytes (52.02GB/48.44GiB), ReleaseCoreCLR. The preferred
-chat performance summary now records this, separately from later matched profiling;
-no new performance workload. Its documentation correction was committed separately as `1eecad58`.
+Latest user clarifications: meaningful Go file/line anchors remain in new ports;
+historical methods are not uniformly anchored. Do not stop after answering tangents.
+The preferred chat performance summary now records first sampled cumulative allocation
+52,015,179,472bytes (52.02GB/48.44GiB), ReleaseCoreCLR, distinctly from later matched
+profiles; correction committed separately at `1eecad58`. No new performance workload.
 
 The full-output registry is prepared: 12,824 original fixtures, 15,330 decoded
 configurations, seven original expansion failures preserved separately. Original
@@ -91,8 +87,7 @@ source-map42, transform2 original functions; compiler emit file contains three
 benchmarks (including the line-break control). Original function counts are distinct from data rows/executed outcomes.
 
 User's documentation tangent is complete: the performance summary now contains
-the preferred chat text, committed separately at `13a89a0b`. Emit source remains
-uncommitted and active; do not interpret that documentation commit as a work stop.
+the preferred chat text, committed separately at `13a89a0b`. Emit continues autonomously; do not interpret documentation or subsystem commits as a work stop.
 
 # Accepted final delivery checkpoint (2026-10-11)
 
@@ -1940,3 +1935,4 @@ exports/re-exports, cycles and cross-file generic calls/diagnostics. It needs a 
 mandate; package/Node resolution, broader libraries and common excluded syntax are
 separate limits. Prior callable state is in
 [CALLABLES-COMPLETION-STATE.md](./CALLABLES-COMPLETION-STATE.md).
+

@@ -124,7 +124,7 @@ private Node visit(Node node)
         }
         case Kind.ModuleDeclaration:
         {
-            if (((!Ast.IsIdentifier(node.Name()) || !Ast.IsInstantiatedModule(node, this.compilerOptions.ShouldPreserveConstEnums())) || (getInnermostModuleDeclarationFromDottedModule(node.AsModuleDeclaration()).Body == null)))
+            if (((!Ast.IsIdentifier(node.Name()) || !Ast.IsInstantiatedModule(node, this.compilerOptions.ShouldPreserveConstEnums())) || (RuntimeSyntaxTransformer.GetInnermostModuleDeclarationFromDottedModule(node.AsModuleDeclaration()).Body == null)))
             {
                 return this.elide(node);
             }
@@ -445,11 +445,4 @@ private Node visit(Node node)
 }
 
 
-// Genuine demanded shared leaf, runtimesyntax.go:990; retain dotted-module traversal.
-private static ModuleDeclaration getInnermostModuleDeclarationFromDottedModule(ModuleDeclaration moduleDeclaration)
-{
-    while (moduleDeclaration.Body != null && moduleDeclaration.Body.Kind == Kind.ModuleDeclaration)
-        moduleDeclaration = moduleDeclaration.Body.AsModuleDeclaration();
-    return moduleDeclaration;
-}
 }

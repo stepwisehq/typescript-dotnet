@@ -140,7 +140,9 @@
         "adaptation": "Concrete AsX performs a direct standard C# checked payload test, with the original data fallback preserving bare-header null and wrong-payload exception behavior. Applicable Node/Type/Mapper forwarding methods join the existing virtual override chain instead of first casting to a payload base. Real nullable interface views and cache algorithms remain. IterChildren overrides expose the already-public inherited operation; both source generators retain the adaptation.",
         "evidence": "artifacts/vscode-allocation-rollout/integration-21/build-1/regressions/final-acceptance-peer-review.json"
       },
-      "emitFactoryCompositionAdaptation": "Unsealed NodeFactory partial declarations permit printer factory inheritance matching upstream embedded AST factory; same instance and hooks preserved. Generator template updated; accepted algorithms unchanged."
+      "emitFactoryCompositionAdaptation": "Unsealed NodeFactory partial declarations permit printer factory inheritance matching upstream embedded AST factory; same instance and hooks preserved. Generator template updated; accepted algorithms unchanged.",
+      "emitTsNominalInterfaceAdaptation": "SourceFile explicitly declares HasFileName using its existing FileName/PathKey implementations: Go implicit interface satisfaction requires a C# declaration. No wrapper, identity or algorithm change.",
+      "emitTsCampaignEvidence": "validation/results/emit-ts-transforms-verified.json"
     },
     {
       "upstream": "tsc/internal/core/options_generated.go",
@@ -2550,7 +2552,11 @@
       "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
       "emitFunctionCount": 85,
       "emitCampaignReview": "docs/progress/emit-foundation.md",
-      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json",
+      "emitTsCampaignDelta": "Focused newly demanded borrowed consumer overload; accepted existing family unchanged otherwise",
+      "emitTsSourceSha256": "6823691acf5184ba8d1f6a13a8182d182a50a2a58320c89d2c0aef26d5930096",
+      "emitTsCampaignState": "independently reviewed; managed and actual Linux x64 Native AOT accepted",
+      "emitTsCampaignEvidence": "validation/results/emit-ts-transforms-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/emitflags.go",
@@ -6386,7 +6392,11 @@
       "emitCampaignState": "Accepted prerequisite implementation with independent source/assertion review and actual Linux x64 Native AOT; full output integration remains pending.",
       "emitFunctionCount": 91,
       "emitCampaignReview": "docs/progress/emit-foundation.md",
-      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json"
+      "emitCampaignEvidence": "validation/results/emit-foundation-verified.json",
+      "emitTsCampaignDelta": "Focused newly demanded borrowed consumer overload; accepted existing family unchanged otherwise",
+      "emitTsSourceSha256": "71aa1d1ee6a8a9c82ef17b9d2a762bf29c1c0f7d03a0da21aca98e3b9bbf1c67",
+      "emitTsCampaignState": "independently reviewed; managed and actual Linux x64 Native AOT accepted",
+      "emitTsCampaignEvidence": "validation/results/emit-ts-transforms-verified.json"
     },
     {
       "upstream": "tsc/internal/printer/namegenerator.go",
@@ -6765,23 +6775,12 @@
       "upstream": "tsc/internal/transformers/tstransforms/typeeraser.go",
       "destination": "src/TypeScript.Scanner/Transformers/TsTransforms/TypeEraser.cs",
       "status": "ported",
-      "scope": "Complete pinned file; source review clear. Integrated managed originals pass; one separate authored printer comment control failure unresolved. Actual Native AOT and whole-output integration pending.",
+      "scope": "Complete pinned source file; original algorithms and required ownership preserved. Implementation review and TS-stage output/diagnostic evidence are distinct from later whole-emit corpus acceptance.",
       "upstreamSha256": "9767b3daf118c51e5e0d63f32165f888d355972849b2aeae29f704781cfa5b7c",
       "emitFunctionCount": 5,
       "emitCampaignReview": "artifacts/emit/source-review/typeeraser-independent-review.json",
-      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json",
-      "emitCampaignState": "implemented and independently source-reviewed; managed and Linux x64 Native AOT dependency gates passed, subject to documented observations and excluded scope"
-    },
-    {
-      "upstream": "tsc/internal/transformers/tstransforms/runtimesyntax.go",
-      "destination": "src/TypeScript.Scanner/Transformers/TsTransforms/TypeEraser.cs",
-      "status": "partial",
-      "scope": "Only genuine demanded getInnermostModuleDeclarationFromDottedModule, original line990; all other RuntimeSyntax functions unimplemented.",
-      "upstreamSha256": "a88e5d803f09e2fbbb07c493896325eb151fe662d82521aefc8ff680ebf95728",
-      "emitFunctionCount": 1,
-      "emitCampaignReview": "artifacts/emit/source-review/typeeraser-independent-review.json",
-      "emitCampaignState": "implemented and independently source-reviewed; managed and Linux x64 Native AOT dependency gates passed, subject to documented observations and excluded scope",
-      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json"
+      "emitCampaignEvidence": "validation/results/emit-ts-transforms-verified.json",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance."
     },
     {
       "upstream": "tsc/internal/printer/printer_test.go",
@@ -6819,20 +6818,116 @@
       "destination": [
         "validation/Emit.Checks/TypeEraserChecks.cs"
       ],
-      "status": "ported-tests",
-      "scope": "Original function bodies, options, expected output and parser diagnostics shared by xUnit and actual Native runner. Managed originals passed; Native pending.",
+      "status": "ported",
+      "scope": "Complete pinned source file; original algorithms and required ownership preserved. Implementation review and TS-stage output/diagnostic evidence are distinct from later whole-emit corpus acceptance.",
       "upstreamSha256": "e91bc729bb1bccfe45fb3639504c3b2d182f8050c2c3ed42cfd2abac57c7a08d",
       "originalTestFunctionCount": 1,
       "originalNamedTableRows": 69,
       "emitCampaignReview": "artifacts/emit/source-review/typeeraser-independent-review.json",
-      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json",
-      "emitCampaignState": "implemented and independently source-reviewed; managed and Linux x64 Native AOT dependency gates passed, subject to documented observations and excluded scope"
+      "emitCampaignEvidence": "validation/results/emit-ts-transforms-verified.json",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance."
+    },
+    {
+      "upstream": "tsc/internal/transformers/tstransforms/metadata.go",
+      "destination": "src/TypeScript.Scanner/Transformers/TsTransforms/Metadata.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; original algorithms and required ownership preserved. Implementation review and TS-stage output/diagnostic evidence are distinct from later whole-emit corpus acceptance.",
+      "upstreamSha256": "deb8141e2cb60e095f67d55c50ad51e1a61d66f6ce7813d3891a0e00f8868031",
+      "emitFunctionCount": 19,
+      "excludedSymbols": [],
+      "emitCampaignReview": "artifacts/emit/source-review/ts-metadata-serializer.json",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "adaptations": "C# class composition and explicit saved-context value copies/restoration preserve Go ownership. Borrowed UTF8 comparisons and Slice headers retain accepted representation. Metadata disabled new-format selector remains false with complete original branch bodies retained.",
+      "emitCampaignEvidence": "validation/results/emit-ts-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/tstransforms/typeserializer.go",
+      "destination": "src/TypeScript.Scanner/Transformers/TsTransforms/TypeSerializer.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; original algorithms and required ownership preserved. Implementation review and TS-stage output/diagnostic evidence are distinct from later whole-emit corpus acceptance.",
+      "upstreamSha256": "2b4de9509c8989b6608fc9adf4d0fd788a5fc8ea5a77e50ec9945c2d0c56063c",
+      "emitFunctionCount": 22,
+      "excludedSymbols": [],
+      "emitCampaignReview": "artifacts/emit/source-review/ts-metadata-serializer.json",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "adaptations": "Serializer context is a value struct copied/restored for each request. Byte-header comparisons preserve Go string comparisons; actual emit resolver supplies classifications and lexical ownership.",
+      "emitCampaignEvidence": "validation/results/emit-ts-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/tstransforms/importelision.go",
+      "destination": "src/TypeScript.Scanner/Transformers/TsTransforms/ImportElision.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; original algorithms and required ownership preserved. Implementation review and TS-stage output/diagnostic evidence are distinct from later whole-emit corpus acceptance.",
+      "upstreamSha256": "202637dea4141dfbd74d9501848c39941d387ffcb1ff14aacdceeb7005c5c405",
+      "emitFunctionCount": 7,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/ts-runtime-import.json",
+      "emitCampaignEvidence": "validation/results/emit-ts-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/tstransforms/runtimesyntax.go",
+      "destination": "src/TypeScript.Scanner/Transformers/TsTransforms/RuntimeSyntax.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; original algorithms and required ownership preserved. Implementation review and TS-stage output/diagnostic evidence are distinct from later whole-emit corpus acceptance.",
+      "upstreamSha256": "a88e5d803f09e2fbbb07c493896325eb151fe662d82521aefc8ff680ebf95728",
+      "emitFunctionCount": 40,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/ts-runtime-import.json",
+      "emitCampaignEvidence": "validation/results/emit-ts-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/tstransforms/utilities.go",
+      "destination": "src/TypeScript.Scanner/Transformers/TsTransforms/Utilities.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; original algorithms and required ownership preserved. Implementation review and TS-stage output/diagnostic evidence are distinct from later whole-emit corpus acceptance.",
+      "upstreamSha256": "38e5bf4a9c825368b086b9aa9abdf3e1e64a9e3f680336c1d21812a4261f9334",
+      "emitFunctionCount": 1,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/ts-runtime-import.json",
+      "emitCampaignEvidence": "validation/results/emit-ts-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/tstransforms/importelision_test.go",
+      "destination": [
+        "validation/Emit.Checks/ImportElisionChecks.cs",
+        "validation/Emit.Checks/TsTransformFixture.cs"
+      ],
+      "status": "ported",
+      "scope": "Complete pinned source file; original algorithms and required ownership preserved. Implementation review and TS-stage output/diagnostic evidence are distinct from later whole-emit corpus acceptance.",
+      "upstreamSha256": "05dff7695c1461b8aadc17694004fc40030c148999ace49cf07b5989fadce540",
+      "originalTestFunctionCount": 1,
+      "originalNamedTableRows": 20,
+      "emitCampaignEvidence": "validation/results/emit-ts-transforms-verified.json",
+      "emitCampaignReview": "artifacts/emit/source-review/ts-runtime-import.json",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance."
+    },
+    {
+      "upstream": "tsc/internal/transformers/tstransforms/legacydecorators.go",
+      "upstreamFunctionCount": 48,
+      "status": "ported",
+      "destination": "src/TypeScript.Scanner/Transformers/TsTransforms/LegacyDecorators.cs",
+      "scope": "Complete pinned source file; original algorithms and required ownership preserved. Implementation review and TS-stage output/diagnostic evidence are distinct from later whole-emit corpus acceptance.",
+      "emitTsSourceSha256": "974bf2ce8175af96897326bbecd26d00d829f8701f3ac442644aa35e5e68a104",
+      "upstreamSha256": "b418ecb76045a9a6c2dc9c056663d70a63b29426069d5005d2afddaf73d412f8",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignEvidence": "validation/results/emit-ts-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/collections/multimap.go",
+      "upstreamFunctionCount": 11,
+      "status": "ported",
+      "destination": "src/TypeScript.Scanner/Collections/MultiMap.cs",
+      "scope": "Complete pinned source file; original algorithms and required ownership preserved. Implementation review and TS-stage output/diagnostic evidence are distinct from later whole-emit corpus acceptance.",
+      "emitTsSourceSha256": "3a0e65c746b97748025af652d7090aa276a3a882db8d53563b2386d1dccd10f7",
+      "upstreamSha256": "97402acb9a12f0f11a41da48edda387037429bb0f43555b045d28e6a1c3a1590",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignEvidence": "validation/results/emit-ts-transforms-verified.json"
     }
   ],
   "activePhase": {
     "name": "whole-emit-dependency-completion",
     "baselineCommit": "e3131a5b",
-    "status": "Synthesis/source-map prerequisites accepted at3e78aede. Full printer and semantic/shared-transform dependency packet passed managed1186 and Linux x64 Native AOT149originalfunctions+46controls; final independent evidence review/commit underway. Remaining TS/ES/JSX/module/declaration transforms and Program output are next.",
+    "status": "Complete TypeScript transform family accepted; full ES family next, followed by JSX/modules/declarations/Program and whole-output acceptance.",
     "contract": "docs/EMIT-CONTRACT.md",
     "state": "docs/STATE.md",
     "testInventory": "docs/EMIT-TEST-INVENTORY.md",
@@ -6840,7 +6935,9 @@
     "verificationTiming": "Targeted development checks, coordinated integration builds, comprehensive subsystem/final upstream-output and Linux x64 Native AOT gates. External-project evaluations deferred until emit acceptance.",
     "prerequisiteEvidence": "validation/results/emit-foundation-verified.json",
     "prerequisiteCheckpoint": "3e78aede",
-    "printerResolverEvidence": "validation/results/emit-printer-resolver-verified.json"
+    "printerResolverEvidence": "validation/results/emit-printer-resolver-verified.json",
+    "printerResolverCheckpoint": "34ade775",
+    "tsTransformsEvidence": "validation/results/emit-ts-transforms-verified.json"
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
@@ -7042,6 +7139,19 @@
       "resolutionCampaignEvidence": "validation/results/resolution-verified.json",
       "retiredByCampaign": "docs/DECLARATIONS-CONTRACT.md",
       "retirementReason": "Obsolete authored fixed-option/profile gate replaced by genuine Program initialization; original options and libraries are consumed unchanged, unfinished semantic algorithms remain explicit."
+    },
+    {
+      "upstream": "tsc/internal/transformers/tstransforms/runtimesyntax.go",
+      "destination": "src/TypeScript.Scanner/Transformers/TsTransforms/TypeEraser.cs",
+      "status": "relocated",
+      "scope": "Only genuine demanded getInnermostModuleDeclarationFromDottedModule, original line990; all other RuntimeSyntax functions unimplemented.",
+      "upstreamSha256": "a88e5d803f09e2fbbb07c493896325eb151fe662d82521aefc8ff680ebf95728",
+      "emitFunctionCount": 1,
+      "emitCampaignReview": "artifacts/emit/source-review/typeeraser-independent-review.json",
+      "emitCampaignState": "implemented and independently source-reviewed; managed and Linux x64 Native AOT dependency gates passed, subject to documented observations and excluded scope",
+      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json",
+      "relocatedTo": "src/TypeScript.Scanner/Transformers/TsTransforms/RuntimeSyntax.cs",
+      "retirementReason": "The accepted demanded leaf moved unchanged into the complete mapped RuntimeSyntax counterpart."
     }
   ],
   "acceptedDeclarationsCheckpoint": {

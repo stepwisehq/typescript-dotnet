@@ -483,7 +483,7 @@ public struct ContentMapperSourceFileInfo
     public SourceFile CanonicalSourceFile;
 }
 
-public sealed partial class SourceFile : CompositeNodeData, SourceFileLike, ISourceTextFileLike
+public sealed partial class SourceFile : CompositeNodeData, SourceFileLike, ISourceTextFileLike, HasFileName
 {
     internal SourceFileParseOptions parseOptions;
     // Authored filename-role boundary: Go ast.SourceFile stores the raw filename

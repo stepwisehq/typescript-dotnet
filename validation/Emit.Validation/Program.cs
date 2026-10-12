@@ -5,6 +5,7 @@ originalFunctions += NameGeneratorChecks.RunAll();
 originalFunctions += PrinterChecks.RunAll();
 originalFunctions += PrinterUtilityChecks.RunAll();
 originalFunctions += TypeEraserChecks.RunAll();
+originalFunctions += ImportElisionChecks.RunAll();
 Console.WriteLine($"Original emit test functions executed: {originalFunctions}");
-int authoredControls = SourceMapChecks.AuthoredCaseCount + FoundationChecks.RunAll() + ResolverChecks.RunAll() + PrinterUtilityChecks.RunAuthoredControls() + FormatUintControls.RunAll() + PrinterCommentControls.RunAll();
+int authoredControls = SourceMapChecks.AuthoredCaseCount + FoundationChecks.RunAll() + ResolverChecks.RunAll() + PrinterUtilityChecks.RunAuthoredControls() + FormatUintControls.RunAll() + PrinterCommentControls.RunAll() + MetadataChecks.RunAll() + TsRuntimeChecks.RunAll() + MultiMapControls.RunAll();
 Console.WriteLine($"Authored emit controls executed: {authoredControls}");

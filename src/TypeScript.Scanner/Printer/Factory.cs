@@ -22,16 +22,18 @@ internal sealed class NodeFactory : TypeScript.Scanner.NodeFactory
     private readonly EmitContext emitContext;
     internal NodeFactory(EmitContext context) : base(new NodeFactoryHooks { OnCreate = context.onCreate, OnUpdate = context.onUpdate, OnClone = context.onClone }) => emitContext = context;
     private Node newGeneratedIdentifier(GeneratedIdentifierFlags kind, string text, Node node, AutoGenerateOptions options)
+        => newGeneratedIdentifier(kind, ByteStringValue.FromString(text), node, options);
+    private Node newGeneratedIdentifier(GeneratedIdentifierFlags kind, ByteStringValue text, Node node, AutoGenerateOptions options)
     {
         uint id = unchecked((uint)System.Threading.Interlocked.Increment(ref EmitContext.nextAutoGenerateId));
         if (text.Length == 0)
         {
-            text = node == null ? "(auto@" + id.ToString(System.Globalization.CultureInfo.InvariantCulture) + ")"
+            string generatedText = node == null ? "(auto@" + id.ToString(System.Globalization.CultureInfo.InvariantCulture) + ")"
                 : Ast.IsMemberName(node) ? node.Text()
                 : "(generated@" + Ast.GetNodeId(emitContext.getNodeForGeneratedNameWorker(node, id)).ToString(System.Globalization.CultureInfo.InvariantCulture) + ")";
-            text = FormatGeneratedName(false, options.Prefix, text, options.Suffix);
+            text = ByteStringValue.FromString(FormatGeneratedName(false, options.Prefix, generatedText, options.Suffix));
         }
-        var name = NewIdentifier(text);
+        var name = NewIdentifierWithTextValue(text);
         emitContext.autoGenerate ??= new(ReferenceEqualityComparer.Instance);
         emitContext.autoGenerate[name] = new() { Id = id, Flags = kind | (options.Flags & ~GeneratedIdentifierFlags.KindMask), Prefix = options.Prefix, Suffix = options.Suffix, Node = node };
         return name;
@@ -97,6 +99,11 @@ public Node NewUniqueNameEx(string text, AutoGenerateOptions options)
 {
     return this.newGeneratedIdentifier(GeneratedIdentifierFlags.Unique, text, null, options);
 }
+
+// factory.go:84/89. Borrowed source spelling follows the same generated-ID worker.
+public Node NewUniqueName(ByteStringValue text) => NewUniqueNameEx(text, new AutoGenerateOptions());
+public Node NewUniqueNameEx(ByteStringValue text, AutoGenerateOptions options)
+    => newGeneratedIdentifier(GeneratedIdentifierFlags.Unique, text, null, options);
 
 // Allocates a new unique name based on the provided node.
 // Upstream upstream/TypeScript/tsc/internal/printer/factory.go:94:1.

@@ -86,3 +86,26 @@ families and Program output are still ahead. Three hover-only serialization meth
 remain outside emit; only one RuntimeSyntax leaf exists until the next family.
 Full original no-emit and complete output-corpus gates remain final integrated
 obligations. No external-project or new performance measurements were run.
+
+## Complete TypeScript transform family
+
+Use the same commands above with output path `artifacts/emit/ts-transforms/native`.
+The integrated managed run passed 205 emit cases; retained gates passed 832 checker,
+84 type-system and 101 selected no-emit cases: 1,222 total, no failures/skips.
+Actual Linux x64 Native AOT publication passed in 15.602s; execution passed in
+1.397s with 150 original test functions and 87 authored controls.
+
+[Evidence](../validation/results/emit-ts-transforms-verified.json) binds source reviews,
+raw TRX, reference observations, actual ILC inputs and the executable. The original
+ImportElision function's 20 rows retain exact outputs with a documented genuine
+Program host adaptation. Authored runtime/decorator/metadata controls (34 cases)
+compare output and full public diagnostic fields/channels, including recursive
+messages and related information; only fixture-root relocation is normalized.
+Seven authored MultiMap controls cover public behavior. Original output-only tests
+are not represented as semantic/compiler acceptance. Declaration-emit diagnostics
+remain a later dependency; full output-corpus and original no-emit acceptance remain
+mandatory at final integration.
+
+Initial build and two test attempts failed compilation at API/interface joins; no
+assertions executed then. The third test attempt passed, followed by first-attempt
+retained gates and Native publication. No external-project/performance run occurred.

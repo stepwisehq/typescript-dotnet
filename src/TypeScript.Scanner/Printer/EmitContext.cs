@@ -304,7 +304,10 @@ internal sealed class EmitContext
         foreach (var helper in emitHelpers) helpers = helpers.Append(helper);
         emitHelpers.AsSpan().Clear(); emitHelpers = emitHelpers.Slice2(0, 0); emitHelperSet.Clear(); return helpers;
     }
-    internal void AddEmitHelper(Node node, params EmitHelper[] helpers)
+    internal void AddEmitHelper(Node node, params EmitHelper[] helpers) => AddEmitHelper(node, (ReadOnlySpan<EmitHelper>)helpers);
+    // New variadic slice callers borrow the Go header without an owned array copy.
+    internal void AddEmitHelper(Node node, Slice<EmitHelper> helpers) => AddEmitHelper(node, helpers.AsSpan());
+    private void AddEmitHelper(Node node, ReadOnlySpan<EmitHelper> helpers)
     {
         ref var data = ref emitNodes.Get(node);
         foreach (var helper in helpers) data.helpers = Core.AppendIfUnique(data.helpers, helper);
