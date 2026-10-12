@@ -17,20 +17,23 @@ internal sealed class ProtocolRequestContext
     private readonly CapabilityOwner capabilities;
     internal readonly CancellationToken Cancellation;
     internal readonly LocaleValue Locale;
+    // locale.HasLocale distinguishes absent context data from explicit und/default.
+    internal readonly bool HasLocale;
     internal readonly ByteStringValue RequestID;
     internal readonly CheckerLifetime CheckerLifetime;
     internal readonly FormatCodeSettings? FormatSettings;
     internal readonly ByteStringValue? FormatHostNewLine;
     internal ref readonly ResolvedClientCapabilities ClientCapabilities => ref capabilities.Value;
 
-    internal ProtocolRequestContext(CancellationToken cancellation, LocaleValue locale, ResolvedClientCapabilities capabilities) : this(cancellation, locale, new CapabilityOwner(capabilities), default, TypeScript.Scanner.CheckerLifetime.Temporary, null, null)
+    internal ProtocolRequestContext(CancellationToken cancellation, LocaleValue locale, ResolvedClientCapabilities capabilities) : this(cancellation, locale, new CapabilityOwner(capabilities), default, TypeScript.Scanner.CheckerLifetime.Temporary, null, null, true)
     {
     }
 
-    private ProtocolRequestContext(CancellationToken cancellation, LocaleValue locale, CapabilityOwner capabilities, ByteStringValue requestID, CheckerLifetime checkerLifetime, FormatCodeSettings? formatSettings, ByteStringValue? formatHostNewLine)
+    private ProtocolRequestContext(CancellationToken cancellation, LocaleValue locale, CapabilityOwner capabilities, ByteStringValue requestID, CheckerLifetime checkerLifetime, FormatCodeSettings? formatSettings, ByteStringValue? formatHostNewLine, bool hasLocale)
     {
         Cancellation = cancellation;
         Locale = locale;
+        HasLocale = hasLocale;
         this.capabilities = capabilities;
         RequestID = requestID;
         CheckerLifetime = checkerLifetime;
@@ -38,13 +41,15 @@ internal sealed class ProtocolRequestContext
         FormatHostNewLine = formatHostNewLine;
     }
 
-    internal static readonly ProtocolRequestContext Default = new(default, default, default(ResolvedClientCapabilities));
-    internal ProtocolRequestContext WithCancellationToken(CancellationToken cancellation) => new(cancellation, Locale, capabilities, RequestID, CheckerLifetime, FormatSettings, FormatHostNewLine);
-    internal ProtocolRequestContext WithLocale(LocaleValue locale) => new(Cancellation, locale, capabilities, RequestID, CheckerLifetime, FormatSettings, FormatHostNewLine);
-    internal ProtocolRequestContext WithClientCapabilities(ResolvedClientCapabilities value) => new(Cancellation, Locale, new CapabilityOwner(value), RequestID, CheckerLifetime, FormatSettings, FormatHostNewLine);
-    internal ProtocolRequestContext WithRequestID(ByteStringValue requestID) => new(Cancellation, Locale, capabilities, requestID, CheckerLifetime, FormatSettings, FormatHostNewLine);
-    internal ProtocolRequestContext WithCheckerLifetime(CheckerLifetime lifetime) => new(Cancellation, Locale, capabilities, RequestID, lifetime, FormatSettings, FormatHostNewLine);
-    internal ProtocolRequestContext WithFormatCodeSettings(FormatCodeSettings settings, ByteStringValue newLine) => new(Cancellation, Locale, capabilities, RequestID, CheckerLifetime, settings, newLine);
+    // Explicit constructor locale arguments install a value; the background default
+    // has no locale context value until WithLocale is called.
+    internal static readonly ProtocolRequestContext Default = new(default, default, new CapabilityOwner(default), default, TypeScript.Scanner.CheckerLifetime.Temporary, null, null, false);
+    internal ProtocolRequestContext WithCancellationToken(CancellationToken cancellation) => new(cancellation, Locale, capabilities, RequestID, CheckerLifetime, FormatSettings, FormatHostNewLine, HasLocale);
+    internal ProtocolRequestContext WithLocale(LocaleValue locale) => new(Cancellation, locale, capabilities, RequestID, CheckerLifetime, FormatSettings, FormatHostNewLine, true);
+    internal ProtocolRequestContext WithClientCapabilities(ResolvedClientCapabilities value) => new(Cancellation, Locale, new CapabilityOwner(value), RequestID, CheckerLifetime, FormatSettings, FormatHostNewLine, HasLocale);
+    internal ProtocolRequestContext WithRequestID(ByteStringValue requestID) => new(Cancellation, Locale, capabilities, requestID, CheckerLifetime, FormatSettings, FormatHostNewLine, HasLocale);
+    internal ProtocolRequestContext WithCheckerLifetime(CheckerLifetime lifetime) => new(Cancellation, Locale, capabilities, RequestID, lifetime, FormatSettings, FormatHostNewLine, HasLocale);
+    internal ProtocolRequestContext WithFormatCodeSettings(FormatCodeSettings settings, ByteStringValue newLine) => new(Cancellation, Locale, capabilities, RequestID, CheckerLifetime, settings, newLine, HasLocale);
 }
 
 internal static class ProtocolContexts

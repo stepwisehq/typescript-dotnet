@@ -23,5 +23,40 @@ privileges or system mutation is required for verification.
 
 Work is preserved outside compilation under
 `artifacts/language-services/drafts/fswatch` and the existing server draft directory.
-No watcher source has been promoted or behavior accepted yet. Root coordinates
+The complete production closure is now promoted for one combined root integration
+build with Session/Snapshot. [Direct mapping and source hashes](./lsp-watcher-mapping.json)
+bind the saved owners and required native support. No behavior is accepted yet. Root coordinates
 whole-owner integration, original assertions and actual Native transport gates.
+
+Current source boundary: complete shared event/debounce/subscription/fallback
+and path-comparison owners, Linux inotify, fanotify dispatch/FID parsing and direct
+Linux x64 syscall transport are written and promoted together. The native walk keeps
+one8192-byte buffer per walk; directory names, inotify names and FID map keys retain
+the original required string copies before buffers are reused. Fanotify availability
+is probed before installing its factory; per-filesystem fallback remains separate.
+The complete LSP subscription wrapper is saved and promoted with the backend owners, including
+missing-directory ancestor promotion, root deletion recovery, original synthetic-create
+behavior and75ms coalescing. Portable walk assertions, complete applicable original
+watcher assertions and final API/source reconciliation remain in progress. Source is ready for central diagnostic compilation; independent source review and
+all candidate managed/Native watcher behavior remain pending.
+
+A required Session context join is saved separately: request context now records
+whether locale was installed. Background Default is absent; an explicit locale
+constructor or WithLocale is present, including und/default; unrelated derivations
+preserve the flag. Foundation independently reviewed this focused owner join;
+execution remains part of the next coordinated integration.
+
+Independent review reconciled the complete production watcher family and found two
+corrections: the raw-name Stringer projection and Go timer admission. Both are saved.
+Debounce now makes nonpositive durations immediately ready; durations exceeding the
+CLR per-timer limit use bounded standard timers against the same absolute monotonic
+deadline. Normal positive delays retain the direct standard timer. Required original
+assertion ports and candidate managed/Native watcher execution remain pending.
+
+## Original fixture drafting resume
+
+The durable ignored `artifacts/language-services/drafts/watcher-checks/` now retains all16 LSP watcher assertions, all7 event-list assertions and all5 fallback assertions. They remain outside compilation and are not behavioral evidence. Fallback fixture promotion requires only explicit retained Primary/Secondary field visibility and the existing package fanotify watcher field accessibility for the exact original identity assertions; no substitute backend result is used. The original injected errors.Join spelling is retained as a newline with marker identity, distinct from the real production fmt.Errorf colon wrapping. Remaining required Linux fanotify/walkdir/broad watcher assertions are still pending.
+
+## First complete original assertion packet promoted
+
+[Assertion mapping](./lsp-watcher-assertions.json) binds46 whole original functions: LSP16, event-list7, fallback5, native/generic walkdir8, path4 and internal6. Every function retains its original assertions and actual relevant backend/callback owner; source-defined permission skips remain explicit. The remaining77 broad watcher and8 Linux fanotify functions are still pending. The two backend identity projections and package fanotify field visibility are assertion-only accessibility joins, with storage and behavior unchanged. Source preflight/formatter are complete; independent review and coordinated managed/Native behavior are pending. No candidate test execution has occurred.

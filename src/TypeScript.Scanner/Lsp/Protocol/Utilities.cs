@@ -7,6 +7,9 @@ namespace TypeScript.Lsp.Protocol;
 
 internal static class ProtocolUtilities
 {
+    // internal/lsp/lsproto/lsp.go:389. Unknown first values are retained.
+    internal static MarkupKind PreferredMarkupKind(Slice<MarkupKind> formats) => formats.Count > 0 ? formats[0] : MarkupKind.PlainText;
+
     internal static int ComparePositions(Position position, Position other)
     {
         int lineComparison = position.Line.CompareTo(other.Line);

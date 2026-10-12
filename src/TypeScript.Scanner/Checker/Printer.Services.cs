@@ -12,9 +12,13 @@ public sealed partial class Checker
 {
     // printer.go:52/55. Public display retains the existing Unicode boundary.
     private static NodeBuilderFlags toNodeBuilderFlags(TypeFormatFlags flags) => (NodeBuilderFlags)(flags & TypeFormatFlags.NodeBuilderFlagsMask);
-    internal string TypeToStringEx(Type type, Node enclosingDeclaration, TypeFormatFlags flags, VerbosityContext verbosity) => ScannerString.ToJsString(typeToStringEx(type, enclosingDeclaration, flags: toNodeBuilderFlags(flags), verbosity: verbosity));
+    internal string TypeToStringEx(Type type, Node enclosingDeclaration, TypeFormatFlags flags, VerbosityContext verbosity) => ScannerString.ToJsString(TypeToStringExValue(type, enclosingDeclaration, flags, verbosity).Materialize());
+    // printer.go:43/47. Keep the ordinary default alias/unique-symbol flag path.
+    internal ByteStringValue TypeToStringValue(Type type) => typeToStringExValue(type, null);
+    internal ByteStringValue TypeToStringExValue(Type type, Node enclosingDeclaration, TypeFormatFlags flags, VerbosityContext verbosity) => typeToStringExValue(type, enclosingDeclaration, flags: toNodeBuilderFlags(flags), verbosity: verbosity);
     // printer.go:183/187.
-    internal string SignatureToStringEx(Signature signature, Node enclosingDeclaration, TypeFormatFlags flags, VerbosityContext verbosity)
+    internal string SignatureToStringEx(Signature signature, Node enclosingDeclaration, TypeFormatFlags flags, VerbosityContext verbosity) => ScannerString.ToJsString(SignatureToStringExValue(signature, enclosingDeclaration, flags, verbosity).Materialize());
+    internal ByteStringValue SignatureToStringExValue(Signature signature, Node enclosingDeclaration, TypeFormatFlags flags, VerbosityContext verbosity)
     {
         bool isConstructor = (signature.flags & SignatureFlags.Construct) != 0 && (flags & TypeFormatFlags.WriteCallStyleSignature) == 0;
         var kind = (flags & TypeFormatFlags.WriteArrowStyleSignature) != 0 ? (isConstructor ? Kind.ConstructorType : Kind.FunctionType) : (isConstructor ? Kind.ConstructSignature : Kind.CallSignature);
@@ -30,14 +34,14 @@ public sealed partial class Checker
             {
                 var writer = Printing.TextWriter.NewTextWriter("\n", 0);
                 printer.Write(node, writer, sourceFile);
-                return ScannerString.ToJsString(writer.String());
+                return writer.TextValue();
             }
 
             var(singleLineWriter, putWriter) = Printing.singleLineStringWriter.GetSingleLineStringWriter();
             try
             {
                 printer.Write(node, sourceFile, singleLineWriter);
-                return ScannerString.ToJsString(singleLineWriter.String());
+                return singleLineWriter.TextValue();
             }
             finally
             {
@@ -52,7 +56,8 @@ public sealed partial class Checker
     }
 
     // printer.go:300.
-    internal string ExpandSymbolForHover(Symbol symbol, SymbolFlags meaning, VerbosityContext verbosity)
+    internal string ExpandSymbolForHover(Symbol symbol, SymbolFlags meaning, VerbosityContext verbosity) => ScannerString.ToJsString(ExpandSymbolForHoverValue(symbol, meaning, verbosity).Materialize());
+    internal ByteStringValue ExpandSymbolForHoverValue(Symbol symbol, SymbolFlags meaning, VerbosityContext verbosity)
     {
         var builder = getNodeBuilder();
         var oldVerbosity = builder.verbosity;
@@ -61,7 +66,7 @@ public sealed partial class Checker
         {
             var nodes = builder.ExpandSymbolForHover(symbol, meaning);
             if (nodes.Count == 0)
-                return "";
+                return default;
             var printer = new Printing.Printer(builder.EmitContext(), true);
             var sourceFile = symbol.ValueDeclaration != null ? Ast.GetSourceFileOfNode(symbol.ValueDeclaration) : null;
             var output = new GoBuilder();
@@ -69,10 +74,10 @@ public sealed partial class Checker
             {
                 if (i > 0)
                     output.WriteString("\n");
-                output.WriteString(printer.Emit(nodes[i], sourceFile));
+                output.WriteString(printer.EmitValue(nodes[i], sourceFile));
             }
 
-            return ScannerString.ToJsString(output.String());
+            return output.Value();
         }
         finally
         {
@@ -82,7 +87,8 @@ public sealed partial class Checker
     }
 
     // printer.go:328.
-    internal string TypeParameterToStringEx(Type type, Node enclosingDeclaration, VerbosityContext verbosity)
+    internal string TypeParameterToStringEx(Type type, Node enclosingDeclaration, VerbosityContext verbosity) => ScannerString.ToJsString(TypeParameterToStringExValue(type, enclosingDeclaration, verbosity).Materialize());
+    internal ByteStringValue TypeParameterToStringExValue(Type type, Node enclosingDeclaration, VerbosityContext verbosity)
     {
         var builder = getNodeBuilder();
         var oldVerbosity = builder.verbosity;
@@ -91,9 +97,9 @@ public sealed partial class Checker
         {
             var node = builder.TypeParameterToDeclaration(type, enclosingDeclaration, NodeBuilderFlags.IgnoreErrors, InternalFlags.None, null);
             if (node == null)
-                return TypeToString(type);
+                return typeToStringExValue(type, null);
             var sourceFile = enclosingDeclaration != null ? Ast.GetSourceFileOfNode(enclosingDeclaration) : null;
-            return ScannerString.ToJsString(new Printing.Printer(builder.EmitContext(), true).Emit(node, sourceFile));
+            return new Printing.Printer(builder.EmitContext(), true).EmitValue(node, sourceFile);
         }
         finally
         {
@@ -102,7 +108,7 @@ public sealed partial class Checker
         }
     }
 
-// printer.go:288. A fresh builder retains the caller's exact identifier-symbol map;
+    // printer.go:288. A fresh builder retains the caller's exact identifier-symbol map;
     // its returned nodes keep their real factory ownership, matching getNodeBuilderEx.
     internal Node TypeToTypeNode(Type type, Node enclosingDeclaration, NodeBuilderFlags flags, Dictionary<Node, Symbol> idToSymbol)
     {

@@ -12,22 +12,23 @@ namespace TypeScript.ProjectSystem;
 internal sealed class ProjectCheckerPool : ICheckerPool
 {
     private static readonly ByteStringValue anonymous = ByteStringValue.FromString("<anonymous>");
-    private readonly object gate = new();
-    private readonly CheckerPoolOptions opts;
-    private readonly Program program;
-    private readonly Checker? [] checkers;
+    internal readonly object gate = new();
+    internal readonly CheckerPoolOptions opts;
+    internal readonly Program program;
+    internal readonly Checker? [] checkers;
     private readonly ByteStringValue[] heldBy;
-    private readonly Dictionary<SourceFile, int> fileAssociations = new(ReferenceEqualityComparer.Instance);
-    private readonly Dictionary<ByteStringKey, int> requestAssociations = new();
+    internal readonly Dictionary<SourceFile, int> fileAssociations = new(ReferenceEqualityComparer.Instance);
+    internal readonly Dictionary<ByteStringKey, int> requestAssociations = new();
     private readonly long[] lastReleased;
     private readonly int[] globalDiagCheckerCount;
     private readonly SemaphoreSlim diagSem = new(1, 1);
-    private readonly SemaphoreSlim querySem;
+    internal readonly SemaphoreSlim querySem;
     private readonly SemaphoreSlim persistentSem = new(1, 1);
     private readonly Action<string> log;
     private bool discarded;
-    private Timer? cleanupTimer;
-    private Checker? persistentChecker;
+    internal ITimer? cleanupTimer;
+    private readonly TimeProvider time;
+    internal Checker? persistentChecker;
 #pragma warning disable CS0414 // checkerpool.go retains this state although the pinned owner never reads it.
 
     private bool persistentHeld;
@@ -35,8 +36,9 @@ internal sealed class ProjectCheckerPool : ICheckerPool
     private Slice<Diagnostic> globalDiagAccumulated;
     private bool globalDiagChanged;
     // checkerpool.go:84 newCheckerPool. Semaphores count free slots instead of occupied channel slots.
-    internal ProjectCheckerPool(CheckerPoolOptions options, Program program, Action<string>? log)
+    internal ProjectCheckerPool(CheckerPoolOptions options, Program program, Action<string>? log, TimeProvider? time = null)
     {
+        this.time = time ?? TimeProvider.System;
         opts = options with
         {
             MaxCheckers = options.MaxCheckers <= 0 ? 4 : Math.Max(options.MaxCheckers, 2),
@@ -228,7 +230,7 @@ internal sealed class ProjectCheckerPool : ICheckerPool
                     if (index == 0)
                         MergeGlobalDiagnosticsFromCheckerLocked(index, checker);
                     heldBy[index] = default;
-                    lastReleased[index] = Stopwatch.GetTimestamp();
+                    lastReleased[index] = time.GetTimestamp();
                     if (!discarded)
                         ScheduleCleanupLocked();
                 }
@@ -252,7 +254,7 @@ internal sealed class ProjectCheckerPool : ICheckerPool
         }, (this, requestID));
     }
 
-    // checkerpool.go:373 scheduleCleanupLocked. Stopwatch retains Go time.Now's monotonic deadline behavior.
+    // checkerpool.go:373 scheduleCleanupLocked. TimeProvider.System retains Go time.Now's monotonic deadline behavior.
     private void ScheduleCleanupLocked()
     {
         TimeSpan? earliest = null;
@@ -260,7 +262,7 @@ internal sealed class ProjectCheckerPool : ICheckerPool
         {
             if (checkers[i] is null || heldBy[i].Length != 0 || lastReleased[i] == 0)
                 continue;
-            var delay = opts.IdleTimeout - Stopwatch.GetElapsedTime(lastReleased[i]);
+            var delay = opts.IdleTimeout - time.GetElapsedTime(lastReleased[i]);
             if (earliest is null || delay < earliest.Value)
                 earliest = delay;
         }
@@ -273,14 +275,20 @@ internal sealed class ProjectCheckerPool : ICheckerPool
         }
 
         var due = earliest.Value <= TimeSpan.Zero ? TimeSpan.FromMilliseconds(1) : earliest.Value;
+        // CLR timers bound each wait to a finite millisecond interval. An early
+        // callback rechecks the original monotonic idle deadline and reschedules;
+        // it cannot dispose a checker before the source timeout.
+        var maximumTimer = TimeSpan.FromMilliseconds(int.MaxValue);
+        if (due > maximumTimer)
+            due = maximumTimer;
         if (cleanupTimer is null)
-            cleanupTimer = new Timer(static state => ((ProjectCheckerPool)state!).CleanupIdleCheckers(), this, due, Timeout.InfiniteTimeSpan);
+            cleanupTimer = time.CreateTimer(static state => ((ProjectCheckerPool)state!).CleanupIdleCheckers(), this, due, Timeout.InfiniteTimeSpan);
         else
             cleanupTimer.Change(due, Timeout.InfiniteTimeSpan);
     }
 
     // checkerpool.go:405 cleanupIdleCheckers.
-    private void CleanupIdleCheckers()
+    internal void CleanupIdleCheckers()
     {
         lock (gate)
         {
@@ -290,7 +298,7 @@ internal sealed class ProjectCheckerPool : ICheckerPool
             {
                 if (checkers[i] is not Checker checker || heldBy[i].Length != 0 || lastReleased[i] == 0)
                     continue;
-                var idle = Stopwatch.GetElapsedTime(lastReleased[i]);
+                var idle = time.GetElapsedTime(lastReleased[i]);
                 if (idle >= opts.IdleTimeout)
                 {
                     log($"checkerpool: Disposing idle checker {i} (idle {Logging.LogFormat.Sprintf("%v", idle)})");

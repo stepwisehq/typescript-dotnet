@@ -30,6 +30,9 @@ internal sealed class ProtocolEncoder
     }
 
     private readonly GoBuilder output = new();
+    private readonly JsonIndentation indentation;
+    internal ProtocolEncoder(JsonIndentation indentation = default) => this.indentation = indentation;
+    internal ByteStringValue PartialOutput() => output.Value();
     private readonly List<Frame> frames = new();
     private bool rootWritten;
     // json/v2 arshal_default.go starts pointer-cycle tracking only beyond
@@ -111,6 +114,7 @@ internal sealed class ProtocolEncoder
         return pointer.Value();
     }
 
+    internal void BeforeGenericValue() => BeforeValue();
     private void BeforeValue()
     {
         if (frames.Count == 0)
@@ -127,10 +131,18 @@ internal sealed class ProtocolEncoder
         {
             if (!frame.AwaitingValue)
                 throw new InvalidOperationException("object value without property name");
+            output.WriteByte(':');
+            if (indentation.Multiline)
+                output.WriteByte(' ');
             frame.AwaitingValue = false;
         }
-        else if (frame.Count != 0)
-            output.WriteByte((byte)',');
+        else
+        {
+            if (frame.Count != 0)
+                output.WriteByte((byte)',');
+            indentation.AppendIndent(output, frames.Count + 1);
+        }
+
         frame.Count++;
         frames[index] = frame;
     }
@@ -155,14 +167,19 @@ internal sealed class ProtocolEncoder
         if (!frame.Object || frame.AwaitingValue)
             throw new InvalidOperationException("invalid object close");
         frames.RemoveAt(frames.Count - 1);
+        if (frame.Count != 0)
+            indentation.AppendIndent(output, frames.Count + 1);
         output.WriteByte((byte)'}');
     }
 
     internal void EndArray()
     {
-        if (frames[^1].Object)
+        var frame = frames[^1];
+        if (frame.Object)
             throw new InvalidOperationException("invalid array close");
         frames.RemoveAt(frames.Count - 1);
+        if (frame.Count != 0)
+            indentation.AppendIndent(output, frames.Count + 1);
         output.WriteByte((byte)']');
     }
 
@@ -177,12 +194,14 @@ internal sealed class ProtocolEncoder
             throw new InvalidOperationException("invalid object property position");
         if (frame.Count != 0)
             output.WriteByte((byte)',');
+        indentation.AppendIndent(output, frames.Count + 1);
         frame.NameStart = output.Len();
         output.WriteByte((byte)'"');
         output.WriteString(name);
         output.WriteByte((byte)'"');
         frame.NameEnd = output.Len();
-        output.WriteByte((byte)':');
+        // jsontext emits the implicit colon only when the next value token
+        // succeeds; a semantic failure retains the member name alone.
         frame.AwaitingValue = true;
         frames[index] = frame;
     }
@@ -195,6 +214,7 @@ internal sealed class ProtocolEncoder
             throw new InvalidOperationException("invalid object property position");
         if (frame.Count != 0)
             output.WriteByte((byte)',');
+        indentation.AppendIndent(output, frames.Count + 1);
         frame.NameStart = output.Len();
         JsonCodec.QuoteToBuilder(output, name);
         if (frame.Names is not null)
@@ -221,7 +241,8 @@ internal sealed class ProtocolEncoder
         }
 
         frame.NameEnd = output.Len();
-        output.WriteByte((byte)':');
+        // jsontext emits the implicit colon only when the next value token
+        // succeeds; a semantic failure retains the member name alone.
         frame.AwaitingValue = true;
         frames[index] = frame;
     }
@@ -260,9 +281,9 @@ internal sealed class ProtocolEncoder
     {
         if (!double.IsFinite(value))
         {
-            // Reuse the accepted source-grounded JSON semantic-error producer.
-            var(_, error) = JsonCodec.TryMarshal(value);
-            throw error!;
+            // json/v2 rejects the scalar before emitting the implicit delimiter.
+            string label = double.IsNaN(value) ? "NaN" : value > 0 ? "+Inf" : "-Inf";
+            throw TypeScript.Json.Internal.JsonTextErrors.AsException(TypeScript.Json.Internal.JsonTextErrors.SemanticError("marshal", "", "", "float64", StackPointer().Materialize() ?? "", 0, "unsupported value: " + label));
         }
 
         BeforeValue();
@@ -272,11 +293,31 @@ internal sealed class ProtocolEncoder
     internal void WriteRaw(ReadOnlySpan<byte> value)
     {
         BeforeValue();
-        output.WriteString(value);
+        JsonCodec.WriteIndentedRaw(output, value, indentation, frames.Count);
     }
 
     internal void WriteAny(object? value)
     {
+        // Preserve real dynamic scalar roles without an intermediate output
+        // buffer; errors retain the enclosing encoder's original JSON pointer.
+        if (value is double number)
+        {
+            WriteNumber(number);
+            return;
+        }
+
+        if (value is ByteStringValue bytesValue)
+        {
+            WriteString(bytesValue);
+            return;
+        }
+
+        if (value is string text)
+        {
+            WriteString(ByteStringValue.FromString(text));
+            return;
+        }
+
         if (value is IProtocolWritable protocol)
         {
             protocol.WriteProtocolJSON(this);
@@ -335,14 +376,10 @@ internal sealed class ProtocolEncoder
                 return;
             }
 
-            value = new JsonValue(raw.Bytes.ToArray());
+            value = new JsonValue(raw.BorrowOwnedBytes());
         }
 
-        var(bytes, error) = JsonCodec.TryMarshal(value);
-        if (error is not null)
-            throw error;
-        BeforeValue();
-        output.WriteString(ByteStringValue.FromView(ByteStringView.FromOwnedBytes(bytes!)));
+        JsonCodec.WriteGenericProtocolValue(output, value, indentation, frames.Count, StackPointer(), this);
     }
 
     internal ByteStringValue Finish()

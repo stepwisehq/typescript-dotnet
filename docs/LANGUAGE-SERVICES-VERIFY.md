@@ -1,7 +1,7 @@
 # Language-services verification
 
 The [completion contract](./LANGUAGE-SERVICES-CONTRACT.md) is still in progress.
-The current [dependency result](../validation/results/language-services-dependencies-33.json)
+The current [dependency result](../validation/results/language-services-dependencies-39.json)
 records a passing managed and Linux x64 Native AOT dependency run, its source hashes,
 and its limitations. This does not establish an operational language server.
 Subsequent source changes require their own integration verification.
@@ -25,34 +25,32 @@ as assertion groups; do not count a selected channel as an entire original funct
 Run from the repository so source fixtures and unchanged upstream baselines are found.
 Publishing alone is insufficient: execute the produced native binary.
 
-The current dependency33 packet passed **212 ordinary xUnit cases** with no failures
-or skips. Actual Linux x64 Native AOT execution passed137 original TypeScript
-functions,11 original external locale functions, the retained normalization and
-regexp channels, and44 authored controls. New regexp replacement/index coverage is
-one whole original function plus one selected channel; quoting adds one whole
-function; Unicode adds three whole functions and one selected channel. The
-[independently reviewed result](./progress/lsp-dependencies-33-review.json) and
-[execution record](../validation/results/language-services-dependencies-33.json) record source
-and native binary hashes, unchanged original corpus exclusions, and exact logs.
-The eight unchanged isolated decoder probes retain their dependency23 evidence;
-they were not added to the212 count or rerun for dependency33.
+The current dependency39 packet passes **305 ordinary xUnit cases**, zero failures
+or skips, and actual Linux x64 Native AOT execution of226 original TypeScript-repository
+functions plus56 authored controls. External dependency functions and selected
+channels remain separately reported; the new generic replacement channel contains49
+original rows and does not claim whole TestReplacer. The
+[assessment](./progress/lsp-dependencies-39.md),
+[independent review](./progress/lsp-dependencies-39-review.json) and
+[execution record](../validation/results/language-services-dependencies-39.json)
+bind exact logs, source hashes, actual native compiler inputs and binary hash.
+Eight unchanged isolated decoder probes retain dependency23 evidence; they were not
+added to305 or rerun in39. To reproduce just this ordinary managed packet, add
+`--filter 'FullyQualifiedName!~AuthoredRecursive'` to the test command above.
 
 The isolated `--ipc-fatal-notification` native control must run as a child with a
 bounded timeout and core dumps disabled. Success requires nonzero termination,
 the exact `authored fatal IPC notification` marker, and no timeout. An arbitrary
-crash is not a pass. The dependency33 child returned-6 and the required marker.
-This checks the upstream unhandled-notification boundary; it is not a real-server
-transport test.
+crash is not a pass. Native39 returned-6 with the required marker and no timeout.
+This checks the upstream unhandled-notification boundary, not actual server transport.
 
-[Independent source reviews](./progress/lsp-autoimport-core-review.md) cover this
-packet together with [host](./progress/lsp-contentmapper-host-review.md),
-[localization](./progress/lsp-localization-review.md),
-[IPC](./progress/lsp-ipc-review.md) and earlier change/codec/formatting reviews.
-Five original autoimport registry tests require the genuine Session and remain
-pending. The original AST-navigation JavaScript channels, full service corpus,
-actual server transport and comprehensive retained compiler/emit regressions also
-remain pending. The post-Native23 test-adapter nullability correction has now passed
-managed and native execution without changing its original assertions.
+Source reviews cover Session/watcher production, original pool/watcher assertions,
+JSON indentation and the ten semantic counterparts. Original Session/registry
+assertions,77 broad watcher and8 Linux fanotify functions remain pending. The full
+service corpus, public stdio server and comprehensive retained compiler/emit gates
+are still unfinished. Source-reviewed hover/definition implementations are not yet
+claimed behaviorally verified services. Earlier dependency33/23 evidence remains
+historical proof of its exact source and scope.
 
 The newly added protocol depth probes have a separate native entrypoint so runtime
 stack admission can be tested without terminating the ordinary assertion packet:

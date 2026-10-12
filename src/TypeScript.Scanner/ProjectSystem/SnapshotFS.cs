@@ -174,8 +174,8 @@ internal static class SnapshotFileSystems
 // snapshotfs.go:189. Mutable construction owner; publication retains immutable maps.
 internal sealed class SnapshotFSBuilder : IFileSource
 {
-    private readonly ILayeredFileSystem fs;
-    private readonly CaseSensitivity sensitivity;
+    internal readonly ILayeredFileSystem fs;
+    internal readonly CaseSensitivity sensitivity;
     internal readonly Dirty.SyncMap<PathKey, CachedFile> cacheFiles;
     internal readonly Dirty.Map<PathKey, Dirty.CloneableMap<PathKey, ByteStringValue>> cacheDirectories;
     internal readonly Dirty.SyncMap<PathKey, RealpathAliasSet> aliases;
@@ -269,7 +269,7 @@ internal sealed class SnapshotFSBuilder : IFileSource
     }
 
     // snapshotfs.go:325 deleteCacheEntry.
-    private void DeleteCacheEntry(Dirty.SyncMapEntry<PathKey, CachedFile> entry)
+    internal void DeleteCacheEntry(Dirty.SyncMapEntry<PathKey, CachedFile> entry)
     {
         var file = entry.Value();
         if (file is not null && fs.FileExists(file.FileName()))
@@ -338,7 +338,7 @@ internal sealed class SnapshotFSBuilder : IFileSource
 
     // snapshotfs.go:405/437. File IO stays outside entry locks.
     private IFileHandle? ReloadEntry(Dirty.SyncMapEntry<PathKey, CachedFile> entry) => Reload(entry, false);
-    private IFileHandle? ReloadEntryIfNeeded(Dirty.SyncMapEntry<PathKey, CachedFile> entry) => Reload(entry, true);
+    internal IFileHandle? ReloadEntryIfNeeded(Dirty.SyncMapEntry<PathKey, CachedFile> entry) => Reload(entry, true);
     private IFileHandle? Reload(Dirty.SyncMapEntry<PathKey, CachedFile> entry, bool onlyIfNeeded)
     {
         RootedFilePath name = default;
@@ -468,19 +468,34 @@ internal sealed class SnapshotFSBuilder : IFileSource
         return changed;
     }
 
+    private readonly struct WatchedExtensions(IEnumerable<string>? strings, Slice<ByteStringValue> values)
+    {
+        internal bool Matches(RootedFilePath name)
+        {
+            if (strings is not null)
+                return name.ExtensionIsOneOf(strings);
+            foreach (var value in values)
+                if (name.AsValue().Length > value.Length && name.AsValue().EndsWith(value))
+                    return true;
+            return false;
+        }
+    }
+
     // snapshotfs.go:617 isRelevantFileName / 638 isRelevantExtension.
-    private bool IsRelevantFileName(TypeScript.Lsp.Protocol.DocumentUri uri, IEnumerable<string> extensions, HashSet<PathKey>? watched, Dictionary<PathKey, IFileHandle>? open)
+    private bool IsRelevantFileName(TypeScript.Lsp.Protocol.DocumentUri uri, WatchedExtensions extensions, HashSet<PathKey>? watched, Dictionary<PathKey, IFileHandle>? open)
     {
         var name = uri.FileName();
         var path = sensitivity.PathKey(name.AsPath());
-        if (watched?.Contains(path) == true || name.ExtensionIsOneOf(extensions) || name.IsDynamic() || open?.ContainsKey(path) == true)
+        if (watched?.Contains(path) == true || extensions.Matches(name) || name.IsDynamic() || open?.ContainsKey(path) == true)
             return true;
         var extension = name.AnyExtensionValue(null, CaseSensitivity.CaseSensitive);
         return extension.EqualsBytes(".js"u8) || extension.EqualsBytes(".jsx"u8) || extension.EqualsBytes(".mjs"u8) || extension.EqualsBytes(".cjs"u8) || extension.EqualsBytes(".ts"u8) || extension.EqualsBytes(".tsx"u8) || extension.EqualsBytes(".mts"u8) || extension.EqualsBytes(".cts"u8) || extension.EqualsBytes(".json"u8);
     }
 
     // snapshotfs.go:653 expandAndFilterWatchEvents. Created paths may be directory symlinks.
-    internal FileChangeSummary ExpandAndFilterWatchEvents(FileChangeSummary change, IEnumerable<string> extensions, HashSet<PathKey>? watched, Dictionary<PathKey, IFileHandle>? previous, Dictionary<PathKey, IFileHandle>? current)
+    internal FileChangeSummary ExpandAndFilterWatchEvents(FileChangeSummary change, IEnumerable<string> extensions, HashSet<PathKey>? watched, Dictionary<PathKey, IFileHandle>? previous, Dictionary<PathKey, IFileHandle>? current) => ExpandAndFilterWatchEvents(change, new WatchedExtensions(extensions, default), watched, previous, current);
+    internal FileChangeSummary ExpandAndFilterWatchEvents(FileChangeSummary change, Slice<ByteStringValue> extensions, HashSet<PathKey>? watched, Dictionary<PathKey, IFileHandle>? previous, Dictionary<PathKey, IFileHandle>? current) => ExpandAndFilterWatchEvents(change, new WatchedExtensions(null, extensions), watched, previous, current);
+    private FileChangeSummary ExpandAndFilterWatchEvents(FileChangeSummary change, WatchedExtensions extensions, HashSet<PathKey>? watched, Dictionary<PathKey, IFileHandle>? previous, Dictionary<PathKey, IFileHandle>? current)
     {
         if (change.Deleted is { Count: > 0 })
         {
@@ -620,7 +635,7 @@ internal sealed class SourceFS : IFS, IFileHandleSource, ISourceTextFileSystem, 
 {
     private bool tracking;
     internal IFileSource source;
-    private readonly CaseSensitivity sensitivity;
+    internal readonly CaseSensitivity sensitivity;
     private readonly TypeScript.Collections.SyncMap<PathKey, bool>? missingDirectories;
     internal TypeScript.Collections.SyncMap<PathKey, RootedFilePath>? seenFiles;
     internal SourceFS(bool tracking, IFileSource source)

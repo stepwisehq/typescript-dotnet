@@ -13,7 +13,7 @@ using TypeScript.Scanner;
 namespace TypeScript.Json;
 /// <summary>Already-encoded raw JSON, corresponding to jsontext.Value.</summary>
 public sealed record JsonValue(byte[]? Bytes, int SourceOffset = 0, string Pointer = "");
-public static class JsonCodec
+public static partial class JsonCodec
 {
     private static readonly UTF8Encoding strictUtf8 = new(false, true);
     public static (object? Value, Exception? Error) Parse(string goBytes, bool allowDuplicateNames = false) => parse(goBytes, allowDuplicateNames, 0, "");
@@ -22,9 +22,10 @@ public static class JsonCodec
     {
         // json/v2's map arshaler reads one token before admitting only object or
         // null. Preserve its semantic error instead of decoding an any root.
-        var (handled, error) = JsonDiagnosticReader.ReadNonObjectToken(goBytes, null, "map[string]interface {}");
+        var(handled, error) = JsonDiagnosticReader.ReadNonObjectToken(goBytes, null, "map[string]interface {}");
         return handled ? (null, error) : parse(goBytes, allowDuplicateNames, 0, "", dictionaryObjects: true);
     }
+
     private static void SetObjectField(object owner, string name, object? value)
     {
         if (owner is Dictionary<string, object?> dictionary)
@@ -503,14 +504,15 @@ public static class JsonCodec
         return writer.String();
     }
 
-    private readonly record struct WriteJob(object? Value, int Depth, string Pointer, int Kind = 0, string Prefix = "");
-    private static void writeValue(GoBuilder writer, object? root, bool deterministic = false)
+    private readonly record struct WriteJob(object? Value, int Depth, string Pointer, int Kind = 0, string Prefix = "", bool ArrayElement = false);
+    private static void writeValue(GoBuilder writer, object? root, bool deterministic = false, JsonIndentation indentation = default, int initialDepth = 0, string initialPointer = "", TypeScript.Lsp.Protocol.ProtocolEncoder? enclosingEncoder = null)
     {
         // Go's stack grows; managed stacks do not. Explicit work preserves the
         // same ordered container traversal for the complete legal JSON depth.
         var pending = new Stack<WriteJob>();
         var active = new HashSet<object>(ReferenceEqualityComparer.Instance);
-        pending.Push(new WriteJob(root, 0, ""));
+        pending.Push(new WriteJob(root, initialDepth, initialPointer));
+        bool rootPrefixWritten = false;
         while (pending.Count != 0)
         {
             WriteJob job = pending.Pop();
@@ -518,6 +520,7 @@ public static class JsonCodec
             {
                 if (job.Depth >= 1000)
                     active.Remove(job.Value!);
+                indentation.AppendIndent(writer, job.Depth + 1);
                 writer.WriteString(job.Kind == 3 ? "}" : "]");
                 continue;
             }
@@ -530,6 +533,7 @@ public static class JsonCodec
 
             if (job.Kind == 2)
             {
+                indentation.AppendIndent(writer, job.Depth + 1);
                 quote(writer, (string)job.Value!);
                 continue;
             }
@@ -540,17 +544,25 @@ public static class JsonCodec
                 // values are unwritten, but failures retain the member name.
                 var rawOptions = (JsonValue)job.Value!;
                 const string memberName = "\"options\"";
-                var result = rawOptions.Bytes is null ? (Bytes: GoString.Bytes("null"), Error: (Exception? )null) : FormatRawValue(rawOptions, allowInvalidUtf8: true, depth: job.Depth, pointer: job.Pointer, offset: writer.Len() + job.Prefix.Length + memberName.Length + 1);
+                var result = rawOptions.Bytes is null ? (Bytes: GoString.Bytes("null"), Error: (Exception? )null) : FormatRawValue(rawOptions, allowInvalidUtf8: true, depth: job.Depth, pointer: job.Pointer, offset: writer.Len() + job.Prefix.Length + indentation.Length(job.Depth + 1) + memberName.Length + (indentation.Multiline ? 2 : 1));
                 if (result.Error != null)
                 {
-                    writer.WriteString(job.Prefix + memberName);
+                    writer.WriteString(job.Prefix);
+                    indentation.AppendIndent(writer, job.Depth + 1);
+                    writer.WriteString(memberName);
                     string cause = GoString.ToUtf8(result.Error.Message)["jsontext: ".Length..];
                     throw JsonTextErrors.AsException(JsonTextErrors.SemanticError("marshal", "", "", "jsontext.Value", "", 0, cause));
                 }
 
                 string encoded = GoString.FromBytes(result.Bytes!);
                 if (encoded is not ("null" or "\"\"" or "[]" or "{}"))
-                    writer.WriteString(job.Prefix + memberName + ":" + encoded);
+                {
+                    writer.WriteString(job.Prefix);
+                    indentation.AppendIndent(writer, job.Depth + 1);
+                    writer.WriteString(memberName + (indentation.Multiline ? ": " : ":"));
+                    WriteIndentedRaw(writer, result.Bytes!, indentation, job.Depth);
+                }
+
                 continue;
             }
 
@@ -574,7 +586,15 @@ public static class JsonCodec
             {
                 if (!prefixWritten)
                 {
+                    if (!rootPrefixWritten)
+                    {
+                        enclosingEncoder?.BeforeGenericValue();
+                        rootPrefixWritten = true;
+                    }
+
                     writer.WriteString(job.Prefix);
+                    if (job.ArrayElement)
+                        indentation.AppendIndent(writer, job.Depth + 1);
                     prefixWritten = true;
                 }
             }
@@ -616,8 +636,8 @@ public static class JsonCodec
                         continue;
                     }
 
-                    pending.Push(new WriteJob(field.Value, job.Depth + 1, JsonTextErrors.AppendPointer(job.Pointer, field.Key), Prefix: ":"));
-                    pending.Push(new WriteJob(field.Key, 0, "", 2));
+                    pending.Push(new WriteJob(field.Value, job.Depth + 1, JsonTextErrors.AppendPointer(job.Pointer, field.Key), Prefix: indentation.Multiline ? ": " : ":"));
+                    pending.Push(new WriteJob(field.Key, job.Depth + 1, "", 2));
                     if (i > 0)
                         pending.Push(new WriteJob(",", 0, "", 1));
                 }
@@ -729,7 +749,7 @@ public static class JsonCodec
                         continue;
                     }
 
-                    var formatted = FormatRawValue(raw, allowInvalidUtf8: true, depth: job.Depth, pointer: job.Pointer, offset: writer.Len() + job.Prefix.Length);
+                    var formatted = FormatRawValue(raw, allowInvalidUtf8: true, depth: job.Depth, pointer: job.Pointer, offset: writer.Len() + job.Prefix.Length + (job.ArrayElement ? indentation.Length(job.Depth + 1) : 0));
                     if (formatted.Error != null)
                     {
                         string cause = GoString.ToUtf8(formatted.Error.Message)["jsontext: ".Length..];
@@ -737,7 +757,7 @@ public static class JsonCodec
                     }
 
                     WritePrefix();
-                    writer.WriteString(GoString.FromBytes(formatted.Bytes!));
+                    WriteIndentedRaw(writer, formatted.Bytes!, indentation, job.Depth);
                     continue;
                 case byte[] bytes:
                     quote(writer, Convert.ToBase64String(bytes));
@@ -797,7 +817,7 @@ public static class JsonCodec
                     pending.Push(new WriteJob(values, job.Depth, job.Pointer, 4));
                     for (int i = items.Count - 1; i >= 0; i--)
                     {
-                        pending.Push(new WriteJob(items[i], job.Depth + 1, JsonTextErrors.AppendPointer(job.Pointer, i.ToString(CultureInfo.InvariantCulture)), Prefix: i > 0 ? "," : ""));
+                        pending.Push(new WriteJob(items[i], job.Depth + 1, JsonTextErrors.AppendPointer(job.Pointer, i.ToString(CultureInfo.InvariantCulture)), Prefix: i > 0 ? "," : "", ArrayElement: true));
                     }
 
                     continue;

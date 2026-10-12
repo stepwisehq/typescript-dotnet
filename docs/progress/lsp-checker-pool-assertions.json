@@ -1,0 +1,124 @@
+{
+  "status": "source-written-syntax-checked-execution-pending",
+  "upstream": "upstream/TypeScript/tsc/internal/project/checkerpool_test.go",
+  "upstreamSha256": "cfefdb0b92e360573bf6ab034c67993e6133cfc978c1de6c00e67197615fed6e",
+  "originalFunctionCount": 39,
+  "originalFunctions": [
+    "TestCheckerPoolDiagnosticsRouting",
+    "TestCheckerPoolQueryRouting",
+    "TestCheckerPoolRequestAffinity",
+    "TestCheckerPoolSameRequestContention",
+    "TestCheckerPoolSameRequestConcurrentQueries",
+    "TestCheckerPoolIdleCleanup",
+    "TestCheckerPoolFileAssociationCleanup",
+    "TestCheckerPoolMinCheckers",
+    "TestCheckerPoolDefaultIdleTimeout",
+    "TestCheckerPoolQueryContention",
+    "TestCheckerPoolDiagnosticsContention",
+    "TestCheckerPoolCanceledCheckerDisposal",
+    "TestCheckerPoolRequestAssociationCleanupOnDisposal",
+    "TestCheckerPoolRequestAssociationCleanupOnContextDone",
+    "TestCheckerPoolDiagnosticsRecreatedAfterIdleDisposal",
+    "TestCheckerPoolCrossReleaseAffinityWithContention",
+    "TestCheckerPoolLifetimeMismatchIgnoresAssociation",
+    "TestCheckerPoolNoRequestID",
+    "TestCheckerPoolDiagnosticsCrossReleaseAffinity",
+    "TestCheckerPoolDiscardKeepsIdleCheckers",
+    "TestCheckerPoolDiscardHeldCheckerSurvivesRelease",
+    "TestCheckerPoolDiscardStillFunctional",
+    "TestCheckerPoolDiagnosticsCheckerStableIdentity",
+    "TestCheckerPoolDiagnosticsCheckerSurvivesDiscard",
+    "TestCheckerPoolDiagnosticsCheckerIndependentFromQuery",
+    "TestCheckerPoolAPICheckerStableIdentity",
+    "TestCheckerPoolAPICheckerSurvivesDiscard",
+    "TestCheckerPoolAllThreeIndependent",
+    "TestCheckerPoolFileAffinity",
+    "TestCheckerPoolMultipleConcurrentQueryCheckers",
+    "TestCheckerPoolDoubleReleaseSafe",
+    "TestCheckerPoolDefaultMaxCheckers",
+    "TestCheckerPoolStaggeredIdleCleanup",
+    "TestCheckerPoolDiscardIdempotent",
+    "TestCheckerPoolGetGlobalDiagnosticsEmpty",
+    "TestCheckerPoolTakeNewGlobalDiagnostics",
+    "TestCheckerPoolAPICheckerDisposedOnCancel",
+    "TestCheckerPoolNonCancelableContextNoAffinity",
+    "TestCheckerPoolCleanupAfterDiscardIsNoop"
+  ],
+  "authoredControls": 1,
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/CheckerPool.cs",
+      "sha256": "7560549758238387a8b5a53266d0b37f1e6036fdceae6f48d7674b3dfb9be3ff"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ProjectCheckerPoolTests.cs",
+      "sha256": "61645844dacfde6a2c541e81b1ff649d50a4e7ea53ba3081da4d53ccae224dae"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/LanguageServicesTestClock.cs",
+      "sha256": "3b442836f2937b381ed3697f86bf20ec5e999d711448b18620f2e6e4964ac1d8"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.Authored.cs",
+      "sha256": "41b43c92a3125a72a2e33ad6d57b6fd94acb271247e070610decfa85bf58568d"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.Concurrency.cs",
+      "sha256": "e97374497ab8abcb133e69c4e83109ad106220ef607beee0fd25b80d90f82108"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.Dispatch.cs",
+      "sha256": "19aae695c270a893df032d4a780aa7b8cc6a7f37ff1250956ee4d23580238e9c"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.Identity.cs",
+      "sha256": "3940220780dbe84ee41daa53b39812ef30b81b75c7ddae9473da7338b9c00409"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.RemainingState.cs",
+      "sha256": "113470440765c89056dbf4a2f6a1dd717cbb421c3dbb98c6955a442ed49e88f3"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.State.cs",
+      "sha256": "9e6bea763469e2531351d2c55ca770c48eaf6a1031036227cfecb48f0cec8afd"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.Timers.cs",
+      "sha256": "eaceeaa99f8a970d8e56d1b53baea656fb5fa0be6ad665388dd89481cbdce4cb"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.cs",
+      "sha256": "343e8fc1fd379b29810d5a2d4112bacd2f0c9e02c4e5e124825c10d060022794"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectSessionSchedulingChecks.cs",
+      "sha256": "78902019627e8d6650fd7a44dbb20009b3f2794d85f69aeb13d448aaf0d2679b"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ProjectSessionSchedulingTests.cs",
+      "sha256": "8d7de986430aa73e02d088b7a57fc6fbea96ef0ea9343cbb5b5a3f2080ff6cda"
+    }
+  ],
+  "adaptations": [
+    "Genuine Session/configured project/bundled filesystem fixture, not a replacement Program or Session.",
+    "Optional TimeProvider defaults System; manual standard ITimer fixture drives actual cleanup callbacks with unchanged original thresholds. Initial nonzero tick preserves Go zero-time sentinel.",
+    "Package-private assertion storage exposed internally through existing verification friend assembly; bodies and storage unchanged.",
+    "Go channel occupancy projected as capacity minus SemaphoreSlim.CurrentCount.",
+    "Real checkout background Threads and blocking/completion observations replace synctest.Wait; cancellation cleanup waits on actual state.",
+    "One separate authored 40-day idle deadline control covers bounded CLR timer intervals without an options clamp."
+  ],
+  "reference": "artifacts/language-services/integration-2/project-original-go.jsonl",
+  "verification": "Roslyn syntax and existing CSharpFormat passed; no agent builds/tests executed",
+  "review": "CLEAR: artifacts/language-services/source-review/checker-pool-clock-assertions.json",
+  "sessionSchedulingAuthoredControls": 1,
+  "sessionSchedulingScope": "Actual DidCloseFile scheduled snapshot transition and client diagnostics callback at 0/-1/-2ms; old snapshot retained/unchanged, plus cancellation of scheduled 40-day positive delays. Distinct from 39 original pool functions and separate long-idle control.",
+  "sessionSchedulingReview": "CLEAR: artifacts/language-services/source-review/session-scheduling-controls.json",
+  "build38CheckJoins": {
+    "scope": "checks only; original assertions unchanged",
+    "changes": [
+      "Explicit RootedFilePath construction at source lookup sites",
+      "DoesNotReturnIf(false) on existing throwing Require helper preserves genuine presence-flow proofs"
+    ],
+    "execution": "build39 clean; managed execution pending"
+  }
+}

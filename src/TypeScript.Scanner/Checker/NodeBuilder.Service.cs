@@ -11,7 +11,7 @@ namespace TypeScript.Checking;
 internal sealed class VerbosityContext
 {
     internal int Level;
-    internal int MaxTruncationLength;
+    internal long MaxTruncationLength;
     internal bool CanIncreaseVerbosity;
     internal bool Truncated;
 }

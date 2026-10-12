@@ -1,0 +1,33 @@
+{
+  "status": "source-review-clear-execution-pending",
+  "scope": "Complete demanded internal/json MarshalIndent prefix/indent worker and actual generic/closed protocol encoder consumers",
+  "files": {
+    "src/TypeScript.Scanner/Json/JsonIndentation.cs": "6c3cd5722b453775110278f80537e78d47a3e71357a8dea62f9b75a1d34f9103",
+    "src/TypeScript.Scanner/Json/JsonIndent.cs": "bb607fb472d5c8590e9816d420935a2fc19ee78f537529ec6b457c83cd681b9f",
+    "src/TypeScript.Scanner/Json/JsonCodec.cs": "a78329c3e83dc0777f20622afc9d5e1bdfb7da3e668bfc58669871e01d784271",
+    "src/TypeScript.Scanner/Lsp/Protocol/ProtocolEncoder.cs": "637ab015b9ced99664db67dab3577e24d20dc1bd5984eebd360b640efe3fc6aa",
+    "validation/LanguageServices.Checks/JsonIndentChecks.cs": "3b8ffd6cc1709186fdbfd8d1c35c1bbf12d25c6794767d7ca685af5dfc33b041",
+    "tests/LanguageServices.Tests/JsonIndentTests.cs": "abe832e872d868e4389076c8483f31a00c928857c236b3b63f18eb16e879bae0",
+    "tools/language-services-oracle/marshal_indent_controls_test.go": "6c78a6f8100a0838513135959a45b9b6045a51a7fb5cf74f975250c42b6e33f1"
+  },
+  "reviewed": [
+    "Pinned TypeScript MarshalIndent compact early branch and Go1.27.1 WithIndentPrefix/WithIndent option panic ordering.",
+    "NeedIndent depth, empty container, colon/comma token admission and exact prefix/indent UTF8 bytes.",
+    "Generic iterative work stack retains successful tokens and existing depth/cycle owners; compact path still emits no new whitespace.",
+    "Closed encoder retains object member names before failed scalar admission, correct array pointer and partial output.",
+    "Raw validated token reformat scans escaped strings without decoding/rebuilding object owners.",
+    "Resolved substantive nested generic fallback finding: existing generic worker now writes into retained encoder with initial depth/pointer and first-successful-token admission, removing temporary compact output loss.",
+    "Nine retained authored Go observations plus added nested typed-array semantic-failure boundary; candidate execution remains pending."
+  ],
+  "findingResolved": "Nested supported generic arrays previously lost partial output and enclosing error pointer through TryMarshal; author reconciled complete generic fallback owner path.",
+  "limitations": [
+    "Review does not enlarge generic serializer input admission or claim reflection serialization.",
+    "This is source review; combined managed/Native execution belongs to root."
+  ],
+  "goWitness": {
+    "path": "artifacts/language-services/integration-3/marshal-indent-go-10.log",
+    "sha256": "baf302264c12aaca955ca9dbc3c65a4826ca55be0e59384cfd7b9412bc9ebb33",
+    "result": "passed exit0, one authored function/ten subtests, 0.003s",
+    "qualification": "Go1.27.1 encoding/json/v2/errors.go322\u2013334 intentionally selects cannot or unable to once per process via map iteration. C# retains canonical cannot. This exact modal phrase availability is documented; JSON pointer/type/cause and partial bytes remain exact."
+  }
+}

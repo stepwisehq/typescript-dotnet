@@ -32,7 +32,7 @@ internal sealed class ProjectCollectionBuilder
     internal Dictionary<PathKey, Overlay>? overlays;
     internal ProjectCollection baseCollection = null!;
     internal CompilerOptions? compilerOptionsForInferredProjects;
-    internal List<Mapper>? inferredContentMappers;
+    internal MapperHeaders inferredContentMappers;
     internal Slice<ByteStringValue> inferredContentMapperExtensions;
     internal ConfigFileRegistryBuilder configFileRegistryBuilder = null!;
     internal IProjectClient? client;
@@ -45,7 +45,7 @@ internal sealed class ProjectCollectionBuilder
     internal Slice<Project> createdPrograms;
     internal ApiState apiState;
     // projectcollectionbuilder.go:67.
-    internal static ProjectCollectionBuilder New(ProtocolRequestContext context, ulong id, SnapshotFSBuilder fs, Dictionary<PathKey, Overlay>? overlays, ProjectCollection old, ConfigFileRegistry registry, ApiState api, CompilerOptions? inferredOptions, List<Mapper>? mappers, Slice<ByteStringValue> extensions, SessionOptions options, ByteStringValue custom, RefCountCache<ParseCacheKey, SourceFile, IFileHandle> parses, RefCountCache<ContentMappedParseCacheKey, SourceFiles, ValueTuple> mapped, OwnerCache<PathKey, ExtendedConfigCacheEntry, ExtendedConfigParseArgs> extended, TypeScript.ContentMapper.IHost? mapperHost, IProjectClient? client)
+    internal static ProjectCollectionBuilder New(ProtocolRequestContext context, ulong id, SnapshotFSBuilder fs, Dictionary<PathKey, Overlay>? overlays, ProjectCollection old, ConfigFileRegistry registry, ApiState api, CompilerOptions? inferredOptions, MapperHeaders mappers, Slice<ByteStringValue> extensions, SessionOptions options, ByteStringValue custom, RefCountCache<ParseCacheKey, SourceFile, IFileHandle> parses, RefCountCache<ContentMappedParseCacheKey, SourceFiles, ValueTuple> mapped, OwnerCache<PathKey, ExtendedConfigCacheEntry, ExtendedConfigParseArgs> extended, TypeScript.ContentMapper.IHost? mapperHost, IProjectClient? client)
     {
         var open = ProjectCollection.OpenFilePaths(overlays);
         return new()
@@ -1110,7 +1110,7 @@ internal sealed class ProjectCollectionBuilder
     }
 
     // projectcollectionbuilder.go:1302.
-    private Dirty.SyncMapEntry<SyntheticProjectID, Project> UpdateOrCreateSyntheticProject(SyntheticProjectID id, List<RootedFilePath>? names, CompilerOptions? options, List<ProjectReference>? references, Slice<Diagnostic> diagnostics, IModuleResolverFactory? resolverFactory, ulong resolverID, List<Mapper>? mappers, LogTree? logger)
+    private Dirty.SyncMapEntry<SyntheticProjectID, Project> UpdateOrCreateSyntheticProject(SyntheticProjectID id, List<RootedFilePath>? names, CompilerOptions? options, List<ProjectReference>? references, Slice<Diagnostic> diagnostics, IModuleResolverFactory? resolverFactory, ulong resolverID, MapperHeaders mappers, LogTree? logger)
     {
         var(entry, loaded) = syntheticProjects.Load(id);
         if (!loaded)
@@ -1137,7 +1137,7 @@ internal sealed class ProjectCollectionBuilder
     }
 
     // projectcollectionbuilder.go:1357/1373/1393. Clone is required upstream before sorting transferred roots.
-    private bool UpdateInferredProject(List<RootedFilePath>? names, CompilerOptions? options, List<ProjectReference>? references, Slice<Diagnostic> diagnostics, List<Mapper>? mappers, LogTree? logger)
+    internal bool UpdateInferredProject(List<RootedFilePath>? names, CompilerOptions? options, List<ProjectReference>? references, Slice<Diagnostic> diagnostics, MapperHeaders mappers, LogTree? logger)
     {
         if ((names?.Count ?? 0) == 0)
             return DeleteInferredProject(logger);
@@ -1161,7 +1161,7 @@ internal sealed class ProjectCollectionBuilder
         return true;
     }
 
-    private bool UpdateOrCreateInferredProject(List<RootedFilePath>? names, CompilerOptions? options, List<ProjectReference>? references, Slice<Diagnostic> diagnostics, List<Mapper>? mappers, LogTree? logger)
+    private bool UpdateOrCreateInferredProject(List<RootedFilePath>? names, CompilerOptions? options, List<ProjectReference>? references, Slice<Diagnostic> diagnostics, MapperHeaders mappers, LogTree? logger)
     {
         var project = inferredProject.Value();
         if (project == null)

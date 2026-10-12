@@ -1,0 +1,117 @@
+{
+  "status": "clear production source review; original assertions and execution pending",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "reviewer": "emit_foundation independent of emit_print_maps author",
+  "scope": "Complete promoted shared/Linux x64/LSP watcher closure and selected x/sys/Go directory/path dependencies; focused PreferredMarkupKind leaf. No other native platforms or whole x/sys claim.",
+  "findingsResolved": [
+    "Original watcher.String/GoLogStringer role restored with borrowed name; owned projection only at raw logging boundary.",
+    "Debounce nonpositive timer admission restored; long positive durations use bounded standard timers with one monotonic deadline."
+  ],
+  "reviewed": [
+    "Subscription admission/reverse rollback/refcounts and recovered startup errors",
+    "Callback snapshot/sequence/filter/terminal ownership and original cloned headers",
+    "Event rapid recreation/cancel/drain ordering and process-lifetime debounce latch",
+    "Path byte/rune boundaries/rebase and malformed UTF8 public admission",
+    "Walk buffer reuse/name copies/symlink/no-follow/descriptor finally/error paths",
+    "Linux x64 poll/stat/statfs/getdents/inotify/FID ABI and required handle copies",
+    "Inotify/fanotify mark/subscription/rename/delete/overflow/start/shutdown lifetimes",
+    "Filesystem fallback/default policy, LSP missing ancestor transitions/synthetic creates/throttle/close",
+    "Generator exact pinned Linux errno text and selected platform exclusions"
+  ],
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/Contracts.cs",
+      "sha256": "ef6a9cfdf6d6110d141cc1a501fd0ba2a89f0dc4ab9afc8e2a82edb8b12ee1f8"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/Debounce.cs",
+      "sha256": "6774f0fa0c74936ee661382e339767b265bfc5e66da391243f79f847aa7c6af1"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/DirWatch.cs",
+      "sha256": "63d5722cb34f9b0c1229f3d611aea89ac17b36fbce77a24070a2eedd2aeb9f90"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/Errors.cs",
+      "sha256": "ea15feba8551385c6994a25df518bec7bf48dcb2df9de996deac2f858279971d"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/Event.cs",
+      "sha256": "6bdc770db2291fd526f5763386d2ab08a381a3bdbf200447555ed5a24dad372b"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/FallbackWatcher.cs",
+      "sha256": "90892af375c79d37ea25e07827443b8e807a409a678f2d35ab3bd67791283927"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/Fanotify.cs",
+      "sha256": "fdeb724b9e57208d65c00a33e631a5be9082d10c4040630ffecc3339a4e3ae22"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/FanotifyRecords.cs",
+      "sha256": "db8875bc87c232b1e79e7317c5d34ac02f71d1ca1719e65f2af7bb206580079a"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/Inotify.cs",
+      "sha256": "f01e7983db4ae50cf731be7fdc30dbd9b2966ea207f8050239a3b1b7d11dd33f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/LinuxFanotify.cs",
+      "sha256": "e7ec4eb9086d2aeaad52058694877a7f274227a522832695cdc5b824ab1715ad"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/LinuxKernel.cs",
+      "sha256": "c53b4de895da492aeb7e1a0f3fc8740b6945d8d219d9e2e3513aaac9b8148412"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/PathCompare.cs",
+      "sha256": "d9dfc9efa330ae6f13e7f6554f439179776fbdfbccadd5618fc33286b31b987e"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/PathHelpers.cs",
+      "sha256": "ad6f88c8122b698b24bbe7ed9958fabe9d428fee07815acab56a6f705895945d"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/Registry.cs",
+      "sha256": "19c4e79f8743ace0b055f7472930288a3eeae12e6533a6c95998a1dfdeebfdb4"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/WalkDir.cs",
+      "sha256": "42af73314ba280909c7ea376351ad32921f5231a8014ac0058ab5cb1faf9f4b7"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/WalkDirGeneric.cs",
+      "sha256": "9a491543c9efb890b19f528f481412ba15407a3f7df3a4dae4aab3c4064b7c74"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/Watcher.cs",
+      "sha256": "8644e857b56d8723af0cd8fe102d76065c6b6daeb990233588e19f48ad0f4f93"
+    },
+    {
+      "path": "src/TypeScript.Scanner/FsWatch/WatcherBase.cs",
+      "sha256": "dc4f4a8f1fb21914ab124c29d7003f421e6659581b3897bc9c499a1e8a021fb3"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Protocol/Utilities.cs",
+      "sha256": "30a352c676d9aca2cb67e09d2aebc5e0b441b22587049ca75caa3b2ba3450a2f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Watching/Patterns.cs",
+      "sha256": "2858317c78e2ab448f9258114bcac787c6f411d6a20dd2322cb17b8537a34253"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Watching/Watch.cs",
+      "sha256": "08a645ff3e7d64da87b884f26bf478d3ca34118ffd3b605d6c375e4ac5f109b1"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Watching/Watcher.cs",
+      "sha256": "d7b1859be7d08c5091cd7f45eeb8a9fc02a538c2b31df095c1c371f7cafe95ec"
+    },
+    {
+      "path": "tools/fswatch/generate-linux-errors.py",
+      "sha256": "b078e1d0e1d2118eccf51349b5b05e1bb2b6cf1693cf9287de9c1c33c43c702a"
+    }
+  ],
+  "mappingSha256": "4114a887de983c26a9f698746a8b312ea86941cdd3eb76db9eea81b8538db1cd",
+  "execution": "Root build36 compiled production; no reviewer builds or workloads. Original test drafts remain pending and no new managed/Native behavior acceptance is claimed."
+}

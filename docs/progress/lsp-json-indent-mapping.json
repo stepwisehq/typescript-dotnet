@@ -1,0 +1,40 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "scope": "Complete demanded internal/json MarshalIndent prefix/indent worker and actual generic/closed protocol encoder consumers",
+  "sourceMappings": {
+    "internal/json/json.go:40": [
+      "src/TypeScript.Scanner/Json/JsonIndent.cs"
+    ],
+    "Go1.27.1 encoding/json/jsontext/options.go WithIndentPrefix/WithIndent; state.go NeedIndent; encode.go AppendIndent/reformatValue": [
+      "src/TypeScript.Scanner/Json/JsonIndentation.cs",
+      "src/TypeScript.Scanner/Json/JsonCodec.cs",
+      "src/TypeScript.Scanner/Lsp/Protocol/ProtocolEncoder.cs"
+    ]
+  },
+  "adaptations": [
+    "Closed AOT-safe protocol payload descriptors retain Go value/pointer metadata; no reflection serialization.",
+    "Generic iterative work stack retains existing depth/ownership; whitespace is emitted at original successful token boundaries.",
+    "Raw validated JSON is reformatted without decoding/rebuilding object owners.",
+    "Semantic failure returns the retained partial output; invalid prefix/indent option panic occurs before marshal error handling.",
+    "Generic fallback continues in the retained closed encoder output with parent depth/JSON pointer; first successful token admits the parent delimiter, avoiding a temporary compact serialization owner."
+  ],
+  "verification": {
+    "classification": "authored differential controls, not original upstream functions",
+    "controls": 10,
+    "go": "artifacts/language-services/integration-3/marshal-indent-go-10.log",
+    "goStatus": "passed one authored function / ten subtests, 0.003s",
+    "candidate": "pending integrated managed and Native execution",
+    "originalRegression": "existing original 27 codec functions and compact JSON diagnostics remain required",
+    "errorModalVerb": "Go encoding/json/v2/errors.go errorModalVerb picks cannot or unable to once per process by map iteration; C# uses canonical cannot. Only this explicit upstream variability is qualified; type, JSON pointer, cause and partial bytes remain exact.",
+    "review": "artifacts/language-services/source-review/json-indent.json clear"
+  },
+  "sourceHashes": {
+    "src/TypeScript.Scanner/Json/JsonIndentation.cs": "6c3cd5722b453775110278f80537e78d47a3e71357a8dea62f9b75a1d34f9103",
+    "src/TypeScript.Scanner/Json/JsonIndent.cs": "bb607fb472d5c8590e9816d420935a2fc19ee78f537529ec6b457c83cd681b9f",
+    "src/TypeScript.Scanner/Json/JsonCodec.cs": "a78329c3e83dc0777f20622afc9d5e1bdfb7da3e668bfc58669871e01d784271",
+    "src/TypeScript.Scanner/Lsp/Protocol/ProtocolEncoder.cs": "637ab015b9ced99664db67dab3577e24d20dc1bd5984eebd360b640efe3fc6aa",
+    "validation/LanguageServices.Checks/JsonIndentChecks.cs": "3b8ffd6cc1709186fdbfd8d1c35c1bbf12d25c6794767d7ca685af5dfc33b041",
+    "tests/LanguageServices.Tests/JsonIndentTests.cs": "abe832e872d868e4389076c8483f31a00c928857c236b3b63f18eb16e879bae0",
+    "tools/language-services-oracle/marshal_indent_controls_test.go": "6c78a6f8100a0838513135959a45b9b6045a51a7fb5cf74f975250c42b6e33f1"
+  }
+}

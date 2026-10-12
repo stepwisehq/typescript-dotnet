@@ -1,0 +1,71 @@
+{
+  "status": "source-written; syntax and formatting checked; semantic compilation and independent review pending",
+  "owners": {
+    "session.go": 79,
+    "snapshot.go": 39,
+    "autoimport.go": 12
+  },
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/Session.cs",
+      "sha256": "97bf275f3a21d6ca6228b32b2999c127a34cc9a8ba72913d07b9398e141b7222"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/Snapshot.cs",
+      "sha256": "bdd433b025969e27ac6b0d6136ce8ae1e7860119ac72c6a456a689c2b22f0b6d"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/SnapshotHost.cs",
+      "sha256": "859a7643fe94c284b1233f68f23da2a0ae4ad7e2a7816603c6b67d758449bfcd"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/AutoImport.cs",
+      "sha256": "4e1bd347c20495a4e18fe23e85eea5a6ca85ea6179c159e41b0d4e99aa46a91d"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/MapperHeaders.cs",
+      "sha256": "3bae0a9de401ddf4991439c522b2cbf27f3a3d46dc6009a372e0ec30a658a0fd"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/Project.cs",
+      "sha256": "62a8d2a69eef0b5e339a9f8e72d333aa749904676a38e3cde4b10a80e0ed92d0"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/ProjectCollectionBuilder.cs",
+      "sha256": "c3cd81dfb34183a6b0049f33f0e108c449f6990a2a00678ce157158d538f5379"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/SnapshotFS.cs",
+      "sha256": "9c99adfc50c5f42c15ada0cc997c8148690875a2780b687e2c85034b0ecb7c06"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/RefCountCache.cs",
+      "sha256": "9d7d4fc0ad433cc55f8a6304b7d348320aae15b1ca6cde25ec480515fb59c548"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/OwnerCache.cs",
+      "sha256": "8055deaf9ffb8f73d7547bcbb39b8e4ea0bc68d17aaa521c654c0cc9f7f1b456"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/Logging/LogFormat.cs",
+      "sha256": "e28fe7dc41927e93729b66c7216e30e43fac4ec7d57d197655dd5b3d5c3b258b"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Vfs/VfsMatch/VfsMatch.cs",
+      "sha256": "8f51d5965cb34dc473d67cc7bbffbb35930522d2e7fab087a807d201c668a6da"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Protocol/RequestContext.cs",
+      "sha256": "dda5dde6d1953a492b2b158cd18978f9c1eee2b103f2151fb8e4e0b4e40d589c"
+    }
+  ],
+  "tests": "Original Session/pool/registry fixtures and assertions remain in preparation; no new execution claim. Reuse project99/250 and autoimport12/36 pinned Go references.",
+  "adaptations": [
+    "Mapper headers remain Slice-valued until existing ParsedCommandLine List boundary; detached List required there.",
+    "Idle timers use standard Timer with atomic claim/stop and tracked completion; snapshot references and original lock scopes retained.",
+    "Telemetry preserves project/cache/schema data; unavailable Go runtime metrics retain documented required defaults, not measured zeros."
+  ],
+  "integration": "Build34 whole-family API joins saved; sole build35 filename join corrected through existing SourceFile.FileNameGoValue/RootedFilePath.FromValue. Central build36 pending; no execution claim.",
+  "postBuild36": "Full Session source review clear after faithful timer admission correction; original pool39 + separate authored2 groups promoted, independently source-reviewed, candidate execution pending.",
+  "poolAssertionPacket": "docs/progress/lsp-checker-pool-assertions.json"
+}

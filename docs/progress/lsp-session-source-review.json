@@ -1,0 +1,53 @@
+{
+  "status": "source review clear; original assertion closure and candidate behavior pending",
+  "reviewer": "emit_print_maps",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "scope": {
+    "completeOriginalOwners": {
+      "session.go": 79,
+      "snapshot.go": 39,
+      "autoimport.go": 12
+    },
+    "additional": "SnapshotHost/SourceFileLease complete owner; connected manifest delta only for already-reviewed graph/cache/VFS/context owners"
+  },
+  "findings": [
+    {
+      "owner": "Session scheduling timer admission",
+      "resolution": "Nonpositive durations immediately ready; positive source durations use bounded cancellable waits against unchanged absolute monotonic deadline; both refresh/update consumers joined."
+    }
+  ],
+  "reviewed": [
+    "all source function bodies/control-flow and source error paths",
+    "snapshot canonical publication vs failed API clone, caller reference transfers, atomic retain/disposal and program/cache ownership",
+    "unchanged-program reuse and changed-host freeze, mapper headers and required List detach boundary",
+    "locale absent vs explicit default with cancellation/capability context preservation",
+    "watch acquire-before-release/retry state and mapper registration snapshots",
+    "diagnostics/ATA/warm-autoimport cancellation and scheduling",
+    "telemetry actual project/cache/system counters; Go-only runtime metrics explicitly default/unavailable"
+  ],
+  "limitations": [
+    "original Session/Snapshot fixtures not yet ported/executed",
+    "source review does not establish all service/server behavior or Native acceptance"
+  ],
+  "sourceHashes": {
+    "src/TypeScript.Scanner/ProjectSystem/Session.cs": "97bf275f3a21d6ca6228b32b2999c127a34cc9a8ba72913d07b9398e141b7222",
+    "src/TypeScript.Scanner/ProjectSystem/Snapshot.cs": "bdd433b025969e27ac6b0d6136ce8ae1e7860119ac72c6a456a689c2b22f0b6d",
+    "src/TypeScript.Scanner/ProjectSystem/SnapshotHost.cs": "859a7643fe94c284b1233f68f23da2a0ae4ad7e2a7816603c6b67d758449bfcd",
+    "src/TypeScript.Scanner/ProjectSystem/AutoImport.cs": "4e1bd347c20495a4e18fe23e85eea5a6ca85ea6179c159e41b0d4e99aa46a91d",
+    "src/TypeScript.Scanner/ProjectSystem/MapperHeaders.cs": "3bae0a9de401ddf4991439c522b2cbf27f3a3d46dc6009a372e0ec30a658a0fd",
+    "src/TypeScript.Scanner/ProjectSystem/Project.cs": "62a8d2a69eef0b5e339a9f8e72d333aa749904676a38e3cde4b10a80e0ed92d0",
+    "src/TypeScript.Scanner/ProjectSystem/ProjectCollectionBuilder.cs": "c3cd81dfb34183a6b0049f33f0e108c449f6990a2a00678ce157158d538f5379",
+    "src/TypeScript.Scanner/ProjectSystem/SnapshotFS.cs": "9c99adfc50c5f42c15ada0cc997c8148690875a2780b687e2c85034b0ecb7c06",
+    "src/TypeScript.Scanner/ProjectSystem/RefCountCache.cs": "9d7d4fc0ad433cc55f8a6304b7d348320aae15b1ca6cde25ec480515fb59c548",
+    "src/TypeScript.Scanner/ProjectSystem/OwnerCache.cs": "8055deaf9ffb8f73d7547bcbb39b8e4ea0bc68d17aaa521c654c0cc9f7f1b456",
+    "src/TypeScript.Scanner/ProjectSystem/Logging/LogFormat.cs": "e28fe7dc41927e93729b66c7216e30e43fac4ec7d57d197655dd5b3d5c3b258b",
+    "src/TypeScript.Scanner/Vfs/VfsMatch/VfsMatch.cs": "8f51d5965cb34dc473d67cc7bbffbb35930522d2e7fab087a807d201c668a6da",
+    "src/TypeScript.Scanner/Lsp/Protocol/RequestContext.cs": "dda5dde6d1953a492b2b158cd18978f9c1eee2b103f2151fb8e4e0b4e40d589c"
+  },
+  "upstreamHashes": {
+    "session.go": "4d71cb61927bc255f4820c56c2ed0b1508de8e7378d3e9735f2d22f8e2a84a2f",
+    "snapshot.go": "7b270b0d176f7a988dc6b6aa15fd4e386e09b0ebd9a57b3872c1d4fdc12dc12f",
+    "snapshothost.go": "103dc42d9a588e18c785369a1c01082256f794e32afce6a5d2da70092d014209",
+    "autoimport.go": "c7e16c007a16a2aece9fad76712751de0559fb1c829fe7807e2ab7b651898a86"
+  }
+}

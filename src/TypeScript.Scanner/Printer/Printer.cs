@@ -6571,15 +6571,14 @@ private void emitListItems(Action<Printer, Node> emit, Node parentNode, Slice<No
 }
 
 // Upstream upstream/TypeScript/tsc/internal/printer/printer.go:5044:1.
-internal string Emit(Node node, SourceFile sourceFile = null)
+// Focused printer.go:5044 raw output owner join; apply to the existing Printer counterpart at promotion.
+internal string Emit(Node node, SourceFile sourceFile = null) => EmitValue(node, sourceFile).Materialize();
+internal ByteStringValue EmitValue(Node node, SourceFile sourceFile = null)
 {
-    if ((this.ownWriter == null))
-    {
-        this.ownWriter = TextWriter.NewTextWriter(this.Options.NewLine.GetNewLineCharacter(), 0);
-    }
-    this.Write(node, sourceFile, this.ownWriter, null);
-    var text = this.ownWriter.String();
-    this.ownWriter.Clear();
+    if (ownWriter == null) ownWriter = TextWriter.NewTextWriter(Options.NewLine.GetNewLineCharacter(), 0);
+    Write(node, sourceFile, ownWriter, null);
+    var text = ownWriter.TextValue();
+    ownWriter.Clear();
     return text;
 }
 

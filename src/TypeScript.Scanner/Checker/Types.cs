@@ -324,7 +324,9 @@ public sealed class LiteralType : TypeBase
         ? text : ByteStringValue.FromString((string)value);
     public Type FreshType() => freshType;
     public Type RegularType() => regularType;
-    // String() belongs to the selected ValueToString/escaping dependency closure.
+    // types.go:914. Default display wrappers materialize only at their boundary.
+    public string String() => StringRepresentationValue().Materialize();
+    internal ByteStringValue StringRepresentationValue() => Checker.ValueToStringValue(value);
 }
 
 // types.go:920. Internal const Symbol()/Symbol.for() results retain their actual

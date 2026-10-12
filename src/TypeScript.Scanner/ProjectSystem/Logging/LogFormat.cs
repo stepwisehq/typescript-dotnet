@@ -121,6 +121,7 @@ internal static class LogFormat
     private static string String(object? value) => value switch
     {
         string text => text,
+        TypeScript.Lsp.Protocol.DocumentUri uri => uri.Value.Materialize() ?? "",
         ByteStringValue text => text.Materialize() ?? "",
         ByteStringKey text => text.Value.Materialize() ?? "",
         RootedFilePath path => path.AsString(),
@@ -153,7 +154,7 @@ internal static class LogFormat
                 return "<nil>";
             case bool boolean:
                 return boolean ? "true" : "false";
-            case string or ByteStringValue or ByteStringKey or RootedFilePath or RootedDirectoryPath or RootedPath or PathKey or IGoLogStringer:
+            case TypeScript.Lsp.Protocol.DocumentUri or string or ByteStringValue or ByteStringKey or RootedFilePath or RootedDirectoryPath or RootedPath or PathKey or IGoLogStringer:
                 return String(value);
             case Exception error:
                 return GoString.ToUtf8(error.Message);
@@ -164,6 +165,10 @@ internal static class LogFormat
             // Slice is a value header with a pattern enumerator, not IEnumerable.
             // These are the actual ATA/project logging element roles. Formatting
             // owns only its output; no list/array bridge or generic ToString fallback.
+            case Slice<TypeScript.Lsp.Protocol.DocumentUri> items:
+                return SliceValue(items);
+            case Slice<Exception> items:
+                return SliceValue(items);
             case Slice<ByteStringValue> items:
                 return SliceValue(items);
             case Slice<ByteStringKey> items:

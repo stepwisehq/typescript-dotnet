@@ -1,0 +1,42 @@
+{
+  "status": "clear",
+  "reviewer": "emit_print_maps",
+  "scope": "Focused complete new TimeProvider/ITimer and assertion-accessibility production delta; genuine Session fixture, all new fixture synchronization/dispatch and authored long-idle control. No repeat review of unchanged pool algorithms or Session.",
+  "sourcePin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "checked": [
+    "System TimeProvider is default; monotonic lastReleased and elapsed queries use same provider, retaining original zero-time sentinel.",
+    "Actual cleanup callback is timer-driven; bounded positive intervals recheck original deadline and never dispose early. Original <=0 scheduling remains one millisecond, as checkerpool.go scheduleCleanupLocked.",
+    "Manual clock drives real ITimer callbacks outside clock lock, and release begins at nonzero timestamp. Discard/in-flight callback guard remains genuine production worker.",
+    "Real checkout background Threads observe blocked/completed acquisition and retain original identity/occupancy/cancellation assertions; waits are failure bounds, not timing expectations.",
+    "Original test names dispatch to genuine Session/configured Program fixtures, timer cleanup/staggered disposal and API survival assertions. Authored 40-day interval remains separately classified."
+  ],
+  "qualifications": [
+    "Source review only; new candidate managed/Native execution pending.",
+    "No broad re-review of the previously independently reviewed Session or unchanged checker-pool bodies."
+  ],
+  "sourceHashes": {
+    "src/TypeScript.Scanner/ProjectSystem/CheckerPool.cs": "7560549758238387a8b5a53266d0b37f1e6036fdceae6f48d7674b3dfb9be3ff",
+    "tests/LanguageServices.Tests/ProjectCheckerPoolTests.cs": "61645844dacfde6a2c541e81b1ff649d50a4e7ea53ba3081da4d53ccae224dae",
+    "validation/LanguageServices.Checks/LanguageServicesTestClock.cs": "3b442836f2937b381ed3697f86bf20ec5e999d711448b18620f2e6e4964ac1d8",
+    "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.Authored.cs": "41b43c92a3125a72a2e33ad6d57b6fd94acb271247e070610decfa85bf58568d",
+    "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.Concurrency.cs": "e97374497ab8abcb133e69c4e83109ad106220ef607beee0fd25b80d90f82108",
+    "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.Dispatch.cs": "19aae695c270a893df032d4a780aa7b8cc6a7f37ff1250956ee4d23580238e9c",
+    "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.Identity.cs": "3940220780dbe84ee41daa53b39812ef30b81b75c7ddae9473da7338b9c00409",
+    "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.RemainingState.cs": "113470440765c89056dbf4a2f6a1dd717cbb421c3dbb98c6955a442ed49e88f3",
+    "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.State.cs": "9e6bea763469e2531351d2c55ca770c48eaf6a1031036227cfecb48f0cec8afd",
+    "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.Timers.cs": "eaceeaa99f8a970d8e56d1b53baea656fb5fa0be6ad665388dd89481cbdce4cb",
+    "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.cs": "343e8fc1fd379b29810d5a2d4112bacd2f0c9e02c4e5e124825c10d060022794"
+  },
+  "narrowCompileJoinReview": {
+    "status": "clear",
+    "scope": "Five saved shared-check files only: explicit RootedFilePath at seven original /src/index.ts GetSourceFile lookups and DoesNotReturnIf(false) on the existing throwing Require helper. Existing path literals, assertion conditions and failure body unchanged; no production delta.",
+    "files": [
+      "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.cs",
+      "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.Identity.cs",
+      "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.State.cs",
+      "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.RemainingState.cs",
+      "validation/LanguageServices.Checks/ProjectCheckerPoolChecks.Timers.cs"
+    ],
+    "behaviorEvidence": "Root reports build39 clean and managed39 305/305 ordinary cases passed; actual Native execution for this packet remains pending."
+  }
+}

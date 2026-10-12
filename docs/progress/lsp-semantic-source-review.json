@@ -1,0 +1,286 @@
+{
+  "status": "independent-source-review-clear; candidate assertion execution pending",
+  "reviewer": "emit_foundation GPT-6.1 Sol",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "manifest": "docs/progress/lsp-semantic-promotion.json",
+  "manifestSha256": "2ff2bd4333147f6268397d7523acaf13052009237680670eeaf885271fc30235",
+  "paths": [
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Utilities.cs",
+      "sha256": "7047277edc7af1ae678b7221e55f87a4c3c02bbc880bc4d8d605011388a5cc89"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/SourceMap.cs",
+      "sha256": "2a4a4531e926e64a45309337383363fb9a5332ebab4052dede6a3a54236d79db"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/DisplayPartsWriter.cs",
+      "sha256": "316757cd2996cdfb511d9a2c83f30f5c192c56822754e437a9b6e70c4f498d81"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/JsDoc.cs",
+      "sha256": "b25ce5b6f5b25edc5c7f284fc98db735297d2de1e06e0d33966e3efe9cc29c0a"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Hover.cs",
+      "sha256": "3149c8c2f4a479d813dcbdbc44f7b0dfc618096c2326ff7c4a4644bf6e12c4a4"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/HoverIcon.cs",
+      "sha256": "c0fbba577889975fe3069794faacf0ac67d95d6315051f5ddcea874b68856b2f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/SignatureHelp.cs",
+      "sha256": "0eb0dd683d8bcb55998d204fc0c8ffb57da648603d0df57b2d07e7eeff3d9b2a"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Format.cs",
+      "sha256": "1f08e7c71b62ffac771947300832d90a81bf1a47f8016e4b820bd5c3d5cd34f1"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Definition.cs",
+      "sha256": "2bfacbd1eb8e71b8189a166fd7b005ce5e1d84b452ca57edbddbe1d0b2096d11"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/SourceDefinition.cs",
+      "sha256": "20d6511d83cc37018794bc38c2e8ba94cc73a41b58a6bf19a0c505f31ae772ad"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/FindAllReferences.SharedLeaves.cs",
+      "sha256": "72b6a4e6ef3a934508f468763ae4c4176ed6c272e4c1db8cff2fa5b9b11931d3"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Completions.SharedLeaves.cs",
+      "sha256": "a6eb027383f947323c01123cec6c7d7dec247a8d4ffe39255c1ccc852f334593"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Printer.cs",
+      "sha256": "f191bb07bd5183effc9a781a0099ac031f9c5fd0d5bed0c923053ed8f4998e27"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Printer.Services.cs",
+      "sha256": "d89525b95b2c17d0b6437d4301357a275e7404515ef72825d3b7e7e537850756"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Services.SignatureHeaders.cs",
+      "sha256": "a95a0cc0de527e1f5b42413f626db290272a068536726def530a20f2778ff9ab"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Compiler/Program.ServiceCheckout.cs",
+      "sha256": "e4a6bd0f72d6fe923d88cae8d8f3aef390bf67d5d77cea412c20340a9c49508e"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Runtime/GoStrings.JoinValue.cs",
+      "sha256": "6397c68279ac6729e67d8c2f17ccb79e6866c7d0ffde0bbdf1e78996d1bc44ab"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Runtime/GoStrings.GenericReplacer.cs",
+      "sha256": "a7e9f985d8e68f7ae2bdaa6d11a8ab980c6a12c1752965a6f26f1b7ff256aceb"
+    },
+    {
+      "path": "src/TypeScript.Scanner/StringUtil/StripQuotes.cs",
+      "sha256": "2daf83586ba707056b53084ff0300365e7965be701d898d94fc695697cc8f781"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/StringifyJson.cs",
+      "sha256": "a0962616bdec57cf9268301ad1a2bef55973c16887b5ce7c30fe78ff6df96834"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/DeduplicateValue.cs",
+      "sha256": "17823e130bceb4f11af2219820cb9c36c445589f6e92182c98ce936128de518b"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/GenericReplacerChecks.cs",
+      "sha256": "09ae9eeccf83d3e48a3b9788ab35c9535dda51dbd5a2994efe9ad129a89c51d6"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/GenericReplacerTests.cs",
+      "sha256": "108567da1de1a8b3385e76d5bdcdcb4c7fa789982b6fe64853eb69b3ebdc39b2"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Printer/Printer.cs",
+      "sha256": "8bc4824ac7d242201a2b9a86a00431196c8b916bcb37432ce1d411118a109df9"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/NodeBuilder.Service.cs",
+      "sha256": "065c88a157f33306536a3240b54f39cd0d2e8827d7d0405a480c899e00808a92"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/NodeBuilderImpl.cs",
+      "sha256": "a99b6f580ea771aaa3d5cec8a2634595f7e6a90a89b3383c754511c9f7db0ed8"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/SingleElementSlice.cs",
+      "sha256": "cefd1b94012c93bb4628b292031d14ed85299c45970b9ceadd1cdd945cb643a6"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Printer/Utilities.ServiceValues.cs",
+      "sha256": "a04b9b4b71936f2629d9f7ae3fdb95bcbab52de9130099d422d634e357e06aae"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Utilities.ServiceValues.cs",
+      "sha256": "d6c806447467411daa6c90d26ac374d9b407d2d04541c30294d29e684073ed43"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Types.cs",
+      "sha256": "fdef067610e575324fe1a7b945daa240676f21c7dd137a6eca12ecadc645d1fe"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/LanguageService.ZeroOwner.cs",
+      "sha256": "311bb3a2a670c1ba9a90b1b3da37688bb94ddf79051c25b3f57f29eb584d0002"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/LanguageServiceFormattingChecks.cs",
+      "sha256": "ba1b03b04ed7bf7a45fb158d8ea9798f540836271274e857698edeab24e689dd"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/LanguageServiceFormattingTests.cs",
+      "sha256": "85812822df01845ee2cf124871044eed98d41c95e99f3c9219ad96ba53f20b7e"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ServiceQueryChecks.cs",
+      "sha256": "e0e744ed011f2ea887864e52ac1c1b4d478063469656cdfadf96cc4275954f2e"
+    }
+  ],
+  "completeCounterparts": [
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/utilities.go",
+      "sha256": "13c970c533b0d7bb9402cd6f66db0eae64f70877e45c4d0461c054bac486baa5",
+      "lines": 1411,
+      "functions": 78,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Utilities.cs",
+      "draftSha256": "a299f08ec9961ced4c9e6ea0777023f55f72300388e6a0af3722ea8de196a16d",
+      "destinationSha256": "7047277edc7af1ae678b7221e55f87a4c3c02bbc880bc4d8d605011388a5cc89"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/source_map.go",
+      "sha256": "3fee8ff6fb7b0a73d2c71b970a4590e091280222536e2ccc1a8cb078ad523c55",
+      "lines": 167,
+      "functions": 13,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SourceMap.cs",
+      "draftSha256": "a55997450064a36819098adad0f34ad6729d50368d433bd5169a41e27fa1175f",
+      "destinationSha256": "2a4a4531e926e64a45309337383363fb9a5332ebab4052dede6a3a54236d79db"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/displaypartswriter.go",
+      "sha256": "45a9504a97002c567b1457b40f8d918266aea41928cc4db59a7425c654908332",
+      "lines": 217,
+      "functions": 33,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/DisplayPartsWriter.cs",
+      "draftSha256": "d8fe8ded81f69277722320bdf44fa923465e28c97e89c9e361eab3685d79c400",
+      "destinationSha256": "316757cd2996cdfb511d9a2c83f30f5c192c56822754e437a9b6e70c4f498d81"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/jsdoc.go",
+      "sha256": "4e5626c94141a1df3f1d079539dd48cf8ae61c40ae4659caa0a1032dbbc9bd0a",
+      "lines": 312,
+      "functions": 12,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/JsDoc.cs",
+      "draftSha256": "3629c7e840a6d6b3c4a6d2137b9e9702a02b0d1cfa642cc3386eb3e0a554d13a",
+      "destinationSha256": "b25ce5b6f5b25edc5c7f284fc98db735297d2de1e06e0d33966e3efe9cc29c0a"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/hover.go",
+      "sha256": "ff424044565af0d22336adc875c04efaa5207b9e52b1dde9d513a0c8c04ef5d8",
+      "lines": 1172,
+      "functions": 27,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Hover.cs",
+      "draftSha256": "7f4ea881536496308bd510546a093d069cad5893f513ddcd32e8ec1c7a7cc7e1",
+      "destinationSha256": "3149c8c2f4a479d813dcbdbc44f7b0dfc618096c2326ff7c4a4644bf6e12c4a4"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/hovericon.go",
+      "sha256": "e6e9f73e266291d52fd2ad2d69df495f3425389d9557008a8c8d3e4a51472b76",
+      "lines": 156,
+      "functions": 3,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/HoverIcon.cs",
+      "draftSha256": "c5eb6f519f46db70bae7c19062305f575b711e84426b76d8d9602b15a44a78e9",
+      "destinationSha256": "c0fbba577889975fe3069794faacf0ac67d95d6315051f5ddcea874b68856b2f"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/signaturehelp.go",
+      "sha256": "01be7bb1da1b4b5e1c442198b78ca9f84006a3d9bd35330b7b9ed82df02662d8",
+      "lines": 1446,
+      "functions": 42,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SignatureHelp.cs",
+      "draftSha256": "3b1a48f97efd9e1680c50914d66e46051f8c86ad2d842137006e26b1c4732bf4",
+      "destinationSha256": "0eb0dd683d8bcb55998d204fc0c8ffb57da648603d0df57b2d07e7eeff3d9b2a"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/format.go",
+      "sha256": "474b282a9d67712452bc77e41a493239e8b20cac2841f300fb5b97d1e9f597f2",
+      "lines": 301,
+      "functions": 10,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Format.cs",
+      "draftSha256": "efac248a82eb9700ffd7aaaf1cd236fcf15ab2dcea67e21ef3e0fc0c409f24ae",
+      "destinationSha256": "1f08e7c71b62ffac771947300832d90a81bf1a47f8016e4b820bd5c3d5cd34f1"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/definition.go",
+      "sha256": "eeb006c3eab8d35e854b321ea2cbc14fbd682fd4dd8cce73e35cd153283624c9",
+      "lines": 516,
+      "functions": 20,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Definition.cs",
+      "draftSha256": "da185adb1c98bb06c24e4742d3ef5d4e88e4c29db441faf4ce8317dc70c9d1cf",
+      "destinationSha256": "2bfacbd1eb8e71b8189a166fd7b005ce5e1d84b452ca57edbddbe1d0b2096d11"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/sourcedefinition.go",
+      "sha256": "43adcda4169732e81abb831e1386a9e0c60cea81d808bfda1f3fea30d9d915b7",
+      "lines": 749,
+      "functions": 30,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SourceDefinition.cs",
+      "draftSha256": "fa21f063ef8b1bf13bc46ffaa79c010809a6ccdcd586a2cf37b2c77d9824d6f7",
+      "destinationSha256": "20d6511d83cc37018794bc38c2e8ba94cc73a41b58a6bf19a0c505f31ae772ad"
+    }
+  ],
+  "resolvedFindings": [
+    {
+      "finding": "Unconditional zero-value Set allocation in definition and connected semantic owners",
+      "resolution": "Lazy backing owners preserve nil-before-first-Add, independent query visited sets, and existing dedup/order."
+    },
+    {
+      "finding": "Signature-help return-type fallback dropped default type-format flags",
+      "resolution": "TypeToStringValue invokes the same default private worker as ordinary TypeToString, preserving AllowUniqueESSymbolType and UseAliasDefinedOutsideCurrentScope."
+    }
+  ],
+  "reviewedOwnership": [
+    "checker checkout and finally release, request context retention",
+    "factory/writer pooling and verbosity restoration",
+    "mapped source/generated locations and nil mapper paths",
+    "byte-valued names, literal escaping, classified display runs, retained builder headers",
+    "original generic trie priority and empty-key advancement; final immutable output copy",
+    "lazy Set and nil/empty Slice producers; required original copies"
+  ],
+  "assertions": {
+    "GenericReplacerChecks.RunAll": {
+      "returnCount": 1,
+      "unit": "selected TestReplacer generic Replace channel",
+      "rows": 49,
+      "notClaimed": "whole TestReplacer, alternate optimized engines and WriteString"
+    },
+    "LanguageServiceFormattingChecks.RunAll": {
+      "returnCount": 4,
+      "unit": "complete original functions",
+      "originalSubtestRows": 8,
+      "parallelScheduling": "original Go T.Parallel hints adapted to sequential assertion scheduling",
+      "reference": "artifacts/language-services/integration-3/format-original-go.jsonl",
+      "execution": "pending"
+    }
+  },
+  "limits": [
+    "Ten complete semantic source counterparts and focused shared leaves reviewed; whole references/completions not claimed.",
+    "Four original formatting functions and 49 selected generic Replace rows reviewed; WriteString and alternate replacer engines not claimed.",
+    "Build38 compiled production but stopped on shared-check API joins. No new behavioral or Native acceptance is inferred."
+  ]
+}

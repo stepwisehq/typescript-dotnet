@@ -16,6 +16,19 @@ internal sealed class RefCountCache<K, V, AcquireArgs>(RefCountCacheOptions opti
     public RefCountCacheOptions Options { get; } = options;
 
     private readonly TypeScript.Collections.SyncMap<K, Entry> entries = new();
+    // session.go logging observes the original Range, rather than inventing a
+    // private-state count contract for concurrent cache mutation.
+    internal int EntryCount()
+    {
+        int count = 0;
+        entries.Range((_, _) =>
+        {
+            count++;
+            return true;
+        });
+        return count;
+    }
+
     // refcountcache.go:44 Acquire.
     public V Acquire(K identity, AcquireArgs args)
     {

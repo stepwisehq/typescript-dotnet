@@ -1,8 +1,8 @@
 {
   "status": "selected-dependency-applicability-record-with-explicit-remaining-channels",
-  "scope": "Selected Go regexp matching/replacement/index, Unicode/quoting and pinned x/text normalization/locale dependency closures; selected channels never imply whole-function credit.",
+  "scope": "Selected Go regexp matching/replacement/index, Unicode/quoting and pinned x/text normalization/locale dependency closures; selected channels never imply whole-function credit. Selected generic strings.Replace consumer closure now has49 original rows, not whole TestReplacer credit.",
   "separateFromTypeScriptTestInventory": true,
-  "functions": 102,
+  "functions": 103,
   "entries": [
     {
       "package": "Go1.27.1 regexp",
@@ -904,6 +904,18 @@
       "line": 480,
       "disposition": "complete-original-assertions-managed-and-Native33-passed",
       "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "Go1.27.1 strings",
+      "source": "tools/.cache/go/src/strings/replace_test.go",
+      "sourceSha256": "704176ae713bedeffd0ee6082baf75066a4170b32a6f96694b48a2ec8fdb6e35",
+      "function": "TestReplacer",
+      "line": 43,
+      "disposition": "selected-generic-Replace-channel-managed-and-Native-passed-dependency39",
+      "assertionRows": 49,
+      "sharedChecks": "validation/LanguageServices.Checks/GenericReplacerChecks.cs",
+      "mapping": "docs/progress/lsp-semantic-promotion.json",
+      "notClaimed": "Whole TestReplacer; WriteString assertions; alternate optimized replacement engines"
     }
   ],
   "referenceEvidence": {
@@ -923,35 +935,7 @@
     },
     "qualification": "Reference-only example/unused-API assertions do not increase C# coverage; default norm run excludes build-tagged TestProperties."
   },
-  "latestManagedEvidence": "validation/results/language-services-dependencies-33.json",
-  "priorManagedEvidence": {
-    "trx": "artifacts/language-services/integration-1/tests/dependencies-5.trx",
-    "trxSha256": "0a65a2ffdb9783d35427b82d95be638a06601082328372c5e5c47798cf62696c",
-    "scope": "All22 regexp groups, authored module-regex group, all7 added selected NFD channels passed. Combined142 cases had139passes and3 unrelated formatting failures; no whole dependency acceptance or Native refresh claimed.",
-    "corpusCounters": {
-      "RE2Search": {
-        "consumed": 1888,
-        "matched": 1804,
-        "matchAssertions": 7216,
-        "unsupportedByteEscapeSkips": 80,
-        "utf8ByteBoundarySkips": 4,
-        "failures": 0
-      },
-      "RE2Exhaustive": {
-        "consumed": 5716884,
-        "matched": 5202968,
-        "matchAssertions": 20811872,
-        "unsupportedByteEscapeSkips": 511220,
-        "utf8ByteBoundarySkips": 2696,
-        "failures": 0
-      },
-      "Fowler": {
-        "consumed": 347,
-        "matched": 346,
-        "originalCompileRejections": 1,
-        "sourceControlRowsExcludedBeforeConsumedCount": 17
-      }
-    }
-  },
-  "latestNativeEvidence": "validation/results/language-services-dependencies-33.json"
+  "latestManagedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+  "priorManagedEvidence": "validation/results/language-services-dependencies-33.json",
+  "latestNativeEvidence": "validation/results/language-services-dependencies-39.json"
 }

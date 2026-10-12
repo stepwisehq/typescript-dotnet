@@ -263,7 +263,20 @@
       },
       "allocationRolloutAdaptation": "Implemented through accepted integration16: Shared explicit-state slice helpers preserve source loops/storage; line-map construction uses borrowed byte decoding without source projection. Combined integration16 behavioral/Native AOT acceptance passed; source-reviewed snapshots and adaptations in docs/STATE.md.",
       "sourceReuseRolloutAdaptation": "One source spelling-selection algorithm consumes borrowed names/candidates; standard ArrayPool<double> buffers leased across search with finally return and source growth/initialization/tie/limit semantics. Scanner/parser/checker receivers preserve real output projection only. Independently reviewed; integration15 Linux x64 Native AOT VS Code passed with ten exact complete diagnostics; broad regression qualification pending.",
-      "emitCampaignAdaptation": "Required Slice<T> Splice retains upstream fresh-owner concat semantics and Go64 start+delete bounds."
+      "emitCampaignAdaptation": "Required Slice<T> Splice retains upstream fresh-owner concat semantics and Go64 start+delete bounds.",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Core/StringifyJson.cs",
+          "src/TypeScript.Scanner/Core/DeduplicateValue.cs",
+          "src/TypeScript.Scanner/Core/SingleElementSlice.cs"
+        ],
+        "scope": "Deduplicate828 byte-content instantiation preserves clone-on-first-duplicate",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
     },
     {
       "upstream": "tsc/internal/diagnostics/diagnostics_generated.go",
@@ -337,7 +350,18 @@
       "projectsCampaignContract": "docs/PROJECTS-CONTRACT.md",
       "projectsCampaignEvidence": "validation/results/projects-verified.json",
       "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
-      "allocationRolloutAdaptation": "Implemented through accepted integration16: Source util.go:240/323/352 shares borrowed descriptor operations through callers, retaining actual string output boundaries and original raw-byte semantics. Combined integration16 behavioral/Native AOT acceptance passed; source review and remaining boundaries recorded in docs/STATE.md."
+      "allocationRolloutAdaptation": "Implemented through accepted integration16: Source util.go:240/323/352 shares borrowed descriptor operations through callers, retaining actual string output boundaries and original raw-byte semantics. Combined integration16 behavioral/Native AOT acceptance passed; source review and remaining boundaries recorded in docs/STATE.md.",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/StringUtil/StripQuotes.cs"
+        ],
+        "scope": "StripQuotes222 borrowed value worker plus retained wrapper",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
     },
     {
       "upstream": "tsc/internal/jsnum/string.go",
@@ -1471,6 +1495,17 @@
         "state": "accepted integration21; independent review, actual Linux x64 Native AOT FIRST and1721 managed/Native controls/full15304 original exact. Reboot continuation8832 original+6472 new;2048 original rows have transparently reconstructed missing result metadata. No repeatable speedup claim.",
         "adaptation": "Concrete AsX performs a direct standard C# checked payload test, with the original data fallback preserving bare-header null and wrong-payload exception behavior. Applicable Node/Type/Mapper forwarding methods join the existing virtual override chain instead of first casting to a payload base. Real nullable interface views and cache algorithms remain. IterChildren overrides expose the already-public inherited operation; both source generators retain the adaptation.",
         "evidence": "artifacts/vscode-allocation-rollout/integration-21/build-1/regressions/final-acceptance-peer-review.json"
+      },
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Checker/Types.cs"
+        ],
+        "scope": "focused LiteralType.String914 owner/consumer join",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
       }
     },
     {
@@ -1769,7 +1804,18 @@
       "excludedSymbols": [],
       "emitReviewedPortion": "Only named demanded leaf/accessibility deltas; whole upstream count is source inventory, not new/reviewed total",
       "mergeInstruction": "Merge emitCampaign/emitReviewedPortion/emitAdaptations fields into existing entry; retain existing main scope/status/accepted historical fields.",
-      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json"
+      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Checker/Utilities.ServiceValues.cs"
+        ],
+        "scope": "complete ValueToString1749 raw producer over original escape worker",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
     },
     {
       "upstream": "tsc/internal/checker/grammarchecks.go",
@@ -2115,7 +2161,19 @@
       "emitAdaptations": [
         "try/finally preserves defer release ordering and exceptional exit."
       ],
-      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json"
+      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Checker/Printer.cs",
+          "src/TypeScript.Scanner/Checker/Printer.Services.cs"
+        ],
+        "scope": "focused configured raw printing joins",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
     },
     {
       "upstream": "tsc/internal/printer/printer.go",
@@ -2162,7 +2220,18 @@
       "preFullEmitPrinterScope": "Original no-emit diagnostic/public-baseline node writing: signatures/accessors, import attributes, bindings/computed names/call/new/binary/private/entity syntax, precedence and optional-empty lists. Statement/source-map/output emission is not claimed; demanded display paths remain in scope despite source printer filenames.",
       "excludedSymbols": [],
       "emitCampaignState": "implemented and independently source-reviewed; managed and Linux x64 Native AOT dependency gates passed, subject to documented observations and excluded scope",
-      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json"
+      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Printer/Printer.cs"
+        ],
+        "scope": "focused EmitValue; lazy writer/Write/Clear lifetime unchanged",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
     },
     {
       "upstream": "tsc/internal/printer/textwriter.go",
@@ -2237,7 +2306,18 @@
       "preFullEmitPrinterScope": "Original precedence/operator and writer/display utilities required by source diagnostic/public node rendering; source operator association/mixing rules retained. No general emitter completion claim.",
       "excludedSymbols": [],
       "emitCampaignState": "implemented and independently source-reviewed; managed and Linux x64 Native AOT dependency gates passed, subject to documented observations and excluded scope",
-      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json"
+      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Printer/Utilities.ServiceValues.cs"
+        ],
+        "scope": "EscapeString178 borrowed counterpart over unchanged actual escapeStringWorker",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
     },
     {
       "upstream": null,
@@ -2337,6 +2417,17 @@
         "adaptation": "Three Symbol and one Signature authored ownership membership guards use same-reference opaque token equality; null/transient/declaration fallback/error behavior and unstamped foreign/default rejection unchanged.",
         "allocationEvidence": "artifacts/vscode-symbol-ownership-token/allocation-comparison.json",
         "allocationQualification": "One matched ServerGC CoreCLR trace per variant: total sampled interval19.321389\u219218.701305GiB (\u22123.2093%); zero events lost/truncation, one candidate missing stack. Net ownership+reporter batch, not per-change attribution or exact allocations/native speed."
+      },
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Checker/Services.SignatureHeaders.cs"
+        ],
+        "scope": "borrowed signature header and real checker.go alias/type-parameter exported workers",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
       }
     },
     {
@@ -8551,12 +8642,12 @@
       "upstream": "tsc/internal/project/session.go",
       "destination": "src/TypeScript.Scanner/ProjectSystem/SessionOptions.cs",
       "status": "integration-pending",
-      "scope": "SessionOptions immutable input owner only; Session methods remain unported",
+      "scope": "Complete session.go production counterpart and required host/input owners; original assertion closure and actual Native execution in progress.",
       "upstreamSha256": "4d71cb61927bc255f4820c56c2ed0b1508de8e7378d3e9735f2d22f8e2a84a2f",
       "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
       "languageServicesCampaign": {
-        "scope": "SessionOptions immutable input owner only; Session methods remain unported",
-        "sourceStatus": "source-written-integration-pending",
+        "scope": "Complete session.go production counterpart and required host/input owners; original assertion closure and actual Native execution in progress.",
+        "sourceStatus": "superseded by languageServicesCurrentPacket; older evidence covers earlier limited owners",
         "destinations": [
           "src/TypeScript.Scanner/ProjectSystem/SessionOptions.cs"
         ],
@@ -8566,7 +8657,20 @@
         "upstreamFunctionCount": 0
       },
       "languageServicesState": "source-written-integration-pending",
-      "upstreamFunctionCount": 0
+      "upstreamFunctionCount": 79,
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-session-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Session.cs",
+          "src/TypeScript.Scanner/ProjectSystem/SessionOptions.cs"
+        ],
+        "scope": "Complete session.go production counterpart and required host/input owners; original assertion closure and actual Native execution in progress.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 79,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
     },
     {
       "upstream": "tsc/internal/project/checkerpool.go",
@@ -8634,12 +8738,12 @@
       "upstream": "tsc/internal/project/snapshot.go",
       "destination": "src/TypeScript.Scanner/ProjectSystem/ModuleResolverFactory.cs",
       "status": "integration-pending",
-      "scope": "complete ModuleResolverFactory contract only; Snapshot owner remains next",
+      "scope": "Complete snapshot.go production counterpart and required host/input owners; original assertion closure and actual Native execution in progress.",
       "upstreamSha256": "7b270b0d176f7a988dc6b6aa15fd4e386e09b0ebd9a57b3872c1d4fdc12dc12f",
       "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
       "languageServicesCampaign": {
-        "scope": "complete ModuleResolverFactory contract only; Snapshot owner remains next",
-        "sourceStatus": "source-written-integration-pending",
+        "scope": "Complete snapshot.go production counterpart and required host/input owners; original assertion closure and actual Native execution in progress.",
+        "sourceStatus": "superseded by languageServicesCurrentPacket; older evidence covers earlier limited owners",
         "destinations": [
           "src/TypeScript.Scanner/ProjectSystem/ModuleResolverFactory.cs"
         ],
@@ -8649,7 +8753,21 @@
         "upstreamFunctionCount": 0
       },
       "languageServicesState": "source-written-integration-pending",
-      "upstreamFunctionCount": 0
+      "upstreamFunctionCount": 39,
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-session-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/Snapshot.cs",
+          "src/TypeScript.Scanner/ProjectSystem/SnapshotHost.cs",
+          "src/TypeScript.Scanner/ProjectSystem/ModuleResolverFactory.cs"
+        ],
+        "scope": "Complete snapshot.go production counterpart and required host/input owners; original assertion closure and actual Native execution in progress.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 39,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
     },
     {
       "upstream": "tsc/internal/ls/crossproject.go",
@@ -9889,6 +10007,633 @@
         "scope": "whole three symlink-cache originals; existing real MapFS assertion adapter; sequential scheduling hints",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/utilities.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Utilities.cs",
+      "status": "integration-pending",
+      "scope": "complete counterpart",
+      "upstreamSha256": "13c970c533b0d7bb9402cd6f66db0eae64f70877e45c4d0461c054bac486baa5",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Utilities.cs"
+        ],
+        "scope": "complete counterpart",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 78,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/source_map.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SourceMap.cs",
+      "status": "integration-pending",
+      "scope": "complete counterpart",
+      "upstreamSha256": "3fee8ff6fb7b0a73d2c71b970a4590e091280222536e2ccc1a8cb078ad523c55",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/SourceMap.cs"
+        ],
+        "scope": "complete counterpart",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 13,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/displaypartswriter.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/DisplayPartsWriter.cs",
+      "status": "integration-pending",
+      "scope": "complete counterpart",
+      "upstreamSha256": "45a9504a97002c567b1457b40f8d918266aea41928cc4db59a7425c654908332",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/DisplayPartsWriter.cs"
+        ],
+        "scope": "complete counterpart",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 33,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/jsdoc.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/JsDoc.cs",
+      "status": "integration-pending",
+      "scope": "complete counterpart",
+      "upstreamSha256": "4e5626c94141a1df3f1d079539dd48cf8ae61c40ae4659caa0a1032dbbc9bd0a",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/JsDoc.cs"
+        ],
+        "scope": "complete counterpart",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 12,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/hover.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Hover.cs",
+      "status": "integration-pending",
+      "scope": "complete counterpart",
+      "upstreamSha256": "ff424044565af0d22336adc875c04efaa5207b9e52b1dde9d513a0c8c04ef5d8",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Hover.cs"
+        ],
+        "scope": "complete counterpart",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 27,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/hovericon.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/HoverIcon.cs",
+      "status": "integration-pending",
+      "scope": "complete counterpart",
+      "upstreamSha256": "e6e9f73e266291d52fd2ad2d69df495f3425389d9557008a8c8d3e4a51472b76",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/HoverIcon.cs"
+        ],
+        "scope": "complete counterpart",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 3,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/signaturehelp.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SignatureHelp.cs",
+      "status": "integration-pending",
+      "scope": "complete counterpart",
+      "upstreamSha256": "01be7bb1da1b4b5e1c442198b78ca9f84006a3d9bd35330b7b9ed82df02662d8",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/SignatureHelp.cs"
+        ],
+        "scope": "complete counterpart",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 42,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/format.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Format.cs",
+      "status": "integration-pending",
+      "scope": "complete counterpart",
+      "upstreamSha256": "474b282a9d67712452bc77e41a493239e8b20cac2841f300fb5b97d1e9f597f2",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Format.cs"
+        ],
+        "scope": "complete counterpart",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 10,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/definition.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Definition.cs",
+      "status": "integration-pending",
+      "scope": "complete counterpart",
+      "upstreamSha256": "eeb006c3eab8d35e854b321ea2cbc14fbd682fd4dd8cce73e35cd153283624c9",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Definition.cs"
+        ],
+        "scope": "complete counterpart",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 20,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/sourcedefinition.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SourceDefinition.cs",
+      "status": "integration-pending",
+      "scope": "complete counterpart",
+      "upstreamSha256": "43adcda4169732e81abb831e1386a9e0c60cea81d808bfda1f3fea30d9d915b7",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/SourceDefinition.cs"
+        ],
+        "scope": "complete counterpart",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 30,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/findallreferences.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/FindAllReferences.SharedLeaves.cs",
+      "status": "integration-pending",
+      "scope": "partial actual shared models/getContextNode/getRangeOfNode/getFileAndStartPosFromDeclaration; full references remains pending",
+      "upstreamSha256": "48b95717c9504c9e96d20c59ed0ea155a77255c70316b672b0ad66611a8572c5",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/FindAllReferences.SharedLeaves.cs"
+        ],
+        "scope": "partial actual shared models/getContextNode/getRangeOfNode/getFileAndStartPosFromDeclaration; full references remains pending",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/completions.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Completions.SharedLeaves.cs",
+      "status": "integration-pending",
+      "scope": "partial getSwitchedType/isEqualityOperatorKind; full completion remains pending",
+      "upstreamSha256": "e4adcb389f45cf83df58cb15d0d6d2411270bca8f4dba32f39406d5e4ea26304",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/LanguageServices/Completions.SharedLeaves.cs"
+        ],
+        "scope": "partial getSwitchedType/isEqualityOperatorKind; full completion remains pending",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "src/strings/strings.go",
+      "destination": "src/TypeScript.Scanner/Runtime/GoStrings.JoinValue.cs",
+      "status": "integration-pending",
+      "scope": "Go1.27.1 selected Join closure",
+      "upstreamSha256": "a81bdf73a308277c322e35d0c602e3813f57b6f769c091f8f8962c8884a45ea3",
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Runtime/GoStrings.JoinValue.cs"
+        ],
+        "scope": "Go1.27.1 selected Join closure",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "src/strings/replace.go",
+      "destination": "src/TypeScript.Scanner/Runtime/GoStrings.GenericReplacer.cs",
+      "status": "integration-pending",
+      "scope": "Go1.27.1 selected generic matching/Replace closure; no alternate optimized engines or external Writer API",
+      "upstreamSha256": "fbe8467c532ea7e5cdb848577423c4f218cbe2776907fb5c8c091006c786cdba",
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Runtime/GoStrings.GenericReplacer.cs"
+        ],
+        "scope": "Go1.27.1 selected generic matching/Replace closure; no alternate optimized engines or external Writer API",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/fswatch/watcher.go",
+      "destination": "src/TypeScript.Scanner/FsWatch/Contracts.cs",
+      "status": "integration-pending",
+      "scope": "Complete generic package contract/registry/subscription/rollback/shared base/callback algorithms; Go private marker functions replaced by internal sealed contracts, base init self owner by CLR virtual receiver; Linux validateWatchDirectory OS boundary included.",
+      "upstreamSha256": "8f1f4ed5de4eb13c49de2d778aef1db867bf2726050ac5e69fdca49fa015872e",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-watcher-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/FsWatch/Contracts.cs",
+          "src/TypeScript.Scanner/FsWatch/Registry.cs",
+          "src/TypeScript.Scanner/FsWatch/FallbackWatcher.cs",
+          "src/TypeScript.Scanner/FsWatch/Watcher.cs",
+          "src/TypeScript.Scanner/FsWatch/WatcherBase.cs",
+          "src/TypeScript.Scanner/FsWatch/DirWatch.cs",
+          "src/TypeScript.Scanner/FsWatch/PathHelpers.cs",
+          "src/TypeScript.Scanner/FsWatch/LinuxKernel.cs",
+          "src/TypeScript.Scanner/FsWatch/Errors.cs"
+        ],
+        "scope": "Complete generic package contract/registry/subscription/rollback/shared base/callback algorithms; Go private marker functions replaced by internal sealed contracts, base init self owner by CLR virtual receiver; Linux validateWatchDirectory OS boundary included.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 69,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/fswatch/event.go",
+      "destination": "src/TypeScript.Scanner/FsWatch/Event.cs",
+      "status": "integration-pending",
+      "scope": "Complete event/coalescing/sequence/drain owner.",
+      "upstreamSha256": "d05029dfd9c21e7e640940d0aeedddd65add1defee121bd1f63844952b7d9fb3",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-watcher-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/FsWatch/Event.cs"
+        ],
+        "scope": "Complete event/coalescing/sequence/drain owner.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 28,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/fswatch/debounce.go",
+      "destination": "src/TypeScript.Scanner/FsWatch/Debounce.cs",
+      "status": "integration-pending",
+      "scope": "Complete latch/debounce algorithm; closed Go channel signals become persistent completion sources, process-lifetime loop a dedicated background thread; TimeProvider supplies monotonic clock/timers.",
+      "upstreamSha256": "c439df6a0f1f3c6320bcf6d60bfd5d28402e4239b5dde644c2d41fdf3e37d9b7",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-watcher-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/FsWatch/Debounce.cs"
+        ],
+        "scope": "Complete latch/debounce algorithm; closed Go channel signals become persistent completion sources, process-lifetime loop a dedicated background thread; TimeProvider supplies monotonic clock/timers.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 12,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/fswatch/pathcompare.go",
+      "destination": "src/TypeScript.Scanner/FsWatch/PathCompare.cs",
+      "status": "integration-pending",
+      "scope": "Complete byte/Unicode comparer and borrowed comparison headers; Darwin native fold remains explicitly unavailable on Linux.",
+      "upstreamSha256": "fd85ff2ed8f80322e50d6b2a70f321827fb5232da35b38a9076c184fefb04be8",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-watcher-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/FsWatch/PathCompare.cs"
+        ],
+        "scope": "Complete byte/Unicode comparer and borrowed comparison headers; Darwin native fold remains explicitly unavailable on Linux.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 10,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/fswatch/pathkey.go",
+      "destination": "src/TypeScript.Scanner/FsWatch/PathCompare.cs",
+      "status": "integration-pending",
+      "scope": "Complete public immutable comparer key/rebase UTF8/NUL admission.",
+      "upstreamSha256": "7ce8475699591cbe1f4e7597297dcb3504593665d02576d706149f44d4123050",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-watcher-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/FsWatch/PathCompare.cs"
+        ],
+        "scope": "Complete public immutable comparer key/rebase UTF8/NUL admission.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 2,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/fswatch/canonicalize_other.go",
+      "destination": "src/TypeScript.Scanner/FsWatch/PathCompare.cs",
+      "status": "integration-pending",
+      "scope": "Whole platform-selected no-op canonicalization/exact comparer and original fold panic.",
+      "upstreamSha256": "7dc0266db8e4c5a2433927bbbc3b07118e23c5745fd3e9864fa60fa2f599c6cf",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-watcher-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/FsWatch/PathCompare.cs",
+          "src/TypeScript.Scanner/FsWatch/Watcher.cs"
+        ],
+        "scope": "Whole platform-selected no-op canonicalization/exact comparer and original fold panic.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 4,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/fswatch/walkdir.go",
+      "destination": "src/TypeScript.Scanner/FsWatch/WalkDirGeneric.cs",
+      "status": "integration-pending",
+      "scope": "Complete portable walk owner; demanded Go os.ReadDir Linux syscall boundary retains raw names/sort/error handling and standard buffer pool.",
+      "upstreamSha256": "f5186a6c92967f65a6f7ee5d6d61c66faca1ce71c7a76b4dbd6d276f66efd9c7",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-watcher-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/FsWatch/WalkDirGeneric.cs"
+        ],
+        "scope": "Complete portable walk owner; demanded Go os.ReadDir Linux syscall boundary retains raw names/sort/error handling and standard buffer pool.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 2,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/fswatch/walkdir_unix.go",
+      "destination": "src/TypeScript.Scanner/FsWatch/WalkDir.cs",
+      "status": "integration-pending",
+      "scope": "Whole native walk/getdents parser/shared8192-byte buffer, directory fd ownership and required name copies.",
+      "upstreamSha256": "52eb7911095cd5a1ce7a888a46544ff58cab98e45b651f7b9ba6cf91cad959fa",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-watcher-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/FsWatch/WalkDir.cs"
+        ],
+        "scope": "Whole native walk/getdents parser/shared8192-byte buffer, directory fd ownership and required name copies.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 3,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/fswatch/walkdir_dirent_linux.go",
+      "destination": "src/TypeScript.Scanner/FsWatch/WalkDir.cs",
+      "status": "integration-pending",
+      "scope": "Whole Linux dirent reclen/ino fields mapped to explicit x64 ABI offsets.",
+      "upstreamSha256": "b1dabb0edd2dbe27d28343bebd0cece3781b012bc7d882071a1aa08c0f1457b5",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-watcher-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/FsWatch/WalkDir.cs"
+        ],
+        "scope": "Whole Linux dirent reclen/ino fields mapped to explicit x64 ABI offsets.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 2,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/fswatch/inotify_linux.go",
+      "destination": "src/TypeScript.Scanner/FsWatch/Inotify.cs",
+      "status": "integration-pending",
+      "scope": "Whole Linux backend/event loop/subscription identity/cleanup and native calls.",
+      "upstreamSha256": "c4c78f2c8fafe27838c2bf9f70931ada42f9f8308489165313643d4f3d1943bd",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-watcher-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/FsWatch/Inotify.cs",
+          "src/TypeScript.Scanner/FsWatch/LinuxKernel.cs"
+        ],
+        "scope": "Whole Linux backend/event loop/subscription identity/cleanup and native calls.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 11,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/fswatch/fanotify_linux.go",
+      "destination": "src/TypeScript.Scanner/FsWatch/Fanotify.cs",
+      "status": "integration-pending",
+      "scope": "Whole Linux backend availability/probe/rename fallback/FID parsing/merged mask/delete/create/cleanup and native calls.",
+      "upstreamSha256": "d18a8d35e63ccc0d4dd2929c1e02bde7c6178619542f29d2a4e7701d76a1e568",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-watcher-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/FsWatch/Fanotify.cs",
+          "src/TypeScript.Scanner/FsWatch/FanotifyRecords.cs",
+          "src/TypeScript.Scanner/FsWatch/LinuxFanotify.cs",
+          "src/TypeScript.Scanner/FsWatch/Registry.cs"
+        ],
+        "scope": "Whole Linux backend availability/probe/rename fallback/FID parsing/merged mask/delete/create/cleanup and native calls.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 20,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/lsp/lspwatcher/lspwatcher.go",
+      "destination": "src/TypeScript.Scanner/Lsp/Watching/Watcher.cs",
+      "status": "integration-pending",
+      "scope": "Whole in-process LSP watcher including ancestor promotion/missing target recovery/rollback/synthetic creates/75ms throttle/pattern and kind logic; original callbacks retain copied value headers.",
+      "upstreamSha256": "a4261019ff46e1e737909417e8b79b61df6dbb62299461f5232878c6091b55a1",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-watcher-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Lsp/Watching/Watcher.cs",
+          "src/TypeScript.Scanner/Lsp/Watching/Watch.cs",
+          "src/TypeScript.Scanner/Lsp/Watching/Patterns.cs"
+        ],
+        "scope": "Whole in-process LSP watcher including ancestor promotion/missing target recovery/rollback/synthetic creates/75ms throttle/pattern and kind logic; original callbacks retain copied value headers.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 24,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/autoimport.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/AutoImport.cs",
+      "status": "integration-pending",
+      "scope": "Complete autoimport.go production counterpart and required host/input owners; original assertion closure and actual Native execution in progress.",
+      "upstreamSha256": "c7e16c007a16a2aece9fad76712751de0559fb1c829fe7807e2ab7b651898a86",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-session-promotion.json",
+        "destinations": [
+          "src/TypeScript.Scanner/ProjectSystem/AutoImport.cs"
+        ],
+        "scope": "Complete autoimport.go production counterpart and required host/input owners; original assertion closure and actual Native execution in progress.",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "upstreamFunctionCount": 12,
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      },
+      "upstreamFunctionCount": 12
+    },
+    {
+      "upstream": "tsc/internal/ls/format_test.go",
+      "destination": "validation/LanguageServices.Checks/LanguageServiceFormattingChecks.cs",
+      "status": "integration-pending",
+      "scope": "four complete original functions/eight original subtest rows; Go parallel hints sequential",
+      "upstreamSha256": "7c6df3b7416d79016d1e21fcb0275228684c7f8a7cb58a627727b02518a81ce9",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
+        "destinations": [
+          "validation/LanguageServices.Checks/LanguageServiceFormattingChecks.cs"
+        ],
+        "scope": "four complete original functions/eight original subtest rows; Go parallel hints sequential",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/json/json.go",
+      "destination": "src/TypeScript.Scanner/Json/JsonIndent.cs",
+      "status": "partial",
+      "scope": "MarshalIndent wrapper required by genuine server/Core.StringifyJson; other existing generic codec behavior remains separately mapped.",
+      "upstreamSha256": "22a2a5590e8899bc197af1271e52684c86858401706e779dcc6faea02ea1a2c1",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-json-indent-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Json/JsonIndent.cs"
+        ],
+        "scope": "MarshalIndent wrapper required by genuine server/Core.StringifyJson; other existing generic codec behavior remains separately mapped.",
+        "sourceStatus": "selected required closure source-reviewed; ten authored comparisons and retained codec assertions passed managed and Linux x64 Native AOT; complete server consumer still pending",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md"
+      }
+    },
+    {
+      "upstream": "src/encoding/json/jsontext/options.go",
+      "destination": "src/TypeScript.Scanner/Json/JsonIndentation.cs",
+      "status": "partial",
+      "scope": "Selected WithIndent/WithIndentPrefix validation and matching Go quoting.",
+      "upstreamSha256": "4b3fe260c216e5b194f1cf7bb362c8bfdcd9964c63bce9519f3647dcbeb06b47",
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-json-indent-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Json/JsonIndentation.cs"
+        ],
+        "scope": "Selected WithIndent/WithIndentPrefix validation and matching Go quoting.",
+        "sourceStatus": "selected required closure source-reviewed; ten authored comparisons and retained codec assertions passed managed and Linux x64 Native AOT; complete server consumer still pending",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md"
+      }
+    },
+    {
+      "upstream": "src/encoding/json/jsontext/state.go",
+      "destination": "src/TypeScript.Scanner/Json/JsonIndentation.cs",
+      "status": "partial",
+      "scope": "Selected NeedIndent formatting-state behavior.",
+      "upstreamSha256": "07930c12fd4a0cd219859f9cd7257cb9e3d71f7581e32f73510c4ddc4c8cc08f",
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-json-indent-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Json/JsonIndentation.cs"
+        ],
+        "scope": "Selected NeedIndent formatting-state behavior.",
+        "sourceStatus": "selected required closure source-reviewed; ten authored comparisons and retained codec assertions passed managed and Linux x64 Native AOT; complete server consumer still pending",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md"
+      }
+    },
+    {
+      "upstream": "src/encoding/json/jsontext/encode.go",
+      "destination": "src/TypeScript.Scanner/Json/JsonIndentation.cs",
+      "status": "partial",
+      "scope": "Selected AppendIndent/reformatValue and actual value-token delimiter ordering; generic/closed AOT encoder consumers preserve partial-output/error behavior.",
+      "upstreamSha256": "1ad3b78ff3e407a13a3f3d05f3cc7ecba92fcd7a3edc95c14c0f65d09e932ef8",
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "languageServicesCurrentPacket": {
+        "mappingPacket": "docs/progress/lsp-json-indent-mapping.json",
+        "destinations": [
+          "src/TypeScript.Scanner/Json/JsonIndentation.cs",
+          "src/TypeScript.Scanner/Json/JsonCodec.cs",
+          "src/TypeScript.Scanner/Lsp/Protocol/ProtocolEncoder.cs"
+        ],
+        "scope": "Selected AppendIndent/reformatValue and actual value-token delimiter ordering; generic/closed AOT encoder consumers preserve partial-output/error behavior.",
+        "sourceStatus": "selected required closure source-reviewed; ten authored comparisons and retained codec assertions passed managed and Linux x64 Native AOT; complete server consumer still pending",
+        "evidence": "validation/results/language-services-dependencies-39.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md"
       }
     }
   ],

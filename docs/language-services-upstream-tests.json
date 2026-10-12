@@ -131,235 +131,430 @@
           "name": "TestCheckerPoolDiagnosticsRouting",
           "line": 60,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolQueryRouting",
           "line": 73,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolRequestAffinity",
           "line": 88,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolSameRequestContention",
           "line": 109,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolSameRequestConcurrentQueries",
           "line": 151,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolIdleCleanup",
           "line": 166,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolFileAssociationCleanup",
           "line": 218,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolMinCheckers",
           "line": 255,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolDefaultIdleTimeout",
           "line": 263,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolQueryContention",
           "line": 270,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolDiagnosticsContention",
           "line": 309,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolCanceledCheckerDisposal",
           "line": 354,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolRequestAssociationCleanupOnDisposal",
           "line": 390,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolRequestAssociationCleanupOnContextDone",
           "line": 426,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolDiagnosticsRecreatedAfterIdleDisposal",
           "line": 463,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolCrossReleaseAffinityWithContention",
           "line": 498,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolLifetimeMismatchIgnoresAssociation",
           "line": 552,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolNoRequestID",
           "line": 593,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolDiagnosticsCrossReleaseAffinity",
           "line": 611,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolDiscardKeepsIdleCheckers",
           "line": 639,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolDiscardHeldCheckerSurvivesRelease",
           "line": 695,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolDiscardStillFunctional",
           "line": 747,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolDiagnosticsCheckerStableIdentity",
           "line": 793,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolDiagnosticsCheckerSurvivesDiscard",
           "line": 820,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolDiagnosticsCheckerIndependentFromQuery",
           "line": 854,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolAPICheckerStableIdentity",
           "line": 881,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolAPICheckerSurvivesDiscard",
           "line": 909,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolAllThreeIndependent",
           "line": 936,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolFileAffinity",
           "line": 966,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolMultipleConcurrentQueryCheckers",
           "line": 996,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolDoubleReleaseSafe",
           "line": 1057,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolDefaultMaxCheckers",
           "line": 1079,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolStaggeredIdleCleanup",
           "line": 1088,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolDiscardIdempotent",
           "line": 1152,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolGetGlobalDiagnosticsEmpty",
           "line": 1195,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolTakeNewGlobalDiagnostics",
           "line": 1204,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolAPICheckerDisposedOnCancel",
           "line": 1236,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolNonCancelableContextNoAffinity",
           "line": 1273,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestCheckerPoolCleanupAfterDiscardIsNoop",
           "line": 1301,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-checker-pool-assertions.json",
+          "adaptation": "Original checker-pool assertions; optional real-owner TimeProvider and source-package visibility preserve original scheduling and identity conditions.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         }
       ]
     },
@@ -1226,25 +1421,45 @@
           "name": "TestNonOverlappingFormattingRanges",
           "line": 15,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-semantic-promotion.json",
+          "adaptation": "Original four formatting-service functions/eight rows; zero-owner LanguageService and original no-panic/range-order assertions retained; Go parallel hints run sequentially.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestGetFormattingEditsAfterKeystroke_EmptyFile",
           "line": 59,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-semantic-promotion.json",
+          "adaptation": "Original four formatting-service functions/eight rows; zero-owner LanguageService and original no-panic/range-order assertions retained; Go parallel hints run sequentially.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestGetFormattingEditsAfterKeystroke_SimpleStatement",
           "line": 89,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-semantic-promotion.json",
+          "adaptation": "Original four formatting-service functions/eight rows; zero-owner LanguageService and original no-panic/range-order assertions retained; Go parallel hints run sequentially.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestGetFormattingEditsForRange_FunctionBody",
           "line": 120,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-semantic-promotion.json",
+          "adaptation": "Original four formatting-service functions/eight rows; zero-owner LanguageService and original no-panic/range-order assertions retained; Go parallel hints run sequentially.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         }
       ]
     },
@@ -1987,97 +2202,177 @@
           "name": "TestWatcher_CreateChangeDelete",
           "line": 34,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatcher_KindFilter",
           "line": 101,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestRootFromGlob",
           "line": 151,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatchRootFromRelativePattern",
           "line": 170,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatcher_BookkeepingAndOverflow",
           "line": 279,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatcher_NonRecursiveGlobIsNotRecursive",
           "line": 333,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatcher_RealBackend_MissingThenCreate",
           "line": 367,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatcher_MissingDirectoryTracksAncestor",
           "line": 427,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatcher_MissingDirectoryPromotesOnCreate",
           "line": 463,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatcher_MultiLevelDescend",
           "line": 527,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatcher_AtomicTreeCreateRace",
           "line": 571,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatcher_SyntheticCreateDepth",
           "line": 601,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatcher_TerminatedFallsBackAndRecovers",
           "line": 701,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatcher_GenuineFailureRollsBackForRetry",
           "line": 767,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatcher_WatchTerminatedDoesNotDropEvents",
           "line": 808,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         },
         {
           "name": "TestWatcher_CloseWhileWatchFilesReconciles",
           "line": 856,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
         }
       ]
     },
@@ -61146,13 +61441,1102 @@
           "reason": "Go source generator tooling; exact runtime catalogs and all four runtime test functions retained."
         }
       ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/fswatch/eventlist_test.go",
+      "sha256": "9ddf22124dccda50cc405e73b5377d1ddfc10419cd4bb8dfa39de91e06fd80a9",
+      "family": "fswatch",
+      "functions": [
+        {
+          "name": "TestEventListCreateThenDelete",
+          "line": 19,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestEventListDeleteThenCreate",
+          "line": 32,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestEventListCreateDeleteCreate",
+          "line": 47,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestEventListErrorIsLatchedAndCleared",
+          "line": 62,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestEventListDrainIsAtomic",
+          "line": 88,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestEventListDrainReturnsErrorWithEvents",
+          "line": 112,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestEventListDrainForSequences",
+          "line": 127,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        }
+      ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/fswatch/fallback_test.go",
+      "sha256": "8f97283fdf38133af509e79c812994df26d75a82c82040151ca260d0060e563b",
+      "family": "fswatch",
+      "functions": [
+        {
+          "name": "TestFallbackWatcherRoutesUnsupportedDirectories",
+          "line": 91,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestFallbackWatcherDoesNotFallbackForUnrelatedError",
+          "line": 126,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestFallbackWatcherDoesNotUseSecondaryOnHappyPath",
+          "line": 142,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestFallbackWatcherRollsBackRoutedWatchesOnFailure",
+          "line": 166,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestFanotifyUsesInternalInotifyFallback",
+          "line": 197,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        }
+      ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/fswatch/fanotify_linux_test.go",
+      "sha256": "f5e1b08aad68b1e9538f14f1d442bf09bc2aee362706d66a5a492024120cb6a9",
+      "family": "fswatch",
+      "functions": [
+        {
+          "name": "TestLinuxFanotifyShutdownBeforeStart",
+          "line": 30,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestLinuxFanotifyBackendSelection",
+          "line": 35,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestLinuxFanotifySubscribeCleansUpAfterMarkFailure",
+          "line": 49,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestLinuxFanotifyParseDfidNameRoundTrip",
+          "line": 68,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestFanotifyCrossWatcherSameFs",
+          "line": 93,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestLinuxFanotifyMaybeWrapUnsupportedFilesystem",
+          "line": 124,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestLinuxFanotifyMarkENODEVTagged",
+          "line": 147,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestLinuxFanotifyUnsupportedTagSurvivesDirWatchError",
+          "line": 164,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        }
+      ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/fswatch/fsevents_darwin_ffi_arm64_test.go",
+      "sha256": "89e915d7560cccaca3776d5e05f9b1adbc0bde6a76949297eb228dc5ba0e2cf3",
+      "family": "fswatch",
+      "functions": [
+        {
+          "name": "TestCallbackASMTouchesOnlySafeRegisters",
+          "line": 64,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        }
+      ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/fswatch/fsevents_darwin_nfd_test.go",
+      "sha256": "30dc1a25203d41021c2608aea71d042fa1ccca5faf934275990ad33642415dad",
+      "family": "fswatch",
+      "functions": [
+        {
+          "name": "TestNormalizeNFC",
+          "line": 33,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestNormalizeNFCASCIIFastPath",
+          "line": 82,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestIsASCII",
+          "line": 92,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsNFDOnDiskNFCSubscribe",
+          "line": 120,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsNFDOnDiskNFCWatchFile",
+          "line": 158,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestDarwinWatchFileComparison",
+          "line": 210,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestNativePathComparerKeys",
+          "line": 314,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestPathComparerVolumeQueryError",
+          "line": 348,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsDifferentCasing",
+          "line": 358,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsWatchFileDifferentCasing",
+          "line": 401,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestNativePathFold",
+          "line": 456,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsExpansionAliases",
+          "line": 485,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsFoldDistinctNames",
+          "line": 575,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        }
+      ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/fswatch/fsevents_darwin_shared_test.go",
+      "sha256": "cf968063e100ff1aa2ef3d00d88c60b727d6b948f2ddade8a8b181a9d1d289b6",
+      "family": "fswatch",
+      "functions": [
+        {
+          "name": "TestFSEventsSharedStreamAcrossWatches",
+          "line": 28,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsSharedStreamRoutesEvents",
+          "line": 65,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsConsolidatedWatchValidatesLogicalRoot",
+          "line": 144,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsConsolidatedWatchTerminatesLogicalRoot",
+          "line": 164,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsSharedStreamFallsBackToChunks",
+          "line": 209,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestWatchesForFSEventsPaths",
+          "line": 246,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsOverflowMatchesWatch",
+          "line": 271,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsCaseSensitiveRouting",
+          "line": 302,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsConsolidatedDifferentCasing",
+          "line": 333,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsConsolidatedExpansion",
+          "line": 376,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsExpansionRouting",
+          "line": 431,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        },
+        {
+          "name": "TestFSEventsLazyPathFolding",
+          "line": 469,
+          "kind": "test",
+          "disposition": "excluded-platform-backend-outside-linux-contract",
+          "reason": "Native Darwin backend is explicitly outside the Linux implementation boundary in LANGUAGE-SERVICES-CONTRACT.md; no assertion success or platform verification is claimed."
+        }
+      ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/fswatch/testutil_test.go",
+      "sha256": "ab20fe2b946a1d2e4ddbe585529c6d165251f995bf8a5b733294938a0999ffc0",
+      "family": "fswatch",
+      "functions": []
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/fswatch/walkdir_test.go",
+      "sha256": "dde30bb8fb90742e3b6b5ddaca066dc29dc68a12081e83c1e5cd0e7d33d165af",
+      "family": "fswatch",
+      "functions": [
+        {
+          "name": "TestWalkDirDoesNotFollowSymlinkedDir",
+          "line": 30,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestWalkDirDoesNotFollowRootSymlinkedDir",
+          "line": 34,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestWalkDirIgnoresUnreadableSubdir",
+          "line": 85,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestWalkDirMissingDir",
+          "line": 126,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestWalkDirNotADir",
+          "line": 134,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestWalkDirEntries",
+          "line": 145,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestWalkDirCallback",
+          "line": 177,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestWalkDirCallbackError",
+          "line": 208,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        }
+      ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/fswatch/watcher_test.go",
+      "sha256": "3f16ad18d43122d1e62aa779e514e5fe39188f27ad8301dc038f94a8569f7dd5",
+      "family": "fswatch",
+      "functions": [
+        {
+          "name": "TestPathComparer",
+          "line": 578,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestPathComparerUnicodeAlignment",
+          "line": 642,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestFileCallbackCaseSensitivity",
+          "line": 664,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestPathComparerExactKeys",
+          "line": 686,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestRebasePath",
+          "line": 702,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestPhysicalDirForResolvesSymlinkAncestor",
+          "line": 764,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestIsInDirectoryOrSelf",
+          "line": 782,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestWatchFileCreate",
+          "line": 853,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestWatchFileUpdate",
+          "line": 867,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestWatchFileRename",
+          "line": 887,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestWatchFileRenameExisting",
+          "line": 907,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestWatchFileDelete",
+          "line": 928,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeDirCreate",
+          "line": 946,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeNonASCIIPath",
+          "line": 965,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeDirRename",
+          "line": 984,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeDirDelete",
+          "line": 1004,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeWatchedDirDeleted",
+          "line": 1020,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeSubfileCreate",
+          "line": 1071,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeSubfileUpdate",
+          "line": 1094,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeSubfileRename",
+          "line": 1117,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeSubfileDelete",
+          "line": 1142,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeSubdirCreate",
+          "line": 1167,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeSubdirDeleteWithFiles",
+          "line": 1187,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeSymlinkCreate",
+          "line": 1212,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeSymlinkDelete",
+          "line": 1232,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeSymlinkedDirectoryRebasesTargetEvents",
+          "line": 1252,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestRecursiveSubscribeSymlinkedDirectoryDoesNotFollowDescendantSymlink",
+          "line": 1272,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeCoalesceCreateUpdate",
+          "line": 1314,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeCoalesceDeleteCreateAsUpdate",
+          "line": 1336,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeCoalesceCreateThenDelete",
+          "line": 1359,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeCoalesceMultipleUpdates",
+          "line": 1389,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeCoalesceUpdateDelete",
+          "line": 1410,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeMultipleSameDir",
+          "line": 1438,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeMultipleDifferentDirs",
+          "line": 1471,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestWatchDirectoriesBatch",
+          "line": 1493,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestFastRecursiveWatcherConsolidatesSiblingDirectories",
+          "line": 1557,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestFastRecursiveWatcherDoesNotConsolidateSymlinkOutsideRoot",
+          "line": 1609,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestConsolidatedSymlinkChildMapsSharedLogicalPath",
+          "line": 1672,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestConsolidatedSymlinkChildTerminatesFromSharedLogicalPath",
+          "line": 1699,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestConsolidatedChildWatchFiltersAgainstRequestedDir",
+          "line": 1728,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestConsolidatedChildWatchIgnoresEventsBeforeSubscribe",
+          "line": 1767,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestRecursiveWatchWithIgnoreDoesNotFilterByLogicalRoot",
+          "line": 1788,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeMissingDirError",
+          "line": 1810,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeNotADirError",
+          "line": 1821,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeRejectsNilCallback",
+          "line": 1836,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeRejectsRelativePath",
+          "line": 1845,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeUnsubscribeIdempotent",
+          "line": 1861,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeCloseThenReSubscribe",
+          "line": 1888,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeNoGoroutineLeak",
+          "line": 1934,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeDeepNestedCreate",
+          "line": 1978,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeManyFilesAtOnce",
+          "line": 2008,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeTruncateFile",
+          "line": 2049,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeConcurrentSubscribeUnsubscribe",
+          "line": 2066,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeRenameDir",
+          "line": 2088,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeReplaceFileWithDir",
+          "line": 2116,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeAppendToFile",
+          "line": 2142,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeNoEventsAfterUnsubscribe",
+          "line": 2163,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestBackendRunReturnsStartError",
+          "line": 2206,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestDirWatchErrorImplementsError",
+          "line": 2215,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestFileCallbackForwardsErrAlongsideEvents",
+          "line": 2223,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-assertions.json",
+          "adaptation": "Original whole-function assertions over actual/injected backends; exact original Linux/POSIX skips retained; none triggered on verified host.",
+          "managedEvidence": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-39.json"
+        },
+        {
+          "name": "TestRenameDirOutOfTreeNoStaleEvents",
+          "line": 2291,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestDefaultBackendMatchesPlatform",
+          "line": 2344,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestUnavailableBackendReturnsError",
+          "line": 2374,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestSubscribeNestedDirDeletionCleansDescendants",
+          "line": 2394,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestNonRecursiveFileCreate",
+          "line": 2420,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestNonRecursiveFileUpdate",
+          "line": 2434,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestNonRecursiveFileDelete",
+          "line": 2452,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestNonRecursiveDirCreate",
+          "line": 2469,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestNonRecursiveGrandchildIgnored",
+          "line": 2483,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestNonRecursiveNewSubdirContentIgnored",
+          "line": 2513,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestNonRecursiveAndRecursiveSameDir",
+          "line": 2545,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestNonRecursiveWithDeniedSubdir",
+          "line": 2577,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestFileWatchCreate",
+          "line": 2608,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestFileWatchUpdate",
+          "line": 2623,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestFileWatchDelete",
+          "line": 2641,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestFileWatchIgnoresSiblings",
+          "line": 2659,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestFileWatchMultipleSameDir",
+          "line": 2682,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestFileWatchDeleteAndRecreate",
+          "line": 2714,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestFileWatchNonExistentTarget",
+          "line": 2738,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestRecursiveMoveInPrePopulated",
+          "line": 2758,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestAtomicSave",
+          "line": 2809,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestAtomicSaveFileWatch",
+          "line": 2839,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestReplaceDirWithFile",
+          "line": 2868,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestRecreateSubdirAndModify",
+          "line": 2897,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestReplaceParentDirWithDifferent",
+          "line": 2961,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestRoundTripRename",
+          "line": 3016,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        },
+        {
+          "name": "TestRecursiveWithDeniedSubdir",
+          "line": 3055,
+          "kind": "test",
+          "disposition": "inventoried-not-executed"
+        }
+      ]
     }
   ],
   "implementationNote": "Initial TypeScript subsystem inventory4820 entries plus core BFS and39 concrete contentmapper/async-IPC dependency entries.86 original functions passed managed and Linux x64 Native dependency23;12 further Change/IPC originals passed managed25, Native pending. Four AstNav functions retain partial Go channels with JavaScript channels pending. The28 host functions are inventoried, not C# executed. Source-written and dependency execution do not establish subsystem completion.",
   "executionDispositionTotals": {
-    "inventoried-not-executed": 4729,
-    "managed-and-native-assertions-passed": 137,
+    "inventoried-not-executed": 4749,
+    "managed-and-native-assertions-passed": 226,
     "partial-managed-native-channels-passed-remaining-channels-pending": 4,
-    "external-go-source-generator-not-runtime-closure": 1
-  }
+    "external-go-source-generator-not-runtime-closure": 1,
+    "excluded-platform-backend-outside-linux-contract": 26
+  },
+  "packageLifecycleDispositionTotals": {
+    "inventoried-not-executed": 6
+  },
+  "dispositionCountingNote": "ExecutionDispositionTotals counts only original Test functions; six TestMain package-lifecycle entries are separate. Earlier aggregate summaries accidentally included those six in inventoried-not-executed, without granting assertion pass credit. Added fswatch inventory includes115 Linux/shared Test functions and26 explicit Darwin-backend exclusions."
 }

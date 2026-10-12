@@ -27,7 +27,8 @@ internal sealed partial class NodeBuilderImpl
     {
         internal IModuleSpecifierGenerationHost host;
         internal Node enclosingDeclaration;
-        internal int depth = 0, maxExpansionDepth = -1, maxTruncationLength;
+        internal int depth = 0, maxExpansionDepth = -1;
+        internal long maxTruncationLength;
         internal bool canIncreaseExpansionDepth, expansionTruncated;
         internal Slice<Type> typeStack;
         internal SourceFile enclosingFile;

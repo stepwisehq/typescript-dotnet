@@ -1,0 +1,460 @@
+{
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "status": "promoted-source-written-central-compilation-and-independent-review-pending",
+  "completeCounterparts": [
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/utilities.go",
+      "sha256": "13c970c533b0d7bb9402cd6f66db0eae64f70877e45c4d0461c054bac486baa5",
+      "lines": 1411,
+      "functions": 78,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Utilities.cs",
+      "draftSha256": "a299f08ec9961ced4c9e6ea0777023f55f72300388e6a0af3722ea8de196a16d",
+      "destinationSha256": "7047277edc7af1ae678b7221e55f87a4c3c02bbc880bc4d8d605011388a5cc89"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/source_map.go",
+      "sha256": "3fee8ff6fb7b0a73d2c71b970a4590e091280222536e2ccc1a8cb078ad523c55",
+      "lines": 167,
+      "functions": 13,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SourceMap.cs",
+      "draftSha256": "a55997450064a36819098adad0f34ad6729d50368d433bd5169a41e27fa1175f",
+      "destinationSha256": "2a4a4531e926e64a45309337383363fb9a5332ebab4052dede6a3a54236d79db"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/displaypartswriter.go",
+      "sha256": "45a9504a97002c567b1457b40f8d918266aea41928cc4db59a7425c654908332",
+      "lines": 217,
+      "functions": 33,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/DisplayPartsWriter.cs",
+      "draftSha256": "d8fe8ded81f69277722320bdf44fa923465e28c97e89c9e361eab3685d79c400",
+      "destinationSha256": "316757cd2996cdfb511d9a2c83f30f5c192c56822754e437a9b6e70c4f498d81"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/jsdoc.go",
+      "sha256": "4e5626c94141a1df3f1d079539dd48cf8ae61c40ae4659caa0a1032dbbc9bd0a",
+      "lines": 312,
+      "functions": 12,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/JsDoc.cs",
+      "draftSha256": "3629c7e840a6d6b3c4a6d2137b9e9702a02b0d1cfa642cc3386eb3e0a554d13a",
+      "destinationSha256": "b25ce5b6f5b25edc5c7f284fc98db735297d2de1e06e0d33966e3efe9cc29c0a"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/hover.go",
+      "sha256": "ff424044565af0d22336adc875c04efaa5207b9e52b1dde9d513a0c8c04ef5d8",
+      "lines": 1172,
+      "functions": 27,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Hover.cs",
+      "draftSha256": "7f4ea881536496308bd510546a093d069cad5893f513ddcd32e8ec1c7a7cc7e1",
+      "destinationSha256": "3149c8c2f4a479d813dcbdbc44f7b0dfc618096c2326ff7c4a4644bf6e12c4a4"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/hovericon.go",
+      "sha256": "e6e9f73e266291d52fd2ad2d69df495f3425389d9557008a8c8d3e4a51472b76",
+      "lines": 156,
+      "functions": 3,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/HoverIcon.cs",
+      "draftSha256": "c5eb6f519f46db70bae7c19062305f575b711e84426b76d8d9602b15a44a78e9",
+      "destinationSha256": "c0fbba577889975fe3069794faacf0ac67d95d6315051f5ddcea874b68856b2f"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/signaturehelp.go",
+      "sha256": "01be7bb1da1b4b5e1c442198b78ca9f84006a3d9bd35330b7b9ed82df02662d8",
+      "lines": 1446,
+      "functions": 42,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SignatureHelp.cs",
+      "draftSha256": "3b1a48f97efd9e1680c50914d66e46051f8c86ad2d842137006e26b1c4732bf4",
+      "destinationSha256": "0eb0dd683d8bcb55998d204fc0c8ffb57da648603d0df57b2d07e7eeff3d9b2a"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/format.go",
+      "sha256": "474b282a9d67712452bc77e41a493239e8b20cac2841f300fb5b97d1e9f597f2",
+      "lines": 301,
+      "functions": 10,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Format.cs",
+      "draftSha256": "efac248a82eb9700ffd7aaaf1cd236fcf15ab2dcea67e21ef3e0fc0c409f24ae",
+      "destinationSha256": "1f08e7c71b62ffac771947300832d90a81bf1a47f8016e4b820bd5c3d5cd34f1"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/definition.go",
+      "sha256": "eeb006c3eab8d35e854b321ea2cbc14fbd682fd4dd8cce73e35cd153283624c9",
+      "lines": 516,
+      "functions": 20,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Definition.cs",
+      "draftSha256": "da185adb1c98bb06c24e4742d3ef5d4e88e4c29db441faf4ce8317dc70c9d1cf",
+      "destinationSha256": "2bfacbd1eb8e71b8189a166fd7b005ce5e1d84b452ca57edbddbe1d0b2096d11"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/sourcedefinition.go",
+      "sha256": "43adcda4169732e81abb831e1386a9e0c60cea81d808bfda1f3fea30d9d915b7",
+      "lines": 749,
+      "functions": 30,
+      "status": "complete-source-written-not-compiled",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SourceDefinition.cs",
+      "draftSha256": "fa21f063ef8b1bf13bc46ffaa79c010809a6ccdcd586a2cf37b2c77d9824d6f7",
+      "destinationSha256": "20d6511d83cc37018794bc38c2e8ba94cc73a41b58a6bf19a0c505f31ae772ad"
+    }
+  ],
+  "paths": [
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Utilities.cs",
+      "sha256": "7047277edc7af1ae678b7221e55f87a4c3c02bbc880bc4d8d605011388a5cc89"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/SourceMap.cs",
+      "sha256": "2a4a4531e926e64a45309337383363fb9a5332ebab4052dede6a3a54236d79db"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/DisplayPartsWriter.cs",
+      "sha256": "316757cd2996cdfb511d9a2c83f30f5c192c56822754e437a9b6e70c4f498d81"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/JsDoc.cs",
+      "sha256": "b25ce5b6f5b25edc5c7f284fc98db735297d2de1e06e0d33966e3efe9cc29c0a"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Hover.cs",
+      "sha256": "3149c8c2f4a479d813dcbdbc44f7b0dfc618096c2326ff7c4a4644bf6e12c4a4"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/HoverIcon.cs",
+      "sha256": "c0fbba577889975fe3069794faacf0ac67d95d6315051f5ddcea874b68856b2f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/SignatureHelp.cs",
+      "sha256": "0eb0dd683d8bcb55998d204fc0c8ffb57da648603d0df57b2d07e7eeff3d9b2a"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Format.cs",
+      "sha256": "1f08e7c71b62ffac771947300832d90a81bf1a47f8016e4b820bd5c3d5cd34f1"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Definition.cs",
+      "sha256": "2bfacbd1eb8e71b8189a166fd7b005ce5e1d84b452ca57edbddbe1d0b2096d11"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/SourceDefinition.cs",
+      "sha256": "20d6511d83cc37018794bc38c2e8ba94cc73a41b58a6bf19a0c505f31ae772ad"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/FindAllReferences.SharedLeaves.cs",
+      "sha256": "72b6a4e6ef3a934508f468763ae4c4176ed6c272e4c1db8cff2fa5b9b11931d3"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Completions.SharedLeaves.cs",
+      "sha256": "a6eb027383f947323c01123cec6c7d7dec247a8d4ffe39255c1ccc852f334593"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Printer.cs",
+      "sha256": "f191bb07bd5183effc9a781a0099ac031f9c5fd0d5bed0c923053ed8f4998e27"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Printer.Services.cs",
+      "sha256": "d89525b95b2c17d0b6437d4301357a275e7404515ef72825d3b7e7e537850756"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Services.SignatureHeaders.cs",
+      "sha256": "a95a0cc0de527e1f5b42413f626db290272a068536726def530a20f2778ff9ab"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Compiler/Program.ServiceCheckout.cs",
+      "sha256": "e4a6bd0f72d6fe923d88cae8d8f3aef390bf67d5d77cea412c20340a9c49508e"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Runtime/GoStrings.JoinValue.cs",
+      "sha256": "6397c68279ac6729e67d8c2f17ccb79e6866c7d0ffde0bbdf1e78996d1bc44ab"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Runtime/GoStrings.GenericReplacer.cs",
+      "sha256": "a7e9f985d8e68f7ae2bdaa6d11a8ab980c6a12c1752965a6f26f1b7ff256aceb"
+    },
+    {
+      "path": "src/TypeScript.Scanner/StringUtil/StripQuotes.cs",
+      "sha256": "2daf83586ba707056b53084ff0300365e7965be701d898d94fc695697cc8f781"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/StringifyJson.cs",
+      "sha256": "a0962616bdec57cf9268301ad1a2bef55973c16887b5ce7c30fe78ff6df96834"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/DeduplicateValue.cs",
+      "sha256": "17823e130bceb4f11af2219820cb9c36c445589f6e92182c98ce936128de518b"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/GenericReplacerChecks.cs",
+      "sha256": "09ae9eeccf83d3e48a3b9788ab35c9535dda51dbd5a2994efe9ad129a89c51d6"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/GenericReplacerTests.cs",
+      "sha256": "108567da1de1a8b3385e76d5bdcdcb4c7fa789982b6fe64853eb69b3ebdc39b2"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Printer/Printer.cs",
+      "sha256": "8bc4824ac7d242201a2b9a86a00431196c8b916bcb37432ce1d411118a109df9"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/NodeBuilder.Service.cs",
+      "sha256": "065c88a157f33306536a3240b54f39cd0d2e8827d7d0405a480c899e00808a92"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/NodeBuilderImpl.cs",
+      "sha256": "a99b6f580ea771aaa3d5cec8a2634595f7e6a90a89b3383c754511c9f7db0ed8"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/SingleElementSlice.cs",
+      "sha256": "cefd1b94012c93bb4628b292031d14ed85299c45970b9ceadd1cdd945cb643a6"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Printer/Utilities.ServiceValues.cs",
+      "sha256": "a04b9b4b71936f2629d9f7ae3fdb95bcbab52de9130099d422d634e357e06aae"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Utilities.ServiceValues.cs",
+      "sha256": "d6c806447467411daa6c90d26ac374d9b407d2d04541c30294d29e684073ed43"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Types.cs",
+      "sha256": "fdef067610e575324fe1a7b945daa240676f21c7dd137a6eca12ecadc645d1fe"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/LanguageService.ZeroOwner.cs",
+      "sha256": "311bb3a2a670c1ba9a90b1b3da37688bb94ddf79051c25b3f57f29eb584d0002"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/LanguageServiceFormattingChecks.cs",
+      "sha256": "ba1b03b04ed7bf7a45fb158d8ea9798f540836271274e857698edeab24e689dd"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/LanguageServiceFormattingTests.cs",
+      "sha256": "85812822df01845ee2cf124871044eed98d41c95e99f3c9219ad96ba53f20b7e"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ServiceQueryChecks.cs",
+      "sha256": "e0e744ed011f2ea887864e52ac1c1b4d478063469656cdfadf96cc4275954f2e"
+    }
+  ],
+  "assertions": {
+    "GenericReplacerChecks.RunAll": {
+      "returnCount": 1,
+      "unit": "selected TestReplacer generic Replace channel",
+      "rows": 49,
+      "notClaimed": "whole TestReplacer, alternate optimized engines and WriteString"
+    },
+    "LanguageServiceFormattingChecks.RunAll": {
+      "returnCount": 4,
+      "unit": "complete original functions",
+      "originalSubtestRows": 8,
+      "parallelScheduling": "original Go T.Parallel hints adapted to sequential assertion scheduling",
+      "reference": "artifacts/language-services/integration-3/format-original-go.jsonl",
+      "execution": "pending"
+    }
+  },
+  "scopeLimits": [
+    "FindAllReferences and Completions contain only actual required shared leaves; full consumers remain pending.",
+    "Five genuine Session-driven autoimport originals remain pending.",
+    "Service/fourslash behavioral and Native execution remain pending."
+  ],
+  "focusedJoins": [
+    "Checker configured printing: borrowed ByteStringValue workers retain display wrappers and original verbosity/factory/pool save/restore lifetimes.",
+    "Program checkout: ProjectCheckerPool receives original request context; ordinary compiler checkout remains unchanged.",
+    "Printer EmitValue: same lazy writer, Write and Clear boundaries; raw header before external materialization.",
+    "Verbosity truncation preference: long through storage/comparison; checked range cast only after length bound.",
+    "Core byte-string Deduplicate: content equality with original unchanged-header/first-duplicate-clone behavior.",
+    "Go generic replacer: exact selected trie/priority/empty progression and required immutable output copy; quote owner clones input and builds once."
+  ],
+  "mappings": [
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/utilities.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Utilities.cs",
+      "sourceSha256": "13c970c533b0d7bb9402cd6f66db0eae64f70877e45c4d0461c054bac486baa5",
+      "scope": "complete counterpart",
+      "originalFunctions": 78
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/source_map.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SourceMap.cs",
+      "sourceSha256": "3fee8ff6fb7b0a73d2c71b970a4590e091280222536e2ccc1a8cb078ad523c55",
+      "scope": "complete counterpart",
+      "originalFunctions": 13
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/displaypartswriter.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/DisplayPartsWriter.cs",
+      "sourceSha256": "45a9504a97002c567b1457b40f8d918266aea41928cc4db59a7425c654908332",
+      "scope": "complete counterpart",
+      "originalFunctions": 33
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/jsdoc.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/JsDoc.cs",
+      "sourceSha256": "4e5626c94141a1df3f1d079539dd48cf8ae61c40ae4659caa0a1032dbbc9bd0a",
+      "scope": "complete counterpart",
+      "originalFunctions": 12
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/hover.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Hover.cs",
+      "sourceSha256": "ff424044565af0d22336adc875c04efaa5207b9e52b1dde9d513a0c8c04ef5d8",
+      "scope": "complete counterpart",
+      "originalFunctions": 27
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/hovericon.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/HoverIcon.cs",
+      "sourceSha256": "e6e9f73e266291d52fd2ad2d69df495f3425389d9557008a8c8d3e4a51472b76",
+      "scope": "complete counterpart",
+      "originalFunctions": 3
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/signaturehelp.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SignatureHelp.cs",
+      "sourceSha256": "01be7bb1da1b4b5e1c442198b78ca9f84006a3d9bd35330b7b9ed82df02662d8",
+      "scope": "complete counterpart",
+      "originalFunctions": 42
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/format.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Format.cs",
+      "sourceSha256": "474b282a9d67712452bc77e41a493239e8b20cac2841f300fb5b97d1e9f597f2",
+      "scope": "complete counterpart",
+      "originalFunctions": 10
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/definition.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Definition.cs",
+      "sourceSha256": "eeb006c3eab8d35e854b321ea2cbc14fbd682fd4dd8cce73e35cd153283624c9",
+      "scope": "complete counterpart",
+      "originalFunctions": 20
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/sourcedefinition.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SourceDefinition.cs",
+      "sourceSha256": "43adcda4169732e81abb831e1386a9e0c60cea81d808bfda1f3fea30d9d915b7",
+      "scope": "complete counterpart",
+      "originalFunctions": 30
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/findallreferences.go",
+      "sourceSha256": "48b95717c9504c9e96d20c59ed0ea155a77255c70316b672b0ad66611a8572c5",
+      "destination": "src/TypeScript.Scanner/LanguageServices/FindAllReferences.SharedLeaves.cs",
+      "scope": "partial actual shared models/getContextNode/getRangeOfNode/getFileAndStartPosFromDeclaration; full references remains pending"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/completions.go",
+      "sourceSha256": "e4adcb389f45cf83df58cb15d0d6d2411270bca8f4dba32f39406d5e4ea26304",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Completions.SharedLeaves.cs",
+      "scope": "partial getSwitchedType/isEqualityOperatorKind; full completion remains pending"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/checker/printer.go",
+      "sourceSha256": "2b24c42ce29882d0c44b03c30ed6f0ef0761573910c111c3f8872b678fc70bb5",
+      "destination": "src/TypeScript.Scanner/Checker/Printer.cs",
+      "scope": "focused raw UTF8 producer/consumer joins; display wrappers and factory/verbosity lifetimes preserved"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/checker/printer.go",
+      "sourceSha256": "2b24c42ce29882d0c44b03c30ed6f0ef0761573910c111c3f8872b678fc70bb5",
+      "destination": "src/TypeScript.Scanner/Checker/Printer.Services.cs",
+      "scope": "focused configured raw printing joins"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/checker/exports.go",
+      "sourceSha256": "28a08d1a69e9cdfeffa900bead4b2792a167076f8d01d8061d18243b12ce8dbf",
+      "destination": "src/TypeScript.Scanner/Checker/Services.SignatureHeaders.cs",
+      "scope": "borrowed signature header and real checker.go alias/type-parameter exported workers"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/printer/printer.go",
+      "sourceSha256": "0cf89eb42c30bf89112ec1e16fdbca3b72806b54f88ea6f984943237b87ad24c",
+      "destination": "src/TypeScript.Scanner/Printer/Printer.cs",
+      "scope": "focused EmitValue; lazy writer/Write/Clear lifetime unchanged"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/core/core.go",
+      "sourceSha256": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0",
+      "destination": "src/TypeScript.Scanner/Core/StringifyJson.cs",
+      "scope": "StringifyJson520 exact promoted MarshalIndent wrapper"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/core/core.go",
+      "sourceSha256": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0",
+      "destination": "src/TypeScript.Scanner/Core/DeduplicateValue.cs",
+      "scope": "Deduplicate828 byte-content instantiation preserves clone-on-first-duplicate"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/stringutil/util.go",
+      "sourceSha256": "e15d8030900518eb0d8bd926751df2f7c7cfda6d49c7a82da36d58daeed22b9e",
+      "destination": "src/TypeScript.Scanner/StringUtil/StripQuotes.cs",
+      "scope": "StripQuotes222 borrowed value worker plus retained wrapper"
+    },
+    {
+      "source": "tools/.cache/go/src/strings/strings.go",
+      "sourceSha256": "a81bdf73a308277c322e35d0c602e3813f57b6f769c091f8f8962c8884a45ea3",
+      "destination": "src/TypeScript.Scanner/Runtime/GoStrings.JoinValue.cs",
+      "scope": "Go1.27.1 selected Join closure"
+    },
+    {
+      "source": "tools/.cache/go/src/strings/replace.go",
+      "sourceSha256": "fbe8467c532ea7e5cdb848577423c4f218cbe2776907fb5c8c091006c786cdba",
+      "destination": "src/TypeScript.Scanner/Runtime/GoStrings.GenericReplacer.cs",
+      "scope": "Go1.27.1 selected generic matching/Replace closure; no alternate optimized engines or external Writer API"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/core/core.go",
+      "sourceSha256": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0",
+      "destination": "src/TypeScript.Scanner/Core/SingleElementSlice.cs",
+      "scope": "complete SingleElementSlice727 worker"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/checker/utilities.go",
+      "sourceSha256": "571b31575f19a1b74deee0d454d7fbaa5412a9a3e012fb86d75b8aa9100502c0",
+      "destination": "src/TypeScript.Scanner/Checker/Utilities.ServiceValues.cs",
+      "scope": "complete ValueToString1749 raw producer over original escape worker"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/printer/utilities.go",
+      "sourceSha256": "a68a38d35ba2c3fdc7febc7082bd5b9301a0fd0ca47014fbe3d2dd944c6a607e",
+      "destination": "src/TypeScript.Scanner/Printer/Utilities.ServiceValues.cs",
+      "scope": "EscapeString178 borrowed counterpart over unchanged actual escapeStringWorker"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/checker/types.go",
+      "sourceSha256": "0265c1f309f28f4c6a608ea20243fe30625ba055e3b779b662dbec93172f9eb7",
+      "destination": "src/TypeScript.Scanner/Checker/Types.cs",
+      "scope": "focused LiteralType.String914 owner/consumer join"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/format_test.go",
+      "sourceSha256": "7c6df3b7416d79016d1e21fcb0275228684c7f8a7cb58a627727b02518a81ce9",
+      "destination": "validation/LanguageServices.Checks/LanguageServiceFormattingChecks.cs",
+      "scope": "four complete original functions/eight original subtest rows; Go parallel hints sequential"
+    }
+  ],
+  "sourceFidelityNotes": [
+    "Protocol DTO pointer/value distinctions use actual generated owners; Definition location deduplication uses structural URI/range value keys.",
+    "SourceDefinition retains its actual three-phase resolver/parser/binder/checker/mapping path and NoDtsResolution preference.",
+    "Private CaseClauseTracker closed producer union error type spelling awaits peer review; no general fmt reflection adapter is claimed.",
+    "Original generic Replace rows transport literal bytes, including all256 byte values, without Unicode reconstruction.",
+    "Lazy collections.Set backing ownership is retained across all new private sets, including ref-shared recursive SourceDefinition visited sets; immutable initialized type keyword sets remain actual initialized owners.",
+    "Independent review corrected SignatureHelp ordinary TypeToString fallback to the original default alias/unique-symbol flags through a genuine raw worker, rather than explicit None."
+  ],
+  "correctionBatch37": {
+    "attempt": "production compile only; no behavior ran",
+    "diagnostics": 52,
+    "scope": "actual imports/signatures, byte property lookup closure, real TextChange/IScript/rooted paths/package fields, nullable proofs, tuple/core leaf dependencies, raw literal formatting and lazy zero-set backing ownership",
+    "status": "complete-saved-coherent-correction-and-original-assertion-packet-ready-for-central-build"
+  },
+  "build38": {
+    "production": "compiled successfully",
+    "behavior": "not executed",
+    "sharedCheckCorrections": "original candidate struct mutation uses actual borrowed AsSpan ref; retained query test selects original CancellationToken overload explicitly"
+  }
+}

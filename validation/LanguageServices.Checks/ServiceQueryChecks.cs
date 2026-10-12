@@ -91,7 +91,7 @@ public static class ServiceQueryChecks
             var program = CompilerProgram.NewProgram(new() { Config = config, Host = TypeScript.Compiler.CompilerHosts.NewCompilerHost(fs, TypeScript.Bundled.Bundled.LibPath()), SingleThreaded = Tristate.True });
             var source = program.GetSourceFile(RootedFilePath.FromUnicode(path)) ?? throw new InvalidOperationException("Genuine query fixture source file was not loaded");
             Source = source;
-            var lease = program.GetTypeCheckerForFile(default, source);
+            var lease = program.GetTypeCheckerForFile(default(CancellationToken), source);
             Checker = lease.Item1;
             release = lease.Item2;
             Visitor visit = null!; // Assigned before the recursive worker is invoked.

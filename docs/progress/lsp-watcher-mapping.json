@@ -1,0 +1,214 @@
+{
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "state": "coherent production promoted; root integration and independent review pending; original shared assertion ports remain ignored drafts",
+  "entries": [
+    {
+      "upstream": "tsc/internal/fswatch/watcher.go",
+      "upstreamSha256": "8f1f4ed5de4eb13c49de2d778aef1db867bf2726050ac5e69fdca49fa015872e",
+      "originalFunctionCount": 69,
+      "destinations": [
+        "src/TypeScript.Scanner/FsWatch/Contracts.cs",
+        "src/TypeScript.Scanner/FsWatch/Registry.cs",
+        "src/TypeScript.Scanner/FsWatch/FallbackWatcher.cs",
+        "src/TypeScript.Scanner/FsWatch/Watcher.cs",
+        "src/TypeScript.Scanner/FsWatch/WatcherBase.cs",
+        "src/TypeScript.Scanner/FsWatch/DirWatch.cs",
+        "src/TypeScript.Scanner/FsWatch/PathHelpers.cs",
+        "src/TypeScript.Scanner/FsWatch/LinuxKernel.cs",
+        "src/TypeScript.Scanner/FsWatch/Errors.cs"
+      ],
+      "scope": "Complete generic package contract/registry/subscription/rollback/shared base/callback algorithms; Go private marker functions replaced by internal sealed contracts, base init self owner by CLR virtual receiver; Linux validateWatchDirectory OS boundary included.",
+      "status": "source-written; integration/review/behavior pending"
+    },
+    {
+      "upstream": "tsc/internal/fswatch/event.go",
+      "upstreamSha256": "d05029dfd9c21e7e640940d0aeedddd65add1defee121bd1f63844952b7d9fb3",
+      "originalFunctionCount": 28,
+      "destinations": [
+        "src/TypeScript.Scanner/FsWatch/Event.cs"
+      ],
+      "scope": "Complete event/coalescing/sequence/drain owner.",
+      "status": "source-written; integration/review/behavior pending"
+    },
+    {
+      "upstream": "tsc/internal/fswatch/debounce.go",
+      "upstreamSha256": "c439df6a0f1f3c6320bcf6d60bfd5d28402e4239b5dde644c2d41fdf3e37d9b7",
+      "originalFunctionCount": 12,
+      "destinations": [
+        "src/TypeScript.Scanner/FsWatch/Debounce.cs"
+      ],
+      "scope": "Complete latch/debounce algorithm; closed Go channel signals become persistent completion sources, process-lifetime loop a dedicated background thread; TimeProvider supplies monotonic clock/timers.",
+      "status": "source-written; integration/review/behavior pending"
+    },
+    {
+      "upstream": "tsc/internal/fswatch/pathcompare.go",
+      "upstreamSha256": "fd85ff2ed8f80322e50d6b2a70f321827fb5232da35b38a9076c184fefb04be8",
+      "originalFunctionCount": 10,
+      "destinations": [
+        "src/TypeScript.Scanner/FsWatch/PathCompare.cs"
+      ],
+      "scope": "Complete byte/Unicode comparer and borrowed comparison headers; Darwin native fold remains explicitly unavailable on Linux.",
+      "status": "source-written; integration/review/behavior pending"
+    },
+    {
+      "upstream": "tsc/internal/fswatch/pathkey.go",
+      "upstreamSha256": "7ce8475699591cbe1f4e7597297dcb3504593665d02576d706149f44d4123050",
+      "originalFunctionCount": 2,
+      "destinations": [
+        "src/TypeScript.Scanner/FsWatch/PathCompare.cs"
+      ],
+      "scope": "Complete public immutable comparer key/rebase UTF8/NUL admission.",
+      "status": "source-written; integration/review/behavior pending"
+    },
+    {
+      "upstream": "tsc/internal/fswatch/canonicalize_other.go",
+      "upstreamSha256": "7dc0266db8e4c5a2433927bbbc3b07118e23c5745fd3e9864fa60fa2f599c6cf",
+      "originalFunctionCount": 4,
+      "destinations": [
+        "src/TypeScript.Scanner/FsWatch/PathCompare.cs",
+        "src/TypeScript.Scanner/FsWatch/Watcher.cs"
+      ],
+      "scope": "Whole platform-selected no-op canonicalization/exact comparer and original fold panic.",
+      "status": "source-written; integration/review/behavior pending"
+    },
+    {
+      "upstream": "tsc/internal/fswatch/walkdir.go",
+      "upstreamSha256": "f5186a6c92967f65a6f7ee5d6d61c66faca1ce71c7a76b4dbd6d276f66efd9c7",
+      "originalFunctionCount": 2,
+      "destinations": [
+        "src/TypeScript.Scanner/FsWatch/WalkDirGeneric.cs"
+      ],
+      "scope": "Complete portable walk owner; demanded Go os.ReadDir Linux syscall boundary retains raw names/sort/error handling and standard buffer pool.",
+      "status": "source-written; integration/review/behavior pending"
+    },
+    {
+      "upstream": "tsc/internal/fswatch/walkdir_unix.go",
+      "upstreamSha256": "52eb7911095cd5a1ce7a888a46544ff58cab98e45b651f7b9ba6cf91cad959fa",
+      "originalFunctionCount": 3,
+      "destinations": [
+        "src/TypeScript.Scanner/FsWatch/WalkDir.cs"
+      ],
+      "scope": "Whole native walk/getdents parser/shared8192-byte buffer, directory fd ownership and required name copies.",
+      "status": "source-written; integration/review/behavior pending"
+    },
+    {
+      "upstream": "tsc/internal/fswatch/walkdir_dirent_linux.go",
+      "upstreamSha256": "b1dabb0edd2dbe27d28343bebd0cece3781b012bc7d882071a1aa08c0f1457b5",
+      "originalFunctionCount": 2,
+      "destinations": [
+        "src/TypeScript.Scanner/FsWatch/WalkDir.cs"
+      ],
+      "scope": "Whole Linux dirent reclen/ino fields mapped to explicit x64 ABI offsets.",
+      "status": "source-written; integration/review/behavior pending"
+    },
+    {
+      "upstream": "tsc/internal/fswatch/inotify_linux.go",
+      "upstreamSha256": "c4c78f2c8fafe27838c2bf9f70931ada42f9f8308489165313643d4f3d1943bd",
+      "originalFunctionCount": 11,
+      "destinations": [
+        "src/TypeScript.Scanner/FsWatch/Inotify.cs",
+        "src/TypeScript.Scanner/FsWatch/LinuxKernel.cs"
+      ],
+      "scope": "Whole Linux backend/event loop/subscription identity/cleanup and native calls.",
+      "status": "source-written; integration/review/behavior pending"
+    },
+    {
+      "upstream": "tsc/internal/fswatch/fanotify_linux.go",
+      "upstreamSha256": "d18a8d35e63ccc0d4dd2929c1e02bde7c6178619542f29d2a4e7701d76a1e568",
+      "originalFunctionCount": 20,
+      "destinations": [
+        "src/TypeScript.Scanner/FsWatch/Fanotify.cs",
+        "src/TypeScript.Scanner/FsWatch/FanotifyRecords.cs",
+        "src/TypeScript.Scanner/FsWatch/LinuxFanotify.cs",
+        "src/TypeScript.Scanner/FsWatch/Registry.cs"
+      ],
+      "scope": "Whole Linux backend availability/probe/rename fallback/FID parsing/merged mask/delete/create/cleanup and native calls.",
+      "status": "source-written; integration/review/behavior pending"
+    },
+    {
+      "upstream": "tsc/internal/lsp/lspwatcher/lspwatcher.go",
+      "upstreamSha256": "a4261019ff46e1e737909417e8b79b61df6dbb62299461f5232878c6091b55a1",
+      "originalFunctionCount": 24,
+      "destinations": [
+        "src/TypeScript.Scanner/Lsp/Watching/Watcher.cs",
+        "src/TypeScript.Scanner/Lsp/Watching/Watch.cs",
+        "src/TypeScript.Scanner/Lsp/Watching/Patterns.cs"
+      ],
+      "scope": "Whole in-process LSP watcher including ancestor promotion/missing target recovery/rollback/synthetic creates/75ms throttle/pattern and kind logic; original callbacks retain copied value headers.",
+      "status": "source-written; integration/review/behavior pending"
+    }
+  ],
+  "sourceHashes": {
+    "licenses/FsWatch-LICENSE.txt": "5881a9f5f9ef3d070b831fd4ad0608885c2a42c983dcb91515def0d90bd06245",
+    "licenses/XSys-LICENSE.txt": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad",
+    "src/TypeScript.Scanner/FsWatch/Contracts.cs": "ef6a9cfdf6d6110d141cc1a501fd0ba2a89f0dc4ab9afc8e2a82edb8b12ee1f8",
+    "src/TypeScript.Scanner/FsWatch/Debounce.cs": "6774f0fa0c74936ee661382e339767b265bfc5e66da391243f79f847aa7c6af1",
+    "src/TypeScript.Scanner/FsWatch/DirWatch.cs": "63d5722cb34f9b0c1229f3d611aea89ac17b36fbce77a24070a2eedd2aeb9f90",
+    "src/TypeScript.Scanner/FsWatch/Errors.cs": "ea15feba8551385c6994a25df518bec7bf48dcb2df9de996deac2f858279971d",
+    "src/TypeScript.Scanner/FsWatch/Event.cs": "6bdc770db2291fd526f5763386d2ab08a381a3bdbf200447555ed5a24dad372b",
+    "src/TypeScript.Scanner/FsWatch/FallbackWatcher.cs": "90892af375c79d37ea25e07827443b8e807a409a678f2d35ab3bd67791283927",
+    "src/TypeScript.Scanner/FsWatch/Fanotify.cs": "fdeb724b9e57208d65c00a33e631a5be9082d10c4040630ffecc3339a4e3ae22",
+    "src/TypeScript.Scanner/FsWatch/FanotifyRecords.cs": "db8875bc87c232b1e79e7317c5d34ac02f71d1ca1719e65f2af7bb206580079a",
+    "src/TypeScript.Scanner/FsWatch/Inotify.cs": "f01e7983db4ae50cf731be7fdc30dbd9b2966ea207f8050239a3b1b7d11dd33f",
+    "src/TypeScript.Scanner/FsWatch/LinuxErrors.Generated.cs": "07d263d49f9242d827d243f35ef04b8ebf74c5f50cb957c6ce6b53174c8c2542",
+    "src/TypeScript.Scanner/FsWatch/LinuxFanotify.cs": "e7ec4eb9086d2aeaad52058694877a7f274227a522832695cdc5b824ab1715ad",
+    "src/TypeScript.Scanner/FsWatch/LinuxKernel.cs": "c53b4de895da492aeb7e1a0f3fc8740b6945d8d219d9e2e3513aaac9b8148412",
+    "src/TypeScript.Scanner/FsWatch/PathCompare.cs": "d9dfc9efa330ae6f13e7f6554f439179776fbdfbccadd5618fc33286b31b987e",
+    "src/TypeScript.Scanner/FsWatch/PathHelpers.cs": "ad6f88c8122b698b24bbe7ed9958fabe9d428fee07815acab56a6f705895945d",
+    "src/TypeScript.Scanner/FsWatch/Registry.cs": "19c4e79f8743ace0b055f7472930288a3eeae12e6533a6c95998a1dfdeebfdb4",
+    "src/TypeScript.Scanner/FsWatch/WalkDir.cs": "42af73314ba280909c7ea376351ad32921f5231a8014ac0058ab5cb1faf9f4b7",
+    "src/TypeScript.Scanner/FsWatch/WalkDirGeneric.cs": "9a491543c9efb890b19f528f481412ba15407a3f7df3a4dae4aab3c4064b7c74",
+    "src/TypeScript.Scanner/FsWatch/Watcher.cs": "8644e857b56d8723af0cd8fe102d76065c6b6daeb990233588e19f48ad0f4f93",
+    "src/TypeScript.Scanner/FsWatch/WatcherBase.cs": "dc4f4a8f1fb21914ab124c29d7003f421e6659581b3897bc9c499a1e8a021fb3",
+    "src/TypeScript.Scanner/Lsp/Protocol/RequestContext.cs": "dda5dde6d1953a492b2b158cd18978f9c1eee2b103f2151fb8e4e0b4e40d589c",
+    "src/TypeScript.Scanner/Lsp/Watching/Patterns.cs": "2858317c78e2ab448f9258114bcac787c6f411d6a20dd2322cb17b8537a34253",
+    "src/TypeScript.Scanner/Lsp/Watching/Watch.cs": "08a645ff3e7d64da87b884f26bf478d3ca34118ffd3b605d6c375e4ac5f109b1",
+    "src/TypeScript.Scanner/Lsp/Watching/Watcher.cs": "d7b1859be7d08c5091cd7f45eeb8a9fc02a538c2b31df095c1c371f7cafe95ec",
+    "tools/fswatch/generate-linux-errors.py": "b078e1d0e1d2118eccf51349b5b05e1bb2b6cf1693cf9287de9c1c33c43c702a",
+    "src/TypeScript.Scanner/Lsp/Protocol/Utilities.cs": "30a352c676d9aca2cb67e09d2aebc5e0b441b22587049ca75caa3b2ba3450a2f"
+  },
+  "supportDependencies": [
+    {
+      "source": "Go go1.27.1 internal/filepathlite/path.go/path_unix.go",
+      "scope": "required POSIX Clean/Dir/lazy buffer workers only",
+      "destination": "src/TypeScript.Scanner/FsWatch/PathHelpers.cs",
+      "license": "licenses/Go-LICENSE.txt"
+    },
+    {
+      "source": "golang.org/x/sys v0.48.0 unix/{syscall_linux.go,zerrors_linux.go,zerrors_linux_amd64.go,ztypes_linux_amd64.go}",
+      "scope": "actual invoked Linux native calls, NameToHandleAt resize algorithm, exact constants/ABI/error table; not whole x/sys port",
+      "destinations": [
+        "src/TypeScript.Scanner/FsWatch/LinuxKernel.cs",
+        "src/TypeScript.Scanner/FsWatch/LinuxFanotify.cs",
+        "src/TypeScript.Scanner/FsWatch/LinuxErrors.Generated.cs"
+      ],
+      "generator": "tools/fswatch/generate-linux-errors.py",
+      "license": "licenses/XSys-LICENSE.txt"
+    }
+  ],
+  "platformBoundary": "Linux x64 native implementation only. Windows/macOS/BSD native backend implementation owners remain external; unavailable backend objects retain nil-factory ErrUnavailable behavior. No cross-platform claim.",
+  "tests": {
+    "reference": "artifacts/language-services/integration-2/watcher-original-go.jsonl",
+    "referenceFunctions": {
+      "fswatch": 115,
+      "lspwatcher": 16
+    },
+    "referenceSubtests": {
+      "fswatch": 233,
+      "lspwatcher": 2
+    },
+    "candidate": "pending original assertion ports/integration/Native gates; no narrowed passing-fixture completion claim"
+  },
+  "contextJoin": {
+    "source": "internal/locale/locale.go HasLocale",
+    "destination": "src/TypeScript.Scanner/Lsp/Protocol/RequestContext.cs",
+    "scope": "presence distinct from und/default; absent background default, explicit constructor and WithLocale present; unrelated derivations preserve",
+    "review": "foundation narrow source review clear; candidate execution pending"
+  },
+  "protocolJoin": {
+    "source": "tsc/internal/lsp/lsproto/lsp.go:389",
+    "destination": "src/TypeScript.Scanner/Lsp/Protocol/Utilities.cs",
+    "scope": "PreferredMarkupKind complete required leaf; first verbatim including unknown, PlainText only empty",
+    "review": "pending narrow peer review; no behavior claim"
+  }
+}

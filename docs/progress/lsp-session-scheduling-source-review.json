@@ -1,0 +1,20 @@
+{
+  "status": "clear",
+  "reviewer": "emit_print_maps",
+  "scope": "Authored genuine Session scheduling duration controls only; previously reviewed production timer correction unchanged.",
+  "checked": [
+    "DidOpenFile and retained snapshot Ref precede actual DidCloseFile; background queue drains scheduled snapshot transition and real injected diagnostic refresh callback.",
+    "Zero/-1/-2ms exercise both actual scheduling owners, with closed new overlay snapshot and retained old owner asserted. No private helper invocation or injected successful output.",
+    "40-day scheduled positive delay is canceled through actual Session.Close; Thread joins bound failure rather than assert timing.",
+    "Retained old snapshot Deref and session cancellation/worker joins are explicit in cleanup; client count is synchronized."
+  ],
+  "qualifications": [
+    "One authored control group, not original-function credit.",
+    "Candidate execution remains pending root integration."
+  ],
+  "sourceHashes": {
+    "src/TypeScript.Scanner/ProjectSystem/Session.cs": "97bf275f3a21d6ca6228b32b2999c127a34cc9a8ba72913d07b9398e141b7222",
+    "validation/LanguageServices.Checks/ProjectSessionSchedulingChecks.cs": "78902019627e8d6650fd7a44dbb20009b3f2794d85f69aeb13d448aaf0d2679b",
+    "tests/LanguageServices.Tests/ProjectSessionSchedulingTests.cs": "8d7de986430aa73e02d088b7a57fc6fbea96ef0ea9343cbb5b5a3f2080ff6cda"
+  }
+}

@@ -182,7 +182,7 @@ internal sealed class Project : TypeScript.LanguageServices.IProject, Dirty.IClo
     }
 
     // project.go:211.
-    internal static Project NewInferredProject(RootedDirectoryPath directory, CompilerOptions? options, List<RootedFilePath>? names, List<ProjectReference>? references, List<Mapper>? mappers, ProjectCollectionBuilder builder, LogTree? logger)
+    internal static Project NewInferredProject(RootedDirectoryPath directory, CompilerOptions? options, List<RootedFilePath>? names, List<ProjectReference>? references, MapperHeaders mappers, ProjectCollectionBuilder builder, LogTree? logger)
     {
         var project = NewProject(Projects.InferredProjectID.AsID(), ProjectKind.Inferred, directory, builder, logger);
         options ??= new()
@@ -204,18 +204,19 @@ internal sealed class Project : TypeScript.LanguageServices.IProject, Dirty.IClo
     }
 
     // project.go:247.
-    internal static Project NewSyntheticProject(SyntheticProjectID id, RootedDirectoryPath directory, CompilerOptions options, List<RootedFilePath>? names, List<ProjectReference>? references, List<Mapper>? mappers, ProjectCollectionBuilder builder, LogTree? logger)
+    internal static Project NewSyntheticProject(SyntheticProjectID id, RootedDirectoryPath directory, CompilerOptions options, List<RootedFilePath>? names, List<ProjectReference>? references, MapperHeaders mappers, ProjectCollectionBuilder builder, LogTree? logger)
     {
         var project = NewProject(id.AsID(), ProjectKind.Synthetic, directory, builder, logger);
         project.CommandLine = NewInferredProjectCommandLine(options, names, references, mappers, directory, builder.fs.FS().CaseSensitivity());
         return project;
     }
 
-    // project.go:269. Existing parsed-command-line API retains List owners; no new bridge copy is introduced.
-    internal static ParsedCommandLine NewInferredProjectCommandLine(CompilerOptions options, List<RootedFilePath>? names, List<ProjectReference>? references, List<Mapper>? mappers, RootedDirectoryPath directory, CaseSensitivity sensitivity)
+    // project.go:269. The established command-line List boundary requires a detached
+    // owner for an incoming Go slice header; legacy List callers retain their owner.
+    internal static ParsedCommandLine NewInferredProjectCommandLine(CompilerOptions options, List<RootedFilePath>? names, List<ProjectReference>? references, MapperHeaders mappers, RootedDirectoryPath directory, CaseSensitivity sensitivity)
     {
         var commandLine = ConfigParser.NewParsedCommandLine(options, names, references, directory, sensitivity);
-        commandLine.ParsedConfig.ContentMappers = mappers;
+        commandLine.ParsedConfig.ContentMappers = mappers.AsCommandLineList();
         return commandLine;
     }
 

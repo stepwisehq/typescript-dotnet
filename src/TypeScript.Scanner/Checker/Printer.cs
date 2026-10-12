@@ -20,10 +20,11 @@ public sealed partial class Checker
     // printer.go:47/59. Preserve diagnostic flags and the compiler's truncation
     // option; configured service calls additionally carry the original verbosity owner.
     private string typeToString(Type t, Node enclosingDeclaration) => typeToStringEx(t, enclosingDeclaration);
-    private string typeToStringEx(Type t, Node enclosingDeclaration, bool fullyQualified = false, bool noTypeReduction = false, TypeScript.NodeBuilding.Flags? flags = null, VerbosityContext verbosity = null)
+    private string typeToStringEx(Type t, Node enclosingDeclaration, bool fullyQualified = false, bool noTypeReduction = false, TypeScript.NodeBuilding.Flags? flags = null, VerbosityContext verbosity = null) => typeToStringExValue(t, enclosingDeclaration, fullyQualified, noTypeReduction, flags, verbosity).Materialize();
+    private ByteStringValue typeToStringExValue(Type t, Node enclosingDeclaration, bool fullyQualified = false, bool noTypeReduction = false, TypeScript.NodeBuilding.Flags? flags = null, VerbosityContext verbosity = null)
     {
         if (serializationLevel >= 2)
-            return "?";
+            return ByteStringValue.FromString("?");
         if (t.checker != this)
             throw new ArgumentException("Type belongs to a different checker");
         var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter((flags.GetValueOrDefault() & TypeScript.NodeBuilding.Flags.MultilineObjectLiterals) != 0 ? "\n" : "", 0);
@@ -44,8 +45,8 @@ public sealed partial class Checker
             // printer.go:97: only the bare unresolved type retains synthesized comments.
             var printer = new TypeScript.DiagnosticPrinting.Printer(nodeBuilder.EmitContext(), t != unresolvedType);
             printer.Write(typeNode, writer, enclosingDeclaration != null ? Ast.GetSourceFileOfNode(enclosingDeclaration) : null);
-            var result = writer.String();
-            var maxLength = NodeBuilderImpl.defaultMaximumTruncationLength * 2;
+            var result = writer.TextValue();
+            long maxLength = NodeBuilderImpl.defaultMaximumTruncationLength * 2L;
             if (verbosity != null && verbosity.MaxTruncationLength > 0)
                 maxLength = verbosity.MaxTruncationLength * 10;
             if (noTruncation)
@@ -54,7 +55,7 @@ public sealed partial class Checker
             {
                 if (verbosity != null)
                     verbosity.Truncated = true;
-                return result[..(maxLength - 3)] + "...";
+                return ByteStringValue.Concat(result.Slice(0, checked((int)(maxLength - 3))), ByteStringValue.FromString("..."));
             }
 
             return result;
@@ -70,7 +71,8 @@ public sealed partial class Checker
     public string SymbolToStringEx(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning, SymbolFormatFlags flags) => ScannerString.ToJsString(symbolToStringEx(symbol, enclosingDeclaration, meaning, flags));
     internal string symbolToString(Symbol symbol) => symbolToStringEx(symbol, null, SymbolFlags.All, SymbolFormatFlags.AllowAnyNodeKind);
     private string symbolToStringWithoutSymbolChain(Symbol symbol, Node enclosingDeclaration) => symbolToStringEx(symbol, enclosingDeclaration, SymbolFlags.All, SymbolFormatFlags.AllowAnyNodeKind | SymbolFormatFlags.DoNotIncludeSymbolChain);
-    private string symbolToStringEx(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning, SymbolFormatFlags flags = SymbolFormatFlags.AllowAnyNodeKind)
+    private string symbolToStringEx(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning, SymbolFormatFlags flags = SymbolFormatFlags.AllowAnyNodeKind) => SymbolToStringExValue(symbol, enclosingDeclaration, meaning, flags).Materialize();
+    internal ByteStringValue SymbolToStringExValue(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning, SymbolFormatFlags flags = SymbolFormatFlags.AllowAnyNodeKind)
     {
         var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
         var nodeFlags = TypeScript.NodeBuilding.Flags.IgnoreErrors;
@@ -92,7 +94,7 @@ public sealed partial class Checker
             var printer = new TypeScript.DiagnosticPrinting.Printer(nodeBuilder.EmitContext(), true, true, enclosingDeclaration != null && enclosingDeclaration.Kind == Kind.SourceFile);
             var entity = (flags & SymbolFormatFlags.AllowAnyNodeKind) != 0 ? nodeBuilder.SymbolToNode(symbol, meaning, enclosingDeclaration, nodeFlags, internalNodeFlags, null) : nodeBuilder.SymbolToEntityName(symbol, meaning, enclosingDeclaration, nodeFlags, internalNodeFlags, null);
             printer.Write(entity, writer, sourceFile);
-            return writer.String();
+            return writer.TextValue();
         }
         finally
         {
@@ -118,7 +120,8 @@ public sealed partial class Checker
         }
     }
 
-    private string typePredicateToString(TypePredicate predicate)
+    private string typePredicateToString(TypePredicate predicate) => TypePredicateToStringValue(predicate).Materialize();
+    internal ByteStringValue TypePredicateToStringValue(TypePredicate predicate)
     {
         var builder = getNodeBuilder();
         try
@@ -126,7 +129,7 @@ public sealed partial class Checker
             var node = builder.TypePredicateToTypePredicateNode(predicate, null, TypeScript.NodeBuilding.Flags.UseAliasDefinedOutsideCurrentScope | TypeScript.NodeBuilding.Flags.IgnoreErrors | TypeScript.NodeBuilding.Flags.WriteTypeParametersInQualifiedName);
             var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
             new TypeScript.DiagnosticPrinting.Printer(builder.EmitContext()).Write(node, writer, null);
-            return writer.String();
+            return writer.TextValue();
         }
         finally
         {

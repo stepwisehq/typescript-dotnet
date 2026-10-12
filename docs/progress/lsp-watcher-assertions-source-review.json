@@ -1,0 +1,64 @@
+{
+  "status": "independent-source-and-original-assertion-review-clear",
+  "reviewer": "emit_foundation GPT-6.1 Sol",
+  "manifest": "docs/progress/lsp-watcher-assertions.json",
+  "manifestSha256": "00f7c8f5b6a8424e31995d50895ab3ed1293fbb5bea17cbd36557f3a64b27863",
+  "sourcePin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceHashes": {
+    "validation/LanguageServices.Checks/LspWatcherChecks.cs": "614d3f1eb10120c192990b366380fdf4a9eef0437fff33fa40758336d75e2aff",
+    "validation/LanguageServices.Checks/LspWatcherChecks.Helpers.cs": "ce664eff3639030f5ce299bf222f93ebadd75458679f565d506f688017b1e2cb",
+    "validation/LanguageServices.Checks/LspWatcherChecks.Basic.cs": "693c0f0b1b7efa1fd4de75fb54efd63a6f7bf167a4b3fe54e90c58baefcc0485",
+    "validation/LanguageServices.Checks/LspWatcherChecks.Recovery.cs": "29408e2deee25c113846bd546cefb16ce6bbb49764ace6ce9f90e8794173e23f",
+    "validation/LanguageServices.Checks/LspWatcherChecks.CloseRace.cs": "0aa4573a91417d648cfb34337f6f005df6909e57ed3abf48228cd6beb7a4d62e",
+    "validation/LanguageServices.Checks/FsWatchEventChecks.cs": "21cf9327bbf1c4bff4ea3f98e31a3fa8a29d65b22c7dbe8854a12f1195265168",
+    "validation/LanguageServices.Checks/FsWatchFallbackChecks.cs": "a78fef415246b1a0f5263f0ca15ff38e0251b0a92a63a5ce45e95a97017ea021",
+    "validation/LanguageServices.Checks/FsWatchWalkDirChecks.cs": "2eb64a3b5a80ac774a97f138819cf1fa05b677fca4aea452f5d1347b084c90f7",
+    "validation/LanguageServices.Checks/FsWatchPathChecks.cs": "40ad6102675f6ecc8e6cbf77700ea171117bca6dd64069c21a8c37ebe9866f87",
+    "validation/LanguageServices.Checks/FsWatchInternalChecks.cs": "29e80693d7387eb2e9b0d88d2f8d4b6d3bd6d258641552d0eb4948409e54f9d6",
+    "tests/LanguageServices.Tests/LspWatcherTests.cs": "772ba07d6b6a13b48f4286bce961f9d6b76b8b3c4067251c1abb0096236c4a28",
+    "tests/LanguageServices.Tests/FsWatchEventTests.cs": "8a4422513619251919fd75508d9eda1aae19f1ed21c3b7c4b682fe0c654a377e",
+    "tests/LanguageServices.Tests/FsWatchFallbackTests.cs": "90b1137df6dbf793ca1cb608dec89c47fd481aef5fc510bce40ae0e16b926840",
+    "tests/LanguageServices.Tests/FsWatchWalkDirTests.cs": "d81147d8d9306ca48128af003d4e253fb6bd719edcc4a9d5b4509cef19b29480",
+    "tests/LanguageServices.Tests/FsWatchPathTests.cs": "443b4ef9feb505026fbf1470c85a6b95886c42e0c5f892f9070f13038c3d745a",
+    "tests/LanguageServices.Tests/FsWatchInternalTests.cs": "c8fbdfad1717bfa94171932b23e3817c5fa26a0740bee78bd60e5ce92110cf55",
+    "tools/fswatch/materialize-path-checks.py": "07736e721db33a3cb0bbe4d4b3ccc3b892b91e3ea15b1e9e88ff26b80c3d6f12",
+    "src/TypeScript.Scanner/FsWatch/FallbackWatcher.cs": "230e31f5b979d9f76808d093ecf373e7764df0ab02726ba6aaaa20a464df2a43",
+    "src/TypeScript.Scanner/FsWatch/Registry.cs": "018074644ab7e45df717710b5f37d64c18787991805f87a71d6f10b769f6bfb0"
+  },
+  "originalFunctionCount": 46,
+  "units": {
+    "LspWatcherChecks": 16,
+    "FsWatchEventChecks": 7,
+    "FsWatchFallbackChecks": 5,
+    "FsWatchWalkDirChecks": 8,
+    "FsWatchPathChecks": 4,
+    "FsWatchInternalChecks": 6
+  },
+  "reviewed": [
+    "All original conditions and rows in sixteen LSP watcher functions, including real backend changes, ancestor promotion, synthetic depth, terminated recovery, rollback and concurrent Close",
+    "Seven event-list functions including sequence-filtered drain and retained first error",
+    "Five fallback functions including exact singleton backend identity and rollback cleanup",
+    "Eight directory walk functions against both actual native and generic workers",
+    "Four path functions with thirty rows, malformed UTF8, Unicode folding and exact keys",
+    "Six path/backend/error/callback functions; real production delivery and error identity",
+    "Thin xUnit dispatch, shared RunAll counts, fixture locking, OS cleanup and path literal generator",
+    "Only focused retained-pointer Primary/Secondary projections and package fanotify visibility changes; prior watcher algorithm review reused"
+  ],
+  "skipReview": {
+    "original": "Unreadable-subdirectory test skips Windows or effective UID zero exactly as pinned source.",
+    "additional": "None in this selected packet. Sequential rather than T.Parallel assertion scheduling is an adaptation, not a skipped assertion.",
+    "linuxScope": "Symlinks and libc geteuid controls are reviewed for the actual Linux x64 acceptance platform; other platform execution is not inferred."
+  },
+  "managedEvidence": {
+    "path": "artifacts/language-services/integration-3/tests/dependencies-39.trx",
+    "reportedCases": 305,
+    "reportedFailures": 0,
+    "reportedSkips": 0,
+    "scope": "Parent completed aggregate gate; this source review does not independently claim full runtime evidence validation."
+  },
+  "remaining": {
+    "broadWatcherFunctions": 77,
+    "linuxFanotifyFunctions": 8
+  },
+  "nativeExecution": "pending"
+}

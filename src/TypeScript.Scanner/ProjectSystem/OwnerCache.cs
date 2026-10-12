@@ -13,6 +13,19 @@ internal sealed class OwnerCache<K, V, LoadArgs>(Func<K, LoadArgs, V> parse, Fun
     }
 
     private readonly TypeScript.Collections.SyncMap<K, Entry> entries = new();
+    // session.go logging observes the original Range, rather than inventing a
+    // private-state count contract for concurrent cache mutation.
+    internal int EntryCount()
+    {
+        int count = 0;
+        entries.Range((_, _) =>
+        {
+            count++;
+            return true;
+        });
+        return count;
+    }
+
     // ownercache.go:38 LoadAndAcquire.
     public V LoadAndAcquire(K identity, ulong owner, LoadArgs args)
     {
