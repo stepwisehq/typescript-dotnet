@@ -3694,106 +3694,12 @@ public partial class Scanner
     public static IEnumerable<CommentRange> GetLeadingCommentRanges(NodeFactory? factory, byte[] text, int pos) => iterateCommentRanges(factory, ByteStringView.CopyFrom(text), pos, false);
     public static IEnumerable<CommentRange> GetTrailingCommentRanges(NodeFactory? factory, string text, int pos) => iterateCommentRanges(factory, ByteStringView.FromUnicode(text), pos, true);
     public static IEnumerable<CommentRange> GetTrailingCommentRanges(NodeFactory? factory, byte[] text, int pos) => iterateCommentRanges(factory, ByteStringView.CopyFrom(text), pos, true);
-    // ast.CommentRange is a value struct; NewCommentRange has no node hooks/identity.
+    // Public IEnumerable compatibility owns its iterator at that API boundary;
+    // internal emit consumers use the same worker through a value sequence.
     private static IEnumerable<CommentRange> iterateCommentRanges(NodeFactory? factory, ByteStringView text, int pos, bool trailing)
     {
-        int pendingPos = 0, pendingEnd = 0;
-        Kind pendingKind = default;
-        bool pendingHasTrailingNewLine = false, hasPendingCommentRange = false;
-        bool collecting = trailing;
-        if (pos == 0)
-        {
-            collecting = true;
-            if (isShebangTrivia(text, pos))
-                pos = scanShebangTrivia(text, pos);
-        }
-
-        while (pos >= 0 && pos < text.Length)
-        {
-            var(ch, size) = Utf8.DecodeRuneInString(text.AsSpan(pos));
-            switch (ch)
-            {
-                case '\r':
-                    if (pos + 1 < text.Length && text[pos + 1] == '\n')
-                        pos++;
-                    goto case '\n';
-                case '\n':
-                    pos++;
-                    if (trailing)
-                        goto scanEnd;
-                    collecting = true;
-                    if (hasPendingCommentRange)
-                        pendingHasTrailingNewLine = true;
-                    continue;
-                case '\t':
-                case '\v':
-                case '\f':
-                case ' ':
-                    pos++;
-                    continue;
-                case '/':
-                {
-                    int nextChar = pos + 1 < text.Length ? text[pos + 1] : 0;
-                    bool hasTrailingNewLine = false;
-                    if (nextChar == '/' || nextChar == '*')
-                    {
-                        Kind kind = nextChar == '/' ? Kind.SingleLineCommentTrivia : Kind.MultiLineCommentTrivia;
-                        int startPos = pos;
-                        pos += 2;
-                        if (nextChar == '/')
-                        {
-                            while (pos < text.Length)
-                            {
-                                var(c, s) = Utf8.DecodeRuneInString(text.AsSpan(pos));
-                                if (StringUtil.IsLineBreak(c))
-                                {
-                                    hasTrailingNewLine = true;
-                                    break;
-                                }
-
-                                pos += s;
-                            }
-                        }
-                        else
-                        {
-                            // Go searches the shared suffix, not an allocated copy.
-                            int i = GoStrings.Index(text.AsSpan(pos), "*/"u8);
-                            pos = i >= 0 ? pos + i + 2 : text.Length;
-                        }
-
-                        if (collecting)
-                        {
-                            if (hasPendingCommentRange)
-                                yield return factory?.NewCommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine) ?? new CommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine);
-                            pendingPos = startPos;
-                            pendingEnd = pos;
-                            pendingKind = kind;
-                            pendingHasTrailingNewLine = hasTrailingNewLine;
-                            hasPendingCommentRange = true;
-                        }
-
-                        continue;
-                    }
-
-                    goto scanEnd;
-                }
-
-                default:
-                    if (ch > 127 && StringUtil.IsWhiteSpaceLike(ch))
-                    {
-                        if (hasPendingCommentRange && StringUtil.IsLineBreak(ch))
-                            pendingHasTrailingNewLine = true;
-                        pos += size;
-                        continue;
-                    }
-
-                    goto scanEnd;
-            }
-        }
-
-        scanEnd:
-            if (hasPendingCommentRange)
-                yield return factory?.NewCommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine) ?? new CommentRange(pendingKind, pendingPos, pendingEnd, pendingHasTrailingNewLine);
+        foreach (var range in new CommentRangeSequence(factory, text, pos, trailing))
+            yield return range;
     }
 
     public Scanner()

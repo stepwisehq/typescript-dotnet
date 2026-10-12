@@ -1,0 +1,37 @@
+{
+  "status": "clear",
+  "reviewer": "emit_inventory independent GPT-6.1 Sol",
+  "proofPath": "validation/results/vscode-emit-performance.json",
+  "proofSha256": "ec5b967a8a66f851cf9f0041f22e0a3608f292cd67b3a09ee238a0f9f4c288aa",
+  "reviewedDocumentAndMapHashes": {
+    "START-HERE.md": "8a2e56ad1b55dc7952c20d42385ab993902823c17ed4130f61a0b0aab654afcb",
+    "docs/STATE.md": "0ac33f4f6a31493e0db8d9301f5b2c7e5a59af348818fccbb8370ee0aaaf1cbf",
+    "docs/VSCODE-CHECK-STATUS.md": "d35b7e47e36796fb644c444819e18d52181a1c7fe300ab71161e8774814092e1",
+    "source-map.json": "5c17d61805e405cafcb6be8ade85396364dd43d9db8d748c284dbf86a2753d77",
+    "docs/progress/emit-performance-transform.md": "6427e20009ed2da4439d9a8dd84e62ea8c88714a3cdc396c7bb821b909040f4a",
+    "docs/progress/emit-performance-printer.md": "937e371c6f0f55278a1702418a485422388e16534d111f3641e0b810994e9c7a",
+    "docs/progress/emit-performance-measurement.md": "ba1e48e060d9c995d0006d1504fc21539472dc0dd01c6e2eddf6687dd5d5523f"
+  },
+  "evidenceHashRecordsVerified": 51,
+  "sourceFreezeFilesVerified": 367,
+  "reviewScope": [
+    "Aggregate claims reconcile independently reviewed source families, exact measured publication and seven correctness phases",
+    "All proof path/sha256 evidence records match actual files",
+    "Final CLI binary/RSP and Scanner IL match measured integration6; actual178 CLI ILC inputs retained",
+    "Five-each primary full-emit1.086446 target with exact10031files/150466543bytes/10comparable diagnostics and full region lifecycle",
+    "2226managed496Emit+1730retained; actualNative152original+254authored; full15330emit dispositions and15304NoEmit exact retained",
+    "Six external incremental metadata deltas preserved as failures, no original assertion/channel weakening",
+    "Borrowed bytes/value callbacks/hooks/requiredSlicecopies/pool owners described faithfully; POSIX runtime adaptation explicitly scoped and not Go fairness/scheduler reproduction",
+    "Noemit supplemental1.199158 observation explicitly qualified by .01s timer precision and rounding interval crossing1.20",
+    "Historical FIRST failure retained: only obsolete Check-status expectations corrected to original genuineCompile2/EmitSkippedfalse/Listingempty; no Project.Check invocation or compiler implementation change",
+    "Negative attempts, all samples, ordinary prior observations and measured effort qualifications preserved"
+  ],
+  "findings": [],
+  "limits": [
+    "One Linuxx64glibc host/mainVSCode workload optionaltuned settings, not universal or portable-default performance",
+    "Ten comparable rendered Go diagnostics cannot establish unavailable related/end DTO parity",
+    "Noemit narrow nominal margin is not robust performance/no-regression guarantee",
+    "Earlier detailed source and execution reviews reused; no broad source rereview, builds or workloads run"
+  ],
+  "decision": "Aggregate delivery claims and bindings are clear within documented scope; delivery commit remains parent-owned."
+}

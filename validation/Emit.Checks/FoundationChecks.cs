@@ -146,8 +146,37 @@ public static class FoundationChecks
     }
     private static void FactoryExpressionConstruction()
     {
+        // Go's factory/visitor hooks are embedded value records, not shared hook owners.
+        var createCount = 0;
+        var hooks = new NodeFactoryHooks { OnCreate = _ => createCount++ };
+        var hookFactory = new TypeScript.Scanner.NodeFactory(hooks);
+        hooks.OnCreate = _ => throw new InvalidOperationException("factory borrowed hook record");
+        hookFactory.NewIdentifier("hook-copy");
+        Check(createCount == 1, "factory owns callback record copy");
+        var visitorHooks = new NodeVisitorHooks { VisitNode = static (node, _) => node };
+        var first = new NodeVisitor(static node => node, hookFactory, visitorHooks);
+        var second = new NodeVisitor(static node => node, hookFactory, visitorHooks);
+        visitorHooks.VisitNode = null;
+        first.Hooks.VisitNode = null;
+        Check(second.Hooks.VisitNode != null, "visitor hook copies mutate independently");
         var context = new EmitContext(); var factory = context.Factory;
+        var contextualFirst = context.NewNodeVisitor(static node => node);
+        var contextualSecond = context.NewNodeVisitor(static node => node);
+        contextualFirst.Hooks.VisitParameters = null;
+        Check(contextualSecond.Hooks.VisitParameters != null, "context hook template copies remain independent");
+        var contextualThird = context.NewNodeVisitor(static node => node);
+        Check(contextualThird.Hooks.VisitParameters != null, "visitor mutation leaves later hook construction intact");
         var a = factory.NewIdentifier("a"); var b = factory.NewIdentifier("b"); var c = factory.NewIdentifier("c");
+        var nestedParent = factory.NewIdentifier("existing-parent");
+        var firstTree = factory.NewBinaryExpression(null, a, null, factory.NewToken(Kind.PlusToken), b);
+        firstTree.Parent = nestedParent;
+        Ast.SetParentInChildren(firstTree);
+        Check(firstTree.Parent == nestedParent && a.Parent == firstTree && b.Parent == firstTree,
+            "parent setter preserves root parent and assigns ordered children");
+        var secondTree = factory.NewParenthesizedExpression(c);
+        Ast.SetParentInChildren(secondTree);
+        Check(secondTree.Parent == null && c.Parent == secondTree && a.Parent == firstTree,
+            "reused parent setter does not retain prior tree state");
         var comma = factory.InlineExpressions(Nodes(factory.NewCommaExpression(a, b), c));
         Check(comma.AsBinaryExpression().Left.AsBinaryExpression().Left == a && comma.AsBinaryExpression().Right == c, "synthesized comma flattening preserves order");
         Check(factory.InlineExpressions(default) == null && factory.InlineExpressions(Nodes(a)) == a, "inline nil/single expression identities");

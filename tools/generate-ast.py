@@ -167,9 +167,9 @@ for n in concrete:
             assert n != 'JSDocText', n
             parts.append('    public override Node VisitEachChild(NodeVisitor v) => v.Factory.Update'+n+'WithFragments(this, v.visitNode(this.name), this.TextFragments);')
         elif n=='SyntaxList':
-            parts.append('    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateSyntaxList(this, Ast.SameMapNodes(Children, v.visitNode));')
+            parts.append('    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateSyntaxList(this, Ast.SameMapNodes(Children, v));')
         elif n=='JSDocTypeLiteral':
-            parts.append('    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateJSDocTypeLiteral(this, Ast.SameMapNodes(JSDocPropertyTags, v.visitNode), IsArrayType);')
+            parts.append('    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateJSDocTypeLiteral(this, Ast.SameMapNodes(JSDocPropertyTags, v), IsArrayType);')
         else:
             assert visit_each.startswith('return '),(n,visit_each)
             ve=expr(visit_each[7:]).replace('(node,', '(this,').replace('visitEachChild_JSDocParameterOrPropertyTag(', 'Ast.VisitEachChildJSDocParameterOrPropertyTag(')

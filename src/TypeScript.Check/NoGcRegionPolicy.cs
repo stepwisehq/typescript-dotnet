@@ -5,7 +5,11 @@ internal sealed class NoGcRegionPolicy : IDisposable
     private readonly GCLatencyMode initial = GCSettings.LatencyMode;
     private readonly string? report;
     private readonly GCLatencyMode effective;
-    private const long TotalBudget = 14L * 1024 * 1024 * 1024;
+    // Full emit adds owned output/transform allocations beyond the accepted check-only budget.
+    // With a separate 2GiB LOH allowance, these reserve 14GiB vs 12GiB for SOH.
+    private readonly long totalBudget;
+    private const long CheckBudget = 14L * 1024 * 1024 * 1024;
+    private const long EmitBudget = 16L * 1024 * 1024 * 1024;
     private const long LohBudget = 2L * 1024 * 1024 * 1024;
     private const long MinimumAvailable = 20L * 1024 * 1024 * 1024;
     private bool started;
@@ -13,8 +17,9 @@ internal sealed class NoGcRegionPolicy : IDisposable
     private string startOutcome = "notAttempted", endOutcome = "notStarted";
     private readonly int[] countsBefore = [GC.CollectionCount(0), GC.CollectionCount(1), GC.CollectionCount(2)];
     private readonly long allocatedBefore = GC.GetTotalAllocatedBytes(false);
-    internal NoGcRegionPolicy(string memoryInfoPath = "/proc/meminfo", string? reportPath = null)
+    internal NoGcRegionPolicy(string memoryInfoPath = "/proc/meminfo", string? reportPath = null, bool fullEmit = false)
     {
+        totalBudget = fullEmit ? EmitBudget : CheckBudget;
         report = reportPath ?? Environment.GetEnvironmentVariable("TSC_GC_POLICY_REPORT");
         try
         {
@@ -30,7 +35,7 @@ internal sealed class NoGcRegionPolicy : IDisposable
             if (availableBytes < MinimumAvailable) startOutcome = "preflightFallback";
             else
             {
-                started = GC.TryStartNoGCRegion(TotalBudget, LohBudget, disallowFullBlockingGC: true);
+                started = GC.TryStartNoGCRegion(totalBudget, LohBudget, disallowFullBlockingGC: true);
                 startOutcome = started ? "started" : "insufficientMemoryFallback";
             }
         }
@@ -73,7 +78,7 @@ internal sealed class NoGcRegionPolicy : IDisposable
             w.WriteString("noGcEndOutcome", endOutcome);
             w.WriteString("modeBeforeEnd",modeBeforeEnd.ToString());
             w.WriteBoolean("fallbackAtStart",!started);
-            w.WriteNumber("totalBudgetBytes",TotalBudget);
+            w.WriteNumber("totalBudgetBytes",totalBudget);
             w.WriteNumber("lohBudgetBytes",LohBudget);
             w.WriteNumber("minimumAvailableBytes",MinimumAvailable);
             w.WriteNumber("preflightAvailableBytes",availableBytes);

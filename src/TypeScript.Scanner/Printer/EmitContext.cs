@@ -50,6 +50,7 @@ internal struct emitNode
 internal sealed class EmitContext
 {
     internal readonly NodeFactory Factory;
+    private readonly NodeVisitorHooks visitorHooks;
     internal Dictionary<Node, AutoGenerateInfo> autoGenerate;
     internal Dictionary<Node, Node> textSource;
     private Dictionary<Node, Node> original;
@@ -67,7 +68,21 @@ internal sealed class EmitContext
         internal Slice<Node> variables, functions, initializationStatements;
         internal environmentFlags flags;
     }
-    internal EmitContext() => Factory = new(this);
+    internal EmitContext()
+    {
+        Factory = new(this);
+        // emitcontext.go:69: the immutable method receivers live with this context.
+        // Cache CLR delegates once; each visitor still receives its own Go Hooks
+        // value copy, so later visitor hook mutation cannot affect another visitor.
+        visitorHooks = new NodeVisitorHooks
+        {
+            VisitParameters = VisitParameters,
+            VisitFunctionBody = VisitFunctionBody,
+            VisitIterationBody = VisitIterationBody,
+            VisitTopLevelStatements = VisitVariableEnvironment,
+            VisitEmbeddedStatement = VisitEmbeddedStatement
+        };
+    }
     internal void onCreate(Node node) => node.Flags |= NodeFlags.Synthesized;
     internal void onUpdate(Node updated, Node original) => SetOriginal(updated, original);
     internal void onClone(Node updated, Node original)
@@ -76,12 +91,7 @@ internal sealed class EmitContext
         if ((Ast.IsIdentifier(updated) || Ast.IsPrivateIdentifier(updated)) && autoGenerate?.TryGetValue(original, out var info) == true)
             autoGenerate[updated] = new() { Id = info.Id, Flags = info.Flags, Prefix = info.Prefix, Suffix = info.Suffix, Node = info.Node };
     }
-    internal NodeVisitor NewNodeVisitor(Func<Node, Node> visit) => new(visit, Factory.AsNodeFactory(), new NodeVisitorHooks
-    {
-        VisitParameters = VisitParameters, VisitFunctionBody = VisitFunctionBody,
-        VisitIterationBody = VisitIterationBody, VisitTopLevelStatements = VisitVariableEnvironment,
-        VisitEmbeddedStatement = VisitEmbeddedStatement
-    });
+    internal NodeVisitor NewNodeVisitor(Func<Node, Node> visit) => new(visit, Factory.AsNodeFactory(), visitorHooks);
     internal void StartVariableEnvironment() { varScopeStack.Push(new()); StartLexicalEnvironment(); }
     internal Slice<Node> EndVariableEnvironment()
     {

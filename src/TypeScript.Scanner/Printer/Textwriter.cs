@@ -74,7 +74,7 @@ internal class TextWriter : EmitTextWriter, GrowableEmitTextWriter
     protected void writeText(ByteStringValue text)
     {
         if (text.Length == 0) return;
-        if (lineStart) { builder.WriteString(getIndentString(indent, indentSize)); lineStart = false; }
+        if (lineStart) { builder.WriteRepeatedByte((byte)' ', checked(indent * indentSize)); lineStart = false; }
         builder.WriteString(text); lastWritten = text.Snapshot(); updateLineCountAndPosFor(text);
     }
     public virtual void Write(string text) => Write(ByteStringValue.FromString(text));

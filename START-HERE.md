@@ -1,5 +1,17 @@
 # Resume this project
 
+## Emit performance: verified, delivery checkpoint
+
+The emit target is verified for the documented Linux x64 configuration: best of five
+Native10.18s/Go9.37s =1.08645x, with all10,031 emitted files and ten diagnostics exact.
+All retained correctness gates passed. Read the current top of [STATE.md](./docs/STATE.md),
+[assessment and reproduction](./docs/VSCODE-CHECK-STATUS.md) and
+[performance evidence](./validation/results/vscode-emit-performance.json).
+Noemit protection is nominally1.19916x with an explicitly narrow timer-precision margin.
+Preserve the Go-faithful allocation/runtime adaptations and scoped configuration;
+this is not a portable-default or universal workload performance guarantee.
+If delivery is still pending in STATE, finish review/commit; otherwise await the next mandate.
+
 ## Latest result: VS Code emit comparison
 
 The authorized external comparison is complete: 10,031 files (150,466,543 bytes)

@@ -280,14 +280,14 @@ internal sealed class DeclarationTransformer : Transformer, IDeclarationTransfor
             {
                 var trailingPos = ScannerApi.SkipTriviaEx(text, (previousSibling.End() + 1), new SkipTriviaOptions { StopAtComments = true });
                 {
-                    foreach (var comment in GoRuntime.RangeKeys(ScannerApi.GetTrailingCommentRanges(this.Factory().AsNodeFactory(), text, trailingPos)))
+                    foreach (var comment in ScannerApi.GetTrailingCommentRangesValue(this.Factory().AsNodeFactory(), text, trailingPos))
                     {
                         commentRanges = commentRanges.Append(comment);
                     }
                 }
 
                 {
-                    foreach (var comment2 in GoRuntime.RangeKeys(ScannerApi.GetLeadingCommentRanges(this.Factory().AsNodeFactory(), text, node.Pos())))
+                    foreach (var comment2 in ScannerApi.GetLeadingCommentRangesValue(this.Factory().AsNodeFactory(), text, node.Pos()))
                     {
                         commentRanges = commentRanges.Append(comment2);
                     }
@@ -297,7 +297,7 @@ internal sealed class DeclarationTransformer : Transformer, IDeclarationTransfor
             {
                 var trailingPos2 = ScannerApi.SkipTriviaEx(text, node.Pos(), new SkipTriviaOptions { StopAtComments = true });
                 {
-                    foreach (var comment3 in GoRuntime.RangeKeys(ScannerApi.GetTrailingCommentRanges(this.Factory().AsNodeFactory(), text, trailingPos2)))
+                    foreach (var comment3 in ScannerApi.GetTrailingCommentRangesValue(this.Factory().AsNodeFactory(), text, trailingPos2))
                     {
                         commentRanges = commentRanges.Append(comment3);
                     }
@@ -313,7 +313,7 @@ internal sealed class DeclarationTransformer : Transformer, IDeclarationTransfor
         }
 
         {
-            foreach (var commentRange in GoRuntime.RangeKeys(this.getLeadingCommentRangesOfNode(parseTreeNode, sourceFile)))
+            foreach (var commentRange in this.getLeadingCommentRangesOfNode(parseTreeNode, sourceFile))
             {
                 if (hasInternalAnnotation(commentRange, sourceFile))
                 {
@@ -326,14 +326,14 @@ internal sealed class DeclarationTransformer : Transformer, IDeclarationTransfor
     }
 
     // Upstream upstream/TypeScript/tsc/internal/transformers/declarations/transform.go:201:1.
-    private IEnumerable<CommentRange> getLeadingCommentRangesOfNode(Node node, SourceFile sourceFile)
+    private ScannerApi.CommentRangeSequence getLeadingCommentRangesOfNode(Node node, SourceFile sourceFile)
     {
         if (((node == null) || (node.Kind == Kind.JsxText)))
         {
-            return null;
+            return default;
         }
 
-        return ScannerApi.GetLeadingCommentRanges(this.Factory().AsNodeFactory(), sourceFile.TextView(), node.Pos());
+        return ScannerApi.GetLeadingCommentRangesValue(this.Factory().AsNodeFactory(), sourceFile.TextView(), node.Pos());
     }
 
     // Upstream upstream/TypeScript/tsc/internal/transformers/declarations/transform.go:208:1.
@@ -3576,7 +3576,7 @@ internal sealed class DeclarationTransformer : Transformer, IDeclarationTransfor
                 if (((n != null) && (n.Kind == Kind.SyntaxList)))
                 {
                     {
-                        foreach (var c in GoRuntime.RangeKeys(n.AsSyntaxList().IterChildren()))
+                        foreach (var c in n.AsSyntaxList().Children)
                         {
                             if ((c.Name() != null))
                             {

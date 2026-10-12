@@ -18,6 +18,13 @@ namespace TypeScript.Checking;
 
 public sealed partial class Checker
 {
+    // checker.go's ordered variadic predicates do not escape FindManyAncestors.
+    // Retain the immutable callback storage across calls; the result slice remains
+    // freshly owned by each invocation exactly as upstream.
+    private static readonly Func<Node, bool>[] identifierAncestorPredicates =
+        [Ast.IsMetaProperty, Ast.IsDecorator, Ast.IsForInOrOfStatement,
+         Ast.IsComputedPropertyName, Ast.IsHeritageClause];
+
     // checker.go:583/917. Go atomic.Uint32 increment, including wraparound.
     private static int nextCheckerID;
     internal uint id;
@@ -147,11 +154,11 @@ public sealed partial class Checker
     private readonly DiagnosticsCollection diagnostics = new();
     private DiagnosticsCollection globalDiagnostics => diagnostics;
 
-    internal readonly SemaphoreSlim mu = new(1, 1);
+    internal readonly CheckerMutex mu = new();
 
     // checker.go:913. Legacy CreateCore entry points below supply their named
     // fixture environments; the genuine entry consumes the actual Program.
-    internal static (Checker Checker, SemaphoreSlim Mutex) NewChecker(ICheckerProgramHost host)
+    internal static (Checker Checker, CheckerMutex Mutex) NewChecker(ICheckerProgramHost host)
     {
         ArgumentNullException.ThrowIfNull(host);
         host.BindSourceFiles();
@@ -32775,7 +32782,7 @@ public sealed partial class Checker
                             return ;
                         }
                     }
-                    var res = Ast.FindManyAncestors(location, Ast.IsMetaProperty, Ast.IsDecorator, Ast.IsForInOrOfStatement, Ast.IsComputedPropertyName, Ast.IsHeritageClause);
+                    var res = Ast.FindManyAncestors(location, identifierAncestorPredicates);
                     var metaProperty = res[0];
                     var decorator = res[1];
                     var forNode = res[2];

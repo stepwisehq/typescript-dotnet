@@ -1,0 +1,1800 @@
+{
+  "status": "verification-complete-scoped-emit-performance-target",
+  "preparedUtc": "2026-10-12T07:32:46.559531+00:00",
+  "contract": {
+    "targetBestNativeToGo": 1.2,
+    "scope": "Linux x64 glibc AVX2, same pinned VSCode main project, checkers8, standard ThreadPoolMinThreads128, explicit optionalNoGC16/2GiB (noEmit14/2),20GiBpreflight. Portable defaults unchanged.",
+    "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+    "vscodeRevision": "4038aefd2c4aa51457420ef764c4c2358ae0ddfa",
+    "exactFiles": 10031,
+    "exactBytes": 150466543,
+    "completeComparableDiagnostics": 10,
+    "qualification": "Every cohort run verifies all output relative paths/raw bytes, ten full comparable messages/positions/code/category, exit2 and full Native region lifecycle. Go nonpretty projection lacks native related/end metadata; do not claim unobserved DTO parity.",
+    "primaryMethod": "Alternating order, five fresh processes each, warm inputs, GNUtime process wall. Verification outside timer; all samples/variability/RSS retained. No significance claim.",
+    "primaryResult": {
+      "bestNativeSeconds": 10.18,
+      "bestGoSeconds": 9.37,
+      "ratio": 1.0864461045891143,
+      "meetsAuthorizedEmitTargetObserved": true,
+      "marginTo1point20Seconds": 1.0639999999999983,
+      "qualification": "Comfortable margin relative to .01s timing quantization; finitefive samples do not establish significance/guarantee."
+    }
+  },
+  "scenarios": [
+    {
+      "name": "baseline-first",
+      "evidence": {
+        "path": "artifacts/emit-performance/baseline/first/comparison.json",
+        "sha256": "3dafffa67571c55c9dddf262bf878f631bbb87ebd97b3e708dec48101e865c3d"
+      },
+      "rows": [
+        {
+          "runtime": "go",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 10.19,
+          "cpuSeconds": 95.74000000000001,
+          "peakResidentKiB": 11347932,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 30.72,
+          "cpuSeconds": 114.03999999999999,
+          "peakResidentKiB": 14552176,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": false,
+          "policy": {
+            "totalBudgetBytes": 15032385536,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "regionFailure:NoGCRegion mode must be set.",
+            "modeBeforeEnd": "Interactive"
+          }
+        }
+      ],
+      "summary": {
+        "go": {
+          "seconds": [
+            10.19
+          ],
+          "best": 10.19,
+          "median": 10.19,
+          "range": [
+            10.19,
+            10.19
+          ]
+        },
+        "native": {
+          "seconds": [
+            30.72
+          ],
+          "best": 30.72,
+          "median": 30.72,
+          "range": [
+            30.72,
+            30.72
+          ]
+        }
+      },
+      "bestNativeToGoRatio": 3.014720314033366
+    },
+    {
+      "name": "integration1-first",
+      "evidence": {
+        "path": "artifacts/emit-performance/integration1/first/comparison.json",
+        "sha256": "f4e4235c0bb964937687f8846b1a06c2565257ec403c1ff8c882bc95089d8679"
+      },
+      "rows": [
+        {
+          "runtime": "go",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 8.59,
+          "cpuSeconds": 79.24000000000001,
+          "peakResidentKiB": 11351540,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 32.21,
+          "cpuSeconds": 98.10000000000001,
+          "peakResidentKiB": 14656696,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": false,
+          "policy": {
+            "totalBudgetBytes": 15032385536,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "regionFailure:NoGCRegion mode must be set.",
+            "modeBeforeEnd": "Interactive"
+          }
+        }
+      ],
+      "summary": {
+        "go": {
+          "seconds": [
+            8.59
+          ],
+          "best": 8.59,
+          "median": 8.59,
+          "range": [
+            8.59,
+            8.59
+          ]
+        },
+        "native": {
+          "seconds": [
+            32.21
+          ],
+          "best": 32.21,
+          "median": 32.21,
+          "range": [
+            32.21,
+            32.21
+          ]
+        }
+      },
+      "bestNativeToGoRatio": 3.7497089639115253
+    },
+    {
+      "name": "integration2-first",
+      "evidence": {
+        "path": "artifacts/emit-performance/integration2/first/comparison.json",
+        "sha256": "f7f5bd1c96b42384534669106511e516523f130876af2641ac93c3dca07043de"
+      },
+      "rows": [
+        {
+          "runtime": "go",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 9.37,
+          "cpuSeconds": 86.07,
+          "peakResidentKiB": 11314340,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 17.46,
+          "cpuSeconds": 105.04,
+          "peakResidentKiB": 14970596,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        }
+      ],
+      "summary": {
+        "go": {
+          "seconds": [
+            9.37
+          ],
+          "best": 9.37,
+          "median": 9.37,
+          "range": [
+            9.37,
+            9.37
+          ]
+        },
+        "native": {
+          "seconds": [
+            17.46
+          ],
+          "best": 17.46,
+          "median": 17.46,
+          "range": [
+            17.46,
+            17.46
+          ]
+        }
+      },
+      "bestNativeToGoRatio": 1.8633938100320173
+    },
+    {
+      "name": "integration2-cohort",
+      "evidence": {
+        "path": "artifacts/emit-performance/integration2/cohort/comparison.json",
+        "sha256": "31c3a64a398a9ef8256d93a73bf5fab8d090146ba018665db10f914d19b7d2e0"
+      },
+      "rows": [
+        {
+          "runtime": "go",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 8.95,
+          "cpuSeconds": 83.21,
+          "peakResidentKiB": 11486660,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 17.04,
+          "cpuSeconds": 99.12,
+          "peakResidentKiB": 14966200,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "native",
+          "round": 2,
+          "exitCode": 2,
+          "wallSeconds": 16.3,
+          "cpuSeconds": 98.51,
+          "peakResidentKiB": 14972168,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "go",
+          "round": 2,
+          "exitCode": 2,
+          "wallSeconds": 8.69,
+          "cpuSeconds": 78.28,
+          "peakResidentKiB": 11347136,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 3,
+          "exitCode": 2,
+          "wallSeconds": 8.41,
+          "cpuSeconds": 74.95,
+          "peakResidentKiB": 11876100,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 3,
+          "exitCode": 2,
+          "wallSeconds": 16.03,
+          "cpuSeconds": 88.53,
+          "peakResidentKiB": 14956600,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "native",
+          "round": 4,
+          "exitCode": 2,
+          "wallSeconds": 15.19,
+          "cpuSeconds": 87.48,
+          "peakResidentKiB": 14959400,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "go",
+          "round": 4,
+          "exitCode": 2,
+          "wallSeconds": 8.79,
+          "cpuSeconds": 79.50999999999999,
+          "peakResidentKiB": 11332128,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 5,
+          "exitCode": 2,
+          "wallSeconds": 8.47,
+          "cpuSeconds": 76.86,
+          "peakResidentKiB": 11397644,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 5,
+          "exitCode": 2,
+          "wallSeconds": 12.96,
+          "cpuSeconds": 71.05000000000001,
+          "peakResidentKiB": 14943932,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        }
+      ],
+      "summary": {
+        "go": {
+          "seconds": [
+            8.95,
+            8.69,
+            8.41,
+            8.79,
+            8.47
+          ],
+          "best": 8.41,
+          "median": 8.69,
+          "range": [
+            8.41,
+            8.95
+          ]
+        },
+        "native": {
+          "seconds": [
+            17.04,
+            16.3,
+            16.03,
+            15.19,
+            12.96
+          ],
+          "best": 12.96,
+          "median": 16.03,
+          "range": [
+            12.96,
+            17.04
+          ]
+        }
+      },
+      "bestNativeToGoRatio": 1.5410225921521998
+    },
+    {
+      "name": "integration3-first",
+      "evidence": {
+        "path": "artifacts/emit-performance/integration3/first/comparison.json",
+        "sha256": "f39597fe946b48b06867e347331da543a59419b9ecb0fbdc8bdc00db7cc18af2"
+      },
+      "rows": [
+        {
+          "runtime": "go",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 10.09,
+          "cpuSeconds": 90.95,
+          "peakResidentKiB": 11879316,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 18.04,
+          "cpuSeconds": 101.82999999999998,
+          "peakResidentKiB": 14946416,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        }
+      ],
+      "summary": {
+        "go": {
+          "seconds": [
+            10.09
+          ],
+          "best": 10.09,
+          "median": 10.09,
+          "range": [
+            10.09,
+            10.09
+          ]
+        },
+        "native": {
+          "seconds": [
+            18.04
+          ],
+          "best": 18.04,
+          "median": 18.04,
+          "range": [
+            18.04,
+            18.04
+          ]
+        }
+      },
+      "bestNativeToGoRatio": 1.7879088206144698
+    },
+    {
+      "name": "integration3-cohort",
+      "evidence": {
+        "path": "artifacts/emit-performance/integration3/cohort/comparison.json",
+        "sha256": "36ee940bcf36c3e309f4ae6cd1bec84ef39e81e89986e69616ad19f3d4afb903"
+      },
+      "rows": [
+        {
+          "runtime": "go",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 9.56,
+          "cpuSeconds": 85.78999999999999,
+          "peakResidentKiB": 11769056,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 14.13,
+          "cpuSeconds": 76.13,
+          "peakResidentKiB": 14940020,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "native",
+          "round": 2,
+          "exitCode": 2,
+          "wallSeconds": 13.55,
+          "cpuSeconds": 73.12,
+          "peakResidentKiB": 14942452,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "go",
+          "round": 2,
+          "exitCode": 2,
+          "wallSeconds": 8.69,
+          "cpuSeconds": 77.9,
+          "peakResidentKiB": 11863108,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 3,
+          "exitCode": 2,
+          "wallSeconds": 8.71,
+          "cpuSeconds": 77.51,
+          "peakResidentKiB": 11771892,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 3,
+          "exitCode": 2,
+          "wallSeconds": 14.3,
+          "cpuSeconds": 77.31,
+          "peakResidentKiB": 14949624,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "native",
+          "round": 4,
+          "exitCode": 2,
+          "wallSeconds": 18.07,
+          "cpuSeconds": 108.37,
+          "peakResidentKiB": 14954044,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "go",
+          "round": 4,
+          "exitCode": 2,
+          "wallSeconds": 8.73,
+          "cpuSeconds": 78.48,
+          "peakResidentKiB": 11384500,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 5,
+          "exitCode": 2,
+          "wallSeconds": 9.16,
+          "cpuSeconds": 83.44,
+          "peakResidentKiB": 11772252,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 5,
+          "exitCode": 2,
+          "wallSeconds": 14.32,
+          "cpuSeconds": 78.50999999999999,
+          "peakResidentKiB": 14943588,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        }
+      ],
+      "summary": {
+        "go": {
+          "seconds": [
+            9.56,
+            8.69,
+            8.71,
+            8.73,
+            9.16
+          ],
+          "best": 8.69,
+          "median": 8.73,
+          "range": [
+            8.69,
+            9.56
+          ]
+        },
+        "native": {
+          "seconds": [
+            14.13,
+            13.55,
+            14.3,
+            18.07,
+            14.32
+          ],
+          "best": 13.55,
+          "median": 14.3,
+          "range": [
+            13.55,
+            18.07
+          ]
+        }
+      },
+      "bestNativeToGoRatio": 1.559263521288838
+    },
+    {
+      "name": "integration5-first",
+      "evidence": {
+        "path": "artifacts/emit-performance/integration5/first/comparison.json",
+        "sha256": "916e99cee2b408a01ec5f3d13d13e574c6aaf6ac4381aa9d69b2a8c75aeba831"
+      },
+      "rows": [
+        {
+          "runtime": "go",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 9.46,
+          "cpuSeconds": 87.7,
+          "peakResidentKiB": 11827988,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 15.53,
+          "cpuSeconds": 99.19999999999999,
+          "peakResidentKiB": 14950880,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        }
+      ],
+      "summary": {
+        "go": {
+          "seconds": [
+            9.46
+          ],
+          "best": 9.46,
+          "median": 9.46,
+          "range": [
+            9.46,
+            9.46
+          ]
+        },
+        "native": {
+          "seconds": [
+            15.53
+          ],
+          "best": 15.53,
+          "median": 15.53,
+          "range": [
+            15.53,
+            15.53
+          ]
+        }
+      },
+      "bestNativeToGoRatio": 1.6416490486257926
+    },
+    {
+      "name": "integration5-cohort",
+      "evidence": {
+        "path": "artifacts/emit-performance/integration5/cohort/comparison.json",
+        "sha256": "6f4c3a6be5883e10b25c2b0fd995176b03ff7f9112e63512700963c607456d38"
+      },
+      "rows": [
+        {
+          "runtime": "go",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 9.57,
+          "cpuSeconds": 88.39999999999999,
+          "peakResidentKiB": 11842048,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 15.68,
+          "cpuSeconds": 105.43,
+          "peakResidentKiB": 14981224,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "native",
+          "round": 2,
+          "exitCode": 2,
+          "wallSeconds": 16.67,
+          "cpuSeconds": 111.89999999999999,
+          "peakResidentKiB": 14977816,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "go",
+          "round": 2,
+          "exitCode": 2,
+          "wallSeconds": 11.41,
+          "cpuSeconds": 103.03999999999999,
+          "peakResidentKiB": 12052844,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 3,
+          "exitCode": 2,
+          "wallSeconds": 9.07,
+          "cpuSeconds": 81.56,
+          "peakResidentKiB": 11335576,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 3,
+          "exitCode": 2,
+          "wallSeconds": 12.95,
+          "cpuSeconds": 87.31,
+          "peakResidentKiB": 14970172,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "native",
+          "round": 4,
+          "exitCode": 2,
+          "wallSeconds": 11.61,
+          "cpuSeconds": 76.86,
+          "peakResidentKiB": 14949044,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "go",
+          "round": 4,
+          "exitCode": 2,
+          "wallSeconds": 8.8,
+          "cpuSeconds": 78.12,
+          "peakResidentKiB": 11362212,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 5,
+          "exitCode": 2,
+          "wallSeconds": 8.66,
+          "cpuSeconds": 78.21000000000001,
+          "peakResidentKiB": 11883872,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 5,
+          "exitCode": 2,
+          "wallSeconds": 12.37,
+          "cpuSeconds": 79.88,
+          "peakResidentKiB": 14954984,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        }
+      ],
+      "summary": {
+        "go": {
+          "seconds": [
+            9.57,
+            11.41,
+            9.07,
+            8.8,
+            8.66
+          ],
+          "best": 8.66,
+          "median": 9.07,
+          "range": [
+            8.66,
+            11.41
+          ]
+        },
+        "native": {
+          "seconds": [
+            15.68,
+            16.67,
+            12.95,
+            11.61,
+            12.37
+          ],
+          "best": 11.61,
+          "median": 12.95,
+          "range": [
+            11.61,
+            16.67
+          ]
+        }
+      },
+      "bestNativeToGoRatio": 1.3406466512702078
+    },
+    {
+      "name": "integration6-first",
+      "evidence": {
+        "path": "artifacts/emit-performance/integration6/first/comparison.json",
+        "sha256": "86872ef8ccbfa1285e7e1108c51ca780a505482064a991e9b9e2ac74af1501fd"
+      },
+      "rows": [
+        {
+          "runtime": "go",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 8.68,
+          "cpuSeconds": 81.11,
+          "peakResidentKiB": 11350144,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 13.41,
+          "cpuSeconds": 97.61,
+          "peakResidentKiB": 14996568,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        }
+      ],
+      "summary": {
+        "go": {
+          "seconds": [
+            8.68
+          ],
+          "best": 8.68,
+          "median": 8.68,
+          "range": [
+            8.68,
+            8.68
+          ]
+        },
+        "native": {
+          "seconds": [
+            13.41
+          ],
+          "best": 13.41,
+          "median": 13.41,
+          "range": [
+            13.41,
+            13.41
+          ]
+        }
+      },
+      "bestNativeToGoRatio": 1.544930875576037
+    },
+    {
+      "name": "integration6-cohort",
+      "evidence": {
+        "path": "artifacts/emit-performance/integration6/cohort/comparison.json",
+        "sha256": "d6260311f8be030e7a9bef46fcbbc8992d0071a1d06523762f1d0648eb12cd46"
+      },
+      "rows": [
+        {
+          "runtime": "go",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 10.06,
+          "cpuSeconds": 90.39,
+          "peakResidentKiB": 11990144,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 1,
+          "exitCode": 2,
+          "wallSeconds": 10.18,
+          "cpuSeconds": 74.89,
+          "peakResidentKiB": 15001656,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "native",
+          "round": 2,
+          "exitCode": 2,
+          "wallSeconds": 13.77,
+          "cpuSeconds": 106.15,
+          "peakResidentKiB": 15017312,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "go",
+          "round": 2,
+          "exitCode": 2,
+          "wallSeconds": 10.65,
+          "cpuSeconds": 100.17,
+          "peakResidentKiB": 11375616,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 3,
+          "exitCode": 2,
+          "wallSeconds": 9.99,
+          "cpuSeconds": 91.55,
+          "peakResidentKiB": 11807464,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 3,
+          "exitCode": 2,
+          "wallSeconds": 10.39,
+          "cpuSeconds": 76.94,
+          "peakResidentKiB": 15001104,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "native",
+          "round": 4,
+          "exitCode": 2,
+          "wallSeconds": 14.76,
+          "cpuSeconds": 110.86999999999999,
+          "peakResidentKiB": 15011492,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        },
+        {
+          "runtime": "go",
+          "round": 4,
+          "exitCode": 2,
+          "wallSeconds": 12.0,
+          "cpuSeconds": 108.1,
+          "peakResidentKiB": 11544976,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 5,
+          "exitCode": 2,
+          "wallSeconds": 9.37,
+          "cpuSeconds": 84.44,
+          "peakResidentKiB": 11338728,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 5,
+          "exitCode": 2,
+          "wallSeconds": 10.38,
+          "cpuSeconds": 75.54,
+          "peakResidentKiB": 15002680,
+          "outputFiles": 10031,
+          "outputBytes": 150466543,
+          "diagnosticTextEqual": true,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true,
+          "policy": {
+            "totalBudgetBytes": 17179869184,
+            "lohBudgetBytes": 2147483648,
+            "noGcStarted": true,
+            "noGcStartOutcome": "started",
+            "noGcEndOutcome": "endedSuccessfully",
+            "modeBeforeEnd": "NoGCRegion"
+          }
+        }
+      ],
+      "summary": {
+        "go": {
+          "seconds": [
+            10.06,
+            10.65,
+            9.99,
+            12.0,
+            9.37
+          ],
+          "best": 9.37,
+          "median": 10.06,
+          "range": [
+            9.37,
+            12.0
+          ]
+        },
+        "native": {
+          "seconds": [
+            10.18,
+            13.77,
+            10.39,
+            14.76,
+            10.38
+          ],
+          "best": 10.18,
+          "median": 10.39,
+          "range": [
+            10.18,
+            14.76
+          ]
+        }
+      },
+      "bestNativeToGoRatio": 1.0864461045891143
+    }
+  ],
+  "ordinaryControl": {
+    "nativeSeconds": 25.384587,
+    "goSeconds": 12.815099,
+    "evidence": {
+      "path": "artifacts/vscode-emit-comparison/2026-10-12-corrected/comparison.json",
+      "sha256": "10300f529a803466eb466441e28b4b61c050581081880b55e48d1755cdf162a6"
+    },
+    "qualification": "Prior ordinary default single observations, not matched tuned cohort or performance acceptance; preserved without repeating."
+  },
+  "sourceReviews": [
+    {
+      "path": "artifacts/emit-performance/checker-mutex-independent-review.json",
+      "sha256": "1bcea9ae588b1a63695a3155d0e2f41580dc044261a0295ca0f9468d07bcfbf0"
+    },
+    {
+      "path": "artifacts/emit-performance/emitresolver-callback-independent-review.json",
+      "sha256": "7e6b64a1334e9c128596af4958d1a4d696f3f045f5082dcd87a32fdb03a83751"
+    },
+    {
+      "path": "artifacts/emit-performance/no-gc-emit-budget-independent-review.json",
+      "sha256": "a166dfcf3985f6651053ccdc39633715474b7524104f203f817415928d294d89"
+    },
+    {
+      "path": "artifacts/emit-performance/scanner-printer-independent-review.json",
+      "sha256": "b43623c25cc50cf53a811333a1a9ae7d1376b0e3254fab0a1d73abb4a08d6d24"
+    },
+    {
+      "path": "artifacts/emit-performance/transform-factory-independent-review.json",
+      "sha256": "9044e0a8715ad34fb2050513a490f30d9d219e6d7546ac10027da335d117fea3"
+    },
+    {
+      "path": "artifacts/emit-performance/write-parent-decode-independent-review.json",
+      "sha256": "15e85dff30f53fe5464d33f64af6fdc1710674c6eb13fe4d348c494df3df9dce"
+    },
+    {
+      "path": "artifacts/emit-performance/integration5/binding-independent-review.json",
+      "sha256": "2196dd4d4143e9edde096096bf2cda719bc24eefc0d08550bffb65b40ae068ee"
+    },
+    {
+      "path": "artifacts/emit-performance/integration5/native-mutex-controls/acceptance-independent-review.json",
+      "sha256": "0463273c1388e55e35be33f55a8f70403391ef241ff664126c25292535a92f37"
+    },
+    {
+      "path": "artifacts/emit-performance/integration6/publication-independent-review.json",
+      "sha256": "0c91063c6a54223df15928977d76686c3843bbe0af3ca75a18bcc2cc4d65fba8"
+    },
+    {
+      "path": "artifacts/emit-performance/integration6/cohort/cohort-independent-review.json",
+      "sha256": "da04231e446cc004c5cd1974b63c7f2c528f0baef9f220c683803f4189ef2449"
+    },
+    {
+      "path": "artifacts/emit-performance/noemit-protection/controller-independent-review.json",
+      "sha256": "979e4315a2e0e38fcf5ec9c719a041c9771d36489b788c97400925b279341937"
+    },
+    {
+      "path": "artifacts/emit-performance/noemit-protection/timing/protection-independent-review.json",
+      "sha256": "097c5b4d00c0dbb1c3934d3102c14aa3b9d297af0a2a846edd1350e6bd88896d"
+    },
+    {
+      "path": "artifacts/emit-performance/acceptance/correctness-independent-review.json",
+      "sha256": "904b558723c2e37bc3000d9017642c5b1a1ce317d2752955d048fb6a53a9e9e8"
+    }
+  ],
+  "sourceBinding": {
+    "path": "artifacts/emit-performance/integration5/source-inputs.json",
+    "sha256": "ca38ee1db16b1816124531e35330de1f368d2b279c590c0ad1475c2bf811c4bb"
+  },
+  "finalCliBinding": {
+    "evidence": {
+      "path": "artifacts/emit-performance/acceptance/native/TypeScript.Check/actual-ilc-input.json",
+      "sha256": "e546c19be5821eaf0f1da350320738080c70e9e80719306591a564653af453d7"
+    },
+    "candidateBinding": {
+      "path": "artifacts/emit-performance/integration6/binary-binding.json",
+      "sha256": "39fa96c87f30600a69f54beb2259f9481d6dd00095729ad75f48ca8f694d99eb"
+    },
+    "binaryIdenticalToMeasuredIntegration6": true,
+    "binarySha256": "05fc470f685b8ffcb557bf55a8865ff50c58fa51e00d38e95bd5528ed11f2a90",
+    "rspIdenticalToMeasuredIntegration6": true,
+    "responseSha256": "b5f318d54457a7ec9f62b9641153b238826148230198c2474dc5bc44f704ff9d",
+    "actualIlcInputCount": 178,
+    "scannerIlIdentical": true,
+    "runtimeOptions": [
+      "--runtimeknob:Microsoft.Extensions.DependencyInjection.VerifyOpenGenericServiceTrimmability=true",
+      "--runtimeknob:System.ComponentModel.DefaultValueAttribute.IsSupported=false",
+      "--runtimeknob:System.ComponentModel.Design.IDesignerHost.IsSupported=false",
+      "--runtimeknob:System.ComponentModel.TypeConverter.EnableUnsafeBinaryFormatterInDesigntimeLicenseContextSerialization=false",
+      "--runtimeknob:System.ComponentModel.TypeDescriptor.IsComObjectDescriptorSupported=false",
+      "--runtimeknob:System.Data.DataSet.XmlSerializationIsSupported=false",
+      "--runtimeknob:System.Diagnostics.Tracing.EventSource.IsSupported=false",
+      "--runtimeknob:System.GC.Server=true",
+      "--runtimeknob:System.Linq.Enumerable.IsSizeOptimized=false",
+      "--runtimeknob:System.Net.Security.UseManagedNtlm=false",
+      "--runtimeknob:System.Net.SocketsHttpHandler.Http3Support=false",
+      "--runtimeknob:System.Reflection.Metadata.MetadataUpdater.IsSupported=false",
+      "--runtimeknob:System.Resources.ResourceManager.AllowCustomResourceTypes=false",
+      "--runtimeknob:System.Resources.UseSystemResourceKeys=false",
+      "--runtimeknob:System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported=false",
+      "--runtimeknob:System.Runtime.InteropServices.BuiltInComInterop.IsSupported=false",
+      "--runtimeknob:System.Runtime.InteropServices.EnableConsumingManagedCodeFromNativeHosting=false",
+      "--runtimeknob:System.Runtime.InteropServices.EnableCppCLIHostActivation=false",
+      "--runtimeknob:System.Runtime.InteropServices.Marshalling.EnableGeneratedComInterfaceComImportInterop=false",
+      "--runtimeknob:System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization=false",
+      "--runtimeknob:System.StartupHookProvider.IsSupported=false",
+      "--runtimeknob:System.Text.Encoding.EnableUnsafeUTF7Encoding=false",
+      "--runtimeknob:System.Text.Json.JsonSerializer.IsReflectionEnabledByDefault=false",
+      "--runtimeknob:System.Threading.Thread.EnableAutoreleasePool=false",
+      "--runtimeknob:System.Threading.ThreadPool.MinThreads=128",
+      "--runtimeknob:System.Linq.Expressions.CanEmitObjectArrayDelegate=false",
+      "--runtimeknob:RUNTIME_IDENTIFIER=linux-x64",
+      "--runtimeopt:gcServer=1"
+    ],
+    "flags": "AVX2 plusMinThreads128 plusEventSourcefalse, ServerGC. Validators use standardpublication; CLI exactmeasuredbinary."
+  },
+  "currentCorrectness": {
+    "phaseMarkers": {
+      "build": {
+        "state": "completed",
+        "marker": {
+          "path": "artifacts/emit-performance/acceptance/build-complete.json",
+          "sha256": "5dfc4179698bbf5733b2cf23d65d700e5b4be3e33ac0ec6c67037d354a2a2455"
+        },
+        "record": {
+          "phase": "build",
+          "attempt": "attempt-1",
+          "status": "passed-qualified-scope",
+          "frozenInputsSha256": "1bcc6026f03b39d453467f98458e38adfe4e5dc6318235474cde0bec37051242"
+        }
+      },
+      "managed": {
+        "state": "completed",
+        "marker": {
+          "path": "artifacts/emit-performance/acceptance/managed-complete.json",
+          "sha256": "3e97a79ff68de9a003eb7ea29f6488430283568e2a85b31c23af6c9ef2cdb87a"
+        },
+        "record": {
+          "phase": "managed",
+          "attempt": "attempt-1",
+          "status": "passed-qualified-scope",
+          "frozenInputsSha256": "1bcc6026f03b39d453467f98458e38adfe4e5dc6318235474cde0bec37051242"
+        }
+      },
+      "publish": {
+        "state": "completed",
+        "marker": {
+          "path": "artifacts/emit-performance/acceptance/publish-complete.json",
+          "sha256": "a297c791a52b25622b86b5d4ff0e39fd269a7a771cec895ab12453f129d4ff3d"
+        },
+        "record": {
+          "phase": "publish",
+          "attempt": "attempt-1",
+          "status": "passed-qualified-scope",
+          "frozenInputsSha256": "1bcc6026f03b39d453467f98458e38adfe4e5dc6318235474cde0bec37051242"
+        }
+      },
+      "native": {
+        "state": "completed",
+        "marker": {
+          "path": "artifacts/emit-performance/acceptance/native-complete.json",
+          "sha256": "164f001757ec14f8cf916649ecba9eca71207f906c8de91e611fe9cd35d2fad4"
+        },
+        "record": {
+          "phase": "native",
+          "attempt": "attempt-1",
+          "status": "passed-qualified-scope",
+          "frozenInputsSha256": "1bcc6026f03b39d453467f98458e38adfe4e5dc6318235474cde0bec37051242"
+        }
+      },
+      "corpus": {
+        "state": "completed",
+        "marker": {
+          "path": "artifacts/emit-performance/acceptance/corpus-complete.json",
+          "sha256": "dfefe9bf5898b7aa346dd565fd2fff55209117cbfb476265c03e123255c9e26a"
+        },
+        "record": {
+          "phase": "corpus",
+          "attempt": "attempt-1",
+          "status": "passed-qualified-scope",
+          "frozenInputsSha256": "1bcc6026f03b39d453467f98458e38adfe4e5dc6318235474cde0bec37051242"
+        }
+      },
+      "command": {
+        "state": "completed",
+        "marker": {
+          "path": "artifacts/emit-performance/acceptance/command-complete.json",
+          "sha256": "4a14ebc8a3ba0a368415dbba6051b0712f31cbc44919c2dc57cfa4bbd3faa3f1"
+        },
+        "record": {
+          "phase": "command",
+          "attempt": "attempt-1",
+          "status": "passed-qualified-scope",
+          "frozenInputsSha256": "1bcc6026f03b39d453467f98458e38adfe4e5dc6318235474cde0bec37051242"
+        }
+      },
+      "noemit": {
+        "state": "completed",
+        "marker": {
+          "path": "artifacts/emit-performance/acceptance/noemit-complete.json",
+          "sha256": "a252dee205e77e2e3cc51aba8f6efc03e3b6531cff13cb52404a0aa8c954a99d"
+        },
+        "record": {
+          "phase": "noemit",
+          "attempt": "attempt-1",
+          "status": "passed-qualified-scope",
+          "frozenInputsSha256": "1bcc6026f03b39d453467f98458e38adfe4e5dc6318235474cde0bec37051242"
+        }
+      }
+    },
+    "managed": {
+      "state": "passed",
+      "total": 2226,
+      "emit": 496,
+      "retained": 1730,
+      "allTrxPassedZeroSkipped": true,
+      "countsEvidence": {
+        "path": "artifacts/emit-performance/acceptance/managed/attempt-1/managed-counts.json",
+        "sha256": "9a4b3e737a8ef5e061d7ea005e7f29cf7fc05c0da78a44d45bbb816772f1e08c"
+      }
+    },
+    "nativeDirect": {
+      "state": "passed",
+      "emitOriginalFunctions": 152,
+      "emitAuthoredControls": 254,
+      "emitRunEvidence": {
+        "path": "artifacts/emit-performance/acceptance/native/attempt-1/Emit.Validation/result.json",
+        "sha256": "f0726b508f172e7a855524b9e7cfe9ae06323da2a02e164df4355a40d839d936"
+      },
+      "emitStdoutEvidence": {
+        "path": "artifacts/emit-performance/acceptance/native/attempt-1/Emit.Validation/stdout.log",
+        "sha256": "24d7338379340c27ec195cdf76f6ff3ffe7c522ef4ef31325caf08d3eeab7c83"
+      },
+      "retainedRecipe": "Foundation3153+87authored/utilities20/Program9plusacceptedretainedcontrols; existingexactrecipeassertions passed, phase marker bound."
+    },
+    "corpusExpectedQualification": {
+      "state": "passed-qualified-scope",
+      "counts": {
+        "expected": 15330,
+        "observed": 15330,
+        "matchedPublicOutputs": 15285,
+        "matchedOriginalAssertions": 13571,
+        "originalPreparationSkips": 39,
+        "originalOptionPolicies": 1720,
+        "externalIncrementalOwnerBlocked": 6,
+        "failed": 6
+      },
+      "comparison": {
+        "path": "artifacts/emit-performance/acceptance/native-emit-corpus/comparison.json",
+        "sha256": "052d327b67be9be940c18bf24f71874e0f1e4c5133cbeb5867f36e494c0a0919"
+      },
+      "execution": {
+        "path": "artifacts/emit-performance/acceptance/native-emit-corpus/result.json",
+        "sha256": "559629b31f9e1d8b210f35fcbd124e0042820eb3faa3d3a77479016c0e180932"
+      },
+      "qualification": "Comparator exit1 preserved: six external incremental owner buildinfo metadata mismatches visible; no original channel assertion differences. Original39prep/1720policies preserved."
+    },
+    "noEmitExpected": 15304,
+    "noEmitPerformanceProtection": {
+      "state": "completed-independent-review-clear-qualified-observations",
+      "evidence": {
+        "path": "artifacts/emit-performance/noemit-protection/timing/comparison.json",
+        "sha256": "23a2029a8a4b82aff217ae67214d5dcb9b23397acdb89525008db578051ddf0e"
+      },
+      "review": {
+        "path": "artifacts/emit-performance/noemit-protection/timing/protection-independent-review.json",
+        "sha256": "097c5b4d00c0dbb1c3934d3102c14aa3b9d297af0a2a846edd1350e6bd88896d"
+      },
+      "controllerReview": {
+        "path": "artifacts/emit-performance/noemit-protection/controller-independent-review.json",
+        "sha256": "979e4315a2e0e38fcf5ec9c719a041c9771d36489b788c97400925b279341937"
+      },
+      "rows": [
+        {
+          "runtime": "go",
+          "round": 1,
+          "wallSeconds": 7.13,
+          "cpuSeconds": 63.35,
+          "peakResidentKiB": 8733496,
+          "exitCode": 2,
+          "completeOriginalDiagnosticsExact": true,
+          "stderrEmpty": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "candidate",
+          "round": 1,
+          "wallSeconds": 8.55,
+          "cpuSeconds": 55.93,
+          "peakResidentKiB": 12049024,
+          "exitCode": 2,
+          "completeOriginalDiagnosticsExact": true,
+          "stderrEmpty": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "candidate",
+          "round": 2,
+          "wallSeconds": 10.37,
+          "cpuSeconds": 72.75,
+          "peakResidentKiB": 12055876,
+          "exitCode": 2,
+          "completeOriginalDiagnosticsExact": true,
+          "stderrEmpty": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 2,
+          "wallSeconds": 7.96,
+          "cpuSeconds": 63.22,
+          "peakResidentKiB": 9059560,
+          "exitCode": 2,
+          "completeOriginalDiagnosticsExact": true,
+          "stderrEmpty": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 3,
+          "wallSeconds": 8.12,
+          "cpuSeconds": 66.71,
+          "peakResidentKiB": 8876896,
+          "exitCode": 2,
+          "completeOriginalDiagnosticsExact": true,
+          "stderrEmpty": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "candidate",
+          "round": 3,
+          "wallSeconds": 9.48,
+          "cpuSeconds": 64.24000000000001,
+          "peakResidentKiB": 12060168,
+          "exitCode": 2,
+          "completeOriginalDiagnosticsExact": true,
+          "stderrEmpty": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "candidate",
+          "round": 4,
+          "wallSeconds": 10.64,
+          "cpuSeconds": 72.96,
+          "peakResidentKiB": 12071284,
+          "exitCode": 2,
+          "completeOriginalDiagnosticsExact": true,
+          "stderrEmpty": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 4,
+          "wallSeconds": 8.55,
+          "cpuSeconds": 75.33,
+          "peakResidentKiB": 8732876,
+          "exitCode": 2,
+          "completeOriginalDiagnosticsExact": true,
+          "stderrEmpty": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 5,
+          "wallSeconds": 8.55,
+          "cpuSeconds": 67.91,
+          "peakResidentKiB": 9055860,
+          "exitCode": 2,
+          "completeOriginalDiagnosticsExact": true,
+          "stderrEmpty": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "candidate",
+          "round": 5,
+          "wallSeconds": 9.7,
+          "cpuSeconds": 66.18,
+          "peakResidentKiB": 12060112,
+          "exitCode": 2,
+          "completeOriginalDiagnosticsExact": true,
+          "stderrEmpty": true,
+          "noGcFullRegionQualified": true
+        }
+      ],
+      "summary": {
+        "go": {
+          "wallSeconds": {
+            "best": 7.13,
+            "median": 8.12,
+            "range": [
+              7.13,
+              8.55
+            ]
+          },
+          "cpuSeconds": {
+            "best": 63.22,
+            "median": 66.71,
+            "range": [
+              63.22,
+              75.33
+            ]
+          },
+          "peakResidentKiB": {
+            "best": 8732876,
+            "median": 8876896,
+            "range": [
+              8732876,
+              9059560
+            ]
+          }
+        },
+        "candidate": {
+          "wallSeconds": {
+            "best": 8.55,
+            "median": 9.7,
+            "range": [
+              8.55,
+              10.64
+            ]
+          },
+          "cpuSeconds": {
+            "best": 55.93,
+            "median": 66.18,
+            "range": [
+              55.93,
+              72.96
+            ]
+          },
+          "peakResidentKiB": {
+            "best": 12049024,
+            "median": 12060112,
+            "range": [
+              12049024,
+              12071284
+            ]
+          }
+        }
+      },
+      "nominalBestNativeToGoRatio": 1.1991584852734924,
+      "nominalMedianNativeToGoRatio": 1.1945812807881773,
+      "nominalWithinTwentyPercent": true,
+      "timingResolutionSeconds": 0.01,
+      "nominalMarginSeconds": 0.005999999999998451,
+      "roundingSensitivityRatioIntervalAssumingHalfUnitRounding": [
+        1.1976173791170288,
+        1.200701754385965
+      ],
+      "qualification": "Supplemental no-emit protection observation only. Six-millisecond nominal margin is below .01s GNUtime precision; rounding interval crosses1.20, so no robust target margin or historicalabsoluteperformance equality/no-regression guarantee claimed. Prior6.95s belongs different cohort/check-only wrapper; currentgenuineCompile measured against its own pinnedGo cohort. AlloriginalDiagnostics/Error, source-grounded Compilefields and14/2regionlifecycles exact.",
+      "firstEvidence": {
+        "path": "artifacts/emit-performance/noemit-protection/first/comparison.json",
+        "sha256": "457d309ad78b838720ce9676fec219517b6701a13221b14c55e22d3df58bea8e"
+      },
+      "harnessTransition": {
+        "path": "artifacts/emit-performance/noemit-protection/compile-api-qualification-transition.json",
+        "sha256": "56c20edc32202161bec1d774c8a4f1a8feb68fb786d9ed18c37549c9cd11c7b9"
+      }
+    },
+    "retainedNoEmit": {
+      "state": "passed",
+      "records": 15304,
+      "progress": {
+        "path": "artifacts/emit-performance/acceptance/noemit/attempt-1/progress.json",
+        "sha256": "23037581dc726809bb49463a35021340d87acb5437222abc0137f41969ea9154"
+      },
+      "actualCompressed": {
+        "path": "artifacts/emit-performance/acceptance/noemit/attempt-1/actual.jsonl.gz",
+        "sha256": "c51cfc2f6d92dc18d3d1666d04e488a1c3ccc8f71dc85114ae31b15fe3725c1d"
+      }
+    },
+    "commands": {
+      "state": "passed",
+      "goEqualDisk": 6,
+      "unsupportedBoundaryGuards": 3,
+      "actualNodeRuntime": 3,
+      "artifacts": [
+        {
+          "path": "artifacts/emit-performance/acceptance/command/attempt-1/command-controls.json",
+          "sha256": "a89b3e7de9945668e7e0b063a7106f394bad70fabbeb785cc90ca506b4e5a648"
+        },
+        {
+          "path": "artifacts/emit-performance/acceptance/command/attempt-1/command-guards.json",
+          "sha256": "13861b9441860d4a2475db94e5e1c7d30cd9623df210ed699a13909e0f7bf747"
+        },
+        {
+          "path": "artifacts/emit-performance/acceptance/command/attempt-1/runtime-controls.json",
+          "sha256": "d1980c622eb2d0945636adb98eb3daf355130ad9582d4efb0f32f1e06927b19d"
+        }
+      ]
+    },
+    "overallCorrectnessReview": {
+      "path": "artifacts/emit-performance/acceptance/correctness-independent-review.json",
+      "sha256": "904b558723c2e37bc3000d9017642c5b1a1ce317d2752955d048fb6a53a9e9e8"
+    }
+  },
+  "measuredEffort": {
+    "sumRecordedCommandSeconds": 1241.9003582299993,
+    "completedWorkloadTimingSeconds": 652.14,
+    "limits": "Reported individual child command durations only, including failures/build/query/publish/diagnostic/correctness. Sum is not epic elapsed/human effort or CPU time; some commands overlapped; unreported durations not guessed. Aggregated corpus batch children excluded to avoid double-counting launcher duration. Noemit FIRST retained/offlinequalified once; five subsequent pairs executed once. Supplementalprocessseconds recorded separately, not attributed compileroptimization/human effort.",
+    "commandCount": 253,
+    "commandLedger": {
+      "path": "artifacts/emit-performance/measured-effort-ledger.json",
+      "sha256": "336c15befee66bd8282ed1563ecb300d3dfb06c2b4e6e2f379d97a8362103a09"
+    },
+    "completedWorkloadProcessCount": 52,
+    "supplementalNoEmitProtectionProcessCount": 12,
+    "supplementalNoEmitProtectionProcessSeconds": 105.69
+  },
+  "negativeAttemptsPreserved": [
+    "baselineNoGC14failure",
+    "integration1NoGC14failure/initialpublishcompilejoin",
+    "integration3CLRmin128targetmiss",
+    "integration5POSIXdefaultworker targetmiss",
+    "integration4trace shimDOTNET_ROOTlaunchfailure and offlinecwdrenderer correction, no compilerdefect",
+    "Cooperativeblockingalternative onlyassessed, not implemented",
+    "Noemit FIRST historicalwrapper expectations failed; capturedpair offlinequalified using genuine pinnedCompile fields; original Diagnostics/Error unchanged, no compiler change or rerun"
+  ],
+  "finalOverallIndependentReview": {
+    "record": "validation/results/vscode-emit-performance-review.json",
+    "scope": "Aggregate claim, source/gate/measurement bindings and documented limitations; required before delivery commit."
+  },
+  "delivery": "The commit containing this result is the delivery checkpoint. No outstanding implementation or verification work in the documented emit performance scope."
+}

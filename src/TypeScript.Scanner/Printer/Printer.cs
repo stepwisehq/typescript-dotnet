@@ -736,10 +736,8 @@ private int getLinesBetweenNodes(Node parent, Node node1, Node node2)
     {
         if (this.Options.PreserveSourceNewlines)
         {
-            return this.getEffectiveLines((includeComments) =>
-{
-    return getLinesBetweenRangeEndAndRangeStart(node1.Loc, node2.Loc, this.currentSourceFile, includeComments);
-});
+            return this.getEffectiveLines((First: node1.Loc, Second: node2.Loc, File: this.currentSourceFile), static (state, includeComments) =>
+                getLinesBetweenRangeEndAndRangeStart(state.First, state.Second, state.File, includeComments));
         }
         return Core.IfElse(rangeEndIsOnSameLineAsRangeStart(node1.Loc, node2.Loc, this.currentSourceFile), 0, 1);
     }
@@ -747,16 +745,18 @@ private int getLinesBetweenNodes(Node parent, Node node1, Node node2)
 }
 
 // Upstream upstream/TypeScript/tsc/internal/printer/printer.go:482:1.
-private int getEffectiveLines(Func<bool, int> getLineDifference)
+// Go closure captures are passed as value state: no CLR display class is allocated
+// before the PreserveSourceNewlines branch, and static callbacks are cached.
+private int getEffectiveLines<TState>(TState state, Func<TState, bool, int> getLineDifference)
 {
     if (!this.Options.PreserveSourceNewlines)
     {
         throw new InvalidOperationException("Should not be called when preserveSourceNewlines is false");
     }
-    var lines = getLineDifference(true);
+    var lines = getLineDifference(state, true);
     if ((lines == 0))
     {
-        return getLineDifference(false);
+        return getLineDifference(state, false);
     }
     return lines;
 }
@@ -786,10 +786,8 @@ private int getLeadingLineTerminatorCount(Node parentNode, Node firstChild, List
         {
             if (this.Options.PreserveSourceNewlines)
             {
-                return this.getEffectiveLines((includeComments) =>
-{
-    return getLinesBetweenPositionAndPrecedingNonWhitespaceCharacter(firstChild.Pos(), parentNode.Pos(), this.currentSourceFile, includeComments);
-});
+                return this.getEffectiveLines((First: firstChild.Pos(), Second: parentNode.Pos(), File: this.currentSourceFile), static (state, includeComments) =>
+                getLinesBetweenPositionAndPrecedingNonWhitespaceCharacter(state.First, state.Second, state.File, includeComments));
             }
             return Core.IfElse(RangeStartPositionsAreOnSameLine(parentNode.Loc, firstChild.Loc, this.currentSourceFile), 0, 1);
         }
@@ -820,10 +818,8 @@ private int getSeparatingLineTerminatorCount(Node previousNode, Node nextNode, L
             {
                 if ((this.Options.PreserveSourceNewlines && siblingNodePositionsAreComparable(this.emitContext, previousNode, nextNode)))
                 {
-                    return this.getEffectiveLines((includeComments) =>
-{
-    return getLinesBetweenRangeEndAndRangeStart(previousNode.Loc, nextNode.Loc, this.currentSourceFile, includeComments);
-});
+                    return this.getEffectiveLines((First: previousNode.Loc, Second: nextNode.Loc, File: this.currentSourceFile), static (state, includeComments) =>
+                getLinesBetweenRangeEndAndRangeStart(state.First, state.Second, state.File, includeComments));
                 }
                 else
                 {
@@ -871,10 +867,8 @@ private int getClosingLineTerminatorCount(Node parentNode, Node lastChild, ListF
             if (this.Options.PreserveSourceNewlines)
             {
                 var end = greatestEnd(lastChild.End(), childrenTextRange);
-                return this.getEffectiveLines((includeComments) =>
-{
-    return getLinesBetweenPositionAndNextNonWhitespaceCharacter(end, parentNode.End(), this.currentSourceFile, includeComments);
-});
+                return this.getEffectiveLines((First: end, Second: parentNode.End(), File: this.currentSourceFile), static (state, includeComments) =>
+                getLinesBetweenPositionAndNextNonWhitespaceCharacter(state.First, state.Second, state.File, includeComments));
             }
             return Core.IfElse(rangeEndPositionsAreOnSameLine(parentNode.Loc, lastChild.Loc, this.currentSourceFile), 0, 1);
         }
@@ -953,6 +947,12 @@ private void writeCommentRangeWorker(ByteStringView text, Slice<int> lineMap, Ki
                 var scan = pos;
                 while ((scan < end))
                 {
+                    // printer.go: the ASCII non-newline prefix has no rune or
+                    // line-state effect. Preserve CR/LF and every high byte for
+                    // the exact original decode/line-break branch.
+                    int candidate = Core.IndexOfECMALineScanCandidate(text.AsSpan(scan, end - scan));
+                    if (candidate < 0) break;
+                    scan += candidate;
                     var tuple3 = Utf8.DecodeRuneInString(text.Slice(scan, end).AsSpan()); var ch = tuple3.Item1; var size = tuple3.Item2;
                     if ((size == 0))
                     {
@@ -1116,13 +1116,13 @@ private bool hasCommentsAtPosition(int pos)
         return false;
     }
     {
-        foreach (var ignored5 in GoRuntime.RangeValues(ByteScanner.GetTrailingCommentRanges(this.emitContext.Factory, this.currentSourceFile.TextView(), (pos + 1))))
+        foreach (var ignored5 in ByteScanner.GetTrailingCommentRangesValue(this.emitContext.Factory, this.currentSourceFile.TextView(), (pos + 1)))
         {
             return true;
         }
     }
     {
-        foreach (var ignored6 in GoRuntime.RangeValues(ByteScanner.GetLeadingCommentRanges(this.emitContext.Factory, this.currentSourceFile.TextView(), (pos + 1))))
+        foreach (var ignored6 in ByteScanner.GetLeadingCommentRangesValue(this.emitContext.Factory, this.currentSourceFile.TextView(), (pos + 1)))
         {
             return true;
         }
@@ -3958,7 +3958,7 @@ private bool willEmitLeadingNewLine(Node node)
     var hasLeadingCommentRanges = false;
     var hasNewLineComment = false;
     {
-        foreach (var comment in GoRuntime.RangeKeys(ByteScanner.GetLeadingCommentRanges(this.emitContext.Factory, this.currentSourceFile.TextView(), node.Pos())))
+        foreach (var comment in ByteScanner.GetLeadingCommentRangesValue(this.emitContext.Factory, this.currentSourceFile.TextView(), node.Pos()))
         {
             hasLeadingCommentRanges = true;
             if (this.commentWillEmitNewLine(comment))
@@ -3989,7 +3989,7 @@ private bool willEmitLeadingNewLine(Node node)
         if ((node.Pos() != pee.Expression.Pos()))
         {
             {
-                foreach (var comment2 in GoRuntime.RangeKeys(ByteScanner.GetTrailingCommentRanges(this.emitContext.Factory, this.currentSourceFile.TextView(), pee.Expression.Pos())))
+                foreach (var comment2 in ByteScanner.GetTrailingCommentRangesValue(this.emitContext.Factory, this.currentSourceFile.TextView(), pee.Expression.Pos()))
                 {
                     if (this.commentWillEmitNewLine(comment2))
                     {
@@ -7300,7 +7300,7 @@ private bool emitLeadingComments(int pos, bool elided)
     }
     Slice<CommentRange> comments = default;
     {
-        foreach (var comment in GoRuntime.RangeKeys(ByteScanner.GetLeadingCommentRanges(this.emitContext.Factory, this.currentSourceFile.TextView(), pos)))
+        foreach (var comment in ByteScanner.GetLeadingCommentRangesValue(this.emitContext.Factory, this.currentSourceFile.TextView(), pos))
         {
             if ((this.shouldWriteComment(comment) && this.shouldEmitCommentIfTripleSlash(comment, tripleSlash)))
             {
@@ -7364,7 +7364,7 @@ private void emitTrailingComments(int pos, commentSeparator commentSeparator)
     }
     Slice<CommentRange> comments = default;
     {
-        foreach (var comment in GoRuntime.RangeKeys(ByteScanner.GetTrailingCommentRanges(this.emitContext.Factory, this.currentSourceFile.TextView(), pos)))
+        foreach (var comment in ByteScanner.GetTrailingCommentRangesValue(this.emitContext.Factory, this.currentSourceFile.TextView(), pos))
         {
             if (this.shouldWriteComment(comment))
             {
@@ -7388,7 +7388,7 @@ private void emitTrailingCommentsOfPosition(int pos, bool prefixSpace, bool forc
     }
     Slice<CommentRange> comments = default;
     {
-        foreach (var comment in GoRuntime.RangeKeys(ByteScanner.GetTrailingCommentRanges(this.emitContext.Factory, this.currentSourceFile.TextView(), pos)))
+        foreach (var comment in ByteScanner.GetTrailingCommentRangesValue(this.emitContext.Factory, this.currentSourceFile.TextView(), pos))
         {
             comments = comments.Append(comment);
         }
@@ -7476,7 +7476,7 @@ private (detachedCommentsInfo, bool) emitDetachedComments(TextRange textRange)
         if ((textRange.Pos() == 0))
         {
             {
-                foreach (var comment in GoRuntime.RangeKeys(ByteScanner.GetLeadingCommentRanges(this.emitContext.Factory, text, textRange.Pos())))
+                foreach (var comment in ByteScanner.GetLeadingCommentRangesValue(this.emitContext.Factory, text, textRange.Pos()))
                 {
                     if (IsPinnedComment(text, comment))
                     {
@@ -7488,7 +7488,7 @@ private (detachedCommentsInfo, bool) emitDetachedComments(TextRange textRange)
     }
     else
     {
-        leadingComments = collect(ByteScanner.GetLeadingCommentRanges(this.emitContext.Factory, text, textRange.Pos()));
+        leadingComments = collect(ByteScanner.GetLeadingCommentRangesValue(this.emitContext.Factory, text, textRange.Pos()));
     }
     if ((GoRuntime.Len(leadingComments) > 0))
     {

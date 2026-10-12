@@ -26,17 +26,19 @@ public sealed partial class Checker
     internal sealed class EmitResolver : IEmitResolver
     {
         private readonly Checker checker;
-        private readonly SemaphoreSlim checkerMu;
+        private readonly CheckerMutex checkerMu;
         private readonly TypeScript.DiagnosticPrinting.EmitContext emitContext;
         private NodeBuilder requestNodeBuilder;
         private readonly Func<Node, bool> isValueAliasDeclaration;
         private readonly Visitor aliasMarkingVisitor;
+        private readonly Visitor linkedReferenceVisitor;
         private IReferenceResolver referenceResolver;
         internal EmitResolver(Checker checker, TypeScript.DiagnosticPrinting.EmitContext context)
         {
             if (context == null) throw new InvalidOperationException("EmitResolver requires an EmitContext");
             this.checker = checker; emitContext = context; checkerMu = checker.mu;
             isValueAliasDeclaration = isValueAliasDeclarationWorker; aliasMarkingVisitor = aliasMarkingVisitorWorker;
+            linkedReferenceVisitor = linkedReferenceVisitorWorker;
         }
 // Upstream upstream/TypeScript/tsc/internal/checker/emitresolver.go:61:1.
 public EmitContext EmitContext()
@@ -642,25 +644,23 @@ public void MarkLinkedReferencesRecursively(SourceFile file)
     {
         if ((file != null))
         {
-            Visitor visit = default;
-            visit = (n) =>
-{
-    if ((Ast.IsImportEqualsDeclaration(n) && ((n.ModifierFlags() & ModifierFlags.Export) == 0)))
-    {
-        return false;
-    }
-    if (Ast.IsImportDeclaration(n))
-    {
-        return false;
-    }
-    this.checker.markLinkedReferences(n, ReferenceHint.Unspecified, null, null);
-    n.ForEachChild(visit);
-    return false;
-};
-            file.ForEachChild(visit);
+            file.ForEachChild(linkedReferenceVisitor);
         }
     }
     finally { this.checkerMu.Release(); }
+}
+
+// emitresolver.go:508–516: one recursive function value belongs to this resolver.
+// Cache the CLR bound delegate; no temporary mutable traversal state is retained.
+private bool linkedReferenceVisitorWorker(Node node)
+{
+    if (Ast.IsImportEqualsDeclaration(node) && (node.ModifierFlags() & ModifierFlags.Export) == 0)
+        return false;
+    if (Ast.IsImportDeclaration(node))
+        return false;
+    checker.markLinkedReferences(node, ReferenceHint.Unspecified, null, null);
+    node.ForEachChild(linkedReferenceVisitor);
+    return false;
 }
 
 // Upstream upstream/TypeScript/tsc/internal/checker/emitresolver.go:522:1.
@@ -927,9 +927,9 @@ public Slice<Node> CreateLateBoundIndexSignatures(Node container, Node enclosing
                         }
                         if ((GoRuntime.Len(info.components) != 0))
                         {
-                            var allComponentComputedNamesSerializable = ((enclosingDeclaration != null) && Core.Every(info.components, (c) =>
+                            var allComponentComputedNamesSerializable = ((enclosingDeclaration != null) && Core.Every(info.components, (Checker: this.checker, EnclosingDeclaration: enclosingDeclaration), static (c, state) =>
 {
-    return ((((c.Name() != null) && Ast.IsComputedPropertyName(c.Name())) && Ast.IsEntityNameExpression(c.Name().Expression())) && (this.checker.isEntityNameVisible(c.Name().Expression(), enclosingDeclaration, false).Accessibility == SymbolAccessibility.Accessible));
+    return ((((c.Name() != null) && Ast.IsComputedPropertyName(c.Name())) && Ast.IsEntityNameExpression(c.Name().Expression())) && (state.Checker.isEntityNameVisible(c.Name().Expression(), state.EnclosingDeclaration, false).Accessibility == SymbolAccessibility.Accessible));
 }));
                             if (allComponentComputedNamesSerializable)
                             {

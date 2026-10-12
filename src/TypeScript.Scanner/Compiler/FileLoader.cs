@@ -357,7 +357,7 @@ internal sealed class FileLoader
     internal readonly FilesParser filesParser = new();
     internal readonly IncludeProcessor includeProcessor;
     private readonly List<List<string>> supportedExtensions, supportedExtensionsWithJson;
-    private readonly NodeFactory factory = Ast.NewNodeFactory(null!);
+    private readonly NodeFactory factory = Ast.NewNodeFactory(default);
 
     private FileLoader(IResolutionHost host, IResolver resolver, CompilerOptions options, IReadOnlyList<SourceFile> libraries,
         ProjectConfiguration configuration, bool graph, ProjectDiskHost? legacyHost = null)

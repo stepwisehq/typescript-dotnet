@@ -35,6 +35,15 @@ internal static partial class PrinterUtilities
         return result;
     }
 
+    // slices.Collect owns the retained detached-comment slice; the source
+    // scanner sequence itself needs no IEnumerable box or heap state machine.
+    internal static Slice<CommentRange> collect(ByteScanner.CommentRangeSequence values)
+    {
+        Slice<CommentRange> result = default;
+        foreach (var value in values) result = result.Append(value);
+        return result;
+    }
+
     private static readonly Dictionary<int,string> jsxEscapedCharsMap = new() { ['"']="&quot;", ['\'']="&apos;" };
     private static readonly Dictionary<int,string> escapedCharsMap = new()
     {

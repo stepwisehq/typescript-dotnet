@@ -6665,29 +6665,35 @@ public static partial class Ast
     }
 
     public static HasFileName NewHasFileName(string fileName, string path) => new hasFileNameImpl(fileName, path);
-    // utilities.go:877. Managed fresh closure replaces the upstream pool; state/control flow retained.
-    private static Visitor newParentInChildrenSetter()
+    // utilities.go:870-906. Go pools the recursive callback and its parent state.
+    // The CLR owner embeds explicit state and caches its callback once; concurrent
+    // and nested traversals acquire independent owners until their finally return.
+    private static readonly System.Collections.Concurrent.ConcurrentBag<ParentInChildrenSetter> setParentInChildrenPool = new();
+    private sealed class ParentInChildrenSetter
     {
-        Node parent = null;
-        Visitor visit = null;
-        visit = node =>
+        private Node parent;
+        internal readonly Visitor Visit;
+        internal ParentInChildrenSetter() => Visit = visit;
+        private bool visit(Node node)
         {
             if (parent != null)
                 node.Parent = parent;
             var saveParent = parent;
             parent = node;
-            node.ForEachChild(visit);
-            parent = saveParent;
+            try { node.ForEachChild(Visit); }
+            finally { parent = saveParent; }
             return false;
-        };
-        return visit;
+        }
     }
+    private static ParentInChildrenSetter newParentInChildrenSetter() => new();
 
     // utilities.go:899. No semantic parent/symbol inference is performed.
     public static void SetParentInChildren(Node node)
     {
-        var fn = newParentInChildrenSetter();
-        fn(node);
+        if (!setParentInChildrenPool.TryTake(out var setter))
+            setter = newParentInChildrenSetter();
+        try { setter.Visit(node); }
+        finally { setParentInChildrenPool.Add(setter); }
     }
 
     // utilities.go:921. Preserve ordered callbacks and at most one callback match per ancestor.

@@ -40,15 +40,19 @@ public sealed class OneShotRuntimePolicyTests
         {
             string memory = Path.Combine(folder, "meminfo"), report = Path.Combine(folder, "report.json");
             File.WriteAllText(memory, "MemAvailable: 0 kB\n");
-            using (var policy = new NoGcRegionPolicy(memory, report)) { }
-            using var document = JsonDocument.Parse(File.ReadAllText(report));
-            var value = document.RootElement;
-            Assert.False(value.GetProperty("noGcStarted").GetBoolean());
-            Assert.True(value.GetProperty("fallbackAtStart").GetBoolean());
-            Assert.Equal("preflightFallback", value.GetProperty("noGcStartOutcome").GetString());
-            Assert.Equal("notStarted", value.GetProperty("noGcEndOutcome").GetString());
-            Assert.True(value.GetProperty("restoredExact").GetBoolean());
-            Assert.Equal(14L * 1024 * 1024 * 1024, value.GetProperty("totalBudgetBytes").GetInt64());
+            foreach (bool fullEmit in new[] { false, true })
+            {
+                using (var policy = new NoGcRegionPolicy(memory, report, fullEmit)) { }
+                using var document = JsonDocument.Parse(File.ReadAllText(report));
+                var value = document.RootElement;
+                Assert.False(value.GetProperty("noGcStarted").GetBoolean());
+                Assert.True(value.GetProperty("fallbackAtStart").GetBoolean());
+                Assert.Equal("preflightFallback", value.GetProperty("noGcStartOutcome").GetString());
+                Assert.Equal("notStarted", value.GetProperty("noGcEndOutcome").GetString());
+                Assert.True(value.GetProperty("restoredExact").GetBoolean());
+                Assert.Equal((fullEmit ? 16L : 14L) * 1024 * 1024 * 1024, value.GetProperty("totalBudgetBytes").GetInt64());
+                Assert.Equal(2L * 1024 * 1024 * 1024, value.GetProperty("lohBudgetBytes").GetInt64());
+            }
         }
         finally { Directory.Delete(folder, recursive: true); }
     }

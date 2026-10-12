@@ -105,11 +105,9 @@ public static partial class OsVfs
         public Exception? WriteOutputText(RootedFilePath path, ByteStringValue content)
         {
             string native;
-            string directory;
             try
             {
                 native = Native(path.AsValue());
-                directory = Native(path.Directory().AsValue());
             }
             catch (FileSystemPathEncodingException encodingError)
             {
@@ -118,6 +116,18 @@ public static partial class OsVfs
 
             if (writeFileWithFlag(native, content)is null)
                 return null;
+            // os.go:166: the directory path is evaluated only after the first
+            // write fails. Successful writes do not decode an unused parent.
+            string directory;
+            try
+            {
+                directory = Native(path.Directory().AsValue());
+            }
+            catch (FileSystemPathEncodingException encodingError)
+            {
+                return encodingError;
+            }
+
             var error = ensureDirectoryExists(directory);
             return error ?? writeFileWithFlag(native, content);
         }

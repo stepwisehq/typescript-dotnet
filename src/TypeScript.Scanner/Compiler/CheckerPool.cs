@@ -27,7 +27,7 @@ internal sealed class CheckerPool : ICheckerPool
     internal readonly Program program;
     internal readonly TypeScript.Tracing.Tracing? tracing;
     internal readonly Checker[] checkers;
-    internal readonly SemaphoreSlim[] locks;
+    internal readonly CheckerMutex[] locks;
     internal Dictionary<SourceFile, Checker> fileAssociations = null!;
     private readonly Lazy<bool> createCheckersOnce;
     internal CheckerPool(Program program, TypeScript.Tracing.Tracing? tracing = null)
@@ -37,7 +37,7 @@ internal sealed class CheckerPool : ICheckerPool
         long count = program.SingleThreaded() ? 1 : program.Options().Checkers?.Value ?? 4;
         count = Math.Max(Math.Min(Math.Min(count, program.files.Count), 256), 1);
         checkers = new Checker[(int)count];
-        locks = new SemaphoreSlim[(int)count];
+        locks = new CheckerMutex[(int)count];
         createCheckersOnce = new(() =>
         {
             createCheckersWorker();
@@ -180,7 +180,7 @@ internal sealed class CheckerPool : ICheckerPool
         return (checker, releaseOnce(locks[index]));
     }
 
-    private static Action releaseOnce(SemaphoreSlim gate)
+    private static Action releaseOnce(CheckerMutex gate)
     {
         int released = 0;
         return () =>

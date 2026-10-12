@@ -316,6 +316,17 @@ internal sealed class GoBuilder
             bytes = bytes[count..];
         }
     }
+    // strings.Repeat's temporary space owner is immediately copied into the
+    // builder by textwriter.go. Fill that same final owned byte range directly;
+    // no returned view of the temporary repeat escapes this consumer.
+    internal void WriteRepeatedByte(byte value, int count)
+    {
+        if (count < 0) throw new ArgumentOutOfRangeException(nameof(count));
+        if (legacy is not null) { legacy.Append((char)value, count); return; }
+        int start = buffer.Length;
+        buffer = buffer.Grow(count).Slice2(0, checked(start + count));
+        buffer.AsSpan()[start..].Fill(value);
+    }
     private StringBuilder UseLegacy()
     {
         legacy = new StringBuilder(buffer.Length);

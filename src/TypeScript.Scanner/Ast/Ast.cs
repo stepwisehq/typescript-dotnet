@@ -19,7 +19,8 @@ public interface NodeFactoryCoercible
     NodeFactory AsNodeFactory();
 }
 
-public sealed class NodeFactoryHooks
+// ast.go embeds this callback record by value; each factory owns its mutable copy.
+public struct NodeFactoryHooks
 {
     public Action<Node> OnCreate;
     public Action<Node, Node> OnUpdate;
@@ -247,9 +248,9 @@ public partial class NodeFactory : NodeFactoryCoercible
 {
     internal NodeFactoryHooks hooks;
     private int nodeCount, textCount;
-    public NodeFactory(NodeFactoryHooks hooks = null)
+    public NodeFactory(NodeFactoryHooks hooks = default)
     {
-        this.hooks = hooks ?? new();
+        this.hooks = hooks;
     }
 
     public NodeFactory AsNodeFactory() => this;
@@ -319,6 +320,10 @@ public static partial class Ast
     internal static Node VisitEachChildJSDocParameterOrPropertyTag(JSDocParameterOrPropertyTag node, NodeVisitor v) => v.Factory.UpdateJSDocParameterOrPropertyTag(node, v.visitNode(node.TagName), v.visitNode(node.name), node.IsBracketed, v.visitNode(node.TypeExpression), node.IsNameFirst, v.visitNodes(node.Comment));
     internal static Slice<Node> SameMapNodes(Slice<Node> nodes, Func<Node, Node> map)
         => Core.SameMap(nodes, map);
+    // Carry the visitor explicitly through the immediate map; retain the original
+    // SameMap clone/identity rules without materializing a bound callback per list.
+    internal static Slice<Node> SameMapNodes(Slice<Node> nodes, NodeVisitor visitor)
+        => Core.SameMap(nodes, visitor, static (node, state) => state.visitNode(node));
     internal static List<Node> SameMapNodes(List<Node> nodes, Func<Node, Node> map)
     {
         if (nodes is null)
@@ -4751,6 +4756,31 @@ public sealed partial class SourceFile
         }
     }
 
+    private sealed class NameTableCollector
+    {
+        private readonly SourceFile source;
+        private readonly Dictionary<ByteStringKey, int> table;
+        internal readonly Visitor Visit;
+        internal NameTableCollector(SourceFile source, Dictionary<ByteStringKey, int> table)
+        {
+            this.source = source;
+            this.table = table;
+            Visit = Walk;
+        }
+        private bool Walk(Node n)
+        {
+            if (Ast.IsIdentifier(n) && !Ast.IsTagName(n) && !n.TextEquals(""u8) || Ast.IsStringOrNumericLiteralLike(n) && Ast.literalIsName(n) || Ast.IsPrivateIdentifier(n))
+            {
+                var value = ByteStringKey.FromValue(n.TextValue());
+                table[value] = table.ContainsKey(value) ? -1 : n.Pos();
+            }
+            n.ForEachChild(Visit);
+            foreach (var doc in n.JSDoc(source))
+                doc.ForEachChild(Visit);
+            return false;
+        }
+    }
+
     public Dictionary<ByteStringKey, int> GetNameTable()
     {
         lock (nameTableLock)
@@ -4760,21 +4790,8 @@ public sealed partial class SourceFile
                 try
                 {
                     var table = new Dictionary<ByteStringKey, int>(IdentifierCount, ByteStringKey.Comparer);
-                    bool Walk(Node n)
-                    {
-                        if (Ast.IsIdentifier(n) && !Ast.IsTagName(n) && !n.TextEquals(""u8) || Ast.IsStringOrNumericLiteralLike(n) && Ast.literalIsName(n) || Ast.IsPrivateIdentifier(n))
-                        {
-                            var value = ByteStringKey.FromValue(n.TextValue());
-                            table[value] = table.ContainsKey(value) ? -1 : n.Pos();
-                        }
-
-                        n.ForEachChild(Walk);
-                        foreach (var doc in n.JSDoc(this))
-                            doc.ForEachChild(Walk);
-                        return false;
-                    }
-
-                    ForEachChild(Walk);
+                    var collector = new NameTableCollector(this, table);
+                    ForEachChild(collector.Visit);
                     nameTable = table;
                 }
                 finally
@@ -4834,11 +4851,15 @@ public sealed partial class SourceFile
 
 public static partial class Ast
 {
-    internal static HashSet<ByteStringKey> CollectIdentifiersForSourceFile(SourceFile sourceFile, out bool hasNullIdentifier)
+    // Explicit recursive callback owner: one delegate for the traversal rather than
+    // rematerializing the capturing local function at every ForEachChild call.
+    private sealed class IdentifierCollector
     {
-        var identifiers = new HashSet<ByteStringKey>(ByteStringKey.Comparer);
-        bool containsNull = false;
-        bool Collect(Node node)
+        internal readonly HashSet<ByteStringKey> Identifiers = new(ByteStringKey.Comparer);
+        internal bool ContainsNull;
+        internal readonly Visitor Visit;
+        internal IdentifierCollector() => Visit = Collect;
+        private bool Collect(Node node)
         {
             switch (node.Kind)
             {
@@ -4849,18 +4870,20 @@ public static partial class Ast
                 case Kind.BigIntLiteral:
                 case Kind.NoSubstitutionTemplateLiteral:
                     var text = node.TextValue();
-                    if (text.IsNull) containsNull = true;
-                    else identifiers.Add(ByteStringKey.FromValue(text));
+                    if (text.IsNull) ContainsNull = true;
+                    else Identifiers.Add(ByteStringKey.FromValue(text));
                     break;
             }
-
-            node.ForEachChild(Collect);
+            node.ForEachChild(Visit);
             return false;
         }
-
-        Collect(sourceFile.AsNode());
-        hasNullIdentifier = containsNull;
-        return identifiers;
+    }
+    internal static HashSet<ByteStringKey> CollectIdentifiersForSourceFile(SourceFile sourceFile, out bool hasNullIdentifier)
+    {
+        var collector = new IdentifierCollector();
+        collector.Visit(sourceFile.AsNode());
+        hasNullIdentifier = collector.ContainsNull;
+        return collector.Identifiers;
     }
 }
 

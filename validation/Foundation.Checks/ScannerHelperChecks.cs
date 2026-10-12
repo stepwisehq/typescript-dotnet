@@ -184,6 +184,37 @@ public static partial class ScannerChecks
         const string text = "// α\r\n/*b*/ value";
         Equal(true, ScannerApi.GetLeadingCommentRanges(text, 0).SequenceEqual(ScannerApi.GetLeadingCommentRanges(factory, text, 0)), "Factory-leading iterator matches convenience API");
         Equal(true, ScannerApi.GetTrailingCommentRanges(text, 0).SequenceEqual(ScannerApi.GetTrailingCommentRanges(factory, text, 0)), "Factory-trailing iterator matches convenience API");
+        // Authored boundary assertions for Go iter.Seq's pending-yield state.
+        // Exact byte offsets include malformed UTF8's one-byte advancement.
+        var borrowed = ByteStringView.FromOwnedBytes("//a\r\n/*b*/\n/*c*/v"u8.ToArray());
+        var sequence = ScannerApi.GetLeadingCommentRangesValue(factory, borrowed, 0);
+        var iterator = sequence.GetEnumerator();
+        Equal(true, iterator.MoveNext(), "First pending comment yielded");
+        Equal(new CommentRange(Kind.SingleLineCommentTrivia, 0, 3, true), iterator.Current, "Pending CRLF flags");
+        Equal(true, iterator.MoveNext(), "Resume after pending yield");
+        Equal(new CommentRange(Kind.MultiLineCommentTrivia, 5, 10, true), iterator.Current, "Next pending newline flags");
+        Equal(true, iterator.MoveNext(), "Final pending comment");
+        Equal(new CommentRange(Kind.MultiLineCommentTrivia, 11, 16, false), iterator.Current, "Final comment excludes following token");
+        Equal(false, iterator.MoveNext(), "Value iterator finished");
+        Equal(false, iterator.MoveNext(), "Finished iteration stays finished");
+        // A fresh enumerator has independent state even after early termination.
+        iterator = sequence.GetEnumerator();
+        Equal(true, iterator.MoveNext(), "Independent sequence restart");
+        Equal(0, iterator.Current.Pos, "Restart retains original source offset");
+        var trailing = ScannerApi.GetTrailingCommentRangesValue(factory, borrowed, 0).GetEnumerator();
+        Equal(true, trailing.MoveNext(), "Trailing first comment");
+        Equal(false, trailing.MoveNext(), "Trailing CRLF stops collection");
+        var shebang = ScannerApi.GetLeadingCommentRangesValue(factory, ByteStringView.FromOwnedBytes("#!x\n//a\nv"u8.ToArray()), 0).GetEnumerator();
+        Equal(true, shebang.MoveNext(), "Shebang skipped before comment");
+        Equal(new CommentRange(Kind.SingleLineCommentTrivia, 4, 7, true), shebang.Current, "Shebang comment byte range");
+        var malformed = ScannerApi.GetLeadingCommentRangesValue(factory, ByteStringView.FromOwnedBytes(new byte[] { 47, 47, 255, 10, 118 }), 0).GetEnumerator();
+        Equal(true, malformed.MoveNext(), "Malformed comment text retained");
+        Equal(new CommentRange(Kind.SingleLineCommentTrivia, 0, 3, true), malformed.Current, "Malformed UTF8 one-byte advancement");
+        var unicode = ScannerApi.GetTrailingCommentRangesValue(factory, ByteStringView.FromOwnedBytes("//a\u2028/*b*/v"u8.ToArray()), 0).GetEnumerator();
+        Equal(true, unicode.MoveNext(), "Unicode line-break comment");
+        Equal(new CommentRange(Kind.SingleLineCommentTrivia, 0, 3, true), unicode.Current, "Unicode newline leaves original byte end");
+        Equal(true, unicode.MoveNext(), "Pinned high-rune whitespace trailing continuation");
+        Equal(new CommentRange(Kind.MultiLineCommentTrivia, 6, 11, false), unicode.Current, "Unicode UTF8 byte position");
     }
 
     private static void CheckNumberPatterns(string family)

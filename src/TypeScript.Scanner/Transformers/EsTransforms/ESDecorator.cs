@@ -349,7 +349,7 @@ internal sealed class ESDecoratorTransformer : Transformer
     {
         var factory = Factory();
         Slice<Node> statements = default;
-        foreach (var (member, memberInfo) in info.memberInfos.Entries())
+        foreach (var (member, memberInfo) in info.memberInfos.EntryValues())
         {
             if (Ast.IsStatic(member) != isStatic) continue;
             statements = statements.Append(createLet(memberInfo.memberDecoratorsName, null));

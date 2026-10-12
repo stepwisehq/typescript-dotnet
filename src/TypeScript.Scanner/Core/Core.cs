@@ -855,6 +855,29 @@ internal static partial class Core
                 return values[i];
         return typeof(T) == typeof(string) ? (T)(object)"" : default;
     }
+    // core.go:ComputeECMALineStartsSeq's ASCII branch advances all characters
+    // except CR/LF without changing state. Search only that exact region in bulk;
+    // every high byte still reaches the original UTF8 decoder below.
+    private static readonly System.Buffers.SearchValues<byte> ecmaAsciiLineText = createECMAAsciiLineText();
+    private static readonly System.Buffers.SearchValues<char> ecmaAsciiLineChars = createECMAAsciiLineChars();
+    private static System.Buffers.SearchValues<byte> createECMAAsciiLineText()
+    {
+        Span<byte> values = stackalloc byte[126];
+        int count = 0;
+        for (int value = 0; value < Utf8.RuneSelf; value++)
+            if (value != '\r' && value != '\n') values[count++] = (byte)value;
+        return System.Buffers.SearchValues.Create(values);
+    }
+    private static System.Buffers.SearchValues<char> createECMAAsciiLineChars()
+    {
+        Span<char> values = stackalloc char[126];
+        int count = 0;
+        for (int value = 0; value < Utf8.RuneSelf; value++)
+            if (value != '\r' && value != '\n') values[count++] = (char)value;
+        return System.Buffers.SearchValues.Create(values);
+    }
+    internal static int IndexOfECMALineScanCandidate(ReadOnlySpan<byte> text) => text.IndexOfAnyExcept(ecmaAsciiLineText);
+    private static int indexOfECMALineScanCandidate(ReadOnlySpan<char> text) => text.IndexOfAnyExcept(ecmaAsciiLineChars);
     // Value sequence for hot Go iter.Seq consumers; immutable text owner, no iterator box.
     internal static ECMALineStartSequence ComputeECMALineStartsValue(ByteStringValue text) => new(text);
     internal readonly struct ECMALineStartSequence(ByteStringValue text)
@@ -872,6 +895,11 @@ internal static partial class Core
             if (finished) return false;
             while (pos < text.Length)
             {
+                int candidate = text.IsBytes
+                    ? IndexOfECMALineScanCandidate(text.ByteSpan[pos..])
+                    : indexOfECMALineScanCandidate(text.CharSpan[pos..]);
+                if (candidate < 0) { pos = text.Length; break; }
+                pos += candidate;
                 int b = text.IsBytes ? text.ByteSpan[pos] : text.CharSpan[pos];
                 if (b < Utf8.RuneSelf)
                 {

@@ -1,3 +1,222 @@
+# Emit performance verified; final review and delivery (2026-10-12)
+
+Implementation is frozen; all seven correctness gates passed. Actual Linux x64 Native
+AOT best10.18s/Go9.37s=1.086446 in five matched alternating full VSCode emit runs.
+Every run matched10,031 paths/150,466,543bytes and all ten comparable diagnostics.
+Scope: same pinned Go and VSCode main src project, AVX2, eight checkers, standard
+ThreadPoolMinThreads128 publication setting and explicit NoGC16/2GiB with20GiB
+available-memory preflight. Portable project defaults unchanged; no universal timing claim.
+
+Passed2226 managed tests; Native152original+254authored controls;15330emit configurations
+retain15285exact public matches,39preparation skips and the same6external incremental
+metadata differences, with13571original assertion sets. All15304retained noemit records
+match exactly; CLI6+guards3+runtime3 passed. Acceptance CLI ELF/ILC response identical
+to measured integration6. Independent source, gate and measurement reviews are clear.
+
+Noemit protection completed five each with exact complete diagnostics/current Compile
+fields and all14/2GiB regions: Native8.55,10.37,9.48,10.64,9.70; Go7.13,7.96,8.12,8.55,8.55.
+Best1.199158 is nominally within20%, but0.01s timer rounding can cross1.20. This is not
+a robust margin or an unchanged historical6.95s promise. Original failed harness FIRST
+is retained: obsolete Check API status1/assumed EmitSkippedtrue corrected ONLY to pinned
+Compile status2/EmitSkippedfalse/emptyListing; Diagnostics/Error exact, no compiler edit
+or rerun. Both source traces and offline qualification independently reviewed.
+
+Delivery evidence is finalized at validation/results/vscode-emit-performance.json;
+aggregate review at validation/results/vscode-emit-performance-review.json must be
+clear before committing. Assessment/reproduction: docs/VSCODE-CHECK-STATUS.md.
+Raw evidence and seven phase markers: artifacts/emit-performance/acceptance.
+No workload is running and no more builds/profiles/benchmarks are needed absent a
+concrete review finding. If the verified files remain uncommitted, finish the review,
+commit this coherent epic and verify clean working trees. The commit containing the
+result is the delivery checkpoint; no self-referential commit hash is needed here.
+Do not restart accepted implementation or verification after compaction. Once clean,
+this completes the authorized emit performance target in its documented scope;
+further work needs a new user mandate. Root owns delivery and the Astra coordination;
+GPT-6.1 Sol lanes supplied implementation, source review and independent acceptance.
+
+# Implementation and measurement history: Go-faithful emit performance (2026-10-12)
+
+Authorized from `edc53e02` exact VS Code emit comparison. Target is Linux x64 Native
+AOT full main-project compile/check/emit wall time <=1.20x pinned Go, using best of
+five fresh processes each, alternating order, equivalent genuine source/options/libs.
+Every qualified run must retain identical 10,031 output files/raw bytes and all ten
+complete comparable diagnostics. Report every sample, variability and memory, even
+though best-to-best is primary. Source maps/declarations are off in this real workload;
+retain comprehensive applicable emit/xUnit/no-emit correctness gates before acceptance.
+Do not silently equate this workload target with all emit modes or all platforms.
+
+Reuse prior scoped AVX2/eight-checker/explicit NoGC policy as an eligible measured
+configuration, clearly separate from portable defaults. Checkers=8 applies to both;
+NoGC lifecycle/budget failures remain visible. Ordinary latest observations were
+25.38 Native /12.82 Go; they are not an equivalent tuned baseline. No debugger/heap
+capture, SVG flamegraphs, unrelated redesign or broad foundation reassessment.
+
+Priority: coherent owner-to-consumer allocation completion grounded in pinned Go,
+not isolated tweaks followed by repeated tests/benchmarks. Preserve algorithms, control
+flow, function boundaries, required copies and identity. Apply UTF8 borrowing/byte
+comparison, Slice reuse, static stateful callbacks, embedded records and genuine
+upstream pooling where needed. Document departures and independently review changes.
+Root owns centralized builds/benchmarks and decisions; no agent workload runs.
+
+Current integration: first coherent allocation packet is source-reviewed and Native
+published. Integration1 exact VS Code outputs/diagnostics passed, allocations fell
+19.9156GB→14.7550GB (~26%), but14/2GiB NoGC region failed (GC9/3/2), Native32.21s/Go8.59s.
+Existing baseline trace partition decode shows93.11% sampled SOH/6.89%LOH; old
+14/2 budget reserves only12GiB SOH with heap balance constraints. No Native per-heap
+failure cause is claimed from the managed trace. A reviewed authored runtime update
+uses16/2GiB for opt-in configuration emit, preserving explicit --noEmit/check-only14/2,
+20GiB MemAvailable preflight/fallback/defaultGC. Config-declaredNoEmit conservatively
+uses16 because region precedes configuration parse. Benchmark expectation change is
+explicit --no-gc-budget-gib16, oldfailedruns preserved.
+
+Integration2 CLI-only publish consumed unchanged frozen integration1 Scanner IL.
+First run matched all outputs/diagnostics; the completed alternating five-run cohort
+also matched every run and every 16/2GiB NoGC region ended successfully. Best Native
+12.96s / Go8.41s = 1.541 (target NOT met); Native range12.96–17.04, Go8.41–8.95.
+Native allocation14.7654GB. Best-wall CPU Native71.05s / Go74.95s suggests examining
+utilization/waiting rather than assuming more compute. Full results: integration2/cohort.
+
+Actual Native perf and matched Go pprof captures completed under integration2/native-cpu;
+both retain exact outputs and all ten diagnostics. Go appends two profile-path status
+lines, separately verified and recorded after initial raw-text assertion failure.
+Native 6,202 samples/lost0 show busy checking followed by less utilization late in emit;
+worker startup was prompt. All-thread caller unwind mostly empty; root is recovering
+per-TID stacks offline (no new capture). CPU-only samples do not prove off-CPU causes.
+Go alloc profile is delayed by GC publication, not an exact total allocation census.
+No allocation ratio can be inferred from it. Required checker locking and VFS write
+semaphores currently match Go; do not redesign them on speculation. Sol maps owns a
+concrete narrow VFS correction: decode directory only on first-open failure, as Go does.
+Foundation owns trace attribution; no workload runs or builds by agents. Continue to
+coherent source-grounded improvements, integrated Native VS Code qualification and
+finally comprehensive acceptance. No final-gate run or acceptance claim yet.
+
+Integration3: recovered per-TID stacks conserve 2,269 samples; selected late waits
+resolve checker GetConstantValue/GetReferencedValueDeclaration. They do not quantify
+blocked wall time. Keep SemaphoreSlim: checker resolver and transferable public leases
+share the same mutex; thread-affine Lock/Monitor would narrow upstream ownership.
+Controlled runtime-only experiment publishes standard ThreadPoolMinThreads=128,
+verified actual ILC --runtimeknob (no compiler scheduling/lock-scope changes). Fresh
+build11.99s/publish12.66s succeeded, actual Scanner reference and binary hashes bound in
+integration3/binary-binding.json. Includes reviewed failure-only VFS directory decode.
+First and five-each cohort completed: all exact outputs/diagnostics/full regions,
+best13.55Native/8.69Go=1.559. No improvement demonstrated; min128 remains experiment,
+NOT chosen production default. No workload currently running. Resolver recursive callback
+owner/static-state predicate correction is now independently reviewed/frozen (EmitResolver.cs).
+Inventory checks remaining profile-grounded emit callback families; foundation prepares
+proportionate off-CPU/wall attribution because CPU-only profiles cannot explain waiting.
+No bespoke mutex, thread-affine lock substitution or compiler scheduling redesign authorized.
+Next integrated publication should omit experimental min128 unless new evidence warrants it.
+
+Integration4 diagnostic NativeAOT published12.91s after freshbuild11.58s, EventSourceSupport
+true, AVX2, no minworker override; actual ILC/binary/source binding retained. Callback
+claim corrected: old recursive lambda already reused its delegate per-node. New resolver
+owner cache saves only per-invocation setup (no asserted measurable speedup). Remaining
+callback audit found no further profile-grounded per-node omission; stop speculative cleanup.
+Native wait-duration capture completed exit2 under integration4/native-waits: actual
+10031bytes/10fulltexts match, trace11.96MB/lost0. Instrumented16.416s is NOT benchmark.
+Initial launch lacked DOTNET_ROOT; retained launch-failure then restored installed root.
+Initial diagnostic renderer used wrong cwd; qualification.json records offline correction
+to actual repository cwd (unchanged captured DTO/expectations, no rerun). No debugger/heap/SVG.
+Existing analyzer compiled/decoded and added focused wait object IDs from sameETLX;
+104202MonitorWait intervals,122.984thread-seconds. Eight identities own99.60% of that
+wait time, beginning~7.5s and ending~15.1s. Prior nativeCPU wait callers resolve checker
+GetConstantValue. NativeEventPipe stacks absent, so identity naming remains an inference.
+Startup GC suspend only19.936ms; late mean waitingthreads11–21 across multiple seconds.
+GC keyword also producedallocationticks, explicitly accounted, no heapdump.
+
+Current implementation decision: root authorized a small standard Linux POSIX unnamed
+semaphore adapter for checker mutex only after two Sol feasibility assessments. NativeAOT
+UnixWaitSubsystem has a process-wide signal-state lock; libc semaphores use per-object
+atomic/futex state. This concrete runtime difference justifies measurement, not a promised
+gain. Preserve all compiler algorithms, lock boundaries, shared checker/pool/resolver identity,
+nonreentrancy and transferable Done. Linuxx64/glibc32-byte ABI only, managed SemaphoreSlim
+fallback elsewhere. No custom waitqueue/scheduler or copied Go-runtime mutex state machine.
+Foundation owns runtime support +Checker.mu/EmitResolver/CheckerPool joins +shared authored
+mutual exclusion/cross-thread release/overrelease/fallback controls; inventory independent
+review. Use finalizer-owned stable native storage/no publicDispose, KeepAlive through calls,
+EINTR retries, loud native failure, held guard clear before post. This preserves ownership;
+Go goroutine parking/fairness are not reproduced or claimed. No agent builds/workloads.
+After coherent source review, root builds, runs focused synchronization correctness controls
+because native lifetime/concurrency changed, then actualNativeVSCode before broader gates.
+Integration5 coherent POSIX packet source review clear (checker-mutex-independent-review.json).
+Three shared authored xUnit records passed (native/default plus forced managed fallback),
+14.25s build/test; productionNativeAOT publish12.93s passed. ActualILC/binary/source hashes
+bound, no experimental minworker override, EventSourceSupport=false. Full VSCode firstpair
+completed exact10031outputs/tenfulltexts/fullNoGC: Native15.53s/Go9.46s; nottarget.
+Five-each alternating cohort completed: Native15.68,16.67,12.95,11.61,12.37;
+Go9.57,11.41,9.07,8.80,8.66. Every output/diagnostic/full region passed.
+Best11.61Native/8.66Go=1.34065, target NOT met. Fresh Native Emit.Validation
+also passed152original+254authored controls, including both mutex backends;
+logs under integration5/native-mutex-controls. Managed total now496emit +1730retained.
+Prepared finalgate count delta preserves all original assertions/dispositions.
+Next controlled runtime interaction: same frozen POSIX source with standard minworkers128.
+Earlier min128 was with the old CLR global wait subsystem, so its negative result does
+not establish this combination. Root centrally publishes/qualifies; agents do no builds.
+Integration6 same-source POSIX+standard minworkers128 publication passed (11.66s).
+Five fresh interleaved runs qualified: best10.18Native/9.37Go=1.086446, all outputs,
+full diagnostics and all five regions passed. Native median10.39 range10.18–14.76;
+Go median10.06 range9.37–12.00. Target observed in this cohort, not final acceptance.
+Now run retained correctness gates and no-emit performance protection. Root changes
+only finalgate CLI publication flags to measured AVX2/min128/EventSourcefalse; validator
+publication unchanged. Portable csproj defaults unchanged. Foundation prepares accepted
+no-emit controller rebind; inventory independently reviews evidence. No new compiler edits.
+Acceptance build, all2226 managed tests, six actual Native publications and direct
+Native controls passed. Full15330configuration emit corpus preserved15285exact public
+matches/39preparation skips/same6external incremental metadata differences, with all
+13571original assertions retained. CLI6+guards3+runtime3 passed. Root running15304
+noemit corpus (25856); no parallel workload/builds. Acceptance CLI ELF and actual ILC
+response are byte-identical to measured integration6 candidate (foundation binding).
+All seven correctness phases passed, including all15304 noemit records exact.
+Noemit VSCode protection first pair completed Go7.42/Native9.22 with full14/2 region
+and unchanged exact Diagnostics/Error. Harness initially failed on obsolete check-only
+API fields (historical ExitCode1, assumed EmitSkippedtrue). Two Sol source traces confirm
+pinned genuine Compile noEmit nil-target/no-buildinfo returns empty EmitResult, so
+EmitSkippedfalse and diagnostic ExitCode2 are correct (Goalso2). Foundation narrowly
+corrects those API expectations and qualifies captured pair offline, preserving original
+failed row; no compiler edit/rerun. Inventory delta review passed; five-cohort now running76768, same integration6 binary. Source remains
+frozen; only docs/artifact summaries may change during gates. Final acceptance pending.
+
+Independent source reviews clear: scanner-printer, transform-factory including
+FileLoader null→default compile join, optional emit NoGC policy+fallbackcontrols and
+benchmark expectations. Artifacts under artifacts/emit-performance. Full retained
+correctness gate prepared (NOT RUN) artifacts/emit-performance/acceptance/run.py phases
+build managed publish native corpus command noemit; reuse references/unchanged expected
+counts and six external build-info metadata differences. Root executes after useful
+performance target, not now. Continue autonomously; no acceptance claim yet.
+
+Current GPT-6.1 Sol lanes:
+- emit_inventory: Transformers and AST factory/synthesis ownership/allocation paths.
+- emit_print_maps: Printer, text writers, source maps and output encoding/writing.
+- emit_foundation: reusable measurement controller and runtime/parallelism comparison;
+  independent review after implementation ownership freezes.
+
+Immutable baseline AVX2 publish succeeded from `git archive edc53e02` under
+`artifacts/emit-performance/baseline/source`, output native-avx2 (23.12s publication).
+First matched pair completed: Go10.19s, Native30.72s; exact outputs/diagnostics.
+Native allocated19.9156GB and fell out of14GiB NoGC region, collections25/11/2;
+qualification exited1 as intended. Evidence baseline/first/comparison.json. No five-run
+cohort until integrated work qualifies. Baseline managed allocation capture and joint decode
+completed under baseline/managed-profile:20.0755GB sampled,0lost,not truncated,
+176500typed resolved allocation ticks. Top4.004GB iterator type is exactly scanner
+comment worker now being converted across printer/declaration consumers. Profile
+outputs match all10031 files. Native counter19.9156GB is separate exact runtime evidence.
+Current additions: embedded visitor/factory hooks+cached context callbacks, stateful
+SameMap including generator source, scanner value comment traversal, byte-span line
+and comment fast-skip, direct indentation fill. Further profile-justified AST parent
+setter and five-predicate ancestor caller avoid transient closure/array allocations.
+No claims of measured candidate gain yet; integration build after coherent packet.
+ Sol foundation is preparing one baseline
+managed allocation trace using existing tools to attribute full-emit extra allocations.
+This isolates baseline from active implementation edits. Benchmark artifacts reuse
+bounded output directories; retain hashes/results rather than five giant output copies.
+Config wrappers MUST reside beside VS Code src/tsconfig.json to preserve default
+source/type roots. Source config and existing VS Code output must remain unchanged.
+
+Completion includes reviewed implementation, full matched Native target cohort,
+unchanged output/diagnostics, applicable retained regressions, source mapping and
+reproducible evidence, committed checkpoint and clean working tree. Continue beyond
+internal milestones; do not stop merely after initial measurements or a plan.
+
 # Completed: VS Code emit comparison (2026-10-12)
 
 The user authorized comparing real VS Code emit after accepted checkpoint `7542f694`.

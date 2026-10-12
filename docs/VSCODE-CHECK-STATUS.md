@@ -1,6 +1,130 @@
 # VS Code checking: diagnostic repairs and performance evidence
 
 
+## Verified emit performance result
+
+The integration6 five-run cohort meets the authorized best-to-best target:
+**Native 10.18s / pinned Go 9.37s = 1.08645×**, below 1.20×. Every run retained
+all 10,031 relative output paths, 150,466,543 exact bytes and the ten complete
+comparable diagnostics described below; both compilers exited 2. This is Linux x64
+AVX2, eight checkers, an optional NoGC region and a standard minimum-worker setting,
+not portable-default performance or a claim about all emit modes. Comprehensive
+managed and actual Native AOT correctness gates have passed. The
+[final proof](../validation/results/vscode-emit-performance.json) and
+[aggregate review](../validation/results/vscode-emit-performance-review.json)
+bind the delivered result and recorded scope.
+
+The completed gate passed 2,226 managed records and actual Native execution of
+152 original functions plus 254 authored controls. The full 15,330 emit configurations
+retain 15,285 public matches, 39 preparation dispositions and six separately visible
+external incremental build-info metadata differences. All 15,304 retained no-emit
+records match exactly. Six Go-equal CLI disk cases, three explicit unsupported-mode
+guards and three emitted runtime observations passed. The supplemental no-emit
+harness initially expected status fields from the historical check-only API. The
+existing genuine Compile path correctly returns exit status 2, EmitSkipped=false and
+an empty listing for this input, as pinned Go does. Only those wrapper expectations
+were corrected after two source reviews; complete Diagnostics/Error stayed exact.
+The failed first record is retained and qualified offline, without a compiler edit
+or workload rerun.
+
+Retained no-emit performance protection also completed five qualified runs per
+runtime: Native **8.55, 10.37, 9.48, 10.64, 9.70s**; Go **7.13, 7.96, 8.12,
+8.55, 8.55s**. Every run matched diagnostics and completed the full region.
+Best-to-best is **1.19916×**, nominally within 20%, with a very narrow margin at
+GNU time's 0.01s reporting precision. This does not promise a robust performance
+margin or the historical 6.95s absolute Native timing; all samples and variability
+remain part of the evidence.
+
+The complete cohorts, with samples in each runtime's execution order, are:
+
+| Candidate | Native seconds | Go seconds | Best ratio | Result |
+| --- | --- | --- | --- | --- |
+| [integration2](../artifacts/emit-performance/integration2/cohort/comparison.json): allocation packet, emit region | 17.04, 16.30, 16.03, 15.19, 12.96 | 8.95, 8.69, 8.41, 8.79, 8.47 | 1.5410× | Above target |
+| [integration3](../artifacts/emit-performance/integration3/cohort/comparison.json): CLR mutex, minimum 128 workers | 14.13, 13.55, 14.30, 18.07, 14.32 | 9.56, 8.69, 8.71, 8.73, 9.16 | 1.5593× | Above target |
+| [integration5](../artifacts/emit-performance/integration5/cohort/comparison.json): POSIX checker mutex | 15.68, 16.67, 12.95, 11.61, 12.37 | 9.57, 11.41, 9.07, 8.80, 8.66 | 1.3406× | Above target |
+| [integration6](../artifacts/emit-performance/integration6/cohort/comparison.json): POSIX mutex plus minimum 128 workers | 10.18, 13.77, 10.39, 14.76, 10.38 | 10.06, 10.65, 9.99, 12.00, 9.37 | 1.0864× | Target observed |
+
+Integration6 medians are 10.39s Native and 10.06s Go; ranges are 10.18–14.76s
+and 9.37–12.00s. CPU ranges are 74.89–110.87 and 84.44–108.10 seconds;
+peak RSS ranges are 15,001,104–15,017,312 KiB and 11,338,728–11,990,144 KiB.
+Variability remains visible; the target deliberately uses each runtime's best of five.
+Processes alternate order across rounds, with exact output/diagnostic verification
+outside compiler timing. Hashing warms input caches; isolated output storage is reused.
+
+Allocation and wait evidence guided the changes without attributing a measured gain
+to each edit. The [baseline first pair](../artifacts/emit-performance/baseline/first/comparison.json)
+was Native30.72s/Go10.19s; its 14GiB/2GiB NoGC region failed, with 25/11/2 collections.
+The [first allocation candidate](../artifacts/emit-performance/integration1/first/comparison.json)
+reduced Native runtime allocation from 19.9156GB to 14.755GB (about 26%), yet its
+32.21s/8.59s pair still failed the region (9/3/2 collections). These negative results
+are retained. Emit now requests 16GiB total/2GiB LOH when explicitly selected;
+no-emit remains 14GiB/2GiB. These are runtime region budgets, not process-memory caps.
+All completed cohort runs qualified the entire region and restored prior GC policy;
+startup region preparation may itself collect before the protected interval.
+
+The Go-faithful allocation packet carries borrowed UTF8 through source comments,
+value comment iterators, writers and output bytes; retains required Slice copies;
+copies embedded factory/visitor hooks; caches owner callbacks; restores the original
+parent-setter pool; uses standard span scanning only across proven ASCII regions;
+and fills final indentation bytes without an escaping temporary string. The resolver
+visitor cache saves per-invocation setup only: its previous recursive delegate already
+reused one value per node. Algorithms, traversal order, checker caches and lock scopes
+remain unchanged. [Printer progress](./progress/emit-performance-printer.md) and
+[transform progress](./progress/emit-performance-transform.md) record the ownership details.
+
+Recovered Native stacks and [wait evidence](../artifacts/emit-performance/integration4/native-waits)
+identified late checker contention, including GetConstantValue. The shared checker
+mutex now uses standard Linux x64/glibc `sem_init`, `sem_wait`, `sem_post` storage,
+with managed SemaphoreSlim fallback elsewhere. This preserves nonreentrancy and
+cross-thread release of public checker leases; it adds no custom scheduler or fairness
+algorithm. The minimum-worker property is standard runtime configuration. Its benefit
+interacts with mutex representation: minimum128 alone did not meet the target.
+Observer builds/timing are excluded from cohorts; see [measurement progress](./progress/emit-performance-measurement.md).
+
+Reproduce from repository root with the same pinned Go executable and VS Code source
+identity recorded below. These are explicit publication overrides; project defaults
+remain unchanged:
+
+```sh
+dotnet publish src/TypeScript.Check/TypeScript.Check.csproj -c Release -r linux-x64 \
+  -p:PublishAot=true -p:IlcInstructionSet=avx2 -p:EventSourceSupport=false \
+  -p:ThreadPoolMinThreads=128 -o artifacts/emit-performance/reproduction/native-avx2
+python3 tools/benchmark-vscode-emit.py artifacts/emit-performance/reproduction/cohort \
+  --native artifacts/emit-performance/reproduction/native-avx2/tscheck \
+  --runs 5 --checkers 8 --no-gc-budget-gib 16
+```
+
+The controller defaults require the retained reference output under
+`artifacts/vscode-emit-comparison/2026-10-12-corrected`; a fresh clone does not
+contain those generated artifacts. To produce a new local reference, first build the
+pinned CLI using the existing [pinned-Go instructions](#reproduction-and-records)
+and select that executable explicitly in both tools. After the Native publication
+above, the optional fresh-reference path is:
+
+```sh
+python3 tools/compare-vscode-emit.py artifacts/emit-performance/reproduction/reference \
+  --native artifacts/emit-performance/reproduction/native-avx2/tscheck \
+  --go artifacts/vscode-diagnostic-fix/pinned-cli/tsc
+python3 tools/benchmark-vscode-emit.py artifacts/emit-performance/reproduction/fresh-cohort \
+  --native artifacts/emit-performance/reproduction/native-avx2/tscheck \
+  --go artifacts/vscode-diagnostic-fix/pinned-cli/tsc \
+  --reference artifacts/emit-performance/reproduction/reference \
+  --runs 5 --checkers 8 --no-gc-budget-gib 16
+```
+
+Reference generation checks exact files and complete diagnostic text before the
+cohort. Its ordinary single-run timings are not added to the five-run sample set.
+The workload must retain the same VS Code revision, dependencies and configuration;
+a new local reference is reproduction evidence, not a replacement for recorded
+acceptance identities.
+
+The [controller](../tools/benchmark-vscode-emit.py) supplies `--no-gc-region` to
+Native and equivalent eight-checker config options to both compilers. Its temporary
+wrapper resides beside VS Code's config, preserving roots, and is removed afterward.
+It binds binaries/config/source inputs, records every elapsed/CPU/RSS sample and
+fails if output, diagnostics or the full NoGC lifecycle differ. The budget argument
+validates the reported policy rather than configuring it. Use a new result directory.
+
 ## Current whole-emit follow-up: exact main-project output
 
 After whole-emit acceptance at `7542f694`, the real VS Code main source project

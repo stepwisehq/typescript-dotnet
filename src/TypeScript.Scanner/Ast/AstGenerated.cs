@@ -3839,7 +3839,7 @@ public sealed partial class SyntaxList : NodeData
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodes(v, this.Children);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewSyntaxList(this.Children), this.AsNode(), f.AsNodeFactory().hooks);
-    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateSyntaxList(this, Ast.SameMapNodes(Children, v.visitNode));
+    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateSyntaxList(this, Ast.SameMapNodes(Children, v));
     public override string DataType() => "SyntaxList";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {
@@ -4855,7 +4855,7 @@ public sealed partial class JSDocTypeLiteral : NodeData, JSDocTypeBase, TypeNode
 
     public override bool ForEachChild(Visitor v) => Ast.VisitNodes(v, this.JSDocPropertyTags);
     public override Node Clone(NodeFactoryCoercible f) => Ast.CloneNode(f.AsNodeFactory().NewJSDocTypeLiteral(this.JSDocPropertyTags, this.IsArrayType), this.AsNode(), f.AsNodeFactory().hooks);
-    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateJSDocTypeLiteral(this, Ast.SameMapNodes(JSDocPropertyTags, v.visitNode), IsArrayType);
+    public override Node VisitEachChild(NodeVisitor v) => v.Factory.UpdateJSDocTypeLiteral(this, Ast.SameMapNodes(JSDocPropertyTags, v), IsArrayType);
     public override string DataType() => "JSDocTypeLiteral";
     public override IEnumerable<SyntaxField> SyntaxFields()
     {

@@ -89,7 +89,7 @@ try
         return output.ExitCode;
     }
 
-    using var noGcRegion = options.NoGcRegion ? new NoGcRegionPolicy() : null;
+    using var noGcRegion = options.NoGcRegion ? new NoGcRegionPolicy(fullEmit: fullConfiguration && !noEmit && !options.ListFilesOnly) : null;
     CompilerOptions? commandOptions = noEmit || options.ListFilesOnly ? new CompilerOptions
     {
         NoEmit = noEmit ? Tristate.True : Tristate.Unknown,

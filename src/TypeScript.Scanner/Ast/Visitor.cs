@@ -4,7 +4,9 @@
 // Port of tsc/internal/ast/visitor.go.
 #nullable disable
 namespace TypeScript.Scanner;
-public sealed class NodeVisitorHooks
+// visitor.go stores hooks by value in each visitor; copies retain delegates without
+// allocating a separate hook owner or sharing mutable hook fields.
+public struct NodeVisitorHooks
 {
     public Func<Node, NodeVisitor, Node> VisitNode, VisitToken, VisitEmbeddedStatement, VisitIterationBody, VisitFunctionBody;
     public Func<NodeList, NodeVisitor, NodeList> VisitNodes, VisitParameters, VisitTopLevelStatements;
@@ -16,11 +18,11 @@ public sealed class NodeVisitor
     public Func<Node, Node> Visit;
     public NodeFactory Factory;
     public NodeVisitorHooks Hooks;
-    public NodeVisitor(Func<Node, Node> visit, NodeFactory factory, NodeVisitorHooks hooks = null)
+    public NodeVisitor(Func<Node, Node> visit, NodeFactory factory, NodeVisitorHooks hooks = default)
     {
         Visit = visit;
         Factory = factory ?? new();
-        Hooks = hooks ?? new();
+        Hooks = hooks;
     }
 
     public SourceFile VisitSourceFile(SourceFile node) => VisitNode(node.AsNode()).AsSourceFile();

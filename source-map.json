@@ -2863,7 +2863,13 @@
       "emitAdaptations": [
         "Nested Checker.EmitResolver represents Go package-private access. SemaphoreSlim and try/finally preserve original locking/deferred unlock; unsafe tracker paths remain unlocked. LinkStore value cells/ref consumers retain lazy owner boundaries; names remain borrowed byte values."
       ],
-      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json"
+      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json",
+      "emitPerformanceCallbackAdaptation": {
+        "source": "emitresolver.go:498–520 recursive linked-reference visitor; CreateLateBoundIndexSignatures component visibility predicate",
+        "adaptation": "Resolver caches one stateless recursive bound callback, saving per-invocation closure/delegate setup only: the prior recursive lambda already passed its same captured delegate to every ForEachChild, so no per-node allocation reduction is claimed. Core.Every receives explicit tuple value state and a cached static predicate. Original checker mutex ownership/extent, traversal/branch order, cache reads and callback lifetime semantics preserved. Public transferable exclusive checker leases retain nonreentrant/cross-thread-release semantics through the shared CheckerMutex runtime adapter.",
+        "currentSourceSha256": "4bd3d25f35ccd8b7419b8f295f3a2d8cad6b65207d473d3733ee290e3eb78866",
+        "verification": "Independent callback and mutex-join reviews passed; integrated managed and actual Native correctness/performance evidence: validation/results/vscode-emit-performance.json"
+      }
     },
     {
       "upstream": "tsc/internal/printer/emitresolver.go",
@@ -7702,9 +7708,46 @@
       "mappingException": "Runtime/host adaptation explicitly labeled in counterpart.",
       "emitCampaignEvidence": "validation/results/emit-verified.json",
       "destinationSha256": "c19e26caf027ff3b585f21eb7f34bf4d7206572b404d39a45cdbab55151e9d4a"
+    },
+    {
+      "upstream": "tsc/internal/scanner/scanner.go",
+      "destination": "src/TypeScript.Scanner/Scanner/CommentRanges.cs",
+      "status": "ported-in-scope",
+      "scope": "iterateCommentRanges and leading/trailing borrowed-source iteration adapters only; original Scanner.cs public IEnumerable wrappers remain compatible.",
+      "upstreamSha256": "48008100fb5a020748651e319c4dcc361c1a81ca06f8c3e0ed94d42dd0d1e6df",
+      "sourceHash": "91be0b226900a58a8695eb8a337014fe76f267a1f4d2f7ee40bf8f1ce2d14a46",
+      "adaptation": "scanner.go:2800–2922 iter.Seq is a CLR value sequence/enumerator. Explicit suspended pending-comment state preserves lazy yield order, early termination, factory calls, borrowed immutable byte owner, shebang, CRLF and malformed UTF8/WTF8 advancement. Printer and declaration consumers enumerate directly; detached comment retention still uses required Slice.Append ownership. ASCII span skip stops before CR/LF or any non-ASCII byte; original rune branch remains unchanged.",
+      "verification": "Independent source review, 2226 managed tests, actual Linux x64 Native controls and full retained emit/noemit comparisons passed. Performance and qualifications: validation/results/vscode-emit-performance.json"
+    },
+    {
+      "upstream": "tsc/internal/checker/checker.go",
+      "destination": "src/TypeScript.Scanner/Runtime/CheckerMutex.cs",
+      "status": "authored",
+      "scope": "Authored Linux x64/glibc standard POSIX semaphore representation of checker mu; same mutex instance shared with CheckerPool and EmitResolver. This is a managed runtime adaptation, not translated Go algorithms.",
+      "destinationSha256": "fce8fdd885e6e75bb4169fa60409377e21890153f5003ee4b4d6176a7a244a84",
+      "emitAdaptations": [
+        "Standard sem_init/wait/post; EINTR retry, binary release guard, cross-thread nonreentrant semantics; glibc export/ABI detection, portable SemaphoreSlim fallback. Stable owner finalization and KeepAlive through native calls. No custom queue/scheduler/fairness algorithm."
+      ],
+      "upstreamFunctionCount": 0,
+      "emitReviewedPortion": "authored runtime representation only; existing Go lock scopes unchanged",
+      "emitCampaignProgress": "docs/progress/emit-performance-measurement.md",
+      "authoredTests": [
+        "validation/Emit.Checks/CheckerMutexChecks.cs",
+        "tests/Emit.Tests/CheckerMutexTests.cs"
+      ],
+      "focusedConsumerJoins": [
+        "src/TypeScript.Scanner/Checker/Checker.cs",
+        "src/TypeScript.Scanner/Checker/EmitResolver.cs",
+        "src/TypeScript.Scanner/Compiler/CheckerPool.cs"
+      ],
+      "emitCampaignReview": [
+        "artifacts/emit-performance/checker-mutex-independent-review.json"
+      ],
+      "emitCampaignState": "Verified runtime adaptation: same compiler lock scopes and transferable ownership; actual Linux x64 Native controls, full retained comparisons and scoped emit performance target. Other native platforms unverified.",
+      "emitCampaignEvidence": "validation/results/vscode-emit-performance.json"
     }
   ],
-  "activePhase": "Whole emit complete in accepted contract scope; final clean delivery/proof binding. No implicit authorization for external projects, language services or incremental/watch orchestration.",
+  "activePhase": "Emit performance verified in documented Linux x64 VS Code scope; final review and commit delivery. No further implementation campaign implicitly authorized.",
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
     "sourceTreeSha256": "3649d542b4bf031beb995de72c02fe9852e205dd4233b94ea7426250d38a30fd"
@@ -8094,5 +8137,34 @@
     "authoredDiskBoundaryCases": 3,
     "originalFixtureRuntimeCases": 3,
     "qualification": "All original option-policy/output-only/expansion dispositions remain separate; six external metadata differences visible. Partial source entries retain exact mapped/excluded scope. Runtime-specific benchmark observations do not establish universal parity."
+  },
+  "acceptedEmitPerformanceCheckpoint": {
+    "status": "verified scoped target; delivery commit contains evidence",
+    "baselineCommit": "edc53e02",
+    "evidence": "validation/results/vscode-emit-performance.json",
+    "assessment": "docs/VSCODE-CHECK-STATUS.md",
+    "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+    "platform": "Linux x64 glibc Native AOT; AVX2, eight checkers, minworkers128, explicit NoGC16/2GiB",
+    "bestNativeSeconds": 10.18,
+    "bestGoSeconds": 9.37,
+    "bestRatio": 1.0864461045891143,
+    "exactOutputFiles": 10031,
+    "exactOutputBytes": 150466543,
+    "completeComparableDiagnostics": 10,
+    "managedPasses": 2226,
+    "nativeOriginalFunctions": 152,
+    "nativeAuthoredControls": 254,
+    "retainedOriginalNoEmitExact": 15304,
+    "noEmitProtection": {
+      "bestNativeSeconds": 8.55,
+      "bestGoSeconds": 7.13,
+      "ratio": 1.1991584852734924,
+      "qualification": "Nominally within20%; 0.01s timer precision can cross threshold. Not a robust margin or historical absolute-time guarantee."
+    },
+    "limitations": [
+      "Same six external incremental metadata differences and39original preparation skips retained.",
+      "Warm-input five-run results on one host; portable defaults and other platforms not performance-verified.",
+      "Go runtime scheduling/fairness is not reproduced; compiler algorithms, lock scopes and required ownership/copies preserved."
+    ]
   }
 }
