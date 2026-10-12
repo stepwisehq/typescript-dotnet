@@ -1,0 +1,70 @@
+{
+  "status": "exact-emitted-files-and-cli-diagnostics",
+  "scope": "VS Code main src/tsconfig.json, Linux x64 Native AOT versus pinned Go",
+  "provenance": {
+    "portCommit": "7542f69494f6925d5655151748f21b8fbd4cb6c4",
+    "vscodeCommit": "4038aefd2c4aa51457420ef764c4c2358ae0ddfa",
+    "upstreamCommit": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+    "files": {
+      "/home/greg/projects/vscode/src/tsconfig.json": "6c35a05a6798601b37cd28c535f4e7258ffdf34e271fbf6a4411d328f1db2332",
+      "/home/greg/projects/vscode/src/tsconfig.base.json": "74359c514fb10624b9871279dd094fdd8034d4f3e37b154b5b98726db361c8c4",
+      "/home/greg/projects/vscode/package.json": "e4b2dac02024e1efdd6201682989c9a70ccd66121acf84c0b6905421b21908f1",
+      "/home/greg/projects/vscode/package-lock.json": "2145793ae920e5bb67b77694dd5fc70a5dd3af31f00c3cc9ee94302f411bea59"
+    },
+    "platform": "Linux x64 Native AOT",
+    "initialAttemptExcluded": "../2026-10-12: wrapper location changed default rootDir/type roots; cleanup recorded separately",
+    "vscodeGitStatusAfter": ""
+  },
+  "runs": [
+    {
+      "name": "go",
+      "command": [
+        "/home/greg/projects/typescript-dotnet/artifacts/emit/command-reference/tsgo",
+        "-p",
+        "/home/greg/projects/vscode/src/tsconfig.emit-comparison-go.json",
+        "--pretty",
+        "false"
+      ],
+      "exitCode": 2,
+      "wallSeconds": 12.815099176004878,
+      "binarySha256": "fb9f349bdbeaad767473a3ab2893271bd106e978ed58a1c0b5ffcd5502450528",
+      "configSha256": "0794dfdef3245c0b6d630a0177048181300017e4a96fdecb9da377066c0ddfc0"
+    },
+    {
+      "name": "native",
+      "command": [
+        "/home/greg/projects/typescript-dotnet/artifacts/emit/final-acceptance-workgroup-fix/native/TypeScript.Check/tscheck",
+        "--config",
+        "/home/greg/projects/vscode/src/tsconfig.emit-comparison-native.json",
+        "--json"
+      ],
+      "exitCode": 2,
+      "wallSeconds": 25.384587182998075,
+      "binarySha256": "b1ca461c54005c6489985897cbc537c4a57db650e7a93a880012a6f84299088d",
+      "configSha256": "502387fadd49cab4be17aaddb6d2367f40c28921220e50269b3ed0ca962734a6"
+    }
+  ],
+  "outputFilesPerCompiler": 10031,
+  "outputBytesPerCompiler": 150466543,
+  "javascriptFiles": 10030,
+  "jsonFiles": 1,
+  "outputMissingOrDifferent": 0,
+  "diagnosticsPerCompiler": 10,
+  "completePrettyFalseDiagnosticTextEqual": true,
+  "comparisonSha256": "10300f529a803466eb466441e28b4b61c050581081880b55e48d1755cdf162a6",
+  "comparisonArtifact": "artifacts/vscode-emit-comparison/2026-10-12-corrected/comparison.json",
+  "toolSha256": "37372adc9ef6aca6ec362b596e22dc7f37a69b1c82dea5dbfd96e0046a45b40d",
+  "limitations": [
+    "skipLibCheck=true inherited from actual project",
+    "Source maps and declaration emission not requested",
+    "No extension/product build or execution of emitted product",
+    "Go pretty-false CLI does not expose byte-end/related-information DTOs",
+    "Single-run elapsed observations, ordinary runtime defaults; not prior tuned no-emit performance cohort"
+  ],
+  "excludedAttempt": "artifacts/vscode-emit-comparison/2026-10-12; relocated config wrappers changed default source/type roots; generated source-adjacent JS removed, VS Code git clean",
+  "independentReview": {
+    "reviewer": "GPT-6.1 Sol emit_foundation",
+    "result": "clear",
+    "checks": "Independently checked all raw relative paths/bytes, hashes, binary/config/provenance identities, exact rendered diagnostic messages and scope qualifications; no compiler reruns."
+  }
+}

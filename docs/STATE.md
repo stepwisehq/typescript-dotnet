@@ -1,3 +1,27 @@
+# Completed: VS Code emit comparison (2026-10-12)
+
+The user authorized comparing real VS Code emit after accepted checkpoint `7542f694`.
+Completed the main `src/tsconfig.json` project at VS Code `4038aefd2c4aa51457420ef764c4c2358ae0ddfa`:
+10,030 JS + one JSON file, 150,466,543 bytes per compiler; all relative paths and raw bytes
+match. Both exited 2 with ten identical complete pretty-false diagnostics (including
+chains/locations/category/code). Byte-end/related-information DTO fields are not exposed
+by Go's nonpretty CLI and are not claimed by this text comparison. Source maps and
+declarations were not requested; this is not a full product build/runtime test.
+
+Ordinary accepted Linux x64 Native AOT: 25.384587s; pinned Go: 12.815099s. These are single
+observations with ordinary defaults, not the prior tuned no-emit performance cohort.
+Real config skipLibCheck=true retained. Temporary wrappers beside the real config
+change only outDir. An initial relocated-wrapper attempt changed default roots and
+was excluded; its 10,030 generated source-adjacent JS files were removed via a recorded
+untracked/stem/timestamp manifest. VS Code working tree is clean.
+
+Evidence: `artifacts/vscode-emit-comparison/2026-10-12-corrected`, including runs,
+provenance, all file hashes and full diagnostics. Reproduce with
+`python3 tools/compare-vscode-emit.py artifacts/vscode-emit-comparison/fresh-run`.
+Sol inventory/config/cleanup/documentation and Sol comparator with independent review;
+root independently confirmed every output byte and full rendered diagnostics. See
+[VSCODE-CHECK-STATUS.md](VSCODE-CHECK-STATUS.md). No new implementation campaign is active.
+
 # Accepted: whole emit contract (2026-10-12)
 
 **No active campaign.** The checkpoint containing

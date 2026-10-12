@@ -1,5 +1,52 @@
 # VS Code checking: diagnostic repairs and performance evidence
 
+
+## Current whole-emit follow-up: exact main-project output
+
+After whole-emit acceptance at `7542f694`, the real VS Code main source project
+at VS Code HEAD `4038aefd` was compiled by the accepted Linux x64 Native executable
+and the pinned Go compiler. Each produced **10,031 files / 150,466,543 bytes** (10,030 JavaScript files and
+one JSON file).
+Every relative output path and every raw byte matched. This compares the main
+[src configuration](../../vscode/src/tsconfig.json), with its configured
+`skipLibCheck: true`, `sourceMap: false`, NodeNext and ES2024 settings unchanged.
+It does not cover extension/product builds, declaration or source-map emission,
+or execution of the complete emitted product.
+
+Both invocations exited 2 and reported the same ten known semantic diagnostics
+involving VS Code’s configuration-resolver types.
+Two independent full-render comparisons confirmed identical messages, chains,
+locations, codes and categories. The [output comparison](../artifacts/vscode-emit-comparison/2026-10-12-corrected/comparison.json)
+records all file hashes and zero differences. Single elapsed observations were Native **25.384587s**
+and Go **12.815099s**, not a best-of-five benchmark or a performance acceptance claim.
+The [run records](../artifacts/vscode-emit-comparison/2026-10-12-corrected/runs.json)
+bind exact commands, config and binary hashes; the
+[provenance](../artifacts/vscode-emit-comparison/2026-10-12-corrected/provenance.json)
+records source identity. The Native executable is the final WorkGroup-fix publication;
+the Go executable is the accepted command-reference binary.
+
+The initial artifact-directory wrappers changed config-relative default rootDir
+and implicit type-root search, so that attempt is excluded from this comparison.
+Corrected temporary wrappers reside beside the original config and override only
+absolute isolated `outDir`; the tool removes them afterward. The initial source
+pollution was removed using the initially clean working tree, matching TypeScript
+stems and original-run timestamps. The
+[cleanup manifest](../artifacts/vscode-emit-comparison/2026-10-12/source-pollution-cleanup.json)
+retains all 10,030 removed paths/hashes. Ignored existing files were preserved and
+the VS Code working tree is clean.
+
+Reproduce into a **new** result directory using the existing binaries:
+
+```sh
+python3 tools/compare-vscode-emit.py artifacts/vscode-emit-comparison/fresh-run
+```
+
+The [committed result](../validation/results/vscode-emit-comparison.json) records the
+summary, artifact binding and independent Sol review.
+The [comparison tool](../tools/compare-vscode-emit.py) preserves isolated outputs
+and compares relative paths/raw bytes; it can recompare retained outputs with
+`--compare-only`. No project semantic options are overridden.
+
 For the human-readable timeline, findings and final result, see the
 [performance epic summary](./PERFORMANCE-EPIC-SUMMARY.md).
 

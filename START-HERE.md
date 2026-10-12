@@ -1,5 +1,12 @@
 # Resume this project
 
+## Latest result: VS Code emit comparison
+
+The authorized external comparison is complete: 10,031 files (150,466,543 bytes)
+match pinned Go byte for byte; all ten complete CLI diagnostics match. See
+[VSCODE-CHECK-STATUS.md](./docs/VSCODE-CHECK-STATUS.md) for scope, timings and reproduction.
+No compiler implementation campaign is active. Preserve the emit acceptance below.
+
 ## Accepted epic: complete upstream emit
 
 The whole-emit contract is satisfied at the checkpoint containing
