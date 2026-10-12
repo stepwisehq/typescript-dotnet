@@ -1,3 +1,20 @@
+# Current watcher owner state
+
+Complete production source review is clear. The first46 original functions passed
+managed39 and actual Linux x64 Native39 in the [scoped dependency checkpoint](../../validation/results/language-services-dependencies-39.json).
+The next [complete assertion packet](./lsp-watcher-backend-assertions.json) is promoted:
+84 whole original functions and one separately adapted original runtime observation.
+Independent review and central managed/Native execution remain pending for this new
+packet. No whole-watcher or whole-server behavioral acceptance is claimed yet.
+
+The runtime observation retains its original warmup, eight close cycles, +2 tolerance
+and two-second settling deadline. CLR dedicated-thread owners are observed through
+actual process thread counts, not labeled as Go goroutine equivalence. Its xUnit
+collection disables parallelization and Native dispatch is separate from whole
+original counts. Optional source-defined kernel/permission skips remain visible.
+
+## Historical promotion notes
+
 # LSP watcher dependency
 
 The complete in-process fallback owner is required by the language-services

@@ -125,7 +125,7 @@ public static class ResolverChecks
             var config = TypeScript.TsOptions.TsOptions.NewParsedCommandLine(new CompilerOptions { SkipLibCheck = Tristate.True }, [RootedFilePath.FromUnicode(fileName)], null, RootedDirectoryPath.FromUnicode(directory), fs.CaseSensitivity());
             var program = TypeScript.Compiler.Program.NewProgram(new() { Config = config, Host = TypeScript.Compiler.CompilerHosts.NewCompilerHost(fs, TypeScript.Bundled.Bundled.LibPath()), SingleThreaded = Tristate.True });
             var file = program.GetSourceFile(RootedFilePath.FromUnicode(fileName));
-            var (checker, done) = program.GetTypeCheckerForFile(default, file);
+            var (checker, done) = program.GetTypeCheckerForFile(default(CancellationToken), file);
             try
             {
                 Check(checker.GetDiagnostics(file).Count == 0, "genuine Program declaration fixture checks without errors");

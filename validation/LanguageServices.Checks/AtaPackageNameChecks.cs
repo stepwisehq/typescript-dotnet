@@ -35,18 +35,33 @@ public static class AtaPackageNameChecks
         return 1;
     }
 
+    // Authored owner coverage repeats each unchanged original expectation on both
+    // retained raw-string and byte-buffer headers; no additional original credit.
+    private static IEnumerable<ByteStringValue> BothOwners(ByteStringValue text)
+    {
+        yield return text;
+        var bytes = new byte[text.Length];
+        for (int i = 0; i < bytes.Length; i++)
+            bytes[i] = (byte)text[i];
+        yield return ByteStringValue.FromView(ByteStringView.FromOwnedBytes(bytes));
+    }
+
     private static ByteStringValue Bytes(string text) => ByteStringValue.FromString(GoString.ToUtf8(text));
     private static void CheckStatus(string text, NameValidationResult expected) => CheckStatus(Bytes(text), expected);
     private static void CheckStatus(ByteStringValue text, NameValidationResult expected)
     {
-        if (AutomaticTypeAcquisition.ValidatePackageName(text).Result != expected)
-            throw new InvalidOperationException("Original package-name status assertion failed");
+        foreach (var owner in BothOwners(text))
+            if (AutomaticTypeAcquisition.ValidatePackageName(owner).Result != expected)
+                throw new InvalidOperationException("Original package-name status assertion failed");
     }
 
     private static void CheckFull(string text, NameValidationResult expected, string name, bool isScope)
     {
-        var actual = AutomaticTypeAcquisition.ValidatePackageName(Bytes(text));
-        if (actual.Result != expected || !actual.Name.EqualsValue(Bytes(name)) || actual.IsScopeName != isScope)
-            throw new InvalidOperationException("Original scoped package-name assertions failed");
+        foreach (var owner in BothOwners(Bytes(text)))
+        {
+            var actual = AutomaticTypeAcquisition.ValidatePackageName(owner);
+            if (actual.Result != expected || !actual.Name.EqualsValue(Bytes(name)) || actual.IsScopeName != isScope)
+                throw new InvalidOperationException("Original scoped package-name assertions failed");
+        }
     }
 }

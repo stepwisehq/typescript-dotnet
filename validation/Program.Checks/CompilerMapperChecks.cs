@@ -112,7 +112,7 @@ public static class CompilerMapperChecks
             Check.Equal(program.GetGlobalDiagnostics().Length, 0, "original pre-incremental global count");
             var file = program.GetSourceFile(RootedFilePath.FromGoString("/src/Component.vue"));
             Check.True(file is not null, "original mapped file exists");
-            var diagnostics = program.GetSemanticDiagnosticsForIncremental(default, Slice<SourceFile>.FromArray([file!]))[file!];
+            var diagnostics = program.GetSemanticDiagnosticsForIncremental(default(CancellationToken), Slice<SourceFile>.FromArray([file!]))[file!];
             int globals = 0, unused = 0;
             foreach (var diagnostic in diagnostics)
             {

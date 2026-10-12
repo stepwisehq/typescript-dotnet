@@ -24,14 +24,14 @@ public static partial class ProgramRunner
             JsonArray rows = [];
             foreach (var file in program.SourceFiles())
                 rows.Add((JsonNode)new JsonObject { ["file"] = observer.File(file),
-                    ["diagnostics"] = observer.Diagnostics(program.GetSemanticDiagnostics(default, file)) });
+                    ["diagnostics"] = observer.Diagnostics(program.GetSemanticDiagnostics(default(CancellationToken), file)) });
             result["perFile"] = rows;
         }
         if (input["IncrementalFiles"] is JsonArray names)
         {
             var files = names.Select(name => program.GetSourceFile(RootedFilePath.FromGoString(
                 GoString.ToUtf8(name!.GetValue<string>()))) ?? throw new ArgumentException("Unknown incremental semantic fixture file")).ToList();
-            var actual = program.GetSemanticDiagnosticsForIncremental(default, Slice<SourceFile>.FromArray(files.ToArray()));
+            var actual = program.GetSemanticDiagnosticsForIncremental(default(CancellationToken), Slice<SourceFile>.FromArray(files.ToArray()));
             JsonArray rows = [];
             foreach (var file in files)
                 rows.Add((JsonNode)new JsonObject { ["file"] = observer.File(file), ["diagnostics"] = observer.Diagnostics(actual[file]) });

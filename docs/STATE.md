@@ -1,131 +1,116 @@
 # Active: language-services and LSP epic (2026-10-12)
 
 Continue autonomously through the [whole contract](./LANGUAGE-SERVICES-CONTRACT.md).
-No internal milestone or compaction is a reason to stop. Public `tscheck --lsp --stdio`
-is still unfinished/unadvertised; its eventual launch must bypass optional one-shot
-CLI no-GC policy. Large external projects and unrelated build/watch remain outside scope.
-Astra coordinates; three reused GPT-6.1 Sol lanes implement/review. Root alone runs
-builds/tests/publishes. Freeze compiled source and mapping manifests for gates; next
-packets remain outside compilation. Preserve upstream algorithms, genuine Program
-reuse, UTF8/Slice borrowing and required copies. Original functions, rows, selected
-channels and authored controls are distinct units. No broad private-state census,
-debugger/heap/SVG/external-project work.
+No internal milestone/commit/compaction is a reason to stop. Public `tscheck --lsp --stdio`
+is unfinished/unadvertised; launch must bypass optional one-shot CLI no-GC policy.
+Large external projects and unrelated build/watch orchestration remain outside scope.
+Astra coordinates; GPT-6.1 Sol implements and independently reviews. Root alone runs
+builds/tests/publishes. Freeze all compiled sources and mapping manifests for gates;
+review findings must go through root before any correction during a gate. Next complete
+packets stay ignored/outside compilation. Preserve actual upstream algorithms, Program
+reuse, UTF8/Slice ownership and required copies. No permissive placeholders, background
+exception suppression, extra private-state census, debugger/heap/SVG/external work.
 
-## Latest checkpoint and accepted scoped evidence
+## Latest accepted evidence; checkpoint in progress
 
-Upstream: `fed0bf24149fb1ed36039212648bafdafc1ea10e`, `upstream/TypeScript/tsc`.
-Bundled Go1.27.1: `tools/.cache/go/bin/go`. Accepted emit/performance: `9b8fa74a`,
-summary `e003f22f`; LSP contract `bcd69dab`, dependencies `f655a303`, then `f5feaa6a`.
-**Dependency39 is reviewed and passed; root documentation/commit is pending.**
-Compiled source remains frozen until the checkpoint commit; no workload currently runs.
+Upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e` under `upstream/TypeScript/tsc`;
+bundled Go1.27.1 under `tools/.cache/go/bin/go`. Emit/performance9b8fa74a, summarye003f22f.
+Previous LSP dependencies: f655a303, f5feaa6a, then committed3f41c7c4. **Dependency48
+managed and actual Linux x64 Native gates and independent evidence review
+have passed. Root is committing this coherent packet before next promotion.**
+Do not repeat accepted runs just because of re-entry.
 
-[Result39](../validation/results/language-services-dependencies-39.json),
-[independent evidence review](./progress/lsp-dependencies-39-review.json),
-[assessment](./progress/lsp-dependencies-39.md) and
-[reproduction](./LANGUAGE-SERVICES-VERIFY.md) are authoritative for current execution.
-Build39:7.26s/zero warnings/errors. Managed:305 ordinary xUnit cases,0 failures/skips,
-5s, no embedded ORIGINAL_SKIP markers. Actual Linux x64 Native AOT:226 original
-TypeScript-repository functions,56 authored controls, retained external functions/
-channels, plus49 selected generic Replace rows. Not whole TestReplacer. Separate
-fatal IPC child:-6/required marker/no timeout. Eight unchanged decoder-depth probes
-retain Native23 evidence and are not included in305 or claimed as server-stack tests.
+[Result48](../validation/results/language-services-dependencies-48.json),
+[assessment](./progress/lsp-dependencies-48.md),
+[reproduction](./LANGUAGE-SERVICES-VERIFY.md) and final
+[independent review](./progress/lsp-dependencies-48-review.json) bind current evidence.
+Build48 clean21.50s; focused Session/package3passes; fullmanaged392/392,0failed/skipped,
+69s, no embedded ORIGINAL_SKIP. Native48 exit0:312 whole TypeScript-repository originals,
+1 separately adapted original runtime observer,56 authored controls plus retained
+external/partial channels. Whole functions, rows, cases and adapted channels differ.
+All115 Linux/shared fswatch originals now accounted:114 whole assertions and1 adapted
+CLR thread observer;26 Darwin backend functions remain outside explicit Linux boundary.
+Complete TestSession24topgroups and Close original assertions now pass. No whole-server claim.
 
-Native ELF: `artifacts/language-services/integration-3/native-39/LanguageServices.Validation`,
-SHA256 `b0be147017b4285fea7861c9a0c7eb83b274f359582af617f6842f5fe8b6955b`.
-Source-39.json binds106 changed compiled paths vsf5feaa6a; actual179 ILC inputs and
-response-file set were independently checked. All source hashes remained unchanged
-through publication/execution. Native33 and older proofs remain historical evidence;
-do not rewrite them to current sources.
+Native ELF `artifacts/language-services/integration-4/native-48/LanguageServices.Validation`,
+SHA256 `d706dc4f52a0476c7af3823585c3311664115454506073263df43397ba6ca401`.
+source-48.json binds50 changed compiled paths versus3f41c7c4, no drift through publication
+and execution; native-inputs-48.json binds179 actual ILC inputs and saved response file.
+Fatal IPC child -6, required marker, no timeout, no core. Eight unchanged decoder-depth
+probes retain Native23 evidence, not added to392. Program/Emit compatibility46 builds
+passed; comprehensive retained compiler/emit execution remains final epic work.
 
-New whole originals:39 checker-pool,46 watcher (LSP16/sharedLinux30),4 service-format
-functions/eight rows. New authored controls:1 long pool timer,1 actual Session scheduling,
-10 JSON-indent comparisons. Initial production/API joins failed builds34/35/37;
-production build36 passed. Build38 compiled production then found19 shared-fixture
-joins; build39 passed. Six build durations total85.88s, not whole epic elapsed effort.
-No token/cost measurements. Do not repeat these gates just because of compaction.
+Original failures remain in integration-4: watcher event equality/prefix fixture bugs,
+Session source-content accessor bugs, source-review lease/capacity corrections, and
+real background crashes from nil autoimport watch map and byte-owned ATA package names.
+All are fixed with original expected behavior intact. Both owner forms now exercise
+all original package-name expectations. Managed45 raced one capacity edit and remains
+intermediate; final48 source binding is clean. Nine central builds40–48 reported136.29s
+combined tool time, not elapsed/model effort. No available token/cost measurements.
+After Session failures, focused original runs avoided repeating69s watcher gate after
+each fix; final full managed+Native gate passed. Details and review qualifications in48.
 
-## Current implementation and review boundaries
+## Ownership and next connected packets
 
-Full Session79/Snapshot39/projectAutoImport12 counterpart bodies are promoted and
-source-reviewed. Original complete Session/registry fixtures remain unfinished;
-the next original tests exposed full diagnostic request-context propagation still
-required in Program. Do not claim all Session behavior from pool/scheduling tests.
-Shared/Linux/LSP watcher production is source-reviewed;46 original functions pass,
-with77 broad and8 Linux fanotify originals still pending. Native Darwin26 test
-functions are explicitly excluded by the Linux implementation contract. Other native
-platform backends are implementation boundaries, not silently called verified.
+Three reused live Sol lanes (restart idle lanes with followup_task rather than silently
+letting a saved intermediate packet end the epic):
 
-Ten semantic counterparts/268 workers are promoted, compiled and independently
-source-reviewed: utilities, source-map, display/JSDoc, hover/icon, signature help,
-formatting, definition and source definition. **Service/fourslash behavior remains
-pending**. References/Completions shared leaves are partial until their real consumers
-are completed. Actual borrowed checker/Printer outputs retain ordinary wrappers,
-factory/verbosity lifetimes and long MaximumHoverLength until a bounds-proven cast.
-Independent review corrected lazy zero-set ownership and SignatureHelp default flags.
+- **emit_foundation:** complete ignored Snapshot/API originals packet is source/API
+  preflight-ready:12 targets (ten ProjectSnapshotChecks partials, xUnit wrapper, genuine
+  Session.API.cs), plus narrow Session pending-queue/mutex internal visibility for
+  original same-package assertions. TestSnapshot all10 groups +TestProjectIDNarrowing,
+  +2 original Native dispatch. Exact plan at artifacts/language-services/drafts/foundation/
+  snapshot-promotion-plan.json. APIUpdate/TryAdoptSnapshotInBackground are necessary
+  local real update/adoption owners; embedding API transport remains excluded. Wait
+  for48 commit then promote coherent packet. Continue TestRefCountingCaches originals
+  using actual fixture outside compilation. No substitute Session or synthetic checker.
+- **emit_inventory:** complete References/ImportTracker/CrossProject/Rename/
+  DocumentHighlights closure,183workers/5228Go lines, remains ignored draft. ImportTracker20,
+  Rename20,CrossProject8,Highlights32 assembled; References core state/root/base/import/
+  reexport/search assembled. Remaining module-reference conversion/merge, response+VS
+  definition/display conversion and JSX traversal, then whole API/nullable/byte/callback
+  preflight and original worklist assertion. No scope blocker. Full request-context
+  checkout companion is accepted48 input and frozen. Five actual Registry originals
+  follow this packet on same lane using genuine Session fixture. Completions6922lines
+  remain later; avoid overlapping ownership or invented local-reference substitutes.
+- **emit_print_maps:** finish48 independent evidence/final-claim review, then continue
+  genuine Server ignored drafts: lifecycle/config/document changes, actual Session,
+  handler timing/errors/async cleanup, exact content-mapper unknown-script fallback,
+  autoimport retry, real cross-project snapshot lifetime, custom RunGC, watchers,
+  client callbacks, request cancellation/read/write/dispatch ownership. Whole Server
+  still needs actual remaining service owners and ResolvedClientCapabilities pointer-root
+  descriptor (value-root exists, cannot substitute). No empty successful handlers.
+  Original progress/stack sanitizer assertions remain drafts. Keep compiled gate frozen.
 
-MarshalIndent uses actual generic/closed AOT writers, original delimiter/indent/raw
-rules and partial-error bytes. Go json/v2 deliberately chooses cannot/unable to once
-per process; C# retains canonical cannot with type/path/cause/partial bytes exact.
-Pool optional TimeProvider defaults to System; true timer cleanup/leases are tested,
-not a simulated pool. Session/watcher nonpositive durations are immediately ready;
-large positive inputs retain deadline semantics rather than CLR timer-limit rejection.
+## Remaining epic acceptance and reusable references
 
-Seven preserved source reviews and the evidence review are under docs/progress;
-result39 links each. Earlier watcher private-access hashes are explicitly superseded
-by the reviewed46-function assertion packet's two internal visibility joins.
-Promotion manifests preserve point-in-time states; later result39 supplies execution.
-[source-map.json](../source-map.json) now maps current source families and selected
-JSON dependencies. The [test inventory](./language-services-upstream-tests.json)
-records226 original passes,4 partial channels,4749 unexecuted test functions,26 Darwin
-exclusions and1 external Go generator; six TestMain lifecycle entries are separate.
-Earlier aggregates counted those six as unexecuted, never as assertion passes.
+Session/Snapshot/project-autoimport production counterparts are source-reviewed;
+original Snapshot/API/registry/refcount assertions remain pending as above. Ten semantic
+counterparts/268workers compile and are source-reviewed (utilities/source maps/display/
+JSDoc/hover/icon/signature/formatting/definition/source-definition). Only direct service
+formatting originals have behavioral evidence so far. Actual service/fourslash results,
+other service consumers and real public Server transport remain unfinished/unadvertised.
+Source-reviewed bodies do not imply verified editor capabilities.
 
-## Active Sol ownership / next actions
+[Verification design](./progress/lsp-verification-design.md) selects original Go
+fourslash bodies/baselines with actual candidate framed stdio and independent validation
+host control; no shadow Go Session. Genuine C# snapshots/FS/same Program and SourceFile
+identity must provide existing non-wire state assertions. This is adapted harness
+evidence, not thousands of original bodies ported to xUnit. Backend still requires
+implementation/review. Public disk launch, changing documents/config, cancellation,
+stale results/refresh, repeated-edit resources and retained compiler/emit/performance
+regressions remain required. No external project evaluation.
 
-- **emit_foundation:** semantic and watcher assertion reviews are clear. Continue
-  genuine Session/projecttestutil/registry originals outside compilation. Fixture now
-  retains npm errors/registry JSON and actual glob watcher matches; open/change/config
-  groups remain drafts, no whole TestSession credit yet. New concrete dependency:
-  Program.GetSemanticDiagnostics/collectCheckerDiagnostics/FromFiles and exclusive
-  checkout must preserve full ProtocolRequestContext request identity/lifetime into
-  ProjectCheckerPool. Complete the overload/collector closure while preserving ordinary
-  compiler CancellationToken wrappers; do not drop IDs in original tests. Coordinate
-  with Inventory, which owns Program.ServiceCheckout.cs general/file helpers.
-- **emit_inventory:** next coherent semantic subsystem is complete FindAllReferences,
-  importTracker, cross-project orchestration, Rename and DocumentHighlights: five
-  counterparts/5228 upstream lines/183 workers. Ignored drafts only until stable
-  promotion after current checkpoint. Include genuine lazy import/reexport graph;
-  no local-reference substitute. Own new GetTypeChecker(ProtocolRequestContext)
-  general/file checkout helpers, coordinate diagnostic propagation with Foundation.
-  Massive Completions owner remains later; do not overlap ownership prematurely.
-- **emit_print_maps:** complete remaining85 watcher original assertions, then genuine
-  server lifecycle/progress/transport consumers. All77 broad+8 Linux original bodies are now
-  written in ignored drafts; complete fixture/API/dispatch preflight remains. remaining-originals.json tracks them.
-  Original no-goroutine-leak assertion needs documented CLR thread-count adaptation
-  because actual watcher/debounce loops use dedicated Threads. Preserve warmup/+2/2s
-  and xUnit nonparallel collection; isolate runtime noise rather than relax thresholds.
-  Label adapted resource evidence, not unchanged Go goroutine equivalence. No private
-  census. Full Server still requires actual ResolvedClientCapabilities pointer-root
-  JSON descriptor; do not substitute existing value root. Preserved server drafts use
-  real Session/snapshot/checker leases and independent framed read/dispatch/write loops.
-
-## Reusable reference evidence and remaining epic gates
-
-Do not rerun stable references without a concrete need. Under integration-2:
-project-original-go.jsonl99 functions/250subtests; watcher-original-go.jsonl LSP16/2,
-fswatch115/233; autoimport12/36; contentmapper31/30; diagnostics4/28; IPC13/3;
-locale public6/275/internal6/200. These references report no failures/skips. References
-alone grant no candidate pass credit. Locale's eight callback-omitted rows are not
-runtime skips. Integration-3 adds format4/8, whole TestReplacer1 (candidate only49
-selected rows), and additive authored MarshalIndent1/10. Exact logs in result39.
-
-[Verification design](./progress/lsp-verification-design.md): retain original Go
-fourslash assertions/baselines with candidate-backed framed stdio and independent
-validation host control. Actual C# Session/FS/state-diff must supply non-wire assertions;
-no shadow Go Session. Direct tests remain C# shared xUnit/Native bodies. Backend still
-needs implementation/review. Complete services/transport, changing projects/cancellation/
-stale results, repeated-edit resources and retained compiler/emit/performance gates
-remain ahead. Do not finish or ask for another assignment after this checkpoint.
+Reusable original Go logs under integration-2: project99functions/250subtests,
+watcher LSP16/2 and fswatch115/233, autoimport12/36, contentmapper31/30, diagnostics4/28,
+IPC13/3, locale public6/275+internal6/200. Reference passes alone grant no C# credit.
+Integration-3 format4/8, whole TestReplacer(reference only; candidate49selectedrows),
+authored MarshalIndent1/10 remain unchanged. Go json/v2 randomly chooses cannot/unable
+once per process; canonical C# cannot qualified with exact type/path/cause/partialbytes.
+Earlier accepted39/33/23 proofs retain their original source bindings; don't rewrite.
+The updated test inventory reports312whole passes,1adapted original,4partial channels,
+4662unexecuted,26Darwin exclusions,1external generator; six TestMain lifecycle entries
+are separate. Missing implementation and unexercised behavior remain distinct.
 
 ## Historical dependency verification (build11 and later managed work)
 

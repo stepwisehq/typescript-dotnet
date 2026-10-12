@@ -79,7 +79,7 @@ Session/lifecycle harness and remain pending that consumer rather than replaced 
 an authored registry fixture. The pinned Go reference passed all12 functions and36
 subtests in integration-2; none of these new candidate drafts has been executed.
 
-## Next semantic owner closure
+## Scoped semantic dependency checkpoint39
 
 The next coherent packet contains complete utilities, source-map composition,
 classified display writer, JSDoc, hover/icon, signature help and the formatting
@@ -89,12 +89,14 @@ parser/binder and declaration-search owner. References and Completions contribut
 only their actual shared models/workers at source anchors until those larger feature
 families are completed.
 
-The complete semantic packet is now promoted and saved for central build38 after build37 compiler API feedback.
-[The promotion manifest](./lsp-semantic-promotion.json) binds33 production/shared-check
-paths, including all268 original workers across ten complete counterparts. The
-whole-packet API, borrowed-text, value equality, source ordering and nullable-owner
-preflight is saved. Compilation, independent source review and real service/fourslash
-behavior remain pending; source presence is not acceptance.
+The complete semantic packet is source-reviewed and scoped-verified at checkpoint
+`3f41c7c4`. [The promotion manifest](./lsp-semantic-promotion.json) binds34
+production/shared-check paths, including268 original workers across ten complete
+counterparts. [Dependency39 evidence](../../validation/results/language-services-dependencies-39.json)
+records305 managed cases and actual Linux x64 Native execution. The four original
+formatting functions/eight subtest rows and49 selected generic Replace rows passed.
+These direct dependency assertions do not establish hover, signature, definition or
+other semantic feature behavior; the actual service/fourslash corpus remains pending.
 
 The generic single-pass quote replacer retains the original trie, priority,
 empty-match progression, cloned input pair owner, once-only build and required final
@@ -105,7 +107,7 @@ Core.StringifyJson wrapper consumes its raw output/error without a fallback.
 Borrowed checker printing/signature headers preserve existing display/List wrappers,
 factory release and verbosity restoration; the real project checkout receives
 request context. The private case-tracker producer union and panic-type spelling
-remain explicit peer-review items. Root owns all integration builds and execution.
+were included in the complete source review. Root owns all integration builds and execution.
 
 Cross-file results must retain content-mapper feature filtering before declaration
 source-map traversal. Documentation keeps alias resolution caller-owned and follows
@@ -117,5 +119,23 @@ correction batch reconciles actual Fidelity imports, TextChange/IScript/path/pac
 owners, borrowed property lookup, tuple/core workers and nullable source invariants.
 The complete LiteralType ValueToString producer uses the original byte escape worker.
 All zero-backed Go Set owners now allocate at first insertion. Four unchanged original
-formatting functions/eight subtest rows are promoted with their genuine zero-value
-LanguageService admission; central execution and peer review remain pending.
+formatting functions/eight subtest rows preserve their genuine zero-value
+LanguageService admission and passed managed/Native39 without changed expectations.
+
+## Current references continuation
+
+The next complete owner closure is FindAllReferences, importTracker, CrossProject,
+Rename and DocumentHighlights:5,228 upstream lines and183 workers. Drafts remain
+outside compilation until the complete algorithms, API and ownership preflight are
+ready. The import tracker is a genuine lazy import/reexport graph dependency, not a
+local-reference substitute. Shared leaves will move into their original complete
+counterpart without duplicate models or workers. Completions remains a later owner.
+
+The complete context checkout draft adds general and exclusive request-context
+workers alongside the accepted file checkout. Foundation owns the matching semantic
+and suggestion diagnostic collectors; real project-pool request lifetime and ordinary
+compiler cancellation/affinity branches must survive that producer/consumer join.
+The current references draft preserves mutable location caches, lazy mapped-position
+results, implementation worklist identity sets and original TODO leaves. Its direct
+original worklist growth assertion and actual cross-project service corpus are still
+pending. No candidate reference/rename/highlight behavior claim is made.

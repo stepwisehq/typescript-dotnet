@@ -11,7 +11,7 @@ internal sealed partial class Watcher(ByteStringValue name) : IWatcher, TypeScri
     private Dictionary<ByteStringKey, DirWatch>? dirWatches;
     private Debounce? debounce;
     internal Func<ulong>? Sequence;
-    private const int RecursiveConsolidateThreshold = 10;
+    internal const int RecursiveConsolidateThreshold = 10;
     public ByteStringValue Name() => name;
     // watcher.go:328. Go Stringer retains the raw UTF8 string header.
     internal ByteStringValue String() => name;
@@ -19,7 +19,7 @@ internal sealed partial class Watcher(ByteStringValue name) : IWatcher, TypeScri
     public bool Available() => Factory is not null;
     public bool HasFastRecursiveBackend() => name.EqualsBytes("windows"u8) || name.EqualsBytes("fsevents"u8);
     private bool CanShareRecursiveDirWatches() => name.EqualsBytes("fsevents"u8);
-    private (IWatcherImpl? Impl, Exception? Error) GetImpl()
+    internal (IWatcherImpl? Impl, Exception? Error) GetImpl()
     {
         Func<IWatcherImpl>? factory;
         lock (mu)
@@ -45,6 +45,13 @@ internal sealed partial class Watcher(ByteStringValue name) : IWatcher, TypeScri
 
         created.Shutdown();
         return (impl, null);
+    }
+
+    // Original same-package watcher_test.go inspects map membership under this mutex.
+    internal bool HasDirectoryWatchForOriginalAssertion(ByteStringValue directory, bool recursive)
+    {
+        lock (mu)
+            return dirWatches?.ContainsKey(KeyForDirWatch(directory, recursive)) ?? false;
     }
 
     private ByteStringKey KeyForDirWatch(ByteStringValue dir, bool recursive) => ByteStringKey.FromValue(recursive ? ByteStringValue.Concat(dir, ByteStringValue.FromString("\0recursive")) : dir);
@@ -260,6 +267,9 @@ internal sealed partial class Watcher(ByteStringValue name) : IWatcher, TypeScri
 
 internal sealed class WatchSubscription(Watcher watcher, DirWatch directory, IWatcherImpl implementation, ulong id) : IWatch
 {
+    // Retained original watch.dw pointer for same-package identity assertions.
+    internal DirWatch Directory => directory;
+
     private readonly object mu = new();
     private bool cancelled;
     public Exception? Close()

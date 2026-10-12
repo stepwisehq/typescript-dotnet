@@ -139,7 +139,7 @@ public static class CompilerBaselineWalker
             int actualPos = Scanner.SkipTrivia(GoString.Bytes(currentFile.Text()), node.Pos());
             int line = Scanner.GetECMALineOfPosition(currentFile, actualPos);
             string sourceText = Scanner.GetSourceTextOfNodeFromSourceFileByteString(currentFile, node, false);
-            var (checker, done) = program.GetTypeCheckerForFile(default, currentFile);
+            var (checker, done) = program.GetTypeCheckerForFile(default(CancellationToken), currentFile);
             try
             {
                 var context = new TypeScript.DiagnosticPrinting.EmitContext();

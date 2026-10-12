@@ -1,0 +1,76 @@
+{
+  "status": "clear: final dependency48 evidence and scoped claims reviewed",
+  "reviewer": "emit_print_maps",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "scope": "Dependency48 fresh publication/direct managed and Native evidence only; no whole server/semantic/fourslash acceptance",
+  "checked": {
+    "sourcePaths": 50,
+    "currentSourceAndProofHashesMatch": true,
+    "actualIlcInputs": 179,
+    "ilcInputHashesMatch": true,
+    "responseFileExactInputSet": true,
+    "relativeResponseFileRoot": "validation/LanguageServices.Validation",
+    "nativeSha256": "d706dc4f52a0476c7af3823585c3311664115454506073263df43397ba6ca401",
+    "actualElf": "Linux x86-64 ELF",
+    "managed": {
+      "passed": 392,
+      "failed": 0,
+      "skipped": 0,
+      "aborted": 0
+    },
+    "focusedSessionPackagePassed": 3,
+    "nativeWholeOriginals": 312,
+    "nativeAdaptedRuntimeObservation": 1,
+    "nativeAuthoredControls": 56,
+    "originalSkipMarkers": 0,
+    "fatalNotification": {
+      "returnCode": -6,
+      "timedOut": false,
+      "requiredMarkerFound": true,
+      "elapsedSeconds": 0.009278268000343814,
+      "passed": true
+    },
+    "assessmentReproductionInventoryMappingClaims": "clear; final reviewed proof status/link and assessment link verified",
+    "inventoryDispositionTotals": {
+      "whole": 312,
+      "adapted": 1,
+      "partial": 4,
+      "unexecuted": 4662,
+      "darwinExcluded": 26,
+      "generator": 1,
+      "testMainSeparate": 6
+    }
+  },
+  "dispositions": [
+    "312 whole TypeScript originals excludes one explicitly adapted thread-count observer; additional dual-backing package assertions add no original-function credit.",
+    "226 prior originals +76 broad +8 Linux +2 Session =312; previous and new selected external channels retain separate units and exclusions.",
+    "114 whole shared/Linux fswatch functions plus one adapted original observation account for115;26 Darwin backend functions remain excluded implementation/platform scope.",
+    "Session24 top-level original groups and Close pass; remaining Snapshot/registry/API fixtures and full public Server remain pending.",
+    "Failed41/42/45 and genuine aborted46/47 are preserved. Build45 capacity-write race is not final source evidence.",
+    "Eight unchanged depth probes retain isolated Native23 evidence and are not part of392. Compatibility builds are not regression execution."
+  ],
+  "findings": [],
+  "artifactHashes": {
+    "validation/results/language-services-dependencies-48.json": "9859a3b64aab7bf6eff5685cd793eef11c6d4099fcdf0e800b6599a462577ef5",
+    "artifacts/language-services/integration-4/source-48.json": "5ae6482cf67f5819f4ffca15bb0c3fcfe40a87db8c72219ff85bbbd0860f0642",
+    "artifacts/language-services/integration-4/native-inputs-48.json": "0cbbe833bf01572e2af2b29b2c0b3b6cbfc3f1768d26fe3666fa060bb328206b",
+    "artifacts/language-services/integration-4/native-48.ilc.rsp": "f7fd17bbe4667b334d92f4a41adcad3a4f39fef0ec9d91c026c76131cfb567c0",
+    "artifacts/language-services/integration-4/tests/dependencies-48.trx": "cae98e7ff9322b6b9ad7c3f45a5f5df3852480cb4b3b8a75c89e451b2d7a1696",
+    "artifacts/language-services/integration-4/tests/session-48.trx": "47e859b8bfd22d2d6da95ce243874a4ff7311c8f10d6b280f165bccc052c9bad",
+    "artifacts/language-services/integration-4/build-48.log": "3a7a1d2c3be0635888a9d490ff4229d8b383a2107c4b6232a4ddba5562de0058",
+    "artifacts/language-services/integration-4/native-publish-48.log": "c47b393bb34dad1ee9d0b8081927c329341175d50337902174ee1165515ca2b9",
+    "artifacts/language-services/integration-4/native-run-48.log": "14bb1eda219b2b9ca181f8cbc4c4ee6d522964bccd6a85999b56923a92d86900",
+    "artifacts/language-services/integration-4/tests-48.log": "71410be911a9dcc7240ee3d3444ad0468f38119b8b72b5158d258593ca1a8faa",
+    "artifacts/language-services/integration-4/native-fatal-48.json": "f005c0eb97bf0fb588c653d5dd0f02e58c9b0a15f6bb90abd3fff8c2d2b12581",
+    "artifacts/language-services/integration-4/native-fatal-48.log": "6b2f47478c69919370ea9566b35a47cd32bb6dc4e8d49f506b003618eb9a9756",
+    "artifacts/language-services/source-review/watcher-backend-assertions.json": "0714c2fd6bc046e02a573c7c71da889aedad7805eafad007f8daac856dff78b1",
+    "artifacts/language-services/source-review/session-assertions.json": "8658d31edcf6a1852ef8c39a0d18916e84b7d80a36bf18dd599fc324558c8f31",
+    "artifacts/language-services/source-review/session-zero-owner-corrections.json": "4064b0afa88e7ca73854d26017b6c7610f6b1fea665b4a5940d77ab968fd9140",
+    "docs/progress/lsp-dependencies-48.md": "d3db251422a8cbb857d4f0f155fdce7d90192443663e9eda31e91e602932e1d2",
+    "docs/LANGUAGE-SERVICES-VERIFY.md": "453d8351f77c5c34bb5dff50156b99aa7a35b710511a6c8095b6084cbf676ab4",
+    "docs/language-services-upstream-tests.json": "c77706f062d4639c7ef467b33c5cad35e29a0cae25ce4549d5b2576fa6a72d74",
+    "source-map.json": "2dbf8d4ec7d82969a3a93518001bca83b9f3342c84fdacbf5e1cd79eb5b8b3bd",
+    "docs/LANGUAGE-SERVICES-CONTRACT.md": "ed24b68128f630f0023a75d27de3f01e2d2fc4d349fd351d9d9d338648e35f33",
+    "docs/STATE.md": "ca048f95832d500d45f1a84c5edfbfa0f2f64ebd1ca7f24b30a54fa4deec9a63"
+  }
+}

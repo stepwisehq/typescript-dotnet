@@ -1,7 +1,7 @@
 # Language-services verification
 
 The [completion contract](./LANGUAGE-SERVICES-CONTRACT.md) is still in progress.
-The current [dependency result](../validation/results/language-services-dependencies-39.json)
+The current [dependency result](../validation/results/language-services-dependencies-48.json)
 records a passing managed and Linux x64 Native AOT dependency run, its source hashes,
 and its limitations. This does not establish an operational language server.
 Subsequent source changes require their own integration verification.
@@ -25,28 +25,30 @@ as assertion groups; do not count a selected channel as an entire original funct
 Run from the repository so source fixtures and unchanged upstream baselines are found.
 Publishing alone is insufficient: execute the produced native binary.
 
-The current dependency39 packet passes **305 ordinary xUnit cases**, zero failures
-or skips, and actual Linux x64 Native AOT execution of226 original TypeScript-repository
-functions plus56 authored controls. External dependency functions and selected
+The current dependency48 packet passes **392 ordinary xUnit cases**, zero failures
+or skips, and actual Linux x64 Native AOT execution of312 whole original TypeScript-repository
+functions, one separately adapted original watcher runtime observation and56 authored controls. External dependency functions and selected
 channels remain separately reported; the new generic replacement channel contains49
 original rows and does not claim whole TestReplacer. The
-[assessment](./progress/lsp-dependencies-39.md),
-[independent review](./progress/lsp-dependencies-39-review.json) and
-[execution record](../validation/results/language-services-dependencies-39.json)
+[assessment](./progress/lsp-dependencies-48.md),
+[independent review](./progress/lsp-dependencies-48-review.json) and
+[execution record](../validation/results/language-services-dependencies-48.json)
 bind exact logs, source hashes, actual native compiler inputs and binary hash.
 Eight unchanged isolated decoder probes retain dependency23 evidence; they were not
-added to305 or rerun in39. To reproduce just this ordinary managed packet, add
+added to392 or rerun in48. To reproduce just this ordinary managed packet, add
 `--filter 'FullyQualifiedName!~AuthoredRecursive'` to the test command above.
 
 The isolated `--ipc-fatal-notification` native control must run as a child with a
 bounded timeout and core dumps disabled. Success requires nonzero termination,
 the exact `authored fatal IPC notification` marker, and no timeout. An arbitrary
-crash is not a pass. Native39 returned-6 with the required marker and no timeout.
+crash is not a pass. Native48 returned-6 with the required marker and no timeout.
 This checks the upstream unhandled-notification boundary, not actual server transport.
 
 Source reviews cover Session/watcher production, original pool/watcher assertions,
-JSON indentation and the ten semantic counterparts. Original Session/registry
-assertions,77 broad watcher and8 Linux fanotify functions remain pending. The full
+JSON indentation and the ten semantic counterparts. Complete Session and all115
+Linux/shared watcher originals are now accounted for:114 watcher functions preserve
+their whole assertions and one uses a separately adapted CLR thread observer.
+Snapshot/API/registry/refcount originals remain pending. The full
 service corpus, public stdio server and comprehensive retained compiler/emit gates
 are still unfinished. Source-reviewed hover/definition implementations are not yet
 claimed behaviorally verified services. Earlier dependency33/23 evidence remains

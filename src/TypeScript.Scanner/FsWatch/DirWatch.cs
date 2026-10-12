@@ -53,6 +53,10 @@ internal sealed class DirWatch
     internal Func<ulong>? Sequence;
     private readonly object mu = new();
     private Slice<Callback> callbacks;
+    // Original same-package terminal assertions lock mu before reading this slice header.
+    internal object CallbackGate => mu;
+    internal Slice<Callback> CallbacksForOriginalAssertion => callbacks;
+
     private Debounce? debounce;
     private ulong nextCBID;
     private DirWatch(ByteStringValue dir, ByteStringValue physicalDir, Debounce db)

@@ -1,0 +1,11 @@
+# Remaining watcher assertion review
+
+The complete 76 broad and eight Linux original function bodies, helpers, dispatch and three retained-owner access joins were reviewed against the pinned originals. The separate CLR thread observation remains an adaptation of the original goroutine observation, with no whole-function equivalence credit.
+
+One assertion-consumer defect was found and corrected: generated `WantEvent` record equality compares the representation of `ByteStringValue` rather than Go string content. The two shared `SequenceEqual` assertions and the complete consolidated-event comparison now use typed `WantEvent.Equals`, comparing event kind and `Path.EqualsValue` explicitly, with a consistent content-key hash. Expected events, filtering and ordering remain unchanged. This can also affect the Linux cross-watcher assertion, which calls the same helper.
+
+Original availability/kernel/symlink/permission skip conditions, callback and terminal error assertions, explicit concurrency, retry scaling and deferred LIFO cleanup reconcile with the source. Recorder clones and nil resets preserve their required owners. Timed Monitor waits are the documented standard synchronization adaptation. The readonly production projections retain the actual map/slice owners and original lock boundaries.
+
+[Hash-bound review](../../artifacts/language-services/source-review/watcher-backend-assertions.json) records the current packet. The final 25-path source binding is clear. Root build41 compiled clean; managed41 retained 355 passes and 35 failures before the equality correction, with zero xUnit skips and no embedded original-skip markers. Corrected behavior and Native execution remain pending; this review claims source fidelity, not acceptance.
+
+Managed42 then retained 387 passes and three failures from seven direct byte-span prefix predicates rejecting string-backed fixture prefixes. The complete predicate family now uses the existing `ByteStringValue.StartsWith(ByteStringValue)` worker, preserving original byte-prefix semantics across both owners without encoding or a new API. This second fixture-consumer correction is narrowly reviewed and hash-bound; final candidate execution remains pending.

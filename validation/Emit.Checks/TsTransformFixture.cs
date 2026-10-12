@@ -70,7 +70,7 @@ internal sealed class TsTransformFixture : IDisposable
             if (otherName != null)
                 Other = program.GetSourceFile(RootedFilePath.FromUnicode(otherName));
             // Nonexclusive acquisition: genuine EmitResolver methods perform checker locking.
-            var lease = program.GetTypeCheckerForFile(default, File);
+            var lease = program.GetTypeCheckerForFile(default(CancellationToken), File);
             checker = lease.Item1;
             done = lease.Item2;
             Context = new EmitContext();

@@ -1,0 +1,149 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "platform": "Linux x64",
+  "status": "reviewed-dependency-packet-managed-and-native-passed-epic-incomplete",
+  "baseCheckpoint": "3f41c7c4",
+  "priorAcceptedEvidence": "validation/results/language-services-dependencies-39.json",
+  "managed": {
+    "passed": 392,
+    "failed": 0,
+    "skipped": 0,
+    "originalSkipMarkers": 0,
+    "trx": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+    "build": "artifacts/language-services/integration-4/build-48.log",
+    "buildSeconds": 21.5,
+    "buildWarnings": 0,
+    "buildErrors": 0,
+    "durationSecondsReported": 69,
+    "focusedSessionAndPackage": {
+      "passed": 3,
+      "failed": 0,
+      "durationSecondsReported": 2,
+      "trx": "artifacts/language-services/integration-4/tests/session-48.trx"
+    },
+    "excluded": "Eight unchanged isolated authored decoder-depth cases retain Native23 evidence; not counted in this run.",
+    "compatibilityBuilds": [
+      "artifacts/language-services/integration-4/program-compatibility-46.log",
+      "artifacts/language-services/integration-4/emit-compatibility-46.log"
+    ]
+  },
+  "native": {
+    "executable": "artifacts/language-services/integration-4/native-48/LanguageServices.Validation",
+    "sha256": "d706dc4f52a0476c7af3823585c3311664115454506073263df43397ba6ca401",
+    "publishLog": "artifacts/language-services/integration-4/native-publish-48.log",
+    "executionLog": "artifacts/language-services/integration-4/native-run-48.log",
+    "exitCode": 0,
+    "originalTypeScriptTestFunctions": 312,
+    "originalExternalNormalizationFunctions": 1,
+    "originalExternalLocaleFunctions": 11,
+    "selectedGenericReplacerChannels": 1,
+    "genericReplacerRows": 49,
+    "authoredControls": 56,
+    "isolatedFatalNotification": {
+      "returnCode": -6,
+      "timedOut": false,
+      "requiredMarkerFound": true,
+      "elapsedSeconds": 0.009278268000343814,
+      "passed": true
+    },
+    "ilcInputRecord": "artifacts/language-services/integration-4/native-inputs-48.json",
+    "ilcInputs": 179,
+    "retainedExternalAndPartialChannels": "Existing regexp, NFD and AstNav selected channels and original exclusions are unchanged; see native log and dependency33/23 evidence.",
+    "adaptedOriginalWatcherRuntimeObservations": 1,
+    "originalSkipMarkers": 0
+  },
+  "sourceSnapshot": {
+    "src/TypeScript.Scanner/Compiler/Program.ServiceCheckout.cs": "ed0a857a8b67dcd45e01dab957ba5a893300e0052456e0762aa803aa5459c132",
+    "src/TypeScript.Scanner/Compiler/Program.ServiceDiagnostics.cs": "22bcd0aa301b5f9222e51534809356916a24aee9ee297c880ecad4498901a6e1",
+    "src/TypeScript.Scanner/FsWatch/DirWatch.cs": "822e4b250c45dc15c81e4c4ccf2fb1b3f6a10e718246d72601715cf8142717c1",
+    "src/TypeScript.Scanner/FsWatch/Fanotify.cs": "b03e062343d857a9d3fde11bb232ce7ec4c08feafb6edfd84a4f19ecef163e43",
+    "src/TypeScript.Scanner/FsWatch/Watcher.cs": "7ca3960f9aac2562aa0b506e4449e5271a91e0a4732d37a88cf62be14e5ae235",
+    "src/TypeScript.Scanner/ProjectSystem/Ata/ValidatePackageName.cs": "344a6026626c2eae08a3542c769b4611f0b69cb4753e2433a9aa838804300a64",
+    "src/TypeScript.Scanner/ProjectSystem/Snapshot.cs": "2866b38eeddd3d10dfba9eda28d6ccab9f616492c0683cc9de2929013b465ad4",
+    "src/TypeScript.Scanner/ProjectSystem/SnapshotHost.cs": "27bba79eef4b33b67485f69ac5b947620f3145bff0b97330211f3013e5bf3c9c",
+    "tests/LanguageServices.Tests/FsWatchBackendTests.cs": "cdb17f78d80290f637213bae864d652c7e425c0683628ac0d206f25a0c0c46ec",
+    "tests/LanguageServices.Tests/FsWatchLinuxTests.cs": "05d109f530c49731a4d76fc7eed4ddffb60854080448f9149719dee0a9643217",
+    "tests/LanguageServices.Tests/ProjectSessionTests.cs": "70df3df17c658b5cf81af590689c0c64e43d090f30336b08de90872c45b553e9",
+    "validation/Emit.Checks/ResolverChecks.cs": "f6e7fd546fce6b7116488ece2e9e986567a8fbe6ac2f01cefc1660df0791efa2",
+    "validation/Emit.Checks/TsTransformFixture.cs": "3785a3580f2ad7cc86c52443f467d088b3aef0846b89d99741e2f2d182e1f17e",
+    "validation/LanguageServices.Checks/AtaPackageNameChecks.cs": "4e89ae955fee0b5759d6d09436552cca0b3cd0484ff532679c73c0843e94d4c3",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Callbacks.cs": "ce3c0c17ec03c66b170916f3e86ace70acf393fc2e0df323a712fe3af76d62c4",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Coalescing.cs": "208217a0f4bb114fa79ae47c9a9bb243e05e345884c543f001db61223c30d3b0",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Consolidation.cs": "a17fd2db5b7b1b92dafb0dcfbe8a5f30fedee0457da6b6472d427739b0b04a97",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Crud.cs": "dcd6d359e8b50a50da1ace1a38ba5ed3ac176f97a7dadac2cb0cdceb6f9a18cf",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Dispatch.cs": "b0044a3d8d2f59785c42b426cce8a42c496f886c290b18c77f912557f6b83b51",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.FileTargets.cs": "aad8b3f736163fa2357440d4c059be652de3fdb9a2bf3f1eddd8c7ee88b9db03",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Fixture.cs": "1cb8461237785d7c188add29cff8c14f9a7b3ff3516656a54cf261604a9b7e39",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Helpers.cs": "e787283dca92c5ef54796de9421aec259e53435737eab107fbf862e2b5ee642c",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Lifecycle.cs": "0223f1347fbaed1345ed61dbf8f71e0f5a2681d22d3a686b4ee6c365a2c9e9df",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Multiple.cs": "d2610a3cd6bc48f91cbd6a9b1784ce988cde478e821d23670e4c74cb43f5327e",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Mutations.cs": "68f3aa4eafbc9f5071fa6ac7334666fdd28018e04e4da94296abb502b8b5af70",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Nonrecursive.cs": "fcf45f130a6043f136460fe326ee83a9b9053d6330e6f838baf9737f349e27ce",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Permissions.cs": "b40c1e9b4ad1dabf3e52560e336ec1beca396d056555c9dbf9024ea418d1d36e",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Platform.cs": "24acb28616889818dfdfa6e18435e7c3e4b8bf0ee47ff4ee8351c281f50560bd",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Runtime.cs": "464aae070c1ca0c834a4e7f89ee019709d6de8da78aa7022c290064584d43ec5",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Subdirectories.cs": "7a767693b87d360d6e48d84494092be7fcf934af014ace82f0359f83714f8102",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.Symlinks.cs": "e2ccda9b4462cdbc3f9b6209e504bbb9c4242bc1be6273f1675ea16c17eefd00",
+    "validation/LanguageServices.Checks/FsWatchBackendChecks.TreeMoves.cs": "debe667aa4f49da1e74709e6808a48c8ad809b1b0070dc7b5ac03f7513fbcf00",
+    "validation/LanguageServices.Checks/FsWatchLinuxChecks.Dispatch.cs": "afb035572c7f021ee8b4271aafd82de64dbccf957735ebc83aa39935b4b1ab0f",
+    "validation/LanguageServices.Checks/FsWatchLinuxChecks.cs": "484995db3cc217b7b811125e07eb4eb4032e96d19449e55157d03d5c8795226c",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Change.cs": "de8a39cb51c7ed0387541eb86f7387054eeeced7e6a7af7e05589043571d174c",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Close.cs": "44612644fa761c6d26f633858f84a6394297c084c930658f70fb143e37da2ba3",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.CloseAndSave.cs": "57aa3284ed3c9416ea1027f1ec824c408aea8036bc9fa2047ad2ce1f8664802b",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Closed.cs": "d6d3ce38a0b47468e421d49d313e6b7bcf82ee968a7a378a4a457688b6dbdc7d",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Configuration.cs": "9bd5c48609cab1479e4b92f03a36876739f325060b06a017b0c5f0dc462836a2",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Dispatch.cs": "a7c5b8571c0f11128b8078bd18c847b75bdce203727a0b4268f26becff14151f",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Open.cs": "7fe14e10be178ffaba9be5a30852e51936977d22ddbcb932c523d434ef33e182",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Sharing.cs": "9a80b91cf140f73c7b74f96676c0b930c4524d3e17cd4521ed04cd4cc76e5503",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Watched.cs": "5178e65b14d5582e289275cd94549079ff3a046f11805d7d3690175da8e240f8",
+    "validation/LanguageServices.Checks/ProjectSessionFixture.cs": "a024a705848ee1465fb6780f3045c9a5af1e88e418b15a2f7819ff8a280d0317",
+    "validation/LanguageServices.Checks/ProjectTestFileSystem.cs": "371be0afb26ec202a5e5d9e1e66ff40da1d07e67496f8c6a0cb450d152b9f83b",
+    "validation/LanguageServices.Checks/UserPreferenceChecks.ProjectAccess.cs": "76fb7d5c4e1659445954f0b525e6f419efbab8535bd173009df2d10ba3f9f0e0",
+    "validation/LanguageServices.Validation/Program.cs": "f701de3ea9546f9c64dac6f414bfa7dfa0494627aaedd834c6b3302e01228b80",
+    "validation/Program.Checks/CompilerBaselineWalker.cs": "8fd71f6d3b3b600b2290c2a8076a4bde4b26abdc3449040439379d0f83146d5d",
+    "validation/Program.Checks/CompilerMapperChecks.cs": "05d8b5e093df67f6eabf2952cd1799c9308c1b9b84d6125d41e37699dbbcd967",
+    "validation/Program.Checks/ProgramSemanticRunner.cs": "dd3d0473653f45d3dfb99361f965d7225ba058692b1b55d9c39204d79a6b7ab2"
+  },
+  "sourceSnapshotRecord": "artifacts/language-services/integration-4/source-48.json",
+  "referenceLogs": [
+    "artifacts/language-services/integration-2/project-original-go.jsonl",
+    "artifacts/language-services/integration-2/watcher-original-go.jsonl"
+  ],
+  "independentSourceReviews": [
+    "artifacts/language-services/source-review/watcher-backend-assertions.json",
+    "artifacts/language-services/source-review/session-assertions.json",
+    "artifacts/language-services/source-review/session-zero-owner-corrections.json"
+  ],
+  "newOriginalFunctionGroups": {
+    "fswatchBroad": 76,
+    "fswatchLinuxFanotify": 8,
+    "completeSession": 2
+  },
+  "newAdaptedOriginalObservations": {
+    "TestSubscribeNoGoroutineLeak": "Actual CLR process-thread observation retains original warmup/+2/two-second bounds; not Go goroutine identity. Separately classified, not among312 whole originals."
+  },
+  "newAuthoredControls": {},
+  "additionalAuthoredCoverage": "All unchanged original package-name expectations now execute on both retained string and byte-buffer owners; no extra original/function count.",
+  "corrections": [
+    "Watcher test event equality and prefix predicates now compare raw content across owners; unchanged expectations.",
+    "Session tests now read actual SourceFile.TextView content; all24 top-level sibling groups execute independently and aggregate failures.",
+    "New request-context diagnostic collectors release the checker before filtering and retain original result-map capacity.",
+    "Initial autoimport watcher nil-map callback preserves Go len/range semantics and allocated empty output.",
+    "ATA package-name URI admission accepts both backing forms without encoding/copy; genuine Session exposed the missing byte-owner path."
+  ],
+  "retainedIntermediateEvidence": {
+    "builds40through48": "All logs retained under integration-4; nine central builds total136.29s reported tool time, not whole elapsed effort.",
+    "failures": "Managed41:35failures;42:3;45:1; Session46/47 aborted from real background defects. Final expectations unchanged. Build45 source raced one capacity correction and is expressly not final source-bound evidence.",
+    "efficiency": "After identifying Session integration defects, focused original Session/package runs replaced repeating the69s watcher workload for every correction; full392 gate then passed."
+  },
+  "limitations": [
+    "Dependency checkpoint only; public stdio server/CLI, full semantic/fourslash comparisons and repeated-edit/cancellation/resources remain unfinished and unadvertised.",
+    "Complete TestSession and Close assertions pass; remaining Snapshot/API/registry/refcount original assertions are not granted execution credit.",
+    "All115 Linux/shared fswatch original functions now accounted:114 whole assertions plus one explicitly adapted runtime observer.26 Darwin native functions remain outside Linux backend implementation contract.",
+    "Original sibling groups execute sequentially; nested siblings can stop within a failed group. Only final complete passes receive whole-function credit.",
+    "Eight unchanged decoder-depth probes retain Native23 evidence; broader retained compiler/emit acceptance awaits final coherent epic integration. Compatibility builds are not new regression execution.",
+    "Missing service behavior, implementation completeness, managed cases, whole original functions, adapted originals and selected external channels remain distinct.",
+    "Go JSON modal wording process variability and all earlier external-channel qualifications remain as accepted39."
+  ],
+  "independentEvidenceReview": "docs/progress/lsp-dependencies-48-review.json"
+}

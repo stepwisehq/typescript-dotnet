@@ -23,6 +23,16 @@ internal sealed partial class FanotifyBackend(bool noRename) : WatcherBase
     private int fanotifyFD = -1;
     private ulong markMask;
     private readonly Dictionary<FanotifyHandleKey, Slice<Subscription>> subscriptions = new();
+    // Original same-package failed-subscribe assertion inspects this existing map.
+    internal int SubscriptionCountForOriginalAssertion
+    {
+        get
+        {
+            lock (Mu)
+                return subscriptions.Count;
+        }
+    }
+
     private readonly TaskCompletionSource ended = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly byte[] readBuffer = new byte[8192];
     private readonly HashSet<DirWatch> touched = new(ReferenceEqualityComparer.Instance);

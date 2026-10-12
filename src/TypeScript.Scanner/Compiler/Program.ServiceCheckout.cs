@@ -18,4 +18,21 @@ public sealed partial class Program
             return compilerCheckerPool.getCheckerForFileNonExclusive(file);
         return checkerPool is ProjectCheckerPool projectPool ? projectPool.GetChecker(context, file) : checkerPool.GetChecker(context.Cancellation, file);
     }
+
+    // compiler/program.go: general checkout preserves real request lifetime values.
+    internal (Checker Checker, Action Done) GetTypeChecker(ProtocolRequestContext context)
+    {
+        if (compilerCheckerPool != null)
+            return compilerCheckerPool.getCheckerNonExclusive();
+        return checkerPool is ProjectCheckerPool projectPool ? projectPool.GetChecker(context, null) : checkerPool.GetChecker(context.Cancellation, null);
+    }
+
+    // Compiler exclusive affinity remains unchanged; ProjectCheckerPool implements
+    // the original project checkout contract, which carries the full request context.
+    internal (Checker Checker, Action Done) GetTypeCheckerForFileExclusive(ProtocolRequestContext context, SourceFile file)
+    {
+        if (compilerCheckerPool != null)
+            return compilerCheckerPool.getCheckerForFileExclusive(context.Cancellation, file);
+        return checkerPool is ProjectCheckerPool projectPool ? projectPool.GetChecker(context, file) : checkerPool.GetChecker(context.Cancellation, file);
+    }
 }

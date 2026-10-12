@@ -10635,6 +10635,36 @@
         "assessment": "docs/progress/lsp-dependencies-39.md",
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md"
       }
+    },
+    {
+      "upstream": "tsc/internal/compiler/program.go",
+      "destination": "src/TypeScript.Scanner/Compiler/Program.ServiceCheckout.cs",
+      "status": "partial",
+      "scope": "Full request-context general/file/exclusive checker checkout overloads; compiler token wrappers preserved.",
+      "upstreamSha256": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c",
+      "destinationSha256": "ed0a857a8b67dcd45e01dab957ba5a893300e0052456e0762aa803aa5459c132",
+      "mappingException": "Partial-class service context companion to Program.cs; CLR context adapter retains values that Go carries in context.Context, preserving ordinary compiler token API.",
+      "languageServicesCurrentPacket": {
+        "evidence": "validation/results/language-services-dependencies-48.json",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "scope": "Full request-context general/file/exclusive checker checkout overloads; compiler token wrappers preserved.",
+        "sourceStatus": "source-reviewed and scoped Session originals passed managed/Linux x64 Native; whole services unfinished"
+      }
+    },
+    {
+      "upstream": "tsc/internal/compiler/program.go",
+      "destination": "src/TypeScript.Scanner/Compiler/Program.ServiceDiagnostics.cs",
+      "status": "partial",
+      "scope": "Full request-context semantic/suggestion/incremental collector closure; genuine checker pool receives request values and cancellation with original lease extent.",
+      "upstreamSha256": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c",
+      "destinationSha256": "22bcd0aa301b5f9222e51534809356916a24aee9ee297c880ecad4498901a6e1",
+      "mappingException": "Partial-class service context companion to Program.cs; CLR context adapter retains values that Go carries in context.Context, preserving ordinary compiler token API.",
+      "languageServicesCurrentPacket": {
+        "evidence": "validation/results/language-services-dependencies-48.json",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "scope": "Full request-context semantic/suggestion/incremental collector closure; genuine checker pool receives request values and cancellation with original lease extent.",
+        "sourceStatus": "source-reviewed and scoped Session originals passed managed/Linux x64 Native; whole services unfinished"
+      }
     }
   ],
   "activePhase": "Language-services and LSP epic from accepted emit/performance 9b8fa74a: comprehensive dependency-first implementation, review, original tests and actual Linux x64 Native AOT transport acceptance. Shared dependency execution passed; complete services and server remain unfinished.",

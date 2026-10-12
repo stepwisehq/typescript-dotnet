@@ -60,7 +60,11 @@ originalFunctions += FsWatchWalkDirChecks.RunAll();
 originalFunctions += FsWatchPathChecks.RunAll();
 originalFunctions += FsWatchInternalChecks.RunAll();
 originalFunctions += LanguageServiceFormattingChecks.RunAll();
+originalFunctions += FsWatchBackendChecks.RunBroadAll();
+originalFunctions += FsWatchBackendChecks.RunLinuxAll();
+originalFunctions += ProjectSessionChecks.RunAll();
 Console.WriteLine($"Original language-service dependency test functions executed: {originalFunctions}");
+Console.WriteLine($"Adapted original watcher runtime observations executed: {FsWatchBackendChecks.RunAdaptedRuntimeObservation()}");
 Console.WriteLine($"Original external normalization dependency test functions executed: {NormalizationChecks.RunAll()}");
 Console.WriteLine($"Original external language-matcher dependency test functions executed: {LocaleMatcherChecks.RunAll()}");
 // Regex groups include explicitly named selected assertion channels; this is not

@@ -110,11 +110,12 @@ internal sealed partial class SnapshotHost
     internal Snapshot NewRootSnapshot(ulong id, bool relativePatternSupport)
     {
         var overlays = new OverlayFS(fs, null, options.PositionEncoding);
-        var watch = new WatchedFiles<Dictionary<PathKey, RootedDirectoryPath>>(ByteStringValue.FromString("auto-import"), WatchKind.Create | WatchKind.Change | WatchKind.Delete, relativePatternSupport, static directories =>
+        var watch = new WatchedFiles<Dictionary<PathKey, RootedDirectoryPath>?>(ByteStringValue.FromString("auto-import"), WatchKind.Create | WatchKind.Change | WatchKind.Delete, relativePatternSupport, static directories =>
         {
-            var patterns = Slice<ByteStringValue>.Make(0, directories.Count);
-            foreach (var directory in directories.Values)
-                patterns = patterns.Append(ProjectWatches.GetRecursiveGlobPattern(directory));
+            var patterns = Slice<ByteStringValue>.Make(0, directories?.Count ?? 0);
+            if (directories is not null)
+                foreach (var directory in directories.Values)
+                    patterns = patterns.Append(ProjectWatches.GetRecursiveGlobPattern(directory));
             GoSlices.SortFunc(patterns, static (left, right) => ByteStringKey.FromValue(left).CompareTo(ByteStringKey.FromValue(right)));
             return new PatternsAndIgnored
             {

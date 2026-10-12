@@ -22,7 +22,7 @@ internal sealed partial class Snapshot
     internal ProjectCollection ProjectCollection = null!;
     internal ConfigFileRegistry ConfigFileRegistry = null!;
     internal Registry? AutoImports;
-    internal WatchedFiles<Dictionary<PathKey, RootedDirectoryPath>>? autoImportsWatch;
+    internal WatchedFiles<Dictionary<PathKey, RootedDirectoryPath>?>? autoImportsWatch;
     internal CompilerOptions? compilerOptionsForInferredProjects;
     internal Slice<Mapper> inferredProjectContentMappers;
     internal Slice<ByteStringValue> inferredProjectContentMapperExtensions;
@@ -39,7 +39,7 @@ internal sealed partial class Snapshot
 internal sealed partial class SnapshotHost
 {
     // snapshot.go:84. Immutable root owners retain their exact shared headers.
-    internal Snapshot NewSnapshot(ulong id, SnapshotFS fs, ConfigFileRegistry? configFileRegistry, CompilerOptions? compilerOptionsForInferredProjects, UserPreferences userPreferences, Registry? autoImports, WatchedFiles<Dictionary<PathKey, RootedDirectoryPath>>? autoImportsWatch)
+    internal Snapshot NewSnapshot(ulong id, SnapshotFS fs, ConfigFileRegistry? configFileRegistry, CompilerOptions? compilerOptionsForInferredProjects, UserPreferences userPreferences, Registry? autoImports, WatchedFiles<Dictionary<PathKey, RootedDirectoryPath>?>? autoImportsWatch)
     {
         var overlays = Snapshot.SnapshotOverlays(fs);
         var snapshot = new Snapshot
@@ -345,7 +345,7 @@ internal sealed partial class Snapshot
 
             var oldImports = AutoImports ?? Registry.NewRegistry(store.caseSensitivity, userPreferences);
             var(imports, error) = oldImports.Clone(context.Cancellation, new RegistryChange { RequestedFile = requestedPath, RequestedFileName = requestedName, OpenFiles = openFiles, Changed = change.fileChanges.Changed, Created = change.fileChanges.Created, Deleted = change.fileChanges.Deleted, RebuiltPrograms = rebuilt, UserPreferences = change.newConfig }, autoImportHost, store.options.CurrentDirectory, logger?.Fork("UpdateAutoImports"));
-            WatchedFiles<Dictionary<PathKey, RootedDirectoryPath>>? nextImportWatch = null;
+            WatchedFiles<Dictionary<PathKey, RootedDirectoryPath>?>? nextImportWatch = null;
             if (error is null)
                 nextImportWatch = autoImportsWatch?.Clone(imports.NodeModulesDirectories());
             var(snapshotFS, _) = nextFS.FinalizeValue();

@@ -970,13 +970,23 @@
           "name": "TestSession",
           "line": 25,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-session-assertions-promotion.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSessionCloseDoesNotBlockOnIdleCacheCleanTimer",
           "line": 1746,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-session-assertions-promotion.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         }
       ]
     },
@@ -61597,49 +61607,89 @@
           "name": "TestLinuxFanotifyShutdownBeforeStart",
           "line": 30,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestLinuxFanotifyBackendSelection",
           "line": 35,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestLinuxFanotifySubscribeCleansUpAfterMarkFailure",
           "line": 49,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestLinuxFanotifyParseDfidNameRoundTrip",
           "line": 68,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestFanotifyCrossWatcherSameFs",
           "line": 93,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestLinuxFanotifyMaybeWrapUnsupportedFilesystem",
           "line": 124,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestLinuxFanotifyMarkENODEVTagged",
           "line": 147,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestLinuxFanotifyUnsupportedTagSurvivesDirWatchError",
           "line": 164,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         }
       ]
     },
@@ -62033,301 +62083,551 @@
           "name": "TestWatchFileCreate",
           "line": 853,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestWatchFileUpdate",
           "line": 867,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestWatchFileRename",
           "line": 887,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestWatchFileRenameExisting",
           "line": 907,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestWatchFileDelete",
           "line": 928,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeDirCreate",
           "line": 946,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeNonASCIIPath",
           "line": 965,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeDirRename",
           "line": 984,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeDirDelete",
           "line": 1004,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeWatchedDirDeleted",
           "line": 1020,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeSubfileCreate",
           "line": 1071,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeSubfileUpdate",
           "line": 1094,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeSubfileRename",
           "line": 1117,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeSubfileDelete",
           "line": 1142,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeSubdirCreate",
           "line": 1167,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeSubdirDeleteWithFiles",
           "line": 1187,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeSymlinkCreate",
           "line": 1212,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeSymlinkDelete",
           "line": 1232,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeSymlinkedDirectoryRebasesTargetEvents",
           "line": 1252,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestRecursiveSubscribeSymlinkedDirectoryDoesNotFollowDescendantSymlink",
           "line": 1272,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeCoalesceCreateUpdate",
           "line": 1314,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeCoalesceDeleteCreateAsUpdate",
           "line": 1336,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeCoalesceCreateThenDelete",
           "line": 1359,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeCoalesceMultipleUpdates",
           "line": 1389,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeCoalesceUpdateDelete",
           "line": 1410,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeMultipleSameDir",
           "line": 1438,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeMultipleDifferentDirs",
           "line": 1471,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestWatchDirectoriesBatch",
           "line": 1493,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestFastRecursiveWatcherConsolidatesSiblingDirectories",
           "line": 1557,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestFastRecursiveWatcherDoesNotConsolidateSymlinkOutsideRoot",
           "line": 1609,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestConsolidatedSymlinkChildMapsSharedLogicalPath",
           "line": 1672,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestConsolidatedSymlinkChildTerminatesFromSharedLogicalPath",
           "line": 1699,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestConsolidatedChildWatchFiltersAgainstRequestedDir",
           "line": 1728,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestConsolidatedChildWatchIgnoresEventsBeforeSubscribe",
           "line": 1767,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestRecursiveWatchWithIgnoreDoesNotFilterByLogicalRoot",
           "line": 1788,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeMissingDirError",
           "line": 1810,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeNotADirError",
           "line": 1821,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeRejectsNilCallback",
           "line": 1836,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeRejectsRelativePath",
           "line": 1845,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeUnsubscribeIdempotent",
           "line": 1861,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeCloseThenReSubscribe",
           "line": 1888,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeNoGoroutineLeak",
           "line": 1934,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "adapted-original-managed-and-native-passed",
+          "implementationDisposition": "adapted-runtime-observer",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "CLR process threads replace Go goroutines; retained original warmup/+2/2s, distinct from whole original credit."
         },
         {
           "name": "TestSubscribeDeepNestedCreate",
           "line": 1978,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeManyFilesAtOnce",
           "line": 2008,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeTruncateFile",
           "line": 2049,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeConcurrentSubscribeUnsubscribe",
           "line": 2066,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeRenameDir",
           "line": 2088,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeReplaceFileWithDir",
           "line": 2116,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeAppendToFile",
           "line": 2142,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeNoEventsAfterUnsubscribe",
           "line": 2163,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestBackendRunReturnsStartError",
@@ -62366,174 +62666,310 @@
           "name": "TestRenameDirOutOfTreeNoStaleEvents",
           "line": 2291,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestDefaultBackendMatchesPlatform",
           "line": 2344,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestUnavailableBackendReturnsError",
           "line": 2374,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestSubscribeNestedDirDeletionCleansDescendants",
           "line": 2394,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestNonRecursiveFileCreate",
           "line": 2420,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestNonRecursiveFileUpdate",
           "line": 2434,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestNonRecursiveFileDelete",
           "line": 2452,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestNonRecursiveDirCreate",
           "line": 2469,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestNonRecursiveGrandchildIgnored",
           "line": 2483,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestNonRecursiveNewSubdirContentIgnored",
           "line": 2513,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestNonRecursiveAndRecursiveSameDir",
           "line": 2545,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestNonRecursiveWithDeniedSubdir",
           "line": 2577,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestFileWatchCreate",
           "line": 2608,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestFileWatchUpdate",
           "line": 2623,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestFileWatchDelete",
           "line": 2641,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestFileWatchIgnoresSiblings",
           "line": 2659,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestFileWatchMultipleSameDir",
           "line": 2682,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestFileWatchDeleteAndRecreate",
           "line": 2714,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestFileWatchNonExistentTarget",
           "line": 2738,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestRecursiveMoveInPrePopulated",
           "line": 2758,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestAtomicSave",
           "line": 2809,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestAtomicSaveFileWatch",
           "line": 2839,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestReplaceDirWithFile",
           "line": 2868,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestRecreateSubdirAndModify",
           "line": 2897,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestReplaceParentDirWithDifferent",
           "line": 2961,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestRoundTripRename",
           "line": 3016,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         },
         {
           "name": "TestRecursiveWithDeniedSubdir",
           "line": 3055,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "assertionPacket": "docs/progress/lsp-watcher-backend-assertions.json",
+          "managedEvidence": "artifacts/language-services/integration-4/tests/dependencies-48.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-48.json",
+          "adaptation": "Original complete inputs/expectations retained; scheduling and fixture adaptations documented in assertion packet. No original conditional skips triggered."
         }
       ]
     }
   ],
-  "implementationNote": "Initial TypeScript subsystem inventory4820 entries plus core BFS and39 concrete contentmapper/async-IPC dependency entries.86 original functions passed managed and Linux x64 Native dependency23;12 further Change/IPC originals passed managed25, Native pending. Four AstNav functions retain partial Go channels with JavaScript channels pending. The28 host functions are inventoried, not C# executed. Source-written and dependency execution do not establish subsystem completion.",
+  "implementationNote": "Dependency48 passes312 whole original TypeScript test functions plus one separately adapted original watcher runtime observer. Four AstNav entries retain selected Go channels with remaining channels pending. Full service/server/fourslash and remaining direct originals are unfinished; source inventory alone grants no execution credit.",
   "executionDispositionTotals": {
-    "inventoried-not-executed": 4749,
-    "managed-and-native-assertions-passed": 226,
+    "inventoried-not-executed": 4662,
+    "managed-and-native-assertions-passed": 312,
     "partial-managed-native-channels-passed-remaining-channels-pending": 4,
     "external-go-source-generator-not-runtime-closure": 1,
-    "excluded-platform-backend-outside-linux-contract": 26
+    "excluded-platform-backend-outside-linux-contract": 26,
+    "adapted-original-managed-and-native-passed": 1
   },
   "packageLifecycleDispositionTotals": {
     "inventoried-not-executed": 6

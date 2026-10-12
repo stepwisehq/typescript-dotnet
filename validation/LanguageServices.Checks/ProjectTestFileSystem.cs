@@ -91,4 +91,22 @@ internal sealed class ProjectTestFileSystem : IFS, IMutableFileSystem
     }
 
     public Exception? Chtimes(RootedPath path, DateTimeOffset access, DateTimeOffset modification) => throw new NotSupportedException("Original project fixture does not request clocks");
+    // Original MapFS mutation boundaries used by Session symlink/watch assertions.
+    internal void AddSymlink(RootedPath link, RootedPath target)
+    {
+        lock (gate)
+        {
+            inputs[sensitivity.PathKey(link)] = new(link.AsString(), Symlink: target.AsString());
+            current = new(inputs.Values, sensitivity);
+        }
+    }
+
+    internal void MkdirAll(RootedDirectoryPath directory)
+    {
+        lock (gate)
+        {
+            inputs[sensitivity.PathKey(directory.AsPath())] = new(directory.AsString(), Directory: true);
+            current = new(inputs.Values, sensitivity);
+        }
+    }
 }

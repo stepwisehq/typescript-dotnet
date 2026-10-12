@@ -53,8 +53,8 @@ internal static partial class AutomaticTypeAcquisition
 
         // net/url/url.go shouldEscape(mode=encodeQueryComponent): QueryEscape differs
         // iff a byte outside the exact unreserved set is present. Its output is not retained.
-        foreach (char value in packageName.CharSpan)
-            if (value is not (>= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '-' or '_' or '.' or '~'))
+        for (int index = 0; index < packageName.Length; index++)
+            if (packageName[index] is not (>= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '-' or '_' or '.' or '~'))
                 return (NameValidationResult.NameContainsNonURISafeCharacters, default, false);
         return (NameValidationResult.NameOk, default, false);
     }

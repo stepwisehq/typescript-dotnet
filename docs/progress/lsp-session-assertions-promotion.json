@@ -1,0 +1,58 @@
+{
+  "state": "promoted coherent Session/context assertion packet; independent connected review and central build pending",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "originalFunctions": [
+    "TestSession",
+    "TestSessionCloseDoesNotBlockOnIdleCacheCleanTimer"
+  ],
+  "wholeFunctionCredit": 0,
+  "source": {
+    "upstream/TypeScript/tsc/internal/project/session_test.go": "01c27f52931ab39273432ca7c5c6f2575fcd8cd9c62d5502b2d4f020bc4d13ed",
+    "upstream/TypeScript/tsc/internal/testutil/projecttestutil/projecttestutil.go": "be57fca53e1c0b31103b015dd22662670ff81e7e1c2a6d5b20d74f3e1d8bccfa"
+  },
+  "requiredCheckoutDraft": "artifacts/language-services/drafts/references/Program.ServiceCheckout.cs",
+  "requiredExistingTokenJoins": [
+    "validation/Program.Checks/CompilerMapperChecks.cs:115",
+    "validation/Program.Checks/ProgramSemanticRunner.cs:27",
+    "validation/Program.Checks/ProgramSemanticRunner.cs:34"
+  ],
+  "adaptations": [
+    "Original MapFS uses the existing real BaselineFS-backed mutable fixture plus actual symlink and explicit-directory mutation boundaries; no production Session substitute.",
+    "Original generated mock call capture uses locked retained argument headers and required snapshot copies at test reads.",
+    "Original Setup/npm registry map iteration order is nondeterministic; fixture emits the same complete configuration/data through a deterministic serialization order. No raw log byte equality is claimed here.",
+    "T.Parallel groups run sequentially through complete original dispatcher. Original explicit background work and callbacks remain actual production owners.",
+    "Close timer original synctest bubble is observed through the actual installed System timer and real Close, retaining the original elapsed<5s assertion; no direct cleanup call or timestamp overwrite.",
+    "Diagnostic test request token is a real CancellationTokenSource canceled at fixture teardown, retaining original request ID 0."
+  ],
+  "reference": "artifacts/language-services/integration-2/project-original-go.jsonl",
+  "candidateExecution": "pending build44 and central managed/Native",
+  "readiness": "Complete connected source stable for Protocol independent review and central build44; no candidate execution credit.",
+  "files": {
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Change.cs": "de8a39cb51c7ed0387541eb86f7387054eeeced7e6a7af7e05589043571d174c",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Close.cs": "44612644fa761c6d26f633858f84a6394297c084c930658f70fb143e37da2ba3",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.CloseAndSave.cs": "57aa3284ed3c9416ea1027f1ec824c408aea8036bc9fa2047ad2ce1f8664802b",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Closed.cs": "d6d3ce38a0b47468e421d49d313e6b7bcf82ee968a7a378a4a457688b6dbdc7d",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Configuration.cs": "9bd5c48609cab1479e4b92f03a36876739f325060b06a017b0c5f0dc462836a2",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Dispatch.cs": "a7c5b8571c0f11128b8078bd18c847b75bdce203727a0b4268f26becff14151f",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Open.cs": "7fe14e10be178ffaba9be5a30852e51936977d22ddbcb932c523d434ef33e182",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Sharing.cs": "9a80b91cf140f73c7b74f96676c0b930c4524d3e17cd4521ed04cd4cc76e5503",
+    "validation/LanguageServices.Checks/ProjectSessionChecks.Watched.cs": "5178e65b14d5582e289275cd94549079ff3a046f11805d7d3690175da8e240f8",
+    "validation/LanguageServices.Checks/ProjectSessionFixture.cs": "a024a705848ee1465fb6780f3045c9a5af1e88e418b15a2f7819ff8a280d0317",
+    "validation/LanguageServices.Checks/ProjectSessionSchedulingChecks.cs": "78902019627e8d6650fd7a44dbb20009b3f2794d85f69aeb13d448aaf0d2679b",
+    "validation/LanguageServices.Checks/UserPreferenceChecks.ProjectAccess.cs": "76fb7d5c4e1659445954f0b525e6f419efbab8535bd173009df2d10ba3f9f0e0",
+    "validation/LanguageServices.Checks/ProjectTestFileSystem.cs": "371be0afb26ec202a5e5d9e1e66ff40da1d07e67496f8c6a0cb450d152b9f83b",
+    "src/TypeScript.Scanner/Compiler/Program.ServiceDiagnostics.cs": "22bcd0aa301b5f9222e51534809356916a24aee9ee297c880ecad4498901a6e1",
+    "tests/LanguageServices.Tests/ProjectSessionTests.cs": "70df3df17c658b5cf81af590689c0c64e43d090f30336b08de90872c45b553e9",
+    "validation/Program.Checks/CompilerMapperChecks.cs": "05d8b5e093df67f6eabf2952cd1799c9308c1b9b84d6125d41e37699dbbcd967",
+    "validation/Program.Checks/ProgramSemanticRunner.cs": "dd3d0473653f45d3dfb99361f965d7225ba058692b1b55d9c39204d79a6b7ab2",
+    "src/TypeScript.Scanner/Compiler/Program.ServiceCheckout.cs": "ed0a857a8b67dcd45e01dab957ba5a893300e0052456e0762aa803aa5459c132",
+    "validation/Emit.Checks/ResolverChecks.cs": "f6e7fd546fce6b7116488ece2e9e986567a8fbe6ac2f01cefc1660df0791efa2",
+    "validation/Emit.Checks/TsTransformFixture.cs": "3785a3580f2ad7cc86c52443f467d088b3aef0846b89d99741e2f2d182e1f17e",
+    "validation/Program.Checks/CompilerBaselineWalker.cs": "8fd71f6d3b3b600b2290c2a8076a4bde4b26abdc3449040439379d0f83146d5d",
+    "src/TypeScript.Scanner/ProjectSystem/SnapshotHost.cs": "27bba79eef4b33b67485f69ac5b947620f3145bff0b97330211f3013e5bf3c9c",
+    "src/TypeScript.Scanner/ProjectSystem/Snapshot.cs": "2866b38eeddd3d10dfba9eda28d6ccab9f616492c0683cc9de2929013b465ad4",
+    "src/TypeScript.Scanner/ProjectSystem/Ata/ValidatePackageName.cs": "344a6026626c2eae08a3542c769b4611f0b69cb4753e2433a9aa838804300a64",
+    "validation/LanguageServices.Checks/AtaPackageNameChecks.cs": "4e89ae955fee0b5759d6d09436552cca0b3cd0484ff532679c73c0843e94d4c3"
+  },
+  "integration": "Managed47 aborted on actual byte-owned ATA package name CharSpan. URI safety admission now uses raw ByteStringValue indexing; all original package name expectations additionally repeated through owned bytes. All direct ProjectSystem/LanguageServices span consumers audited with backing guards/known string producer. Candidate rerun pending."
+}
