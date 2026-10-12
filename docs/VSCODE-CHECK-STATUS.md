@@ -3,6 +3,9 @@
 
 ## Verified emit performance result
 
+For the timeline and explanation of the work, see the
+[emit performance summary](./EMIT-PERFORMANCE-SUMMARY.md).
+
 The integration6 five-run cohort meets the authorized best-to-best target:
 **Native 10.18s / pinned Go 9.37s = 1.08645×**, below 1.20×. Every run retained
 all 10,031 relative output paths, 150,466,543 exact bytes and the ten complete

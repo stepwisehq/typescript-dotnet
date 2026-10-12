@@ -24,10 +24,12 @@ contracts, not exhaustive correctness or parity with every historical tsc featur
 Only Linux x64 has been qualified. Incremental/build/watch orchestration and language
 services remain outside scope.
 
-The completed VS Code checking performance campaign met its scoped target; see the
-[performance summary](./docs/PERFORMANCE-EPIC-SUMMARY.md). The new emitter's
-[in-repository measurements](./docs/EMIT-ASSESSMENT.md#in-repository-workload-observations)
-are separate evidence. No new external-project performance claim is made.
+The VS Code checking and full-emit performance campaigns met their scoped targets.
+The [checking summary](./docs/PERFORMANCE-EPIC-SUMMARY.md) covers the original
+allocation rollout; the [emit summary](./docs/EMIT-PERFORMANCE-SUMMARY.md) explains
+the additional allocation and runtime work that reached **10.18s Native / 9.37s Go**.
+These are best-of-five results with documented tuning and memory requirements;
+see the [detailed measurements and reproduction](./docs/VSCODE-CHECK-STATUS.md).
 
 Ordinary `tscheck --config <tsconfig> --json` uses genuine Program options and unchanged
 upstream libraries, checks the project and emits JavaScript, declarations and maps
