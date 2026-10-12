@@ -5,14 +5,14 @@ namespace TypeScript.ProjectSystem;
 internal sealed class OwnerCache<K, V, LoadArgs>(Func<K, LoadArgs, V> parse, Func<K, V, LoadArgs, bool>? isExpired = null)
     where K : notnull
 {
-    private sealed class Entry
+    internal sealed class Entry
     {
         internal readonly SemaphoreSlim Mu = new(1, 1);
         internal V Value = default!;
         internal readonly HashSet<ulong> Owners = [];
     }
 
-    private readonly TypeScript.Collections.SyncMap<K, Entry> entries = new();
+    internal readonly TypeScript.Collections.SyncMap<K, Entry> entries = new();
     // session.go logging observes the original Range, rather than inventing a
     // private-state count contract for concurrent cache mutation.
     internal int EntryCount()

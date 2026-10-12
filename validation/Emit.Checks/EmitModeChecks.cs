@@ -36,7 +36,7 @@ public static class EmitModeChecks
         {
             var initial = program.Emit() ?? throw new InvalidOperationException("Missing NoEmit result.");
             Require(!initial.EmitSkipped && initial.Diagnostics.IsNil && initial.EmittedFiles.IsNil && initial.SourceMaps.IsNil, "NoEmit nil-target empty result changed.");
-            var selected = program.Emit(default, new() { TargetSourceFiles = targets }) ?? throw new InvalidOperationException("Missing selected NoEmit result.");
+            var selected = program.Emit(default(CancellationToken), new() { TargetSourceFiles = targets }) ?? throw new InvalidOperationException("Missing selected NoEmit result.");
             Require(selected.EmitSkipped && selected.Diagnostics.IsNil && selected.EmittedFiles.IsNil && selected.SourceMaps.IsNil, "NoEmit selected-target skipped result changed.");
         }
 
@@ -66,7 +66,7 @@ public static class EmitModeChecks
 
         if (name == "BuilderSignatureDespiteNoEmit")
             emitOptions.EmitOnly = EmitOnly.EmitOnlyBuilderSignature;
-        var result = program.Emit(default, emitOptions) ?? throw new InvalidOperationException("Missing public emit result.");
+        var result = program.Emit(default(CancellationToken), emitOptions) ?? throw new InvalidOperationException("Missing public emit result.");
         var root = expected.RootElement;
         Require(result.EmitSkipped == root.GetProperty("EmitSkipped").GetBoolean(), "EmitSkipped differs.");
         Require(result.Diagnostics.Count == root.GetProperty("Diagnostics").GetArrayLength(), "Full empty diagnostic channel differs.");

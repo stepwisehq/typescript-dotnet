@@ -7741,12 +7741,16 @@
       "status": "ported",
       "scope": "Complete original EmitHost ownership and delegates",
       "upstreamSha256": "c579b4d62e4939f08be9ae061b0e4c99d51e15b46ca0c05c55d1811d026fbc38",
-      "destinationSha256": "53eb0646aeecd934f89ff9bbf04144466054270a61dcc490193fd121cf769032",
+      "destinationSha256": "f3c634eb85ba01421088ed33d99ba41960d5fb7f57f8c52b7fb054c5324e8191",
       "emitFunctionCount": 26,
       "emitCampaignReview": "artifacts/emit/source-review/compiler-output.json",
       "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
       "emitCampaignContract": "docs/EMIT-CONTRACT.md",
-      "emitCampaignEvidence": "validation/results/emit-verified.json"
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "languageServicesContextAdaptation": {
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "scope": "One shared Emit algorithm retains full optional service request context into actual checker checkout and semantic/declaration collection; existing token API preserved."
+      }
     },
     {
       "upstream": "tsc/internal/compiler/emitter.go",
@@ -7768,13 +7772,17 @@
       "status": "partial",
       "scope": "Emit, combine, noEmit gating, diagnostics aggregation and declaration cache worker; partial Program counterpart",
       "upstreamSha256": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c",
-      "destinationSha256": "5350b418275bec0bba4ef41c5f1d1e9b91ae8b23e67c109376c6da3400ba0de4",
+      "destinationSha256": "27ab001b483ddd481b408a0a750f30f3c3a2132bbedd1da8916018d0162f1953",
       "emitFunctionCount": 5,
       "emitCampaignReview": "artifacts/emit/source-review/compiler-output.json",
       "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
       "emitCampaignContract": "docs/EMIT-CONTRACT.md",
       "mappingException": "Emit and host roles split from the existing Program.cs partial class; together they map to upstream compiler/program.go without changing algorithms.",
-      "emitCampaignEvidence": "validation/results/emit-verified.json"
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "languageServicesContextAdaptation": {
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "scope": "One shared Emit algorithm retains full optional service request context into actual checker checkout and semantic/declaration collection; existing token API preserved."
+      }
     },
     {
       "upstream": "tsc/internal/compiler/program.go",
@@ -10201,21 +10209,18 @@
     },
     {
       "upstream": "tsc/internal/ls/findallreferences.go",
-      "destination": "src/TypeScript.Scanner/LanguageServices/FindAllReferences.SharedLeaves.cs",
-      "status": "integration-pending",
-      "scope": "partial actual shared models/getContextNode/getRangeOfNode/getFileAndStartPosFromDeclaration; full references remains pending",
+      "destination": "src/TypeScript.Scanner/LanguageServices/FindAllReferences.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
       "upstreamSha256": "48b95717c9504c9e96d20c59ed0ea155a77255c70316b672b0ad66611a8572c5",
       "languageServicesCurrentPacket": {
-        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
-        "destinations": [
-          "src/TypeScript.Scanner/LanguageServices/FindAllReferences.SharedLeaves.cs"
-        ],
-        "scope": "partial actual shared models/getContextNode/getRangeOfNode/getFileAndStartPosFromDeclaration; full references remains pending",
-        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
-        "evidence": "validation/results/language-services-dependencies-39.json",
-        "assessment": "docs/progress/lsp-dependencies-39.md"
-      }
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "assessment": "docs/progress/lsp-dependencies-55.md",
+        "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+      },
+      "destinationSha256": "914dd2e704d6e7d8b150c4ce62828d6a8f44272cf1a6254796d66982679b824f"
     },
     {
       "upstream": "tsc/internal/ls/completions.go",
@@ -10665,6 +10670,247 @@
         "scope": "Full request-context semantic/suggestion/incremental collector closure; genuine checker pool receives request values and cancellation with original lease extent.",
         "sourceStatus": "source-reviewed and scoped Session originals passed managed/Linux x64 Native; whole services unfinished"
       }
+    },
+    {
+      "upstream": "tsc/internal/ls/importTracker.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/ImportTracker.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
+      "upstreamSha256": "4f76411d43813021558d1e90a85df62a8c4742dc276935ea84cc4aeba6f7eeb4",
+      "destinationSha256": "5a1e06d1d41b1f3e994b6d5a98644e5e8a5fcae292dbc655ee258a8ef2f1863e",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "assessment": "docs/progress/lsp-dependencies-55.md",
+        "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/crossproject.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/CrossProject.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
+      "upstreamSha256": "48cf96e0992a6cd90560ad28af2b0218ec404e6125dc2ad9a68f306a052cf63f",
+      "destinationSha256": "d864757673e8ce3909cc5b57af8ebda406fea186ebea00b44d4d0f477dca7450",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "assessment": "docs/progress/lsp-dependencies-55.md",
+        "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/rename.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Rename.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
+      "upstreamSha256": "a3153660eb4995852c1187253b0812833ad3af28ba71230e175ef10d93c97bba",
+      "destinationSha256": "dac1aa941a4c345dbda1c1920fc0636d75f7214541897193703be70476deb1c1",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "assessment": "docs/progress/lsp-dependencies-55.md",
+        "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/documenthighlights.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/DocumentHighlights.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
+      "upstreamSha256": "c544df9da53c678e09c889fe8ace985d225362e246741d7b1c6446f05d733ee9",
+      "destinationSha256": "1f31b1ba7bb6f6bd298dc747a3ae4bebf56c9be098bb7c57456f10cff34ea358",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "assessment": "docs/progress/lsp-dependencies-55.md",
+        "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/diagnostics.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Diagnostics.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
+      "upstreamSha256": "f8ef74fd3c97eb958ab132e02c653f4ad6e244a4f0708f42fc5b666ed809033c",
+      "destinationSha256": "4ce9bde1ae8d5db3b8910da7dc1430a6e085b203731d9de46b3fa8f4abcd01fa",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "assessment": "docs/progress/lsp-dependencies-55.md",
+        "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/api.go",
+      "destination": "src/TypeScript.Scanner/ProjectSystem/Session.API.cs",
+      "status": "ported",
+      "scope": "Complete local Session API update and background snapshot adoption; external embedding transport remains excluded.",
+      "upstreamSha256": "af4e204e6a79d84d65fbe6d3ba286f5955694470bee14b748ad027c3c7ce24e3",
+      "destinationSha256": "6ab884f6a20a17e55c7cd22662075a6b4ee1480a1b70c421edea7deab5ec560c",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "assessment": "docs/progress/lsp-dependencies-55.md",
+        "scope": "Complete local Session API update and background snapshot adoption; external embedding transport remains excluded.",
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+      },
+      "mappingException": "Session partial retains real shared private owners and original function boundaries."
+    },
+    {
+      "upstream": "tsc/internal/compiler/program.go",
+      "destination": "src/TypeScript.Scanner/Compiler/Program.ServiceEmit.cs",
+      "status": "partial",
+      "scope": "Full request-context Emit/declaration companion to existing single Emit algorithm.",
+      "upstreamSha256": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c",
+      "destinationSha256": "a9c259d6cf81caa31d6b64cb85903aea4c029b2abf41583dce9a535a678c74e1",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "assessment": "docs/progress/lsp-dependencies-55.md",
+        "scope": "Full request-context Emit/declaration companion to existing single Emit algorithm.",
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+      },
+      "mappingException": "Explicit CLR request context retains values carried by Go context.Context; existing token API preserved."
+    },
+    {
+      "upstream": "tsc/internal/ls/symbols.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Symbols.SharedLeaves.cs",
+      "status": "partial",
+      "scope": "Required isInNodeModules helper only; complete Symbols owner remains in progress.",
+      "upstreamSha256": "6c886c97b2a531cfe6eac62f7ecbf290e658793277a4dbb035ef3e6d4c277bfb",
+      "destinationSha256": "e443512af2b174c498b818e3e408d6f981bf86e98d74f0da97af4c566418345f",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "assessment": "docs/progress/lsp-dependencies-55.md",
+        "scope": "Required isInNodeModules helper only; complete Symbols owner remains in progress.",
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/core/core.go",
+      "destination": "src/TypeScript.Scanner/Core/ReferenceTraversal.cs",
+      "status": "partial",
+      "scope": "MapNonNil explicit-state callback overload preserving original nil/empty/growth semantics.",
+      "upstreamSha256": "8fe48acf261d22b4d858b2b447ebc503d1c89bb2800d6d0e677ff122a785dcc0",
+      "destinationSha256": "9da8a69ece28b129c6d78d126a89e2e8d68bdeb2ff51ee0db028428033522903",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "assessment": "docs/progress/lsp-dependencies-55.md",
+        "scope": "MapNonNil explicit-state callback overload preserving original nil/empty/growth semantics.",
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/findallreferences_test.go",
+      "destination": "validation/LanguageServices.Checks/FindAllReferencesChecks.cs",
+      "status": "ported",
+      "scope": "Complete original TestImplementationsWorklistDoesNotBlowUp; both40/80 limits preserved.",
+      "upstreamSha256": "737b28abf2df3bdee417144c7c8d4de2540ded0efff23984742f1ebce499d46d",
+      "destinationSha256": "1767bb26c7e35733bddda1761ed88001a66515bc5122538c131c800f3db34821",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "assessment": "docs/progress/lsp-dependencies-55.md",
+        "scope": "Complete original TestImplementationsWorklistDoesNotBlowUp; both40/80 limits preserved.",
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/project/snapshot_test.go",
+      "destination": "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Setup.cs",
+      "status": "partial",
+      "scope": "Complete TestSnapshot10groups and TestProjectIDNarrowing; split original shared setup/assertion bodies into ProjectSnapshotLifetimeChecks partials.",
+      "upstreamSha256": "fe663e4b7a584814638f302752c681bdfb86bc34e40e5d1eacdfef313c31c7aa",
+      "destinationSha256": "b72568d51fd5cbb1774a73f4e57acce36ae8974d72df82235e05080806c8744a",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "assessment": "docs/progress/lsp-dependencies-55.md",
+        "scope": "Complete TestSnapshot10groups and TestProjectIDNarrowing; split original shared setup/assertion bodies into ProjectSnapshotLifetimeChecks partials.",
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending.",
+        "destinations": [
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Cache.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Dispatch.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Errors.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Freeze.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Identity.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Import.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDispatch.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDuplicates.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountExtended.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountParse.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Reuse.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Setup.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Synthetic.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Watch.cs"
+        ]
+      },
+      "mappingException": "C# partial check class groups original functions without changing assertions; Go t.Parallel scheduling adapted to sequential sibling groups."
+    },
+    {
+      "upstream": "tsc/internal/project/refcountcache_test.go",
+      "destination": "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDispatch.cs",
+      "status": "partial",
+      "scope": "Complete original TestRefCountingCaches11groups; other original functions remain in accepted ProjectCacheChecks.",
+      "upstreamSha256": "9e315c00eb7690608d89cd1d6ce7690db74c91874a79a46a02fabc089b20e489",
+      "destinationSha256": "1ea8152c448a05f0bb77c566cae416c1495309366c6d392dd0d41a2b8cb42b86",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "assessment": "docs/progress/lsp-dependencies-55.md",
+        "scope": "Complete original TestRefCountingCaches11groups; other original functions remain in accepted ProjectCacheChecks.",
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending.",
+        "destinations": [
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Cache.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Dispatch.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Errors.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Freeze.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Identity.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Import.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDispatch.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDuplicates.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountExtended.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountParse.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Reuse.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Setup.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Synthetic.cs",
+          "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Watch.cs"
+        ]
+      },
+      "mappingException": "C# partial check class groups original functions without changing assertions; Go t.Parallel scheduling adapted to sequential sibling groups."
+    },
+    {
+      "upstream": null,
+      "destination": "src/TypeScript.Scanner/Compiler/CompilerRequestContext.cs",
+      "status": "compatibility-support",
+      "scope": "New CLR compatibility carrier for Go context.Context values; explicit cancellation plus optional immutable ProtocolRequestContext; no independent compiler algorithm.",
+      "destinationSha256": "b1c720d078bdd5d80bb20680397c60cbfec102368b90ab826468acc3aa763ea8",
+      "languageServicesCurrentPacket": {
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "scope": "New CLR compatibility carrier for Go context.Context values; explicit cancellation plus optional immutable ProtocolRequestContext; no independent compiler algorithm.",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/findallreferences_test.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/LanguageService.ReferenceTestOwner.cs",
+      "status": "partial",
+      "scope": "Required original same-package partial LanguageService struct initialization for Worklist assertion; no fabricated service behavior.",
+      "destinationSha256": "19acce0a28ffa3a2437246e5276d0b928de3a00feff25e4840d87982baf78d17",
+      "languageServicesCurrentPacket": {
+        "evidence": "validation/results/language-services-dependencies-55.json",
+        "scope": "Required original same-package partial LanguageService struct initialization for Worklist assertion; no fabricated service behavior.",
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md"
+      },
+      "upstreamSha256": "737b28abf2df3bdee417144c7c8d4de2540ded0efff23984742f1ebce499d46d"
     }
   ],
   "activePhase": "Language-services and LSP epic from accepted emit/performance 9b8fa74a: comprehensive dependency-first implementation, review, original tests and actual Linux x64 Native AOT transport acceptance. Shared dependency execution passed; complete services and server remain unfinished.",

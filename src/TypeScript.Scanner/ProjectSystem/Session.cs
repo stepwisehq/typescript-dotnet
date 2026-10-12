@@ -49,8 +49,9 @@ internal sealed partial class Session : INpmExecutor
     private ulong scheduledSnapshotUpdateGeneration, diagnosticsRefreshGeneration;
     private readonly object scheduledSnapshotUpdateMu = new(), diagnosticsRefreshMu = new(), warmAutoImportMu = new();
     private bool pendingUserConfigChanges;
-    private readonly object configureMu = new(), userConfigRWMu = new(), pendingFileChangesMu = new(), pendingATAChangesMu = new();
-    private Slice<FileChange> pendingFileChanges;
+    private readonly object configureMu = new(), userConfigRWMu = new(), pendingATAChangesMu = new();
+    internal readonly object pendingFileChangesMu = new();
+    internal Slice<FileChange> pendingFileChanges;
     private Dictionary<ID, ATAStateChange> pendingATAChanges = new();
     private readonly object idleCacheCleanMu = new();
     private IdleTimer? idleCacheCleanTimer;

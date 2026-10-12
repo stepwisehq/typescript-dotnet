@@ -1,0 +1,15 @@
+# Full request-context emit and diagnostics dependency
+
+The [promotion manifest](./lsp-emit-request-context-promotion.json) binds the complete shared emit context path and all six workers from pinned `internal/ls/diagnostics.go`. Production is saved; compilation and behavioral acceptance remain pending.
+
+The existing public CancellationToken emit API and single original Emit/phase algorithm remain. An explicit carrier retains the optional complete request owner through actual checker checkout, semantic collection and declaration collection/cache/host lease. No ambient state, token registry or copied transformer is introduced. Existing Program.ServiceDiagnostics is unchanged. Five validation calls qualify the existing token default without changing inputs or assertions.
+
+The service preserves primary and supplemental source order, all four diagnostic channels and declaration options, disabled-validation allocated empty reports, style preferences, synthesized content-mapper aggregation, related diagnostic headers and worst-category selection. Ordered-map allocation remains lazy and iteration retains insertion order. This is the genuine required server diagnostics dependency; no empty handler substitutes are supplied.
+
+The [emit source review](../../artifacts/language-services/source-review/emit-request-context.json) covers the full carrier and final declaration exposure. Independent review of the six service workers is requested. Later original fourslash diagnostic assertions and actual server diagnostic-flake observer remain necessary; no direct upstream diagnostics test function is fabricated or counted here. Full Server remains an ignored draft until genuine registered service consumers are complete.
+
+## Authored execution controls
+
+Four [shared rows](../../validation/LanguageServices.Checks/SessionDiagnosticsEmitChecks.cs) use the genuine accepted Session fixture, bundled libraries and skipLibCheck. Valid and invalid source each exercise noEmitOnError false and true, retaining the Diagnostics checker lifetime and request ID. Complete before/after protocol reports, all public EmitResult diagnostic fields, output paths/raw contents and EmitSkipped are compared with the [captured values](../../validation/LanguageServices.Checks/SessionDiagnosticsEmitChecks.Captured.cs). The unchanged accepted public diagnostic projector is linked as source rather than replaced. These are four authored differential rows, not additional original upstream functions.
+
+The [tracked additive Go witness](../../tools/language-services-oracle/context_emit_test.go) targets the pinned internal/project package through an additive overlay. Reference capture passed four rows in integration-5/context-emit-go-2.log; the initial two-row noLib capture/log remain preserved separately and do not supply the current expectations. Candidate managed and Native execution remain pending. Per-document diagnostics match the original service channel; no global diagnostic is suppressed or substituted.

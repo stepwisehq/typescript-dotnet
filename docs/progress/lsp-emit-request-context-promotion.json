@@ -1,0 +1,96 @@
+{
+  "status": "source-written-integration-pending",
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/Compiler/CompilerRequestContext.cs",
+      "sha256": "b1c720d078bdd5d80bb20680397c60cbfec102368b90ab826468acc3aa763ea8"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Compiler/Program.Emit.cs",
+      "sha256": "27ab001b483ddd481b408a0a750f30f3c3a2132bbedd1da8916018d0162f1953"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Compiler/EmitHost.cs",
+      "sha256": "f3c634eb85ba01421088ed33d99ba41960d5fb7f57f8c52b7fb054c5324e8191"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Compiler/Program.ServiceEmit.cs",
+      "sha256": "a9c259d6cf81caa31d6b64cb85903aea4c029b2abf41583dce9a535a678c74e1"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Diagnostics.cs",
+      "sha256": "4ce9bde1ae8d5db3b8910da7dc1430a6e085b203731d9de46b3fa8f4abcd01fa"
+    },
+    {
+      "path": "validation/Program.Checks/CompilerEmitRunner.cs",
+      "sha256": "9565bb11541226aca7f81018d981fbb1c7aee1f664251d388e8179cafe452dab"
+    },
+    {
+      "path": "validation/Emit.Checks/EmitModeChecks.cs",
+      "sha256": "b58cb445667b1a00afc4f4ad0f3c5ea3d561497c1e4fc8dcac5f2acf274789a4"
+    },
+    {
+      "path": "validation/Emit.Checks/EmitBenchmarkChecks.cs",
+      "sha256": "6f978fd468ca00599d2f30cf1fb9b49c65407fab502c24a27e8936c5d78535ab"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/SessionDiagnosticsEmitChecks.cs",
+      "sha256": "68346c56bb8d8ce5843741d4c2ae6aa17eb10a892875ef06a96f0d73783048eb"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/SessionDiagnosticsEmitChecks.Captured.cs",
+      "sha256": "171ee194bdd0438eaa959f9d5f78eca6da14fe7bc6f155cbc012370085678fe2"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/SessionDiagnosticsEmitTests.cs",
+      "sha256": "ef5136f061627986528907e1a5be0c7ce47f681f77abc97cb2279a5f6799265d"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/LanguageServices.Checks.csproj",
+      "sha256": "193ebc9d1e7d9a98ade41e7ec618baeb18c2385d18a9a1372033a89b61e2e6ad"
+    },
+    {
+      "path": "validation/Emit.Checks/TsDiagnosticProjection.cs",
+      "sha256": "78c8d8a511a20f09e8c334fefb930bb9bb52551424e925bfc38670438f7dd3c1"
+    },
+    {
+      "path": "tools/language-services-oracle/context_emit_test.go",
+      "sha256": "410892720226fb5154192de6fbf284ed13fd3c2fd0c2db7267354644ce0ef73b"
+    }
+  ],
+  "sources": [
+    {
+      "path": "upstream/TypeScript/tsc/internal/compiler/program.go",
+      "sha256": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/diagnostics.go",
+      "sha256": "f8ef74fd3c97eb958ab132e02c653f4ad6e244a4f0708f42fc5b666ed809033c"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/compiler/emitHost.go",
+      "sha256": "c579b4d62e4939f08be9ae061b0e4c99d51e15b46ca0c05c55d1811d026fbc38"
+    }
+  ],
+  "review": "artifacts/language-services/source-review/emit-request-context.json",
+  "diagnosticsReview": "pending independent six-worker source review",
+  "adaptations": [
+    "One shared existing Emit algorithm carries cancellation and optional immutable full request owner; no ambient state or duplicated transforms.",
+    "Actual checker checkout, semantic and declaration collectors retain request ID/lifetime/locale/capabilities. Existing ServiceDiagnostics remains unchanged.",
+    "Five token-default calls explicitly disambiguate the retained public CancellationToken API.",
+    "Diagnostics primary/supplemental order, owned primary slice and related headers remain upstream; lazy ordered-map owner preserves nil allocation and insertion order."
+  ],
+  "verification": "No new execution claimed; root coordinates integration and subsequent actual service/transport assertions.",
+  "integrationCorrections": [
+    "Build51: narrow ProtocolRequestContext imports preserve actual Scanner Diagnostic type; EmitHost needs no protocol namespace import."
+  ],
+  "controls": {
+    "classification": "authored differential",
+    "rows": 4,
+    "witness": "tools/language-services-oracle/context_emit_test.go",
+    "goReference": "artifacts/language-services/integration-5/context-emit-go-2.log",
+    "candidateExecution": "pending",
+    "scope": "Real Session to full ProvideDiagnostics, full-context Emit including NoEmitOnError false/true, full ProvideDiagnostics. Valid and invalid sources in bundled-library environment with skipLibCheck; complete per-document reports, complete public EmitResult diagnostic fields and exact output paths/content/disposition. Global diagnostics are not replaced by per-document reports."
+  }
+}

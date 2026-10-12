@@ -532,6 +532,15 @@
       "status": "source-review-clear-managed-and-native-dependency-assertions-passed",
       "portSha256": "eab4f6059cfde7e0444097fd763060e9825e5be1ce2727d29d7e623383bffcb6",
       "upstreamSha256": "f6df3237020bc8da0b4d8d4c236abd0196210f2e57093e679a56446cd95ccc96"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/project/api.go",
+      "port": "src/TypeScript.Scanner/ProjectSystem/Session.API.cs",
+      "upstreamFunctions": 2,
+      "scope": "complete local Session API update and retained background adoption workers required by original graph assertions; embedding transport/endpoint excluded",
+      "status": "source-written-integration-pending",
+      "sourceSha256": "af4e204e6a79d84d65fbe6d3ba286f5955694470bee14b748ad027c3c7ce24e3",
+      "portSha256": "6ab884f6a20a17e55c7cd22662075a6b4ee1480a1b70c421edea7deab5ec560c"
     }
   ],
   "adaptations": [

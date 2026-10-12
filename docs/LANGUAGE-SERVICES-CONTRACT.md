@@ -79,6 +79,9 @@ Direct Go-to-C# mappings and meaningful adaptations belong in
   are external to editor services. Do not advertise them or fake success. Explicit
   unsupported-method behavior and the original tests affected by this boundary must
   be visible. This boundary does not exclude editor project-info or mapping requests.
+  The local `project/api.go` snapshot update/adoption workers are required by the
+  original snapshot assertions and share genuine Session state; their implementation
+  does not add the excluded embedding transport or advertise an API endpoint.
 - Preserve concrete upstream gaps, including limited registered code actions, no
   semantic-token delta provider, and documented reference/symlink TODOs. Inventory
   affected tests/paths; do not convert an upstream limitation into a new port omission.
@@ -163,8 +166,8 @@ A source scan separates actual `Test*` entries from `TestMain` package lifecycle
 
 The [per-file/function inventory](./language-services-upstream-tests.json) records
 4,442 source test files, their hashes and 4,820 test entrypoints. One concrete core
-BFS dependency was added afterward. The inventory records312 whole original TypeScript-repository functions plus one separately adapted original runtime observation passed at
-reviewed dependency48; remaining execution and detailed
+BFS dependency was added afterward. The inventory records316 whole original TypeScript-repository functions plus one separately adapted original runtime observation passed at
+dependency55 (final evidence review recorded separately); remaining execution and detailed
 dispositions are still work.
 These are function identities, not table-row, assertion or pass counts. The original
 investigations also report raw `Test`-prefixed declaration counts; those include
@@ -177,7 +180,7 @@ identified. Per-test dispositions and original assertions remain acceptance work
 | Internal milestone | Complete owners before consumers | Status |
 | --- | --- | --- |
 | Shared foundations | Protocol/codecs/converters; checker queries/hover; AST navigation; project ownership utilities | In progress |
-| Reusable project environment | Overlays, snapshots, caches, graph/pool, session lifecycle, preferences, hosts | Complete production counterparts promoted and source-reviewed through Session/Snapshot; complete original Session/pool assertions pass managed and Native; remaining Snapshot/API/registry/refcount assertions in progress |
+| Reusable project environment | Overlays, snapshots, caches, graph/pool, session lifecycle, preferences, hosts | Complete production counterparts promoted and source-reviewed through Session/Snapshot; complete original Session/pool assertions pass managed and Native; Snapshot/API/refcount originals pass managed/Native; Registry assertions in progress |
 | Shared editing and indexing | Formatting, change tracking, autoimport, display/source maps | Formatting/change/autoimport dependencies scoped-verified at f5feaa6a; display/source-map/semantic consumers promoted, verification pending |
 | Semantic services | All listed upstream request algorithms and cross-project interactions | In progress: full hover/signature/definition/source-definition counterparts compile and are source-reviewed; direct formatting assertions pass managed/Native, service comparisons remain pending; other consumers unfinished |
 | Server and full acceptance | Real dispatch/transport, direct/fourslash comparisons, Native AOT, review and regressions | Missing |

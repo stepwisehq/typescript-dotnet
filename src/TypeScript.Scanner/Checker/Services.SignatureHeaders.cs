@@ -39,4 +39,16 @@ public sealed partial class Checker
 
     // exports.go:231.
     internal static bool IsTupleType(Type type) => isTupleType(type);
+    // services.go:508. Keep the retained byte name through both original table
+    // lookups; the accepted public string wrapper remains unchanged.
+    internal (Symbol Parameter, Symbol Member) GetSymbolsOfParameterPropertyDeclaration(Node parameter, ByteStringValue name)
+    {
+        var constructor = parameter.Parent;
+        var declaration = constructor.Parent;
+        var parameterSymbol = getSymbol(constructor.Locals(), name, SymbolFlags.Value);
+        var propertySymbol = getSymbol(getMembersOfSymbol(declaration.Symbol()), name, SymbolFlags.Value);
+        if (parameterSymbol != null && propertySymbol != null)
+            return (parameterSymbol, propertySymbol);
+        throw new InvalidOperationException("There should exist two symbols, one as property declaration and one as parameter declaration");
+    }
 }

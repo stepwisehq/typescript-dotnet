@@ -6,7 +6,7 @@ internal readonly record struct RefCountCacheOptions(bool DisableDeletion = fals
 internal sealed class RefCountCache<K, V, AcquireArgs>(RefCountCacheOptions options, Func<K, AcquireArgs, V> parse)
     where K : notnull
 {
-    private sealed class Entry
+    internal sealed class Entry
     {
         internal readonly SemaphoreSlim Mu = new(1, 1);
         internal V Value = default!;
@@ -15,7 +15,7 @@ internal sealed class RefCountCache<K, V, AcquireArgs>(RefCountCacheOptions opti
 
     public RefCountCacheOptions Options { get; } = options;
 
-    private readonly TypeScript.Collections.SyncMap<K, Entry> entries = new();
+    internal readonly TypeScript.Collections.SyncMap<K, Entry> entries = new();
     // session.go logging observes the original Range, rather than inventing a
     // private-state count contract for concurrent cache mutation.
     internal int EntryCount()

@@ -1,0 +1,252 @@
+{
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "status": "complete-connected-packet-promoted-source-stable-independent-review-and-central-build-pending",
+  "sources": [
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/findallreferences.go",
+      "sha256": "48b95717c9504c9e96d20c59ed0ea155a77255c70316b672b0ad66611a8572c5",
+      "lines": 2764,
+      "functions": 103,
+      "destination": "FindAllReferences.cs",
+      "status": "complete-counterpart-source-written-independent-review-and-execution-pending"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/crossproject.go",
+      "sha256": "48cf96e0992a6cd90560ad28af2b0218ec404e6125dc2ad9a68f306a052cf63f",
+      "lines": 436,
+      "functions": 8,
+      "destination": "CrossProject.cs",
+      "status": "complete-counterpart-source-written-independent-review-and-execution-pending"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/rename.go",
+      "sha256": "a3153660eb4995852c1187253b0812833ad3af28ba71230e175ef10d93c97bba",
+      "lines": 463,
+      "functions": 20,
+      "destination": "Rename.cs",
+      "status": "complete-counterpart-source-written-independent-review-and-execution-pending"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/documenthighlights.go",
+      "sha256": "c544df9da53c678e09c889fe8ace985d225362e246741d7b1c6446f05d733ee9",
+      "lines": 797,
+      "functions": 32,
+      "destination": "DocumentHighlights.cs",
+      "status": "complete-counterpart-source-written-independent-review-and-execution-pending"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/importTracker.go",
+      "sha256": "4f76411d43813021558d1e90a85df62a8c4742dc276935ea84cc4aeba6f7eeb4",
+      "lines": 768,
+      "functions": 20,
+      "destination": "ImportTracker.cs",
+      "status": "complete-counterpart-source-written-independent-review-and-execution-pending"
+    }
+  ],
+  "constraints": [
+    "Merge/rehome accepted real References shared leaves without duplicate workers",
+    "No single-project/empty-success feature substitute",
+    "Preserve required copied outputs, zero set backing, byte-content keys, checker leases and contentmapper fidelity",
+    "Actual original implementation worklist retained reference/group growth assertions are required; no new private census",
+    "No builds or workloads by owner; root central integration"
+  ],
+  "apiDependencies": [
+    "Actual IProject and Session/Server cross-project orchestrator",
+    "Complete accepted semantic source-map/utility/display owners",
+    "Existing retained checker public queries and binder identity",
+    "Real protocol References/VSReferences/Implementation/Rename/DocumentHighlight DTO owners",
+    "Complete importTracker.go import/reexport graph and module-reference traversal"
+  ],
+  "originalDirectTests": [
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/findallreferences_test.go",
+      "sha256": "737b28abf2df3bdee417144c7c8d4de2540ded0efff23984742f1ebce499d46d",
+      "functions": 1,
+      "name": "TestImplementationsWorklistDoesNotBlowUp",
+      "status": "unchanged-original40/80-growth-assertions-source-written-execution-pending"
+    }
+  ],
+  "draftProgress": {
+    "FindAllReferences": "All103 original workers assembled; three accepted shared leaves copied unchanged for coherent rehoming. Main state/import/reexport/base-type/search and complete response conversion bodies present.",
+    "ImportTracker": "All20 original workers assembled and source-ordered; complete lazy import/reexport/module graph.",
+    "CrossProject": "All8 original workers assembled; invoked/restartable yield lifetime, context checker leases and workgroup phases retained.",
+    "Rename": "All20 original workers assembled/source-ordered; actual byte/context/protocol consumers.",
+    "DocumentHighlights": "All32 original workers assembled/source-ordered including syntactic ownership traversal.",
+    "checkout": "Complete context companion already promoted/reviewed in accepted0bd3b6c3, no new change.",
+    "compiledFreeze": "Root build49 Snapshot/API gate; all new packet code remains ignored drafts."
+  },
+  "focusedDependencies": [
+    {
+      "draft": "Services.SignatureHeaders.cs",
+      "target": "src/TypeScript.Scanner/Checker/Services.SignatureHeaders.cs",
+      "reason": "Borrowed ByteStringValue parameter-property name producer\u2192both actual getSymbol workers; public string wrapper unchanged."
+    },
+    {
+      "draft": "Core.ReferenceTraversal.cs",
+      "target": "src/TypeScript.Scanner/Core/ReferenceTraversal.cs",
+      "reason": "Same MapNonNil algorithm for actual explicit-state reference-class callbacks, preserves nil/empty output growth."
+    },
+    {
+      "draft": "Symbols.SharedLeaves.cs",
+      "target": "src/TypeScript.Scanner/LanguageServices/Symbols.SharedLeaves.cs",
+      "reason": "Original symbols.go:623 node_modules boundary helper; full Symbols owner remains future scope."
+    },
+    {
+      "draft": "LanguageService.ReferenceTestOwner.cs",
+      "target": "src/TypeScript.Scanner/LanguageServices/LanguageService.ReferenceTestOwner.cs",
+      "reason": "Original Worklist test partial Go struct admission preserves actual Program+Converters only."
+    }
+  ],
+  "ownershipAdaptations": [
+    "FileReference.TextRange field pointer retains its actual containing owner; node-derived range owns its cached value.",
+    "Location Go value is copied in generic combiner despite protocol CLR class; LocationLink pointers retain identity.",
+    "Nested state-owner grouping preserves original worker boundaries/order; recursive callback owners cache child delegates, save/restore JSX result frame.",
+    "Zero sets keep nullable backing until first Add; explicit initialized maps and original capacities remain initialized.",
+    "Go iter.Seq provider lifetime stays around callback invocation; no escaping snapshot IEnumerable.",
+    "All SourceFile text consumers use actual borrowed TextView/FromView; inherited Node.TextValue is only used for actual node text kinds."
+  ],
+  "draftFiles": [
+    {
+      "path": "artifacts/language-services/drafts/references/Core.ReferenceTraversal.cs",
+      "sha256": "9da8a69ece28b129c6d78d126a89e2e8d68bdeb2ff51ee0db028428033522903"
+    },
+    {
+      "path": "artifacts/language-services/drafts/references/CrossProject.cs",
+      "sha256": "d864757673e8ce3909cc5b57af8ebda406fea186ebea00b44d4d0f477dca7450"
+    },
+    {
+      "path": "artifacts/language-services/drafts/references/DocumentHighlights.cs",
+      "sha256": "1f31b1ba7bb6f6bd298dc747a3ae4bebf56c9be098bb7c57456f10cff34ea358"
+    },
+    {
+      "path": "artifacts/language-services/drafts/references/FindAllReferences.cs",
+      "sha256": "914dd2e704d6e7d8b150c4ce62828d6a8f44272cf1a6254796d66982679b824f"
+    },
+    {
+      "path": "artifacts/language-services/drafts/references/FindAllReferencesChecks.cs",
+      "sha256": "1767bb26c7e35733bddda1761ed88001a66515bc5122538c131c800f3db34821"
+    },
+    {
+      "path": "artifacts/language-services/drafts/references/FindAllReferencesTests.cs",
+      "sha256": "b3a978e7730143e360504011ddf817779ffa15df7456300017616d36c538002f"
+    },
+    {
+      "path": "artifacts/language-services/drafts/references/ImportTracker.cs",
+      "sha256": "5a1e06d1d41b1f3e994b6d5a98644e5e8a5fcae292dbc655ee258a8ef2f1863e"
+    },
+    {
+      "path": "artifacts/language-services/drafts/references/LanguageService.ReferenceTestOwner.cs",
+      "sha256": "19acce0a28ffa3a2437246e5276d0b928de3a00feff25e4840d87982baf78d17"
+    },
+    {
+      "path": "artifacts/language-services/drafts/references/Program.ServiceCheckout.cs",
+      "sha256": "ed0a857a8b67dcd45e01dab957ba5a893300e0052456e0762aa803aa5459c132"
+    },
+    {
+      "path": "artifacts/language-services/drafts/references/Rename.cs",
+      "sha256": "dac1aa941a4c345dbda1c1920fc0636d75f7214541897193703be70476deb1c1"
+    },
+    {
+      "path": "artifacts/language-services/drafts/references/Services.SignatureHeaders.cs",
+      "sha256": "37216831f2f8d50f6383e8b83edd76c2e28d9c9317d2f6d34e1e8fd482542fdf"
+    },
+    {
+      "path": "artifacts/language-services/drafts/references/Symbols.SharedLeaves.cs",
+      "sha256": "e443512af2b174c498b818e3e408d6f981bf86e98d74f0da97af4c566418345f"
+    }
+  ],
+  "promotedFiles": [
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/FindAllReferences.cs",
+      "sha256": "914dd2e704d6e7d8b150c4ce62828d6a8f44272cf1a6254796d66982679b824f",
+      "priorSha256": null,
+      "draft": "artifacts/language-services/drafts/references/FindAllReferences.cs"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/ImportTracker.cs",
+      "sha256": "5a1e06d1d41b1f3e994b6d5a98644e5e8a5fcae292dbc655ee258a8ef2f1863e",
+      "priorSha256": null,
+      "draft": "artifacts/language-services/drafts/references/ImportTracker.cs"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/CrossProject.cs",
+      "sha256": "d864757673e8ce3909cc5b57af8ebda406fea186ebea00b44d4d0f477dca7450",
+      "priorSha256": null,
+      "draft": "artifacts/language-services/drafts/references/CrossProject.cs"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Rename.cs",
+      "sha256": "dac1aa941a4c345dbda1c1920fc0636d75f7214541897193703be70476deb1c1",
+      "priorSha256": null,
+      "draft": "artifacts/language-services/drafts/references/Rename.cs"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/DocumentHighlights.cs",
+      "sha256": "1f31b1ba7bb6f6bd298dc747a3ae4bebf56c9be098bb7c57456f10cff34ea358",
+      "priorSha256": null,
+      "draft": "artifacts/language-services/drafts/references/DocumentHighlights.cs"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Symbols.SharedLeaves.cs",
+      "sha256": "e443512af2b174c498b818e3e408d6f981bf86e98d74f0da97af4c566418345f",
+      "priorSha256": null,
+      "draft": "artifacts/language-services/drafts/references/Symbols.SharedLeaves.cs"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/LanguageService.ReferenceTestOwner.cs",
+      "sha256": "19acce0a28ffa3a2437246e5276d0b928de3a00feff25e4840d87982baf78d17",
+      "priorSha256": null,
+      "draft": "artifacts/language-services/drafts/references/LanguageService.ReferenceTestOwner.cs"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/ReferenceTraversal.cs",
+      "sha256": "9da8a69ece28b129c6d78d126a89e2e8d68bdeb2ff51ee0db028428033522903",
+      "priorSha256": null,
+      "draft": "artifacts/language-services/drafts/references/Core.ReferenceTraversal.cs"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Services.SignatureHeaders.cs",
+      "sha256": "37216831f2f8d50f6383e8b83edd76c2e28d9c9317d2f6d34e1e8fd482542fdf",
+      "priorSha256": "a95a0cc0de527e1f5b42413f626db290272a068536726def530a20f2778ff9ab",
+      "draft": "artifacts/language-services/drafts/references/Services.SignatureHeaders.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/FindAllReferencesChecks.cs",
+      "sha256": "1767bb26c7e35733bddda1761ed88001a66515bc5122538c131c800f3db34821",
+      "priorSha256": null,
+      "draft": "artifacts/language-services/drafts/references/FindAllReferencesChecks.cs"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/FindAllReferencesTests.cs",
+      "sha256": "b3a978e7730143e360504011ddf817779ffa15df7456300017616d36c538002f",
+      "priorSha256": null,
+      "draft": "artifacts/language-services/drafts/references/FindAllReferencesTests.cs"
+    }
+  ],
+  "rehomedFiles": [
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/FindAllReferences.SharedLeaves.cs",
+      "sha256": "72b6a4e6ef3a934508f468763ae4c4176ed6c272e4c1db8cff2fa5b9b11931d3",
+      "disposition": "Three unchanged real shared workers and RefInfo rehomed in complete FindAllReferences counterpart; no duplicate members."
+    }
+  ],
+  "testDispatch": {
+    "type": "LanguageServices.Checks.FindAllReferencesChecks",
+    "method": "RunAll",
+    "wholeOriginalFunctions": 1,
+    "authoredControls": 0,
+    "execution": "pending",
+    "fixture": "Actual bundled Program plus original partial LanguageService struct admission; unchanged40/80 growth limits."
+  },
+  "remainingLimitations": [
+    "Five actual Session-driven autoimport Registry originals remain queued separately.",
+    "Cross-project/References/Rename/Highlights full service corpus and LSP request acceptance remain pending.",
+    "Original shared Worklist assertion has not yet executed in C#; no source-written function count is a behavior pass."
+  ],
+  "compileHold": "Root build50 released; this packet is stable for coordinated integration with reviewed request-context Emit closure.",
+  "integrationDiagnostics": [
+    "Build51 declaration-only namespace collisions: explicit Scanner.Kind in all five counterparts and Scanner.Message in Rename retain exact original owners; no algorithm/expectation changes.",
+    "Build52 complete family: all stale Kind.KindFoo aliases verified against KindGenerated and changed to Kind.Foo; four PathKey consumers use FromValue(PathKeyValue()) without materialization. Original Go mandatory script/context/alias dereferences explicitly annotated; RefState.context is set by sole newState producer. Existing explicit goto case preserves original switch fallthrough after enum correction.",
+    "Build53: two existing package workers bound to actual declared owners PrinterUtilities.RangeIsOnSingleLine and NameResolver.GetLocalSymbolForExportDefault; no helper expansion or behavior change."
+  ]
+}

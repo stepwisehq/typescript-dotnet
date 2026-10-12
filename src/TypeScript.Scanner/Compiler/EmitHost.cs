@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port of tsc/internal/compiler/emitHost.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
 using TypeScript.Scanner;
+
 using TypeScript.DiagnosticPrinting;
 using TypeScript.Modules;
 using TypeScript.PackageJson;
@@ -44,6 +45,13 @@ internal sealed class CompilerEmitHost : ICompilerEmitHost
     internal static (CompilerEmitHost Host, Action Done) New(CancellationToken context, Program program, SourceFile file)
     {
         var(checker, done) = program.GetTypeCheckerForFile(context, file);
+        return (new CompilerEmitHost(program, checker.NewEmitResolver), done);
+    }
+
+    // Same host/checker owner; only the actual request checkout retains values.
+    internal static (CompilerEmitHost Host, Action Done) New(CompilerRequestContext context, Program program, SourceFile file)
+    {
+        var(checker, done) = context.Request is { } request ? program.GetTypeCheckerForFile(request, file) : program.GetTypeCheckerForFile(context.Cancellation, file);
         return (new CompilerEmitHost(program, checker.NewEmitResolver), done);
     }
 

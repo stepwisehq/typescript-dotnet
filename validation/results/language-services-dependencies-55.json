@@ -1,0 +1,152 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "platform": "Linux x64",
+  "status": "reviewed-dependency-packet-managed-and-native-passed-epic-incomplete",
+  "baseCheckpoint": "0bd3b6c3",
+  "priorAcceptedEvidence": "validation/results/language-services-dependencies-48.json",
+  "managed": {
+    "total": 400,
+    "passed": 400,
+    "failed": 0,
+    "notExecuted": 0,
+    "durationSecondsReported": 70,
+    "trx": "artifacts/language-services/integration-5/tests/dependencies-55.trx",
+    "build": "artifacts/language-services/integration-5/build-55.log",
+    "buildSeconds": 22.78,
+    "buildWarnings": 0,
+    "buildErrors": 0,
+    "originalSkipMarkers": 0,
+    "focusedOriginals": {
+      "passed": 4,
+      "trx": "artifacts/language-services/integration-5/tests/focused-54.trx"
+    },
+    "contextEmit": {
+      "passed": 4,
+      "durationMillisecondsReported": 765,
+      "trx": "artifacts/language-services/integration-5/tests/context-emit-55.trx"
+    },
+    "retainedEmit": {
+      "passed": 10,
+      "durationMillisecondsReported": 765,
+      "trx": "artifacts/language-services/integration-5/tests/emit-retained-55.trx",
+      "scope": "Existing Emit mode, checker mutex and output write-failure controls; not full compiler corpus"
+    },
+    "programEmitCompatibility": {
+      "log": "artifacts/language-services/integration-5/emit-compatibility-55.log",
+      "buildSeconds": 3.92,
+      "errors": 0,
+      "warnings": 0
+    },
+    "excluded": "Eight unchanged authored decoder-depth probes retain Native23 evidence; not counted in this run."
+  },
+  "native": {
+    "executable": "artifacts/language-services/integration-5/native-55/LanguageServices.Validation",
+    "sha256": "c0f4f939bb1371aabdb3de7fe096e8f622862cb15b3ca6cd9ac301d1919b43b1",
+    "publishLog": "artifacts/language-services/integration-5/native-publish-55.log",
+    "executionLog": "artifacts/language-services/integration-5/native-run-55.log",
+    "exitCode": 0,
+    "originalTypeScriptTestFunctions": 316,
+    "adaptedOriginalWatcherRuntimeObservations": 1,
+    "authoredControls": 60,
+    "ilcInputRecord": "artifacts/language-services/integration-5/native-inputs-55.json",
+    "ilcInputs": 179,
+    "isolatedFatalNotification": {
+      "returnCode": -6,
+      "timedOut": false,
+      "elapsedSeconds": 0.009454508995986544,
+      "requiredMarkerFound": true,
+      "passed": true
+    },
+    "originalSkipMarkers": 0,
+    "retainedExternalAndPartialChannels": "NFD, locale, regexp/quoting and AstNav original/selected channels unchanged; inherited qualifications and exclusions remain. See execution log and previous accepted evidence."
+  },
+  "sourceSnapshot": {
+    "src/TypeScript.Scanner/Checker/Services.SignatureHeaders.cs": "37216831f2f8d50f6383e8b83edd76c2e28d9c9317d2f6d34e1e8fd482542fdf",
+    "src/TypeScript.Scanner/Compiler/CompilerRequestContext.cs": "b1c720d078bdd5d80bb20680397c60cbfec102368b90ab826468acc3aa763ea8",
+    "src/TypeScript.Scanner/Compiler/EmitHost.cs": "f3c634eb85ba01421088ed33d99ba41960d5fb7f57f8c52b7fb054c5324e8191",
+    "src/TypeScript.Scanner/Compiler/Program.Emit.cs": "27ab001b483ddd481b408a0a750f30f3c3a2132bbedd1da8916018d0162f1953",
+    "src/TypeScript.Scanner/Compiler/Program.ServiceEmit.cs": "a9c259d6cf81caa31d6b64cb85903aea4c029b2abf41583dce9a535a678c74e1",
+    "src/TypeScript.Scanner/Core/ReferenceTraversal.cs": "9da8a69ece28b129c6d78d126a89e2e8d68bdeb2ff51ee0db028428033522903",
+    "src/TypeScript.Scanner/LanguageServices/CrossProject.cs": "d864757673e8ce3909cc5b57af8ebda406fea186ebea00b44d4d0f477dca7450",
+    "src/TypeScript.Scanner/LanguageServices/Diagnostics.cs": "4ce9bde1ae8d5db3b8910da7dc1430a6e085b203731d9de46b3fa8f4abcd01fa",
+    "src/TypeScript.Scanner/LanguageServices/DocumentHighlights.cs": "1f31b1ba7bb6f6bd298dc747a3ae4bebf56c9be098bb7c57456f10cff34ea358",
+    "src/TypeScript.Scanner/LanguageServices/FindAllReferences.cs": "914dd2e704d6e7d8b150c4ce62828d6a8f44272cf1a6254796d66982679b824f",
+    "src/TypeScript.Scanner/LanguageServices/ImportTracker.cs": "5a1e06d1d41b1f3e994b6d5a98644e5e8a5fcae292dbc655ee258a8ef2f1863e",
+    "src/TypeScript.Scanner/LanguageServices/LanguageService.ReferenceTestOwner.cs": "19acce0a28ffa3a2437246e5276d0b928de3a00feff25e4840d87982baf78d17",
+    "src/TypeScript.Scanner/LanguageServices/Rename.cs": "dac1aa941a4c345dbda1c1920fc0636d75f7214541897193703be70476deb1c1",
+    "src/TypeScript.Scanner/LanguageServices/Symbols.SharedLeaves.cs": "e443512af2b174c498b818e3e408d6f981bf86e98d74f0da97af4c566418345f",
+    "src/TypeScript.Scanner/ProjectSystem/OwnerCache.cs": "9a286b498fcaa3b7bcd5b585b3349c0578a46a96703f771336ac98ebc13ef199",
+    "src/TypeScript.Scanner/ProjectSystem/RefCountCache.cs": "e3ea1eed643081c20e9c871d3f1d960ba4fec7e6c477f833b4c4fb652c69421f",
+    "src/TypeScript.Scanner/ProjectSystem/Session.API.cs": "6ab884f6a20a17e55c7cd22662075a6b4ee1480a1b70c421edea7deab5ec560c",
+    "src/TypeScript.Scanner/ProjectSystem/Session.cs": "2ef60c2d89fa13f718e285fd7571e710d44cd7a0f2bb406ae947faebb89148ac",
+    "tests/LanguageServices.Tests/FindAllReferencesTests.cs": "b3a978e7730143e360504011ddf817779ffa15df7456300017616d36c538002f",
+    "tests/LanguageServices.Tests/ProjectSnapshotLifetimeTests.cs": "f15364191c691c2cd7376957b3b9258473e88db62302ae3801f64c05ac07e3c1",
+    "tests/LanguageServices.Tests/SessionDiagnosticsEmitTests.cs": "ef5136f061627986528907e1a5be0c7ce47f681f77abc97cb2279a5f6799265d",
+    "validation/Emit.Checks/EmitBenchmarkChecks.cs": "6f978fd468ca00599d2f30cf1fb9b49c65407fab502c24a27e8936c5d78535ab",
+    "validation/Emit.Checks/EmitModeChecks.cs": "b58cb445667b1a00afc4f4ad0f3c5ea3d561497c1e4fc8dcac5f2acf274789a4",
+    "validation/LanguageServices.Checks/FindAllReferencesChecks.cs": "1767bb26c7e35733bddda1761ed88001a66515bc5122538c131c800f3db34821",
+    "validation/LanguageServices.Checks/LanguageServices.Checks.csproj": "193ebc9d1e7d9a98ade41e7ec618baeb18c2385d18a9a1372033a89b61e2e6ad",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Cache.cs": "1537b7dfcb2c149516e7cc627b826bb6968cfff0290fbd756137779697a074f0",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Dispatch.cs": "42258f0028d56f557828f8d7309f49275dfeb13ccb2d8f90afe8067227395064",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Errors.cs": "71b5bd261756ba0c577c612342c92dc52bd707feb5be7eeb9240dc45f9544128",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Freeze.cs": "574d8d8ee7b6e903bf809e3517478bc0b886d06d5f2419f4f5aa78c93b5d20ba",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Identity.cs": "599a04474a56c0ea47978e50b767ca4a689b3dce8ee7fe0c681b9dc4f0c5b1c4",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Import.cs": "07e962dcbdf5c4118fcbb693abdaec7034205a6f267c0ef8f243bad96c86751e",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDispatch.cs": "1ea8152c448a05f0bb77c566cae416c1495309366c6d392dd0d41a2b8cb42b86",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDuplicates.cs": "76cbd8cbdc695af28be1b07d06d6c559f763c32b67973e85ed5d3f800b0491aa",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountExtended.cs": "9d1b98d4976c78e7b0408931d4eee41dd1363c55f12b5b7f2b24b30aaf7cfe09",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountParse.cs": "d66c5ccc8777319c4c0db3542a3288c7b37b8d1602c71c94cab763644666aec8",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Reuse.cs": "e1015ca02093af56d2f0785f67834080e5835c3e9419ba99b48d8df2d09f46d9",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Setup.cs": "b72568d51fd5cbb1774a73f4e57acce36ae8974d72df82235e05080806c8744a",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Synthetic.cs": "36d897b22e4a7b2c1c586547136e9cded26722c5cc54b1ea75ad8a1af2a520ee",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Watch.cs": "8acc8514ff9b5ed2a10016be1309f3b280c2ec3953b223e2500a8bffc4f927cc",
+    "validation/LanguageServices.Checks/SessionDiagnosticsEmitChecks.Captured.cs": "171ee194bdd0438eaa959f9d5f78eca6da14fe7bc6f155cbc012370085678fe2",
+    "validation/LanguageServices.Checks/SessionDiagnosticsEmitChecks.cs": "68346c56bb8d8ce5843741d4c2ae6aa17eb10a892875ef06a96f0d73783048eb",
+    "validation/LanguageServices.Validation/Program.cs": "bff81f294bca852995dc01d84099a751c55be1bde19bd6040e14e91d724315d3",
+    "validation/Program.Checks/CompilerEmitRunner.cs": "9565bb11541226aca7f81018d981fbb1c7aee1f664251d388e8179cafe452dab"
+  },
+  "sourceSnapshotRecord": "artifacts/language-services/integration-5/source-55.json",
+  "sourceDrift": [],
+  "newOriginalFunctions": [
+    "TestSnapshot",
+    "TestProjectIDNarrowing",
+    "TestRefCountingCaches",
+    "TestImplementationsWorklistDoesNotBlowUp"
+  ],
+  "newAuthoredControls": {
+    "SessionDiagnosticsEmit": 4,
+    "provenance": "tools/language-services-oracle/context_emit_test.go",
+    "referenceLog": "artifacts/language-services/integration-5/context-emit-go-2.log",
+    "scope": "Genuine bundled-library Session; strict/declaration/skipLibCheck; valid/invalid inputs \u00d7 noEmitOnError. Complete before/after LSP diagnostics, complete EmitResult diagnostic projection, output paths/bytes and skip disposition."
+  },
+  "independentSourceReviews": [
+    "artifacts/language-services/source-review/snapshot-assertions.json",
+    "artifacts/language-services/source-review/references.json",
+    "artifacts/language-services/source-review/emit-request-context.json",
+    "artifacts/language-services/source-review/service-diagnostics.json",
+    "artifacts/language-services/source-review/context-emit-controls.json"
+  ],
+  "implementation": "Complete five References-family counterparts (183 workers), six Diagnostics service workers, local Session API update/adoption and original snapshot/refcount assertions. Full request context travels through one existing Emit algorithm and real checker checkout.",
+  "corrections": [
+    "References and highlighting read actual borrowed SourceFile.TextView, not inherited token accessor.",
+    "Snapshot original assertions preserve original synthetic-project presence and LIFO cleanup. Existing SnapshotFS checks remain unchanged.",
+    "Binding corrections retain actual C# enum spelling, borrowed PathKey, source switch fallthrough and existing PrinterUtilities/NameResolver producers.",
+    "Five existing token-default Emit calls explicitly select the preserved CancellationToken API."
+  ],
+  "observedEffort": {
+    "centralBuilds49through55": 7,
+    "reportedBuildSecondsTotal": 104.14,
+    "compatibilityBuildSeconds": 3.92,
+    "limitations": "Tool-reported build durations only; not total elapsed/model effort. No token or monetary measurements available.",
+    "process": "Compile complete connected bodies promptly after collision/syntax checks; do not duplicate compiler API checking with prolonged manual preflight. Source review targets algorithms/ownership/omissions. Focused failure checks precede combined managed/Native gate."
+  },
+  "limitations": [
+    "Dependency checkpoint, not whole services or server acceptance. Actual public stdio transport and full service/fourslash comparisons remain unfinished.",
+    "Original Worklist pass does not verify full References/Rename/Highlights outputs; service response and cross-project behavior remain pending.",
+    "Four authored diagnostics/Emit rows cover the real shared context path, not complete diagnostic content-map/supplemental/locale service behavior.",
+    "Snapshot/API/refcount originals pass; Registry originals and remaining service owners are still in progress.",
+    "Retained scoped Emit controls pass; comprehensive compiler/emit and server resource/performance gates remain final epic work.",
+    "Linux x64 only;26 Darwin backend functions remain outside contract. Existing external/partial assertion dispositions preserved."
+  ],
+  "independentEvidenceReview": "docs/progress/lsp-dependencies-55-review.json"
+}

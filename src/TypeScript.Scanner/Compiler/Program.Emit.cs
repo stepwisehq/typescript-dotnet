@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port of tsc/internal/compiler/program.go:1860–2090, pinned fed0bf24149fb1ed36039212648bafdafc1ea10e.
 using System.Collections.Concurrent;
+using ProtocolRequestContext = TypeScript.Lsp.Protocol.ProtocolRequestContext;
 using TypeScript.Scanner;
 using TypeScript.SourceMap;
 using TextWriter = TypeScript.DiagnosticPrinting.TextWriter;
@@ -58,7 +59,10 @@ public sealed partial class Program
     private TypeScript.Collections.SyncMap<SourceFile, Slice<Diagnostic>> DeclarationDiagnosticCache => LazyInitializer.EnsureInitialized(ref declarationDiagnosticCache, static () => new());
 
     // program.go:1890. Work starts while queued and results are reduced in source input order.
-    public EmitResult? Emit(CancellationToken context = default, EmitOptions options = default)
+    public EmitResult? Emit(CancellationToken context = default, EmitOptions options = default) => EmitWorker(new CompilerRequestContext(context), options);
+    internal EmitResult? Emit(ProtocolRequestContext context, EmitOptions options = default) => EmitWorker(new CompilerRequestContext(context), options);
+    // Same upstream algorithm; request values remain explicit at checkout edges.
+    private EmitResult? EmitWorker(CompilerRequestContext context, EmitOptions options)
     {
         Action? releaseTrace = hosts.Tracing?.Push(TypeScript.Tracing.Phase.Emit, "emit", null, true);
         try
@@ -104,7 +108,7 @@ public sealed partial class Program
     }
 
     // Go closure captures this per-job state; its bound callback retains one explicit owner.
-    private sealed class EmitWork(Program program, CancellationToken context, Emitter emitter, ConcurrentBag<TextWriter> pool, string newLine, bool forceDts, bool forceJs, bool forceDeclarationMap)
+    private sealed class EmitWork(Program program, CompilerRequestContext context, Emitter emitter, ConcurrentBag<TextWriter> pool, string newLine, bool forceDts, bool forceJs, bool forceDeclarationMap)
     {
         internal void Run()
         {
@@ -147,13 +151,14 @@ public sealed partial class Program
     }
 
     // program.go:1999. Explicit empty targets differ from nil targets under noEmit.
-    public static EmitResult? HandleNoEmitOptions(CancellationToken context, Program program, Slice<SourceFile> files, Func<EmitResult?>? emitBuildInfo)
+    public static EmitResult? HandleNoEmitOptions(CancellationToken context, Program program, Slice<SourceFile> files, Func<EmitResult?>? emitBuildInfo) => HandleNoEmitOptions(new CompilerRequestContext(context), program, files, emitBuildInfo);
+    private static EmitResult? HandleNoEmitOptions(CompilerRequestContext context, Program program, Slice<SourceFile> files, Func<EmitResult?>? emitBuildInfo)
     {
         if (program.Options().NoEmit != Tristate.True)
         {
             if (program.Options().NoEmitOnError != Tristate.True)
                 return null;
-            var diagnostics = GetDiagnosticsOfAnyProgram(context, program, files, true, program.GetBindDiagnostics, program.GetSemanticDiagnostics);
+            var diagnostics = GetDiagnosticsForEmit(context, program, files, true);
             return diagnostics.Count == 0 ? null : new EmitResult
             {
                 Diagnostics = diagnostics,
@@ -177,11 +182,13 @@ public sealed partial class Program
     }
 
     // program.go:2033. Syntax failure gates semantic/declaration work exactly as upstream.
-    public static Slice<Diagnostic> GetDiagnosticsOfAnyProgram(CancellationToken context, Program program, Slice<SourceFile> files, bool skipNoEmitCheckForDtsDiagnostics, Func<CancellationToken, SourceFile?, Slice<Diagnostic>> getBindDiagnostics, Func<CancellationToken, SourceFile?, Slice<Diagnostic>> getSemanticDiagnostics)
+    public static Slice<Diagnostic> GetDiagnosticsOfAnyProgram(CancellationToken context, Program program, Slice<SourceFile> files, bool skipNoEmitCheckForDtsDiagnostics, Func<CancellationToken, SourceFile?, Slice<Diagnostic>> getBindDiagnostics, Func<CancellationToken, SourceFile?, Slice<Diagnostic>> getSemanticDiagnostics) => GetDiagnosticsOfAnyProgramWorker(context, context, program, files, skipNoEmitCheckForDtsDiagnostics, program.GetSyntacticDiagnostics, getBindDiagnostics, getSemanticDiagnostics, program.GetDeclarationDiagnostics);
+    private static Slice<Diagnostic> GetDiagnosticsForEmit(CompilerRequestContext context, Program program, Slice<SourceFile> files, bool skipNoEmitCheckForDtsDiagnostics) => GetDiagnosticsOfAnyProgramWorker(context, context.Cancellation, program, files, skipNoEmitCheckForDtsDiagnostics, program.GetSyntacticDiagnosticsForEmit, program.GetBindDiagnosticsForEmit, program.GetSemanticDiagnosticsForEmit, program.GetDeclarationDiagnosticsForEmit);
+    private static Slice<Diagnostic> GetDiagnosticsOfAnyProgramWorker<TContext>(TContext context, CancellationToken cancellation, Program program, Slice<SourceFile> files, bool skipNoEmitCheckForDtsDiagnostics, Func<TContext, SourceFile?, Slice<Diagnostic>> getSyntacticDiagnostics, Func<TContext, SourceFile?, Slice<Diagnostic>> getBindDiagnostics, Func<TContext, SourceFile?, Slice<Diagnostic>> getSemanticDiagnostics, Func<TContext, SourceFile?, Slice<Diagnostic>> getDeclarationDiagnostics)
     {
         var allDiagnostics = GoSlices.Clip(program.GetConfigFileParsingDiagnostics());
         int configLength = allDiagnostics.Count;
-        var syntax = AppendDiagnosticsForFiles(default, files, context, program.GetSyntacticDiagnostics);
+        var syntax = AppendDiagnosticsForFiles(default, files, context, getSyntacticDiagnostics);
         if (syntax.Count > 0)
             allDiagnostics = allDiagnostics.Append(program.processedFiles.contentMapperDiagnostics);
         allDiagnostics = allDiagnostics.Append(syntax);
@@ -191,22 +198,22 @@ public sealed partial class Program
             _ = AppendDiagnosticsForFiles(default, files, context, getBindDiagnostics);
             if (program.Options().ListFilesOnly != Tristate.True)
             {
-                allDiagnostics = allDiagnostics.Append(program.GetGlobalDiagnostics(context));
+                allDiagnostics = allDiagnostics.Append(program.GetGlobalDiagnostics(cancellation));
                 if (allDiagnostics.Count == configLength)
                 {
                     allDiagnostics = AppendDiagnosticsForFiles(allDiagnostics, files, context, getSemanticDiagnostics);
-                    allDiagnostics = allDiagnostics.Append(program.GetGlobalDiagnostics(context));
+                    allDiagnostics = allDiagnostics.Append(program.GetGlobalDiagnostics(cancellation));
                 }
 
                 if ((skipNoEmitCheckForDtsDiagnostics || program.Options().NoEmit == Tristate.True) && program.Options().GetEmitDeclarations() && allDiagnostics.Count == configLength)
-                    allDiagnostics = AppendDiagnosticsForFiles(allDiagnostics, files, context, program.GetDeclarationDiagnostics);
+                    allDiagnostics = AppendDiagnosticsForFiles(allDiagnostics, files, context, getDeclarationDiagnostics);
             }
         }
 
         return allDiagnostics;
     }
 
-    private static Slice<Diagnostic> AppendDiagnosticsForFiles(Slice<Diagnostic> diagnostics, Slice<SourceFile> files, CancellationToken context, Func<CancellationToken, SourceFile?, Slice<Diagnostic>> getDiagnostics)
+    private static Slice<Diagnostic> AppendDiagnosticsForFiles<TContext>(Slice<Diagnostic> diagnostics, Slice<SourceFile> files, TContext context, Func<TContext, SourceFile?, Slice<Diagnostic>> getDiagnostics)
     {
         if (files.IsNil)
             return diagnostics.Append(getDiagnostics(context, null));

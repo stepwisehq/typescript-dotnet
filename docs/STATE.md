@@ -11,13 +11,24 @@ packets stay ignored/outside compilation. Preserve actual upstream algorithms, P
 reuse, UTF8/Slice ownership and required copies. No permissive placeholders, background
 exception suppression, extra private-state census, debugger/heap/SVG/external work.
 
-## Latest accepted evidence; checkpoint in progress
+## Latest accepted checkpoint: dependency55
+
+[Result55](../validation/results/language-services-dependencies-55.json),
+[assessment](./progress/lsp-dependencies-55.md),
+[reproduction](./LANGUAGE-SERVICES-VERIFY.md) and
+[independent evidence review](./progress/lsp-dependencies-55-review.json) are clear.
+Managed400/400, native316 whole original TypeScript functions +1adapted +60authored;
+43 changed source hashes/179 actual ILC inputs bound with no drift. Root is committing
+this reviewed checkpoint; immediately continue the queued Registry/fixer/completion/
+read-only-query/server families. Full services and stdio remain unfinished/unadvertised.
+
+## Prior accepted checkpoint: dependency48
 
 Upstream `fed0bf24149fb1ed36039212648bafdafc1ea10e` under `upstream/TypeScript/tsc`;
 bundled Go1.27.1 under `tools/.cache/go/bin/go`. Emit/performance9b8fa74a, summarye003f22f.
-Previous LSP dependencies: f655a303, f5feaa6a, then committed3f41c7c4. **Dependency48
-managed and actual Linux x64 Native gates and independent evidence review
-have passed. Root is committing this coherent packet before next promotion.**
+Previous LSP dependencies: f655a303, f5feaa6a,3f41c7c4. **Dependency48 is
+committed at0bd3b6c3 with managed/Native gates and independent review clear;
+clean worktree was confirmed. Implementation freeze is released for next packets.**
 Do not repeat accepted runs just because of re-entry.
 
 [Result48](../validation/results/language-services-dependencies-48.json),
@@ -50,42 +61,81 @@ combined tool time, not elapsed/model effort. No available token/cost measuremen
 After Session failures, focused original runs avoided repeating69s watcher gate after
 each fix; final full managed+Native gate passed. Details and review qualifications in48.
 
-## Ownership and next connected packets
+## Ownership and current integration
 
-Three reused live Sol lanes (restart idle lanes with followup_task rather than silently
-letting a saved intermediate packet end the epic):
+Three reused GPT-6.1 Sol lanes remain active. Root alone runs workloads; next bodies
+stay outside compile globs while an integration gate runs.
 
-- **emit_foundation:** complete ignored Snapshot/API originals packet is source/API
-  preflight-ready:12 targets (ten ProjectSnapshotChecks partials, xUnit wrapper, genuine
-  Session.API.cs), plus narrow Session pending-queue/mutex internal visibility for
-  original same-package assertions. TestSnapshot all10 groups +TestProjectIDNarrowing,
-  +2 original Native dispatch. Exact plan at artifacts/language-services/drafts/foundation/
-  snapshot-promotion-plan.json. APIUpdate/TryAdoptSnapshotInBackground are necessary
-  local real update/adoption owners; embedding API transport remains excluded. Wait
-  for48 commit then promote coherent packet. Continue TestRefCountingCaches originals
-  using actual fixture outside compilation. No substitute Session or synthetic checker.
-- **emit_inventory:** complete References/ImportTracker/CrossProject/Rename/
-  DocumentHighlights closure,183workers/5228Go lines, remains ignored draft. ImportTracker20,
-  Rename20,CrossProject8,Highlights32 assembled; References core state/root/base/import/
-  reexport/search assembled. Remaining module-reference conversion/merge, response+VS
-  definition/display conversion and JSX traversal, then whole API/nullable/byte/callback
-  preflight and original worklist assertion. No scope blocker. Full request-context
-  checkout companion is accepted48 input and frozen. Five actual Registry originals
-  follow this packet on same lane using genuine Session fixture. Completions6922lines
-  remain later; avoid overlapping ownership or invented local-reference substitutes.
-- **emit_print_maps:** finish48 independent evidence/final-claim review, then continue
-  genuine Server ignored drafts: lifecycle/config/document changes, actual Session,
-  handler timing/errors/async cleanup, exact content-mapper unknown-script fallback,
-  autoimport retry, real cross-project snapshot lifetime, custom RunGC, watchers,
-  client callbacks, request cancellation/read/write/dispatch ownership. Whole Server
-  still needs actual remaining service owners and ResolvedClientCapabilities pointer-root
-  descriptor (value-root exists, cannot substitute). No empty successful handlers.
-  Original progress/stack sanitizer assertions remain drafts. Keep compiled gate frozen.
+- **emit_foundation:** complete Snapshot/API/refcount originals promoted and reviewed;
+  independent References and six-worker Diagnostics reviews clear. Now porting complete
+  Completions, string completions and JSDoc snippet closure (9,768 pinned Go lines),
+  using genuine existing indexing/change/formatting/display/checker producers.
+- **emit_inventory:** full References/ImportTracker/CrossProject/Rename/Highlights
+  closure promoted: five counterparts,183 workers,5,228 Go lines. Source-reviewed
+  and build54 clean; original Worklist assertions pass. Now five actual autoimport
+  Registry originals, followed by complete edit-producing services (organize imports,
+  file rename, registered code-action/fix-all families). Service response evidence
+  remains pending; Worklist alone is not References acceptance.
+- **emit_print_maps:** explicit request-context Emit and full six-worker LS Diagnostics
+  promoted/reviewed; one actual Emit algorithm preserves checkout/lifetime through
+  semantic/declaration collectors. Four authored real Session diagnostics→Emit→diagnostics
+  controls are being promoted with exact pinned-Go observations and unchanged accepted
+  diagnostic projector. Then continue genuine Server lifecycle/dispatch/context/transport
+  and required client capability descriptor. No empty handlers or public advertisement.
+
+SnapshotLifetime checks preserve accepted SnapshotFS classes/wrappers unchanged:
+TestSnapshot all10 groups, TestProjectIDNarrowing, TestRefCountingCaches all11 groups.
+The local genuine Session.API update/adoption workers are a required shared dependency;
+embedding API transport remains excluded. Native dispatcher adds3 original functions.
+Focused50 passed3/3; focused54 passed these3 plus original References Worklist (4/4,2s).
+Full managed/Native acceptance of the new packet is still pending.
+
+Build54 clean22.51s after prior integration corrections. Build49 production compiled,
+16 test binding errors;50 clean7.31s.51 failed26 namespace ambiguities (3.26s);52 failed134
+References binding errors (13.36s), mostly Go Kind.KindFoo versus C# Kind.Foo;53 left2
+actual helper-owner names (14.40s).54 resolved those to existing PrinterUtilities and
+NameResolver producers, without adding foundation algorithms. Source review preserved
+Go fallthrough, borrowed PathKey and SourceFile content ownership. All logs retained
+under artifacts/language-services/integration-5; intermediate builds are not acceptance.
+
+Four authored Go controls passed in context-emit-go-2.log (0.211s package): genuine
+bundled libraries, strict/declaration/skipLibCheck, valid/invalid source × noEmitOnError.
+Complete LSP diagnostics before/after, full EmitResult diagnostics and exact JS/d.ts
+outputs captured. Invalid/noEmitOnError produces7006+2322 and skips outputs; other
+cases emit as upstream. These are reference expectations, not candidate pass credit.
+The earlier two-row noLib capture is superseded for acceptance, retained as history.
+Protocol may promote the coherent captured-control packet after focused54 release;
+root next builds55, diagnoses controls, builds/runs applicable retained Emit controls,
+then combines full managed and Linux x64 Native acceptance before a new checkpoint.
+No separate Native publication per focused original test. Program/Emit compatibility
+also required because five existing default-token call sites gained explicit types.
+
+Process correction from51/52: compile promptly after complete connected bodies and
+syntax/target-collision checks. Prolonged manual API binding preflight duplicated the
+compiler poorly. Independent review focuses on algorithm/ownership/omission/assertion
+fidelity. Still no stubs, per-small-change validation loop, overlapping edits or
+agent-run workloads. No current blocker requires a user decision.
+
+Build55 clean22.78s. Context controls4/4 and retained Emit mode/mutex/write-failure10/10
+pass; Program+Emit compatibility build clean3.92s. Full managed400/400,0fail/skip,70s.
+Actual Linux x64 Native55 published and executed successfully:316 whole original TS
+functions,1adapted original runtime observation,60authored controls; retained external/
+partial channels unchanged. Fatal child-6 with required marker/no timeout/no core.
+ELF SHA c0f4f939bb1371aabdb3de7fe096e8f622862cb15b3ca6cd9ac301d1919b43b1;
+179 actual ILC inputs and43 changed compiled source paths bound, no drift.
+Result validation/results/language-services-dependencies-55.json, assessment/reproduction
+and mapping/test inventory updated. Independent final evidence/claim review is clear; root commits this checkpoint now. All next implementation stays ignored until this
+checkpoint. Do not repeat passed gates or count service behavior as verified merely
+because it compiled. Whole server/epic remains incomplete and work continues directly.
+Registry five whole original functions/all20 subtest bodies assembled ignored; next
+promote after checkpoint and review. MissingMemberFixer is Inventory's next full owner,
+a concrete dependency of Foundation's genuine class-member completion snippets.
+Protocol ports full read-only query families before their genuine Server consumers.
 
 ## Remaining epic acceptance and reusable references
 
 Session/Snapshot/project-autoimport production counterparts are source-reviewed;
-original Snapshot/API/registry/refcount assertions remain pending as above. Ten semantic
+original Snapshot/API/refcount assertions now pass focused managed checks; Registry and combined Native evidence remain pending as above. Ten semantic
 counterparts/268workers compile and are source-reviewed (utilities/source maps/display/
 JSDoc/hover/icon/signature/formatting/definition/source-definition). Only direct service
 formatting originals have behavioral evidence so far. Actual service/fourslash results,

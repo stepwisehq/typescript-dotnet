@@ -52,7 +52,7 @@ public static class EmitBenchmarkChecks
         long allocatedBefore = GC.GetTotalAllocatedBytes(precise: true);
         long started = Stopwatch.GetTimestamp();
         for (int i = 0; i < iterations; i++)
-            program.Emit(default, emitOptions);
+            program.Emit(default(CancellationToken), emitOptions);
         double elapsed = Stopwatch.GetElapsedTime(started).TotalMilliseconds;
         long allocated = GC.GetTotalAllocatedBytes(precise: true) - allocatedBefore;
         return new(name, iterations, elapsed, allocated);

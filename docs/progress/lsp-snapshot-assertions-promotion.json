@@ -1,0 +1,77 @@
+{
+  "status": "Complete promoted Snapshot/API/refcount original packet source/API preflight ready; independent review and central compile/execution pending",
+  "originalFunctions": [
+    "TestSnapshot",
+    "TestProjectIDNarrowing",
+    "TestRefCountingCaches"
+  ],
+  "originalCredit": 0,
+  "reference": "artifacts/language-services/integration-2/project-original-go.jsonl",
+  "source": {
+    "upstream/TypeScript/tsc/internal/project/snapshot_test.go": "fe663e4b7a584814638f302752c681bdfb86bc34e40e5d1eacdfef313c31c7aa",
+    "upstream/TypeScript/tsc/internal/project/api.go": "af4e204e6a79d84d65fbe6d3ba286f5955694470bee14b748ad027c3c7ce24e3",
+    "upstream/TypeScript/tsc/internal/project/refcountcache_test.go": "9e315c00eb7690608d89cd1d6ce7690db74c91874a79a46a02fabc089b20e489"
+  },
+  "productionDependencies": [
+    "Complete api.go APIUpdate and TryAdoptSnapshotInBackground workers, using actual private Session flush/update/ref/adopt owners; no embedding endpoint.",
+    "Original same-package queue assertions require pendingFileChangesMu and pendingFileChanges internal visibility only, retaining original storage/locking."
+  ],
+  "adaptations": [
+    "Real BaselineFS mutable fixture and bundled owner; original nil client/npm and disabled watch/log options retained.",
+    "Original t.Parallel executes sequentially; every10 t.Run sibling independently collected before aggregate failure.",
+    "Original assert.Check cache/nonexistent observations all execute before aggregate failure.",
+    "Local API update worker is required graph/test dependency, not a transport or remote embedding endpoint.",
+    "Fixture disposes real Session after assertions even where original relies on test/process cleanup; no state or expected observation changes before assertions."
+  ],
+  "plannedTargets": {
+    "artifacts/language-services/drafts/foundation/checks/ProjectSnapshotLifetimeChecks.Cache.cs": "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Cache.cs",
+    "artifacts/language-services/drafts/foundation/checks/ProjectSnapshotLifetimeChecks.Identity.cs": "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Identity.cs",
+    "artifacts/language-services/drafts/foundation/checks/ProjectSnapshotLifetimeChecks.Watch.cs": "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Watch.cs",
+    "artifacts/language-services/drafts/foundation/checks/ProjectSnapshotLifetimeChecks.Reuse.cs": "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Reuse.cs",
+    "artifacts/language-services/drafts/foundation/checks/ProjectSnapshotLifetimeChecks.Import.cs": "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Import.cs",
+    "artifacts/language-services/drafts/foundation/checks/ProjectSnapshotLifetimeChecks.Setup.cs": "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Setup.cs",
+    "artifacts/language-services/drafts/foundation/checks/ProjectSnapshotLifetimeChecks.Dispatch.cs": "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Dispatch.cs",
+    "artifacts/language-services/drafts/foundation/checks/ProjectSnapshotLifetimeChecks.Errors.cs": "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Errors.cs",
+    "artifacts/language-services/drafts/foundation/checks/ProjectSnapshotLifetimeChecks.Freeze.cs": "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Freeze.cs",
+    "artifacts/language-services/drafts/foundation/checks/ProjectSnapshotLifetimeChecks.Synthetic.cs": "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Synthetic.cs",
+    "artifacts/language-services/drafts/foundation/Session.API.cs": "src/TypeScript.Scanner/ProjectSystem/Session.API.cs",
+    "artifacts/language-services/drafts/foundation/tests/ProjectSnapshotLifetimeTests.cs": "tests/LanguageServices.Tests/ProjectSnapshotLifetimeTests.cs"
+  },
+  "existingOwnerDelta": {
+    "src/TypeScript.Scanner/ProjectSystem/Session.cs": "Separate pendingFileChangesMu from private multi-field declaration as internal readonly; pendingFileChanges internal. Existing backing fields/locking untouched, original same-package assertions only."
+  },
+  "files": {
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Cache.cs": "1537b7dfcb2c149516e7cc627b826bb6968cfff0290fbd756137779697a074f0",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Identity.cs": "599a04474a56c0ea47978e50b767ca4a689b3dce8ee7fe0c681b9dc4f0c5b1c4",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Watch.cs": "8acc8514ff9b5ed2a10016be1309f3b280c2ec3953b223e2500a8bffc4f927cc",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Reuse.cs": "e1015ca02093af56d2f0785f67834080e5835c3e9419ba99b48d8df2d09f46d9",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Import.cs": "07e962dcbdf5c4118fcbb693abdaec7034205a6f267c0ef8f243bad96c86751e",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Setup.cs": "b72568d51fd5cbb1774a73f4e57acce36ae8974d72df82235e05080806c8744a",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Dispatch.cs": "42258f0028d56f557828f8d7309f49275dfeb13ccb2d8f90afe8067227395064",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Errors.cs": "71b5bd261756ba0c577c612342c92dc52bd707feb5be7eeb9240dc45f9544128",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Freeze.cs": "574d8d8ee7b6e903bf809e3517478bc0b886d06d5f2419f4f5aa78c93b5d20ba",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Synthetic.cs": "36d897b22e4a7b2c1c586547136e9cded26722c5cc54b1ea75ad8a1af2a520ee",
+    "src/TypeScript.Scanner/ProjectSystem/Session.API.cs": "6ab884f6a20a17e55c7cd22662075a6b4ee1480a1b70c421edea7deab5ec560c",
+    "src/TypeScript.Scanner/ProjectSystem/Session.cs": "2ef60c2d89fa13f718e285fd7571e710d44cd7a0f2bb406ae947faebb89148ac",
+    "tests/LanguageServices.Tests/ProjectSnapshotLifetimeTests.cs": "f15364191c691c2cd7376957b3b9258473e88db62302ae3801f64c05ac07e3c1",
+    "tests/LanguageServices.Tests/ProjectSnapshotTests.cs": "00aca616528d8f01e0d78a3a4d9adc64525ab1222b787f64e282c98e0f049ff4",
+    "src/TypeScript.Scanner/ProjectSystem/RefCountCache.cs": "e3ea1eed643081c20e9c871d3f1d960ba4fec7e6c477f833b4c4fb652c69421f",
+    "src/TypeScript.Scanner/ProjectSystem/OwnerCache.cs": "9a286b498fcaa3b7bcd5b585b3349c0578a46a96703f771336ac98ebc13ef199",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDispatch.cs": "1ea8152c448a05f0bb77c566cae416c1495309366c6d392dd0d41a2b8cb42b86",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDuplicates.cs": "76cbd8cbdc695af28be1b07d06d6c559f763c32b67973e85ed5d3f800b0491aa",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountParse.cs": "d66c5ccc8777319c4c0db3542a3288c7b37b8d1602c71c94cab763644666aec8",
+    "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountExtended.cs": "9d1b98d4976c78e7b0408931d4eee41dd1363c55f12b5b7f2b24b30aaf7cfe09"
+  },
+  "nativeDispatch": "ProjectSnapshotLifetimeChecks.RunAll() returns3 new whole original functions; accepted ProjectSnapshotChecks.RunAll/old Theory retained unchanged",
+  "namingCorrection": "Distinct new Lifetime assertion class/wrapper avoids accepted SnapshotFS class/RunAll/URI collisions. Original wrapper restored verbatim from checkpoint.",
+  "visibilityJoins": [
+    "Session pending queue/mutex internal for original same-package enqueue assertions",
+    "RefCountCache.Entry/entries and OwnerCache.Entry/entries internal for original same-package identity/refCount/owner assertions; storage, callbacks, locking, bodies unchanged"
+  ],
+  "originalGroups": {
+    "TestSnapshot": 10,
+    "TestRefCountingCaches": 11
+  },
+  "readiness": "Stable complete source/check/wrapper packet. No prior originals replaced; no substitute observer or state census.",
+  "integration": "Build49 production clean; check-only whole family fixes explicit rooted Program source names, authored version helper uses actual int API, actual initialized program CommandLine presence proofs. Original inputs/expectations unchanged; candidate execution pending50."
+}

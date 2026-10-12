@@ -29,7 +29,7 @@ public static partial class ProgramRunner
         // Validate the original parent/union invariants before and after its real consumption.
         CompilerOriginalInvariantChecks.Validate(program);
         var recorder = new EmitOutputRecorder(compilation.Host.FS());
-        var emitResult = program.Emit(default, new EmitOptions { WriteFile = recorder.Write }) ?? throw new InvalidOperationException("Uncancelled original emit returned nil.");
+        var emitResult = program.Emit(default(CancellationToken), new EmitOptions { WriteFile = recorder.Write }) ?? throw new InvalidOperationException("Uncancelled original emit returned nil.");
         var postErrors = CollectEmitDiagnostics(program, compilation.Harness, pre: false);
         var errors = DiagnosticCountMismatch(preErrors, postErrors);
         CompilerOriginalInvariantChecks.Validate(program);
@@ -221,7 +221,7 @@ public static partial class ProgramRunner
         compilation = compilation.ConstructActualProgram();
         CompilerOriginalInvariantChecks.Validate(compilation.Program);
         var recorder = new EmitOutputRecorder(compilation.Host.FS());
-        var emitted = compilation.Program.Emit(default, new EmitOptions { WriteFile = recorder.Write }) ?? throw new InvalidOperationException("Uncancelled repeat emit returned nil.");
+        var emitted = compilation.Program.Emit(default(CancellationToken), new EmitOptions { WriteFile = recorder.Write }) ?? throw new InvalidOperationException("Uncancelled repeat emit returned nil.");
         var post = CollectEmitDiagnostics(compilation.Program, compilation.Harness, pre: false);
         CompilerOriginalInvariantChecks.Validate(compilation.Program);
         return recorder.Capture(compilation, emitted, DiagnosticCountMismatch(pre, post));

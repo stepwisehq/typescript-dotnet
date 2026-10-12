@@ -957,7 +957,26 @@
           "name": "TestRefCountingCaches",
           "line": 223,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "managedEvidence": "artifacts/language-services/integration-5/tests/dependencies-55.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-55.json",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Cache.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Dispatch.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Errors.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Freeze.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Identity.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Import.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDispatch.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDuplicates.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountExtended.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountParse.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Reuse.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Setup.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Synthetic.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Watch.cs"
+          ]
         }
       ]
     },
@@ -999,13 +1018,51 @@
           "name": "TestSnapshot",
           "line": 17,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "managedEvidence": "artifacts/language-services/integration-5/tests/dependencies-55.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-55.json",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Cache.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Dispatch.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Errors.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Freeze.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Identity.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Import.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDispatch.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDuplicates.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountExtended.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountParse.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Reuse.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Setup.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Synthetic.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Watch.cs"
+          ]
         },
         {
           "name": "TestProjectIDNarrowing",
           "line": 431,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "managedEvidence": "artifacts/language-services/integration-5/tests/dependencies-55.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-55.json",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Cache.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Dispatch.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Errors.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Freeze.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Identity.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Import.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDispatch.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountDuplicates.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountExtended.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.RefCountParse.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Reuse.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Setup.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Synthetic.cs",
+            "validation/LanguageServices.Checks/ProjectSnapshotLifetimeChecks.Watch.cs"
+          ]
         }
       ]
     },
@@ -1418,7 +1475,13 @@
           "name": "TestImplementationsWorklistDoesNotBlowUp",
           "line": 35,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "managedEvidence": "artifacts/language-services/integration-5/tests/dependencies-55.trx",
+          "nativeEvidence": "validation/results/language-services-dependencies-55.json",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/FindAllReferencesChecks.cs"
+          ]
         }
       ]
     },
@@ -62964,8 +63027,8 @@
   ],
   "implementationNote": "Dependency48 passes312 whole original TypeScript test functions plus one separately adapted original watcher runtime observer. Four AstNav entries retain selected Go channels with remaining channels pending. Full service/server/fourslash and remaining direct originals are unfinished; source inventory alone grants no execution credit.",
   "executionDispositionTotals": {
-    "inventoried-not-executed": 4662,
-    "managed-and-native-assertions-passed": 312,
+    "inventoried-not-executed": 4658,
+    "managed-and-native-assertions-passed": 316,
     "partial-managed-native-channels-passed-remaining-channels-pending": 4,
     "external-go-source-generator-not-runtime-closure": 1,
     "excluded-platform-backend-outside-linux-contract": 26,
