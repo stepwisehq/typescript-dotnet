@@ -227,7 +227,8 @@ public sealed partial class Checker
     }
 
     // Upstream internal/checker/services.go:168:1.
-    private bool isValidPropertyAccess(Node node, string propertyName)
+    private bool isValidPropertyAccess(Node node, string propertyName) => isValidPropertyAccess(node, ByteStringValue.FromString(propertyName));
+    private bool isValidPropertyAccess(Node node, ByteStringValue propertyName)
     {
         switch (node.Kind)
         {
@@ -251,7 +252,7 @@ public sealed partial class Checker
     }
 
     // Upstream internal/checker/services.go:180:1.
-    private bool isValidPropertyAccessWithType(Node node, bool isSuper, string propertyName, Type t)
+    private bool isValidPropertyAccessWithType(Node node, bool isSuper, ByteStringValue propertyName, Type t)
     {
         if (IsTypeAny(t))
         {

@@ -3506,7 +3506,7 @@ internal enum DocumentHighlightKind : uint
 }
 
 // lsp_generated.go:10029
-internal readonly struct CodeActionKind(ByteStringValue value) : IEquatable<CodeActionKind>
+internal readonly partial struct CodeActionKind(ByteStringValue value) : IEquatable<CodeActionKind>
 {
     internal readonly ByteStringValue Value = value;
     public bool Equals(CodeActionKind other) => Value.EqualsValue(other.Value);

@@ -1,0 +1,29 @@
+{
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "status": "whole-source-promoted-central-compile-and-independent-review-pending",
+  "mapping": [
+    {
+      "source": "upstream/TypeScript/tsc/internal/ls/codeactions_missingmemberfixer.go",
+      "sourceSha256": "615cb5a56e7ec1efb8cb2e34e32103c46971c4fb6a67e6cf65ff0e1f4f9cffab",
+      "destination": "src/TypeScript.Scanner/LanguageServices/CodeActionsMissingMemberFixer.cs",
+      "destinationSha256": "2de07c22ac28b5a09dd168cadac1bad1806877ff82482bb8618c700b14f09e32",
+      "workers": 18,
+      "scope": "complete counterpart, 514 upstream lines"
+    }
+  ],
+  "focusedJoins": [
+    {
+      "destination": "src/TypeScript.Scanner/Checker/Utilities.cs",
+      "sha256": "699d40b0b05f3b23e9c3bf1873d22e1ef64cf3828548aecf803d4605048cdec7",
+      "scope": "GetSetAccessorValueParameter private to internal; body unchanged",
+      "source": "upstream/TypeScript/tsc/internal/checker/utilities.go"
+    }
+  ],
+  "originalTests": "No direct codeactions_missingmemberfixer_test.go counterpart; actual completion/fourslash result assertions pending, no standalone original credit.",
+  "authoredControls": 0,
+  "adaptations": [
+    "IImportAdder actual interface nullable owner",
+    "Raw symbol/property/parameter names retained through ByteStringValue factory consumers",
+    "Required fresh node-builder map/capacities/clones retained"
+  ]
+}

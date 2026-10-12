@@ -9,13 +9,20 @@ if (args is ["--ipc-fatal-notification"])
 
 // Run stack-boundary probes in separate processes so a runtime stack failure
 // cannot hide the result of the ordinary dependency assertions.
+if (args is ["--selection-depth"])
+{
+    SelectionRangeChecks.TestSelectionRangeDepthIsLimited();
+    Console.WriteLine("Original selection-range depth assertions: passed");
+    return 0;
+}
+
 if (args.Length != 0)
 {
     if (args.Length != 3 || args[0] != "--protocol-depth" ||
         !int.TryParse(args[2], out int depth) || depth < 1 ||
         args[1] is not ("model" or "any"))
     {
-        Console.Error.WriteLine("Usage: LanguageServices.Validation [--protocol-depth model|any DEPTH | --ipc-fatal-notification]");
+        Console.Error.WriteLine("Usage: LanguageServices.Validation [--protocol-depth model|any DEPTH | --selection-depth | --ipc-fatal-notification]");
         return 2;
     }
     if (args[1] == "model") ProtocolCodecChecks.RunModelDepthBoundary(depth);
@@ -53,6 +60,7 @@ originalFunctions += DiagnosticLocaleChecks.RunAll();
 originalFunctions += AutoImportOwnerChecks.RunAll();
 originalFunctions += AutoImportRealpathChecks.RunAll();
 originalFunctions += AutoImportAliasResolverChecks.RunAll();
+originalFunctions += AutoImportRegistryChecks.RunAll();
 originalFunctions += ProjectCheckerPoolChecks.RunAll();
 originalFunctions += LspWatcherChecks.RunAll();
 originalFunctions += FsWatchEventChecks.RunAll();
@@ -65,6 +73,8 @@ originalFunctions += FsWatchBackendChecks.RunBroadAll();
 originalFunctions += FsWatchBackendChecks.RunLinuxAll();
 originalFunctions += ProjectSessionChecks.RunAll();
 originalFunctions += FindAllReferencesChecks.RunAll();
+originalFunctions += SelectionRangeChecks.RunAll();
+originalFunctions += CompletionChecks.RunAll();
 Console.WriteLine($"Original language-service dependency test functions executed: {originalFunctions}");
 Console.WriteLine($"Adapted original watcher runtime observations executed: {FsWatchBackendChecks.RunAdaptedRuntimeObservation()}");
 Console.WriteLine($"Original external normalization dependency test functions executed: {NormalizationChecks.RunAll()}");
@@ -79,6 +89,8 @@ Console.WriteLine($"Selected original Fowler matching channels executed: {RegexF
 Console.WriteLine($"External regexp replacement/index assertion groups executed: {RegexReplacementChecks.RunAll()}");
 Console.WriteLine($"Selected original generic replacer channels executed: {GenericReplacerChecks.RunAll()}");
 Console.WriteLine($"Original external quoting dependency test functions executed: {CanBackquoteChecks.RunAll()}");
+Console.WriteLine($"Original external string-trimming dependency test functions executed: {TrimFuncChecks.RunAll()}");
+Console.WriteLine($"Original external slice-predicate dependency test functions executed: {SlicePredicateChecks.RunAll()}");
 Console.WriteLine($"External Unicode service assertion groups executed: {UnicodeServiceChecks.RunAll()}");
 int normalizationChannels = NormalizationPropertyChecks.RunAll();
 normalizationChannels += NormalizationSpanChecks.RunAll();
@@ -106,5 +118,6 @@ authoredControls += ProjectCheckerPoolChecks.RunAuthoredControls();
 authoredControls += ProjectSessionSchedulingChecks.RunAll();
 authoredControls += JsonIndentChecks.RunAll();
 authoredControls += SessionDiagnosticsEmitChecks.RunAll();
+authoredControls += DocumentSymbolExpandoChecks.RunAll();
 Console.WriteLine($"Authored dependency controls executed: {authoredControls}");
 return 0;

@@ -9,7 +9,6 @@ internal sealed class GoRef<T>
     private readonly Func<T> get;
     private readonly Action<T> set;
     private readonly bool linked;
-
     // An upstream local pointer owns its value directly. Callback adapters are
     // reserved for links to an existing field or other lvalue.
     public GoRef(T value) => this.value = value;
@@ -18,40 +17,47 @@ internal sealed class GoRef<T>
         (this.get, this.set) = (get, set);
         linked = true;
     }
+
     public T Value
     {
         get => linked ? get() : value;
-        set { if (linked) set(value); else this.value = value; }
+        set
+        {
+            if (linked)
+                set(value);
+            else
+                this.value = value;
+        }
     }
 }
 
 internal sealed class GoArena<T>
 {
     private Slice<T> data;
-
     // core/arena.go:nextArenaSize. Shared by clipped slice allocation and the
     // internal link-store adaptation of Arena.New's stable record chunks.
-    internal static int NextSize(int size) =>
-        (int)Math.Min(Math.Max((long)size, 1) * 2, 256);
-
+    internal static int NextSize(int size) => (int)Math.Min(Math.Max((long)size, 1) * 2, 256);
     // An upstream owner reset drops its arena header. Published clipped regions
     // keep their array owners; resetting must never clear or reuse those slots.
     internal void Reset() => data = default;
-
     // core/arena.go:25–44. Allocate clipped regions from the current arena.
     // Advancing the arena leaves old regions valid through their array owner.
     // CLR allocation does not reproduce Go allocator size-class rounding; each
     // published region still has exactly len == cap == requested size.
     public Slice<T> NewSliceHeader(int size)
     {
-        if (size < 0) throw new ArgumentOutOfRangeException(nameof(size));
-        if (size == 0) return default;
+        if (size < 0)
+            throw new ArgumentOutOfRangeException(nameof(size));
+        if (size == 0)
+            return default;
         if (size > data.Capacity - data.Length)
         {
             int nextSize = NextSize(data.Length);
-            if (size > nextSize) return Slice<T>.Make(size);
+            if (size > nextSize)
+                return Slice<T>.Make(size);
             data = Slice<T>.Make(0, nextSize);
         }
+
         int end = data.Length + size;
         var result = data.Slice3(data.Length, end, end);
         data = data.Slice2(0, end);
@@ -73,9 +79,9 @@ internal sealed class GoArena<T>
         source.CopyTo(result.AsSpan());
         return result;
     }
+
     public Slice<T> CloneHeader(Slice<T> source) => CloneHeader(source.AsSpan());
     public Slice<T> CloneHeader(List<T> source) => CloneHeader(System.Runtime.InteropServices.CollectionsMarshal.AsSpan(source));
-
     // core/arena.go:46. The single published slot has no spare logical capacity.
     public List<T> NewSlice1(T value) => new(1)
     {
@@ -84,14 +90,13 @@ internal sealed class GoArena<T>
     public List<T> NewSlice(int length) => length == 0 ? null : Enumerable.Repeat(default(T), length).ToList();
     public Slice<T> Clone(Slice<T> slice) => slice.Length == 0 ? default : TypeScript.Scanner.Slice<T>.FromArray(slice.AsSpan().ToArray());
     public List<T> Clone(List<T> list) => list is null || list.Count == 0 ? null : new(list);
-
     // Go core/arena.go:Clone: retain the final detached clone at the mutable List boundary.
     public List<T> CloneAsList(Slice<T> slice) => CloneAsList(slice.AsSpan());
-
     // Borrow stack scratch only while producing the same detached mutable List boundary.
     public List<T> CloneAsList(ReadOnlySpan<T> slice)
     {
-        if (slice.Length == 0) return null;
+        if (slice.Length == 0)
+            return null;
         var result = new List<T>(slice.Length);
         result.AddRange(slice);
         return result;
@@ -106,7 +111,6 @@ internal readonly struct GoListRange<T>(List<T> source) : IEnumerable<KeyValuePa
     public Enumerator GetEnumerator() => new(source);
     IEnumerator<KeyValuePair<int, T>> IEnumerable<KeyValuePair<int, T>>.GetEnumerator() => GetEnumerator();
     System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
-
     public struct Enumerator : IEnumerator<KeyValuePair<int, T>>
     {
         private readonly List<T> source;
@@ -119,11 +123,15 @@ internal readonly struct GoListRange<T>(List<T> source) : IEnumerable<KeyValuePa
             finished = false;
             Current = default;
         }
+
         public KeyValuePair<int, T> Current { get; private set; }
+
         object System.Collections.IEnumerator.Current => Current;
+
         public bool MoveNext()
         {
-            if (finished) return false;
+            if (finished)
+                return false;
             int next = index + 1;
             if (next < (source?.Count ?? 0))
             {
@@ -132,9 +140,11 @@ internal readonly struct GoListRange<T>(List<T> source) : IEnumerable<KeyValuePa
                 Current = new(index, source[index]);
                 return true;
             }
+
             finished = true;
             return false;
         }
+
         public void Dispose() => finished = true;
         public void Reset() => throw new NotSupportedException();
     }
@@ -147,14 +157,9 @@ internal readonly struct GoListRange<T>(List<T> source) : IEnumerable<KeyValuePa
 internal readonly struct GoListValues<T>(List<T> source) : IEnumerable<T>
 {
     public Enumerator GetEnumerator() => new(source);
-    private IEnumerator<T> InterfaceEnumerator() => source is null
-        ? ((IEnumerable<T>)Array.Empty<T>()).GetEnumerator()
-        : ((IEnumerable<T>)source).GetEnumerator();
+    private IEnumerator<T> InterfaceEnumerator() => source is null ? ((IEnumerable<T>)Array.Empty<T>()).GetEnumerator() : ((IEnumerable<T>)source).GetEnumerator();
     IEnumerator<T> IEnumerable<T>.GetEnumerator() => InterfaceEnumerator();
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => source is null
-        ? ((System.Collections.IEnumerable)Array.Empty<T>()).GetEnumerator()
-        : ((System.Collections.IEnumerable)source).GetEnumerator();
-
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => source is null ? ((System.Collections.IEnumerable)Array.Empty<T>()).GetEnumerator() : ((System.Collections.IEnumerable)source).GetEnumerator();
     public struct Enumerator : IEnumerator<T>
     {
         private readonly bool hasList;
@@ -167,24 +172,31 @@ internal readonly struct GoListValues<T>(List<T> source) : IEnumerable<T>
             // List version checks. Preserve that distinct empty-list policy.
             hasList = source != null && source.Count != 0;
             listEnumerator = hasList ? source.GetEnumerator() : default;
-            emptyEnumerator = hasList ? null : source is null
-                ? ((IEnumerable<T>)Array.Empty<T>()).GetEnumerator()
-                : ((IEnumerable<T>)source).GetEnumerator();
+            emptyEnumerator = hasList ? null : source is null ? ((IEnumerable<T>)Array.Empty<T>()).GetEnumerator() : ((IEnumerable<T>)source).GetEnumerator();
         }
+
         private IEnumerator<T> EmptyEnumerator => emptyEnumerator ?? ((IEnumerable<T>)Array.Empty<T>()).GetEnumerator();
         public T Current => hasList ? listEnumerator.Current : EmptyEnumerator.Current;
-        object System.Collections.IEnumerator.Current => hasList
-            ? ((System.Collections.IEnumerator)listEnumerator).Current
-            : ((System.Collections.IEnumerator)EmptyEnumerator).Current;
+
+        object System.Collections.IEnumerator.Current => hasList ? ((System.Collections.IEnumerator)listEnumerator).Current : ((System.Collections.IEnumerator)EmptyEnumerator).Current;
+
         public bool MoveNext() => hasList ? listEnumerator.MoveNext() : EmptyEnumerator.MoveNext();
         public void Dispose()
         {
-            if (hasList) listEnumerator.Dispose();
-            else EmptyEnumerator.Dispose();
+            if (hasList)
+                listEnumerator.Dispose();
+            else
+                EmptyEnumerator.Dispose();
         }
+
         public void Reset()
         {
-            if (!hasList) { EmptyEnumerator.Reset(); return; }
+            if (!hasList)
+            {
+                EmptyEnumerator.Reset();
+                return;
+            }
+
             // List exposes Reset only through IEnumerator. Boxing is confined
             // to an explicit Reset request, never ordinary value iteration.
             System.Collections.IEnumerator boxed = listEnumerator;
@@ -206,16 +218,28 @@ internal readonly struct GoIntegerRange(int count) : IEnumerable<int>
         private int next;
         private bool finished;
         public int Current { get; private set; }
+
         object System.Collections.IEnumerator.Current => Current;
+
         public bool MoveNext()
         {
-            if (finished) return false;
-            if (next < count) { Current = next++; return true; }
+            if (finished)
+                return false;
+            if (next < count)
+            {
+                Current = next++;
+                return true;
+            }
+
             finished = true;
             return false;
         }
+
         // The prior simple yield loop has no finally/resource cleanup.
-        public void Dispose() { }
+        public void Dispose()
+        {
+        }
+
         public void Reset() => throw new NotSupportedException();
     }
 }
@@ -228,9 +252,11 @@ internal readonly struct GoSliceRange<T>(Slice<T> source)
     {
         private int next;
         public KeyValuePair<int, T> Current { get; private set; }
+
         public bool MoveNext()
         {
-            if (next >= source.Length) return false;
+            if (next >= source.Length)
+                return false;
             Current = new(next, source[next]);
             next++;
             return true;
@@ -310,9 +336,7 @@ internal static class GoRuntime
     public static GoIntegerRange RangeKeys(int count) => new(count);
     public static IEnumerable<K> RangeKeys<K, V>(Dictionary<K, V> source) => source?.Keys ?? Enumerable.Empty<K>();
     public static GoListRange<T> Range<T>(List<T> source) => new(source);
-
     public static GoRuneIndexRange Range(ByteStringValue source) => new(source);
-
     public static IEnumerable<KeyValuePair<int, int>> Range(string source)
     {
         for (int i = 0; i < source.Length;)
@@ -324,38 +348,53 @@ internal static class GoRuntime
     }
 
     // A Go nil map ranges empty; it does not allocate an empty map owner.
-    public static IEnumerable<KeyValuePair<K, V>> Range<K, V>(Dictionary<K, V> source) =>
-        source is null ? Enumerable.Empty<KeyValuePair<K, V>>() : source;
+    public static IEnumerable<KeyValuePair<K, V>> Range<K, V>(Dictionary<K, V> source) => source is null ? Enumerable.Empty<KeyValuePair<K, V>>() : source;
 }
 
 internal static class GoSlices
 {
     // Go slices.Clone retains nil and a nonnil empty zero-capacity header.
-    public static Slice<T> Clone<T>(Slice<T> values) => values.Length == 0
-        ? values.Slice3(0, 0, 0) : TypeScript.Scanner.Slice<T>.FromArray(values.AsSpan().ToArray());
+    public static Slice<T> Clone<T>(Slice<T> values) => values.Length == 0 ? values.Slice3(0, 0, 0) : TypeScript.Scanner.Slice<T>.FromArray(values.AsSpan().ToArray());
     public static Slice<T> Clip<T>(Slice<T> values) => values.Slice3(0, values.Length, values.Length);
     public static int Index<T>(Slice<T> values, T target)
     {
         for (int i = 0; i < values.Length; i++)
-            if (EqualityComparer<T>.Default.Equals(values[i], target)) return i;
+            if (EqualityComparer<T>.Default.Equals(values[i], target))
+                return i;
         return -1;
     }
+
     public static bool Contains<T>(Slice<T> values, T target) => Index(values, target) >= 0;
+    // Go1.27.1 slices/slices.go:105–125; borrowed slice, original index order.
+    public static int IndexFunc<T>(Slice<T> values, Func<T, bool> predicate)
+    {
+        for (int i = 0; i < values.Length; i++)
+            if (predicate(values[i]))
+                return i;
+        return -1;
+    }
+
+    public static bool ContainsFunc<T>(Slice<T> values, Func<T, bool> predicate) => IndexFunc(values, predicate) >= 0;
     public static bool Equal<T>(Slice<T> left, Slice<T> right)
     {
-        if (left.Length != right.Length) return false;
+        if (left.Length != right.Length)
+            return false;
         for (int i = 0; i < left.Length; i++)
-            if (!EqualityComparer<T>.Default.Equals(left[i], right[i])) return false;
+            if (!EqualityComparer<T>.Default.Equals(left[i], right[i]))
+                return false;
         return true;
     }
+
     // Explicit public/named-observer boundary only; internal consumers borrow.
     public static List<T> ToListOrNull<T>(Slice<T> values)
     {
-        if (values.IsNil) return null;
+        if (values.IsNil)
+            return null;
         var result = new List<T>(values.Length);
         result.AddRange(values.AsSpan());
         return result;
     }
+
     public static int Index<T>(List<T> values, T target) => values?.IndexOf(target) ?? -1;
     public static bool Contains<T>(List<T> values, T target) => Index(values, target) >= 0;
     public static bool Equal<T>(List<T> left, List<T> right)
@@ -376,7 +415,8 @@ internal static class GoSlices
         int length = values.Length;
         if (start < 0 || start > end || end > length)
             throw new ArgumentOutOfRangeException(nameof(start));
-        if (start == end) return values;
+        if (start == end)
+            return values;
         int newLength = length - (end - start);
         var storage = values.AsSpan();
         storage.Slice(end).CopyTo(storage.Slice(start));
@@ -406,7 +446,8 @@ internal static class GoSlices
     public static Slice<T> Concat<T>(Slice<T> left, Slice<T> right)
     {
         int length = checked(left.Length + right.Length);
-        if (length == 0) return default;
+        if (length == 0)
+            return default;
         var result = TypeScript.Scanner.Slice<T>.Make(length);
         left.AsSpan().CopyTo(result.AsSpan());
         right.AsSpan().CopyTo(result.AsSpan().Slice(left.Length));
@@ -419,9 +460,12 @@ internal static class GoSlices
         while (low < high)
         {
             int mid = low + (high - low) / 2;
-            if (compare(values[mid], target) < 0) low = mid + 1;
-            else high = mid;
+            if (compare(values[mid], target) < 0)
+                low = mid + 1;
+            else
+                high = mid;
         }
+
         return (low, low < values.Length && compare(values[low], target) == 0);
     }
 
@@ -445,29 +489,35 @@ internal static class GoSlices
     // internal foreach continues to use the descriptor's value enumerator.
     public static IEnumerable<T> Values<T>(Slice<T> values)
     {
-        foreach (var value in values) yield return value;
+        foreach (var value in values)
+            yield return value;
     }
+
     public static List<T> Clone<T>(List<T> values) => values is null ? null : new(values);
     public static void SortFunc<T>(List<T> values, Comparison<T> compare) => GoSliceSort.SortFunc(values, compare);
     public static void SortFunc<T>(Slice<T> values, Comparison<T> compare) => GoSliceSort.SortFunc(values.AsSpan(), compare);
     public static void SortStableFunc<T>(Slice<T> values, Comparison<T> compare) => GoSliceSort.SortStableFunc(values.AsSpan(), compare);
-
     // Go 1.27.1 slices/slices.go:241. Same header when unchanged; otherwise
     // compact shared storage, clear abandoned slots and return the shorter header.
     // Copyright 2021 The Go Authors; BSD license in licenses/Go-LICENSE.txt.
     public static Slice<T> DeleteFunc<T>(Slice<T> values, Func<T, bool> pred)
     {
         int i = 0;
-        while (i < values.Length && !pred(values[i])) i++;
-        if (i == values.Length) return values;
+        while (i < values.Length && !pred(values[i]))
+            i++;
+        if (i == values.Length)
+            return values;
         for (int j = i + 1; j < values.Length; j++)
         {
             var value = values[j];
-            if (!pred(value)) values[i++] = value;
+            if (!pred(value))
+                values[i++] = value;
         }
+
         values.AsSpan().Slice(i).Clear();
         return values.Slice2(0, i);
     }
+
     public static List<T> DeleteFunc<T>(List<T> values, Func<T, bool> pred) => values?.Where(x => !pred(x)).ToList();
 }
 

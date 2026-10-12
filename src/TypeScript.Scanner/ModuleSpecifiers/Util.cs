@@ -173,7 +173,7 @@ internal static partial class ModuleSpecifiers
     // `foo.ModuleFunctions.d.css.ts` back to their real non-JS names.
     // Upstream tsc/internal/modulespecifiers/util.go:141:1.
     public static string TryGetRealFileNameForNonJSDeclarationFileName(string fileName) => TryGetRealFileNameValueForNonJSDeclarationFileName(ByteStringValue.FromString(fileName)).Materialize()!;
-    private static ByteStringValue TryGetRealFileNameValueForNonJSDeclarationFileName(ByteStringValue fileName)
+    internal static ByteStringValue TryGetRealFileNameValueForNonJSDeclarationFileName(ByteStringValue fileName)
     {
         var baseName = TsPath.GetBaseFileName(fileName);
         if (((!fileName.EndsWith(".ts"u8) || !baseName.Contains(".d."u8)) || baseName.EndsWith(".d.ts"u8)))
@@ -320,7 +320,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/util.go:251:1.
-    private static bool prefersTsExtension(List<ModuleSpecifierEnding> allowedEndings)
+    private static bool prefersTsExtension(Slice<ModuleSpecifierEnding> allowedEndings)
     {
         var jsPriority = GoSlices.Index(allowedEndings, ModuleSpecifierEnding.JsExtension);
         var tsPriority = GoSlices.Index(allowedEndings, ModuleSpecifierEnding.TsExtension);
@@ -656,7 +656,7 @@ internal static partial class ModuleSpecifiers
         return TsPath.ToModuleSpecifier(specifier);
     }
 
-internal static ModuleSpecifier ProcessEntrypointEnding(ResolvedEntrypoint entrypoint, UserPreferences prefs, IModuleSpecifierGenerationHost host, CompilerOptions options, SourceFile importingSourceFile, Slice<ModuleSpecifierEnding> allowedEndings)
+    internal static ModuleSpecifier ProcessEntrypointEnding(ResolvedEntrypoint entrypoint, UserPreferences prefs, IModuleSpecifierGenerationHost host, CompilerOptions options, SourceFile importingSourceFile, Slice<ModuleSpecifierEnding> allowedEndings)
     {
         var specifier = entrypoint.ModuleSpecifier.AsValue();
         if ((entrypoint.Ending == Ending.Fixed))

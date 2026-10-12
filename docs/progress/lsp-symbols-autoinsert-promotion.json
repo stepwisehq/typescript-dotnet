@@ -1,0 +1,80 @@
+{
+  "status": "source-written; source-only syntax checked; final independent review and central compile pending",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "scope": "Whole Symbols (document/workspace) and AutoInsert owners; exact shared snippet leaf, complete demanded raw AST entity-name/rune-truncation workers",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Symbols.cs",
+      "sha256": "a4581d124269a4fb6d663799357873ddc3a1de8518e5dff9c7185a8159592d52"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoInsert.cs",
+      "sha256": "800d21dc29c173f287bbc4348c6b06b334dfe12b1f6c0d918b4cc915dab4e31e"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/CompletionSnippetText.cs",
+      "sha256": "57df70bb7cb6bf8c6cea9f3465f795274e306fba9b5db68aee85ad3ad0fcf12c"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Ast/EntityNameValue.cs",
+      "sha256": "07f95c9fac39519fced94eedffc34b96e1a814f0f7ddb359f9d2e496fdeae27b"
+    },
+    {
+      "path": "src/TypeScript.Scanner/StringUtil/TruncateValue.cs",
+      "sha256": "072ad4249ed1aae6d7bdede42fabdf9baac92eef3f48c4c779cc4594b8122fcb"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/DocumentSymbolExpandoChecks.cs",
+      "sha256": "d9eb41bd8b058c81a01532b8598a84e0e1bb7cdf06a618d93b951b02136006d7"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/DocumentSymbolExpandoTests.cs",
+      "sha256": "8dcb00e5698a9d8733bdeb38a1946a1c281291ec48b217d19264199a36ca4d94"
+    }
+  ],
+  "removed": {
+    "path": "src/TypeScript.Scanner/LanguageServices/Symbols.SharedLeaves.cs",
+    "priorSha256": "e443512af2b174c498b818e3e408d6f981bf86e98d74f0da97af4c566418345f",
+    "reason": "Exact isInsideNodeModules worker now belongs to the complete Symbols counterpart, avoiding duplicate partial owner"
+  },
+  "upstream": [
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/symbols.go",
+      "sha256": "6c886c97b2a531cfe6eac62f7ecbf290e658793277a4dbb035ef3e6d4c277bfb"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/autoinsert.go",
+      "sha256": "6e325825732238a62ed5fd91168ab04742d2f76bf3371431ef8bec8146334817"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/completions.go",
+      "sha256": "e4adcb389f45cf83df58cb15d0d6d2411270bca8f4dba32f39406d5e4ea26304"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ast/utilities.go",
+      "sha256": "44c9e10ee88fd004b599e764fababedb173d94afd9476998489cac471243bac3"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/stringutil/util.go",
+      "sha256": "e15d8030900518eb0d8bd926751df2f7c7cfda6d49c7a82da36d58daeed22b9e"
+    }
+  ],
+  "adaptations": [
+    "Original nil sets lazy; required eagerly allocated workspace path map retained; byte-content keys preserve Go map/string equality.",
+    "Symbol hierarchy/expando traversal and state restoration follow source; namespace/property merge writes the original shared Slice backing and retains owned merged slice.",
+    "Raw borrowed text and required concatenation ownership flow through AST/Printer/StringUtil; no display projection in labels or snippet text.",
+    "Exact escapeSnippetText leaf rehomed once from ignored Completions draft; shared completion consumer retained.",
+    "DocumentSymbol.Children retains the accepted nullable Slice facade. newDocumentSymbol always supplies a nonnull pointer, including allocated-empty children; no actual producer aliases that pointer. The nil-target merge arm is retained, but incidental private pointer alias observations are not claimed. Proposed shared-cell/template changes were removed after source-grounded reachability review."
+  ],
+  "verification": "No original direct unit functions exist for these two ls source files; unchanged original fourslash editor assertions remain required. No execution claim or whole Server acceptance.",
+  "authoredWitness": "tools/language-services-oracle/document_symbols_alias_test.go",
+  "witnessSha256": "e6e71764bcc19bfd603983dd7397b9f96cfb627eb1312198cce9ccc0f055bb67",
+  "authoredControls": {
+    "entrypoint": "DocumentSymbolExpandoChecks.RunAll",
+    "count": 2,
+    "classification": "authored full public response differential",
+    "reference": "artifacts/language-services/integration-6/document-symbols-alias-go.log",
+    "scope": "Genuine Session hierarchical and flat document-symbol responses for duplicate function declarations and property expandos; complete captured JSON. These responses do not exercise the unreachable nil-target pointer-alias arm."
+  },
+  "bindingCorrections": "Build61: actual ByteStringKey.FromValue; Visitor recursive delegate; Tristate value comparisons; complete raw GoStrings.Replace(...,-1); indexed raw rune-range truncation; explicit raw literal headers in AST entity concatenation. No text materialization, expected-response changes or algorithm replacement."
+}

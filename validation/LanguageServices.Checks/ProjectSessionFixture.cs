@@ -18,11 +18,11 @@ internal sealed class ProjectSessionFixture : IDisposable
     internal readonly TestClient Client = new();
     internal readonly ILogCollector Logger = LogCollector.NewTestLogger();
     internal readonly NpmExecutor Npm;
-    internal ProjectSessionFixture(IEnumerable<BaselineFS.Input> files, SessionOptions? options = null, IEnumerable<string>? typesRegistry = null, Dictionary<string, string>? packages = null)
+    internal ProjectSessionFixture(IEnumerable<BaselineFS.Input> files, SessionOptions? options = null, IEnumerable<string>? typesRegistry = null, Dictionary<string, string>? packages = null, TypeScript.ContentMapper.ISpawner? spawner = null)
     {
         MutableFS = new ProjectTestFileSystem(CaseSensitivity.CaseInsensitive, files.ToArray());
         Npm = new NpmExecutor(MutableFS, typesRegistry?.ToArray() ?? [], packages ?? new());
-        Session = Session.NewSession(new SessionInit { BackgroundContext = ProtocolRequestContext.Default, FS = TypeScript.Bundled.Bundled.WrapFS(MutableFS), Client = Client, NpmExecutor = Npm, Logger = Logger, Options = options ?? new SessionOptions { CurrentDirectory = RootedDirectoryPath.FromGoString("/"), DefaultLibraryPath = TypeScript.Bundled.Bundled.LibPath(), TypingsLocation = RootedDirectoryPath.FromGoString("/home/src/Library/Caches/typescript"), PositionEncoding = PositionEncodingKind.UTF8, WatchEnabled = true, LoggingEnabled = true, PushDiagnosticsEnabled = true } });
+        Session = Session.NewSession(new SessionInit { BackgroundContext = ProtocolRequestContext.Default, FS = TypeScript.Bundled.Bundled.WrapFS(MutableFS), Client = Client, NpmExecutor = Npm, Logger = Logger, Spawner = spawner, Options = options ?? new SessionOptions { CurrentDirectory = RootedDirectoryPath.FromGoString("/"), DefaultLibraryPath = TypeScript.Bundled.Bundled.LibPath(), TypingsLocation = RootedDirectoryPath.FromGoString("/home/src/Library/Caches/typescript"), PositionEncoding = PositionEncodingKind.UTF8, WatchEnabled = true, LoggingEnabled = true, PushDiagnosticsEnabled = true } });
     }
 
     internal bool WatchesFile(ByteStringValue filePath)

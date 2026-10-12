@@ -4,7 +4,10 @@ The complete autoimport/core dependency packet is reviewed, compiled and scoped-
 at checkpoint `f5feaa6a`. Managed33 and actual Linux x64 Native33 passed the shared
 packet. Its implementation freeze is released. The [promotion manifest](./lsp-autoimport-promotion.json)
 binds all 46 source/check/generator hashes, with [source-bound execution evidence](../../validation/results/language-services-dependencies-33.json).
-No whole-service acceptance is claimed; five genuine Session registry originals remain pending.
+No whole-service acceptance is claimed. The five genuine Session Registry originals and
+all twenty subtest groups are now promoted with the actual component-mapper fixture;
+[source-bound promotion](./lsp-autoimport-registry-tests-promotion.json) is reviewed,
+but central managed/Native execution remains pending.
 
 Seven direct original TypeScript test functions are preserved, alongside five
 whole external dependency functions, two selected external assertion channels and

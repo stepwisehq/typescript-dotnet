@@ -11,15 +11,25 @@ packets stay ignored/outside compilation. Preserve actual upstream algorithms, P
 reuse, UTF8/Slice ownership and required copies. No permissive placeholders, background
 exception suppression, extra private-state census, debugger/heap/SVG/external work.
 
-## Latest accepted checkpoint: dependency55
+## Latest accepted checkpoint: dependency74
+
+[Result74](../validation/results/language-services-dependencies-74.json),
+[assessment](./progress/lsp-dependencies-74.md), [reproduction](./LANGUAGE-SERVICES-VERIFY.md)
+and [independent evidence review](./progress/lsp-dependencies-74-review.json) are clear.
+Managed420/420, retained Parser18799/18799, Native323whole originals+1adapted+62authored;
+79changed source paths/179actual ILC inputs bound without drift. Delivery commit pending
+in this entry. Freeze remains until root commit; then promote reviewed API/constants,
+complete Server/CLI and candidate original-editor backend and continue autonomous
+integration. No whole-server or service corpus acceptance claim.
+
+## Prior accepted checkpoint: dependency55
 
 [Result55](../validation/results/language-services-dependencies-55.json),
 [assessment](./progress/lsp-dependencies-55.md),
 [reproduction](./LANGUAGE-SERVICES-VERIFY.md) and
 [independent evidence review](./progress/lsp-dependencies-55-review.json) are clear.
 Managed400/400, native316 whole original TypeScript functions +1adapted +60authored;
-43 changed source hashes/179 actual ILC inputs bound with no drift. Root is committing
-this reviewed checkpoint; immediately continue the queued Registry/fixer/completion/
+43 changed source hashes/179 actual ILC inputs bound with no drift. Committed at **bfb0c0e1**, with clean working tree confirmed. Immediately continue the queued Registry/fixer/completion/
 read-only-query/server families. Full services and stdio remain unfinished/unadvertised.
 
 ## Prior accepted checkpoint: dependency48
@@ -60,6 +70,185 @@ intermediate; final48 source binding is clean. Nine central builds40–48 report
 combined tool time, not elapsed/model effort. No available token/cost measurements.
 After Session failures, focused original runs avoided repeating69s watcher gate after
 each fix; final full managed+Native gate passed. Details and review qualifications in48.
+
+## Next service integration after bfb0c0e1
+
+Latest74: all integrated service source families compile clean7.42s. Full managed
+420/420,0fail/skip,70s (eight retained decoder-depth probes included); retained
+Parser18799/18799 pass2s (compatibility build3.85s/11existing observer warnings).
+Actual Linux x64 Native74 publish and full execution pass exit0:323 whole original
+TypeScript functions +1adapted runtime observation +62authored, separate external
+TrimFunc1/SlicePredicate2 plus inherited channels. Exact original selection-depth
+passes separately; fatal IPC child-6/exactmarker/no timeout. ELF95116c200af392092865ed4ee0effd4dc08a4b7b6776663d77aff26c22b1f9a2.
+79changed source paths/179actual ILC inputs bound with no drift. Full Completion
+independent source review CLEAR; other current owners reviewed. Sources/manifests
+remain frozen until evidence review/commit; no active workload.
+Result/assessment74 and source-map saved; Inventory evidence review CLEAR. Foundation
+independently reviews whole ignored fourslash backend. Protocol finishes actual
+Server/entrypoint/handler closure and direct originals ignored. After74 commit release
+freeze and promote complete API3/constants2 +Server/backend reviewed packets, compile
+promptly, resolve whole binding batches and proceed original editor corpus/actual
+Native stdio. Public --lsp is still unfinished/unadvertised. Foundation next closes
+remaining direct-original assertion gaps, not accepted infrastructure re-audit.
+Do not stop at checkpoint/compaction. Whole epic still incomplete.
+
+Latest72 failed11bindings14.98s (main8,String3), down291. Foundation/Protocol correct
+disjoint batches for73; other current service owners now report no binding errors.
+Full independent Completion review also corrected its earlier successful-set claim:
+Go final NewSetWithSizeHint always allocates even empty; restore sized HashSet success
+producer, retain actual nullable error result. Do not retain incorrect lazy-success
+attribution or claim an allocation gain. Reviewer must inspect full producer and called
+constructor before ownership findings. TestTrimFunc and SlicePredicate originals
+promoted; Native dispatcher includes separate external1+2counts. Fourslash backend
+coherent drafts now include all three actual nonwire joins, independent FS/process
+transport and real session-state projection, still gated on actual Server promotion.
+No active workload; freeze released only for current correction batches.
+
+72 readiness: Foundation main/JSDoc batch and Protocol String batch are saved/stable;
+Foundation narrow String/Utilities review clear. CodeActions annotation-only header
+conversion uses direct edits! (no Unsafe.As). Actual connected Utilities SourceFile
+token-accessor defects are corrected with borrowed TextView, original algorithm
+unchanged. Remaining optional SlicePredicate external originals are ignored pending
+Protocol readiness ACK; do not block body compilation for test wrapper work. Root
+still must establish freeze with all owners before72. Original Go slices IndexFunc/
+ContainsFunc pass0.002s package, log slice-predicate-original-go.log. No active workload.
+
+Latest71: failed291 actual body/API bindings13.91s. Freeze released; split correction
+by disjoint files to reduce critical path: Foundation Completions200+JSDoc4 and shared
+completion model/helper signatures; Protocol StringCompletions83+SemanticTokens2,
+coordinates signatures directly; Inventory remaining edit2 then resumes complete
+candidate fourslash backend (do not stop at its first message draft). Protocol's full
+independent Completion review continues; Foundation narrowly reviews Protocol string
+binding deltas. Other read-only owner bodies now have no reported compile errors;
+that is not behavioral verification. Root next compile72 after whole batch readiness.
+
+Latest70: full Completions/string/JSDoc288workers promoted (three direct counterparts,
+shared leaves rehomed) plus original directory-prefix assertion. Full69 corrections
+and external Go TestTrimFunc9rows/27comparisons promoted; root wired original Native
+Completion+1 and separate external TrimFunc+1.70 fails13 early completion declaration/
+type/collision bindings2.04s, Foundation fixes entire batch; current source freeze
+released for it. Protocol independent whole Completion source review ongoing;
+remaining service families source-reviewed. Do not misclassify Materialize as UTF8
+decoding: ByteStringValue.Materialize returns raw Go char-per-byte strings. Proposed
+comparator ownership change is allocation preservation, not a demonstrated Unicode
+correctness defect (reviewer withdrew that attribution). Pinned Go original completion
+prefix test passes0.004s package; TestTrimFunc also passes, logs in integration-6.
+Next root compiles71 when Foundation ready, then resolves concrete binding failures;
+actual service/fourslash/server verification remains future acceptance, not source credit.
+
+Latest69 compilation failed86 mechanical/current API bindings13.21s across complete
+editing and read-only families; Inventory/Protocol correcting their disjoint owners
+as a batch, no workloads by agents.68 failed2 pre-existing duplicate raw/scanner
+helpers2.04s; those are removed in favor of actual accepted producers. Read-only84
+source review CLEAR, including sole nil-map predicate wrapper and lazily cached CLR
+visitor (language allocation adaptation, not a missing Go cached-closure algorithm).
+Root next freezes after both owners ready and compiles70. Original TrimFunc27
+comparisons are drafted for next shared xUnit/Native integration. Fourslash backend
+draft temporarily paused for Inventory to fix its69 binding joins. Full Completions
+continues in ignored drafts. No accepted new commit or whole service claim yet.
+
+Next68 integration prepared: complete edit six-owner111worker packet promoted
+with five actual shared helper joins; Foundation independent source review CLEAR in
+lsp-edit-services-review.md. Complete read-only84workers SemanticTokens/InlayHints/
+CallHierarchy/CodeLens +actual byte/codec/helper dependencies promoted; Inventory
+reviews, resolving duplicate exact checker predicate wrapper to one owner before
+compile. IPC original deadline correction saved and independently reviewed CLEAR.
+Root must freeze source/manifests when packets stable, then compile68 promptly.
+No behavioral credit for these new owners from source review alone. Inventory has
+resumed original candidate-backed fourslash backend work in ignored drafts, coordinating
+actual Server APIs with Protocol; no shadow Go Session. Foundation resumes full
+Completions after its single-pass edit review. Native/full managed acceptance remains
+pending for this new source; latest accepted commit remains bfb0c0e1.
+
+Latest67: clean22.51s; focused Selection original12000+Registry5+Expando2 all8pass3s.
+Actual Native67 publication succeeded; same exact original selection depth passed
+standalone exit0. ELF66b8105b5a093f49a2973490239f8afe4bea629349c0bc36f1f46f8d7e4c64f9;
+source-67.json binds39 changed compiled paths, native-inputs-67.json binds179 actual
+ILC inputs, no drift. Native full dependency execution passed exit0:322 whole original
+TypeScript functions +1adapted runtime observer +62authored controls; inherited
+external/partial channels unchanged, no ORIGINAL_SKIP. Fullmanaged67 ran
+416cases (including eight unchanged decoder-depth probes unlike prior400):415pass,
+one failed TestAsyncConnRunWaitsForHandlers,71s. This is not accepted full gate.
+Protocol traced that timeout to shared fixture Await imposing1s where the Go original
+waits without a per-read deadline. Root approved precise fixture correction after
+active Native gate:30s deadlock-safety default, explicit1s for actually timed upstream
+waits; preserve original context1s/negative100ms and all assertions. No production
+scheduler change. Inventory independently reviews this narrow provenance correction.
+Native gate finished, freeze released for this precise fixture correction and next
+complete editing owners rather than separate fixture-only
+publication. Keep67 failed log intact, no substituted pass claim. Next ignored edit
+packet includes all six CodeActions/ImportFixes/MissingTypeAnnotation/ClassImplements/
+OrganizeImports/FileRename counterparts111workers plus required actual helper joins.
+Foundation continues full Completions, Protocol remaining read-only owners+Server.
+
+Current integration66: clean build1.83s, focused6/7pass including both complete
+hierarchical/flat Go expando responses. RegistryLifecycle fails three groups because
+the new retained-directory fixture input is not normalized; Inventory fixing that
+actual host representation with expected behavior unchanged. Freeze released for
+this correction and independently reviewed parser continuation packet promotion.
+Build61 had24 production bindings12.27s;62 production clean/test raw-display join22.79s;
+63 nullable annotation5.79s;64 missing Xunit import6.94s;65 root misplaced import1.12s.
+These are integration/process failures, not semantic test evidence. Future test
+wrappers must reuse actual adjacent imports to avoid repeated compiler handoffs.
+Selection depth test must not run again until the production stack remedy is ready.
+Pinned Go unchanged SelectionDepth/Implementation
+Worklist originals pass (integration-6/selection-worklist-original-go.log).
+Registry failure was fixture directory lifetime: ProjectTestFileSystem.Remove rebuilt
+from leaves and lost empty ancestors, unlike Go MapFS.remove. Reviewed correction
+retains existing ancestors, without changing production Registry or expectations.
+Go authored expando full responses captured in document-symbols-alias-go.log; that
+historical filename does not imply shared-header evidence. Actual Go newDocumentSymbol
+always creates nonnull Children, making proposed alias branch unreachable from the
+service producer. Root and both reviewers withdrew that suspected defect; unaccepted
+cell/model/codec/generator changes removed. Ordinary nullable Slice representation
+and meaningful full public-response comparisons retained (DocumentSymbolExpandoChecks).
+Foundation implements a reviewed production low-stack continuation design: guarded
+recursive parser hubs continue synchronously on a fresh CLR stack only when needed,
+retaining exclusive parser state and exception/context semantics. Protocol reviews;
+no test-only stack, changed depth or skip. Runtime remedy remains unverified work.
+
+Root central builds56–60 under artifacts/language-services/integration-6.60 is clean
+(7.76s); no gate currently running.56:three Locale alias errors3.33s;57:14 actual
+owner/span bindings14.41s;58:RawJsonValue test alias18.78s;59:existing GoStrings.Map
+owner qualification6.18s. No new dependency or expectations changed for those joins.
+
+Concrete execution defects, ordinary work to resolve:
+- Focused registry+selection60 ABORTED in actual Parser on unchanged original12000
+  parenthesis nesting: CLR StackOverflow in expression/parenthesized recursion. No
+  pass credit. Foundation pauses Completion briefly to investigate proportionate
+  production runtime stack adaptation (Go growable stack versus CLR); explain technique
+  before edits, preserve parser algorithm and ordinary performance plus thread-local/
+  arena ownership, error/cancellation semantics. No test-only larger stack, lower depth,
+  skips or fixture shortcuts. Protocol independently reviews remedy. No debugger/heap work.
+- Separate Registry60:4/5functions pass,3s; single failed LifecycleDeletedPackageDirectory
+  group expected1bucket got0 at Invalidation.cs53. All15 lifecycle siblings did execute.
+  Inventory diagnoses real original fixture/environment versus algorithm difference,
+  with expected behavior unchanged. Logs/TRX in integration-6. No broader reruns yet.
+
+Protocol may now promote coherent Symbols/AutoInsert plus genuine raw helper/snippet
+closure, rehoming prior Symbols.SharedLeaves without duplication. Subsequent query
+families remain ignored. Next build waits these complete owners and concrete defect fixes.
+
+Promoted coherent next packet:
+- Full MissingMemberFixer18workers/514Go lines plus unchanged-body checker helper
+  visibility. Foundation source review clear, including raw localized-text owner and
+  actual autoimport producer. Manifest lsp-missingmemberfixer-promotion.json.
+- All5 Registry original functions/all20 subtest bodies, actual Session/component mapper
+  fixture closure. Protocol review clear;15 Lifecycle/4 Entrypoint siblings aggregate
+  failures preserving Go t.Run continuation. Original expectations unchanged. Manifest
+  lsp-autoimport-registry-tests-promotion.json. Existing ProjectSessionFixture only gains
+  optional trailing injected ISpawner, preserving existing defaults.
+- Full Folding/SelectionRanges/LinkedEditing37workers and two exact completion line
+  helpers (rehome coordinated, no duplicates). Whole original SelectionRange depth12000/
+  chain1000/range/actual response serialization assertion. Inventory source review clear,
+  after lazy zero-set and actual span/owner corrections. Manifest lsp-syntax-query-promotion.json.
+Root wired +5 Registry/+1 Selection Native originals. Candidate execution still pending;
+source review and a clean production build alone are not service behavior acceptance.
+Both focused60 executions are recorded above; no separate Native gate just for tests.
+Combine meaningful connected service behavior before next broader Native checkpoint.
+Foundation continues full Completions, Inventory broader edit/codeactions/filerename,
+Protocol remaining read-only services and actual Server. All next bodies stay ignored
+during central gates. No blocker requires user input; whole epic continues autonomously.
 
 ## Ownership and current integration
 
@@ -124,11 +313,9 @@ partial channels unchanged. Fatal child-6 with required marker/no timeout/no cor
 ELF SHA c0f4f939bb1371aabdb3de7fe096e8f622862cb15b3ca6cd9ac301d1919b43b1;
 179 actual ILC inputs and43 changed compiled source paths bound, no drift.
 Result validation/results/language-services-dependencies-55.json, assessment/reproduction
-and mapping/test inventory updated. Independent final evidence/claim review is clear; root commits this checkpoint now. All next implementation stays ignored until this
-checkpoint. Do not repeat passed gates or count service behavior as verified merely
+and mapping/test inventory updated. Independent final evidence/claim review is clear; committed at bfb0c0e1, clean tree confirmed. Source freeze released for next coherent packets. Do not repeat passed gates or count service behavior as verified merely
 because it compiled. Whole server/epic remains incomplete and work continues directly.
-Registry five whole original functions/all20 subtest bodies assembled ignored; next
-promote after checkpoint and review. MissingMemberFixer is Inventory's next full owner,
+Registry five whole original functions/all20 subtest bodies assembled; independent review found sibling failure aggregation required to preserve Go t.Run behavior. Fix then promote stable packet. MissingMemberFixer is Inventory's next full owner,
 a concrete dependency of Foundation's genuine class-member completion snippets.
 Protocol ports full read-only query families before their genuine Server consumers.
 

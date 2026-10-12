@@ -166,9 +166,8 @@ A source scan separates actual `Test*` entries from `TestMain` package lifecycle
 
 The [per-file/function inventory](./language-services-upstream-tests.json) records
 4,442 source test files, their hashes and 4,820 test entrypoints. One concrete core
-BFS dependency was added afterward. The inventory records316 whole original TypeScript-repository functions plus one separately adapted original runtime observation passed at
-dependency55 (final evidence review recorded separately); remaining execution and detailed
-dispositions are still work.
+BFS dependency was added afterward. The expanded inventory accounts for5,006 test functions:323 whole original TypeScript-repository functions plus one separately adapted original runtime observation pass at
+dependency74; remaining execution and detailed dispositions are still work.
 These are function identities, not table-row, assertion or pass counts. The original
 investigations also report raw `Test`-prefixed declaration counts; those include
 lifecycle functions and must not be used as executed-test totals. Dependency tests
@@ -180,10 +179,10 @@ identified. Per-test dispositions and original assertions remain acceptance work
 | Internal milestone | Complete owners before consumers | Status |
 | --- | --- | --- |
 | Shared foundations | Protocol/codecs/converters; checker queries/hover; AST navigation; project ownership utilities | In progress |
-| Reusable project environment | Overlays, snapshots, caches, graph/pool, session lifecycle, preferences, hosts | Complete production counterparts promoted and source-reviewed through Session/Snapshot; complete original Session/pool assertions pass managed and Native; Snapshot/API/refcount originals pass managed/Native; Registry assertions in progress |
+| Reusable project environment | Overlays, snapshots, caches, graph/pool, session lifecycle, preferences, hosts | Complete production counterparts promoted and source-reviewed through Session/Snapshot; complete original Session/pool assertions pass managed and Native; Snapshot/API/refcount originals pass managed/Native; all five Registry originals pass managed/Native74 |
 | Shared editing and indexing | Formatting, change tracking, autoimport, display/source maps | Formatting/change/autoimport dependencies scoped-verified at f5feaa6a; display/source-map/semantic consumers promoted, verification pending |
-| Semantic services | All listed upstream request algorithms and cross-project interactions | In progress: full hover/signature/definition/source-definition counterparts compile and are source-reviewed; direct formatting assertions pass managed/Native, service comparisons remain pending; other consumers unfinished |
-| Server and full acceptance | Real dispatch/transport, direct/fourslash comparisons, Native AOT, review and regressions | Missing |
+| Semantic services | All listed upstream request algorithms and cross-project interactions | Full semantic counterpart families integrated and independently source-reviewed through completion, edit-producing and read-only requests; service-result corpus verification remains pending |
+| Server and full acceptance | Real dispatch/transport, direct/fourslash comparisons, Native AOT, review and regressions | Complete source-owner drafts in progress; no actual server acceptance yet |
 
 Concrete implementation dependencies refine this sequence: formatting precedes
 change tracking, which precedes full autoimport support. Real autoimport and the

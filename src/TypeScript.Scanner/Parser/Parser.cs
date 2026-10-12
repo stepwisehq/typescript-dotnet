@@ -1557,8 +1557,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:1062:1.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private Node parseStatement()
     {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+            return SynchronousStackContinuation.Run(this, static parser => parser.parseStatement());
         switch (this.token)
         {
             case Kind.SemicolonToken:
@@ -1715,8 +1718,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:1123:1.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private Node parseDeclaration()
     {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+            return SynchronousStackContinuation.Run(this, static parser => parser.parseDeclaration());
         var pos = this.nodePos();
         var jsdoc = this.jsdocScannerInfo();
         var modifiers = this.parseModifiersEx(true, false, false);
@@ -2399,8 +2405,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:1637:1.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private Node parseIdentifierOrPatternWithDiagnostic(Message privateIdentifierDiagnosticMessage)
     {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+            return SynchronousStackContinuation.Run((Parser: this, Arg0: privateIdentifierDiagnosticMessage), static state => state.Parser.parseIdentifierOrPatternWithDiagnostic(state.Arg0));
         if ((this.token == Kind.OpenBracketToken))
         {
             return this.parseArrayBindingPattern();
@@ -3242,8 +3251,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:2257:1.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private Node parseModuleOrNamespaceDeclaration(int pos, jsdocScannerInfo jsdoc, ModifierList modifiers, bool nested, Kind keyword)
     {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+            return SynchronousStackContinuation.Run((Parser: this, Arg0: pos, Arg1: jsdoc, Arg2: modifiers, Arg3: nested, Arg4: keyword), static state => state.Parser.parseModuleOrNamespaceDeclaration(state.Arg0, state.Arg1, state.Arg2, state.Arg3, state.Arg4));
         var saveHasAwaitIdentifier = this.statementHasAwaitIdentifier;
         Node name = default;
         if (nested)
@@ -3768,8 +3780,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:2680:1.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private Node parseType()
     {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+            return SynchronousStackContinuation.Run(this, static parser => parser.parseType());
         var saveContextFlags = this.contextFlags;
         this.setContextFlags(NodeFlags.TypeExcludesFlags, false);
         Node typeNode = default;
@@ -3865,8 +3880,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:2746:1.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private Node parseTypeOperatorOrHigher()
     {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+            return SynchronousStackContinuation.Run(this, static parser => parser.parseTypeOperatorOrHigher());
         var @operator = this.token;
         switch (@operator)
         {
@@ -4188,8 +4206,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:2932:1.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private Node parseJSDocType()
     {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+            return SynchronousStackContinuation.Run(this, static parser => parser.parseJSDocType());
         this.scanner.SetSkipJSDocLeadingAsterisks(true);
         var pos = this.nodePos();
         var hasDotDotDot = this.parseOptional(Kind.DotDotDotToken);
@@ -5747,8 +5768,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:4155:1.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private Node parseAssignmentExpressionOrHigherWorker(bool allowReturnTypeInArrowFunction)
     {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+            return SynchronousStackContinuation.Run((Parser: this, Arg0: allowReturnTypeInArrowFunction), static state => state.Parser.parseAssignmentExpressionOrHigherWorker(state.Arg0));
         if (this.isYieldExpression())
         {
             return this.parseYieldExpression();
@@ -6271,8 +6295,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:4663:1.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private Node parseBinaryExpressionRest(OperatorPrecedence precedence, Node leftOperand, int pos)
     {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+            return SynchronousStackContinuation.Run((Parser: this, Arg0: precedence, Arg1: leftOperand, Arg2: pos), static state => state.Parser.parseBinaryExpressionRest(state.Arg0, state.Arg1, state.Arg2));
         var lastOperand = leftOperand;
         while (true)
         {
@@ -6349,8 +6376,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:4746:1.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private Node parseUnaryExpressionOrHigher()
     {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+            return SynchronousStackContinuation.Run(this, static parser => parser.parseUnaryExpressionOrHigher());
         if (this.isUpdateExpression())
         {
             var pos = this.nodePos();
@@ -6439,8 +6469,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/parser.go:4814:1.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private Node parseJsxElementOrSelfClosingElementOrFragment(bool inExpressionContext, int topInvalidNodePosition, Node openingTag, bool mustBeUnary)
     {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+            return SynchronousStackContinuation.Run((Parser: this, Arg0: inExpressionContext, Arg1: topInvalidNodePosition, Arg2: openingTag, Arg3: mustBeUnary), static state => state.Parser.parseJsxElementOrSelfClosingElementOrFragment(state.Arg0, state.Arg1, state.Arg2, state.Arg3));
         var pos = this.nodePos();
         var opening = this.parseJsxOpeningOrSelfClosingElementOrOpeningFragment(inExpressionContext);
         Node result = default;

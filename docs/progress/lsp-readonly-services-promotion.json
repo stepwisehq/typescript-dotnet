@@ -1,0 +1,106 @@
+{
+  "status": "source-written; central compile and independent source review pending",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "scope": "Whole SemanticTokens16/InlayHints29/CallHierarchy33/CodeLens6 workers (84 total), actual raw checker predicate wrapper, closed CodeLens command argument descriptors, existing borrowed scanner view admission, demanded Go TrimFunc/TrimLeftFunc/indexFunc three-worker closure, exact two shared completion supplemental-file leaves",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/SemanticTokens.cs",
+      "sha256": "8b1b706eed809ec909478a3e5e02c9843c3693d2c0e71fac15a3d780b040562b"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/InlayHints.cs",
+      "sha256": "ddc0f65ace69c0449d05ab574b67f3856b10f8a2270b5c788e3d83e590bc7d48"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/InlayHints.LabelParts.cs",
+      "sha256": "ecdc8ff9ba49259e4c0653c5e7d8033219f73a064734362fee050d698aeed0b2"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/CallHierarchy.cs",
+      "sha256": "09ad1ce54c81aa793689cbeb87187169de39767ffb463db2da94a09aaaafeb47"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/CodeLens.cs",
+      "sha256": "98e4e8ecaf0e9f0ca53c4454dfc89275e9474d96e63d41ba182bafce6798183b"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/CompletionSupplementalFiles.cs",
+      "sha256": "a66ae549bb5d7d204900869186a8bbb689fcd084a26dde0dda36452a7e3e85e7"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/InlayPredicate.cs",
+      "sha256": "979e11a97f0c0af2912caf817465af175b09c0ebec472ce431293a2f95f402d5"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Protocol/CodeLensCodec.cs",
+      "sha256": "e76ea7874ee763e5d44f3357ca572dcb1c091ce4af7ab96431fdcdec5246e89e"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Runtime/GoStrings.TrimFunc.cs",
+      "sha256": "3a5bd923c6fb78c2dab66503b1fca75dc91091127e25c49242edf84c91962437"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Runtime/ParserCompat.cs",
+      "sha256": "7653f7c19584e23e922c935d9ba14bcd8f56cfb27143a72d60d312152021d1e5"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Protocol/CodeActionKind.cs",
+      "sha256": "8591e3d59de72275c872538c12a7ff2e876530ea73c9267a6a6d1e4c9b0bc61a"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Protocol/Models.Generated.cs",
+      "sha256": "4b08235f9fc8654db33647e4987289c526ab0c8b0b18e7de7cf88ebc74a95b85"
+    },
+    {
+      "path": "tools/lsp/generate-protocol.py",
+      "sha256": "2f8c58a44eb5b92d1fd6263dec1364ed096304b3e9c383dd8065869370014e8f"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/TrimFuncChecks.cs",
+      "sha256": "f3e038ec4f82aa58019f30accd9c990285ea2db927213ebf957392a3e95071ae"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/TrimFuncTests.cs",
+      "sha256": "ebf110c27c1ebfcfa101692853ef34929e96006612a0a919a625fdcb2f44b3f9"
+    }
+  ],
+  "upstream": [
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/semantictokens.go",
+      "sha256": "a4cda56b2e1c62282e8c7dc07ee20df929c3c0c67bd502283c1a11df20b41e85"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/inlay_hints.go",
+      "sha256": "2bcd9d8a15e9e921ae841bc400b0d86dcfca19e8dc1c67b7a83e49a82d2fd92e"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/callhierarchy.go",
+      "sha256": "53cbc16aa8611eac9a816b329db8d0ca0d4836ac491eb77dea00013f3a33fb00"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/codelens.go",
+      "sha256": "7af15fda97b8a6fcc18dbdba4ef9c2591736d0109b7865aeaf103fe10369b85c"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/completions.go",
+      "sha256": "e4adcb389f45cf83df58cb15d0d6d2411270bca8f4dba32f39406d5e4ea26304"
+    }
+  ],
+  "adaptations": [
+    "Full request contexts retained where original workers use supplied context; explicit background checker checkouts retain original background roles. Lease Done/finally encloses original body extent.",
+    "Lazy Go zero sets remain lazy; original make maps/slices stay allocated. Byte-content keys retain URI/file identity; reference identity retains node/symbol pointer roles. Sorting, traversal and result combination follow pinned source.",
+    "Inlay type-hint union argument copied as Go value before punctuation mutation, retaining borrowed Slice/text headers. Exact caller identifier map feeds nodebuilder predicate/type serialization.",
+    "Incoming-entry three sync.Once owners reuse existing accepted ProjectOnce primitive, including completion after panic. No alternate crossproject or cancellation pipeline.",
+    "CodeLens arguments retain actual value-root ProtocolPayload descriptors for Position and []Location; generated codecs are reused without reflection, cloned slices or temporary JSON buffers.",
+    "Full raw Go trim workers borrow headers and use accepted Go UTF8 rune enumeration/decoding, including malformed bytes; scanner StopAtComments consumes existing ParserBridge borrowed overload; TrimRightFunc reuses existing accepted raw worker.",
+    "Two exact supplemental-file completion leaves rehomed once; full Completions draft must consume this sole shared owner.",
+    "TypePredicateToTypePredicateNode sole shared wrapper admits the original nil identifier map for edit-service callers; actual builder retains nullable map owner. Duplicate edit wrapper removed by that owner.",
+    "Inlay traversal retains one CLR bound Visitor per request-owned state; source Go method-value calls/control flow remain equivalent. This is CLR allocation adaptation, not an omitted Go cached-closure algorithm.",
+    "Build69 binds existing raw UnicodeCase.EqualFold, ByteStringKey factory, Visitor, actual writer ordering and raw locale-result headers. Demanded slices IndexFunc/ContainsFunc preserve borrowed index-order traversal; CodeActionKind.Contains and four TS constants retain source lsp.go397\u2013407."
+  ],
+  "verification": {
+    "serviceOriginalFunctions": 0,
+    "reason": "These four source files have no direct original ls unit functions; unchanged original fourslash/editor response assertions remain required. No service pass or full Server acceptance claimed.",
+    "newExternalTrimFunc": "Whole Go1.27.1 strings TestTrimFunc promoted: one original external function, nine rows/27 unchanged comparisons; candidate/reference execution pending."
+  }
+}

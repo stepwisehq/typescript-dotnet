@@ -19,7 +19,7 @@ internal static partial class ModuleSpecifiers
     private sealed class ModuleSpecifierPreferences
     {
         internal RelativePreferenceKind relativePreference;
-        internal Func<ResolutionMode, List<ModuleSpecifierEnding>> getAllowedEndingsInPreferredOrder;
+        internal Func<ResolutionMode, Slice<ModuleSpecifierEnding>> getAllowedEndingsInPreferredOrder;
         internal Slice<string> excludeRegexes;
     }
 
@@ -290,6 +290,9 @@ internal static partial class ModuleSpecifiers
 
     // Upstream tsc/internal/modulespecifiers/preferences.go:213:1.
     private static ModuleSpecifierPreferences getModuleSpecifierPreferences(UserPreferences prefs, IModuleSpecifierGenerationHost host, CompilerOptions compilerOptions, SourceFile importingSourceFile, string oldImportSpecifier)
+        => getModuleSpecifierPreferences(prefs, host, compilerOptions, importingSourceFile, ByteStringValue.FromString(oldImportSpecifier));
+
+    private static ModuleSpecifierPreferences getModuleSpecifierPreferences(UserPreferences prefs, IModuleSpecifierGenerationHost host, CompilerOptions compilerOptions, SourceFile importingSourceFile, ByteStringValue oldImportSpecifier)
     {
         var excludes = prefs.AutoImportSpecifierExcludeRegexes;
         var relativePreference = RelativePreferenceKind.Shortest;
@@ -328,9 +331,9 @@ internal static partial class ModuleSpecifiers
             }
         }
 
-        Func<ResolutionMode, List<ModuleSpecifierEnding>> getAllowedEndingsInPreferredOrder = (syntaxImpliedNodeFormat) =>
+        Func<ResolutionMode, Slice<ModuleSpecifierEnding>> getAllowedEndingsInPreferredOrder = (syntaxImpliedNodeFormat) =>
         {
-            return GetAllowedEndingsInPreferredOrder(prefs, host, compilerOptions, importingSourceFile, oldImportSpecifier, syntaxImpliedNodeFormat);
+            return GetAllowedEndingsInPreferredOrderValue(prefs, host, compilerOptions, importingSourceFile, oldImportSpecifier, syntaxImpliedNodeFormat);
         };
         return new ModuleSpecifierPreferences
         {

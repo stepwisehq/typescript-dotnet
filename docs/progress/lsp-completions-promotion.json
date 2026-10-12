@@ -1,0 +1,1265 @@
+{
+  "status": "complete source bodies promoted; syntax-only passed; central compilation and independent review pending",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceMappings": [
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/completions.go",
+      "sha256": "e4adcb389f45cf83df58cb15d0d6d2411270bca8f4dba32f39406d5e4ea26304",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Completions.cs",
+      "workers": 196,
+      "functions": [
+        {
+          "name": "ProvideCompletion",
+          "line": 37
+        },
+        {
+          "name": "filterContentMappedAutoImports",
+          "line": 78
+        },
+        {
+          "name": "GetCompletionsAtPosition",
+          "line": 106
+        },
+        {
+          "name": "ensureItemData",
+          "line": 122
+        },
+        {
+          "name": "supplementalFileIndex",
+          "line": 139
+        },
+        {
+          "name": "sourceFileForSupplementalFileIndex",
+          "line": 152
+        },
+        {
+          "name": "keywordFiltersFromSyntaxKind",
+          "line": 239
+        },
+        {
+          "name": "DeprecateSortText",
+          "line": 283
+        },
+        {
+          "name": "ObjectLiteralPropertySortText",
+          "line": 287
+        },
+        {
+          "name": "SortBelow",
+          "line": 291
+        },
+        {
+          "name": "symbolName",
+          "line": 315
+        },
+        {
+          "name": "asObjectLiteralMethod",
+          "line": 330
+        },
+        {
+          "name": "toLSP",
+          "line": 383
+        },
+        {
+          "name": "getCompletionsAtPosition",
+          "line": 401
+        },
+        {
+          "name": "getCompletionData",
+          "line": 527
+        },
+        {
+          "name": "keywordCompletionData",
+          "line": 1801
+        },
+        {
+          "name": "getDefaultCommitCharacters",
+          "line": 1812
+        },
+        {
+          "name": "completionInfoFromData",
+          "line": 1819
+        },
+        {
+          "name": "getCompletionEntriesFromSymbols",
+          "line": 1954
+        },
+        {
+          "name": "completionNameForLiteral",
+          "line": 2125
+        },
+        {
+          "name": "getInsertTextAndReplacementSpanForImportCompletion",
+          "line": 2142
+        },
+        {
+          "name": "createCompletionItemForLiteral",
+          "line": 2164
+        },
+        {
+          "name": "createCompletionItem",
+          "line": 2177
+        },
+        {
+          "name": "getEntryForObjectLiteralMethodCompletion",
+          "line": 2473
+        },
+        {
+          "name": "createObjectLiteralMethod",
+          "line": 2498
+        },
+        {
+          "name": "isObjectLiteralMethodCompletionCandidateDeclaration",
+          "line": 2572
+        },
+        {
+          "name": "collectObjectLiteralMethodSymbols",
+          "line": 2589
+        },
+        {
+          "name": "isObjectLiteralMethodSymbol",
+          "line": 2619
+        },
+        {
+          "name": "printObjectLiteralMethodLabelDetail",
+          "line": 2623
+        },
+        {
+          "name": "getEntryForMemberCompletion",
+          "line": 2642
+        },
+        {
+          "name": "getPresentMemberModifiers",
+          "line": 2765
+        },
+        {
+          "name": "modifierLikeKind",
+          "line": 2818
+        },
+        {
+          "name": "createModifierList",
+          "line": 2834
+        },
+        {
+          "name": "createSnippetTabStopBody",
+          "line": 2846
+        },
+        {
+          "name": "createImportAdder",
+          "line": 2855
+        },
+        {
+          "name": "isRecommendedCompletionMatch",
+          "line": 2869
+        },
+        {
+          "name": "getWordLengthAndStart",
+          "line": 2882
+        },
+        {
+          "name": "trimElementAccess",
+          "line": 2905
+        },
+        {
+          "name": "getFilterText",
+          "line": 2918
+        },
+        {
+          "name": "getDotAccessor",
+          "line": 2992
+        },
+        {
+          "name": "strPtrIsEmpty",
+          "line": 3006
+        },
+        {
+          "name": "strPtrTo",
+          "line": 3013
+        },
+        {
+          "name": "boolToPtr",
+          "line": 3020
+        },
+        {
+          "name": "getLineOfPosition",
+          "line": 3027
+        },
+        {
+          "name": "getLineEndOfPosition",
+          "line": 3032
+        },
+        {
+          "name": "isClassLikeMemberCompletion",
+          "line": 3048
+        },
+        {
+          "name": "symbolAppearsToBeTypeOnly",
+          "line": 3059
+        },
+        {
+          "name": "shouldIncludeSymbol",
+          "line": 3065
+        },
+        {
+          "name": "getCompletionEntryDisplayNameForSymbol",
+          "line": 3157
+        },
+        {
+          "name": "originIsIgnore",
+          "line": 3219
+        },
+        {
+          "name": "originIncludesSymbolName",
+          "line": 3223
+        },
+        {
+          "name": "originIsComputedPropertyName",
+          "line": 3227
+        },
+        {
+          "name": "originIsObjectLiteralMethod",
+          "line": 3231
+        },
+        {
+          "name": "originIsThisTypeNode",
+          "line": 3235
+        },
+        {
+          "name": "originIsTypeOnlyAlias",
+          "line": 3239
+        },
+        {
+          "name": "originIsSymbolMember",
+          "line": 3243
+        },
+        {
+          "name": "originIsNullableMember",
+          "line": 3247
+        },
+        {
+          "name": "originIsPromise",
+          "line": 3251
+        },
+        {
+          "name": "getSourceFromOrigin",
+          "line": 3255
+        },
+        {
+          "name": "getRelevantTokens",
+          "line": 3270
+        },
+        {
+          "name": "isValidTrigger",
+          "line": 3282
+        },
+        {
+          "name": "isStringLiteralOrTemplate",
+          "line": 3317
+        },
+        {
+          "name": "binaryExpressionMayBeOpenTag",
+          "line": 3326
+        },
+        {
+          "name": "isCheckedFile",
+          "line": 3330
+        },
+        {
+          "name": "isContextTokenValueLocation",
+          "line": 3334
+        },
+        {
+          "name": "isPossiblyTypeArgumentPosition",
+          "line": 3340
+        },
+        {
+          "name": "isContextTokenTypeLocation",
+          "line": 3347
+        },
+        {
+          "name": "symbolCanBeReferencedAtTypeLocation",
+          "line": 3375
+        },
+        {
+          "name": "nonAliasCanBeReferencedAtTypeLocation",
+          "line": 3386
+        },
+        {
+          "name": "getPropertiesForCompletion",
+          "line": 3397
+        },
+        {
+          "name": "getLeftMostName",
+          "line": 3406
+        },
+        {
+          "name": "getFirstSymbolInChain",
+          "line": 3416
+        },
+        {
+          "name": "isModuleSymbol",
+          "line": 3435
+        },
+        {
+          "name": "getNullableSymbolOriginInfoKind",
+          "line": 3439
+        },
+        {
+          "name": "isStaticProperty",
+          "line": 3446
+        },
+        {
+          "name": "getContextualTypeForConditionalExpression",
+          "line": 3454
+        },
+        {
+          "name": "getContextualType",
+          "line": 3467
+        },
+        {
+          "name": "getSwitchedType",
+          "line": 3556
+        },
+        {
+          "name": "isEqualityOperatorKind",
+          "line": 3560
+        },
+        {
+          "name": "isLiteral",
+          "line": 3571
+        },
+        {
+          "name": "getRecommendedCompletion",
+          "line": 3575
+        },
+        {
+          "name": "isAbstractConstructorSymbol",
+          "line": 3598
+        },
+        {
+          "name": "startsWithQuote",
+          "line": 3606
+        },
+        {
+          "name": "getClosestSymbolDeclaration",
+          "line": 3611
+        },
+        {
+          "name": "isArrowFunctionBody",
+          "line": 3643
+        },
+        {
+          "name": "isInTypeParameterDefault",
+          "line": 3650
+        },
+        {
+          "name": "isDeprecated",
+          "line": 3668
+        },
+        {
+          "name": "getReplacementRangeForContextToken",
+          "line": 3673
+        },
+        {
+          "name": "createRangeFromStringLiteralLikeContent",
+          "line": 3691
+        },
+        {
+          "name": "quotePropertyName",
+          "line": 3708
+        },
+        {
+          "name": "isStringAndEmptyAnonymousObjectIntersection",
+          "line": 3719
+        },
+        {
+          "name": "areIntersectedTypesAvoidingStringReduction",
+          "line": 3729
+        },
+        {
+          "name": "escapeSnippetText",
+          "line": 3733
+        },
+        {
+          "name": "isNamedImportsOrExports",
+          "line": 3737
+        },
+        {
+          "name": "generateIdentifierForArbitraryString",
+          "line": 3741
+        },
+        {
+          "name": "getCompletionsSymbolKind",
+          "line": 3781
+        },
+        {
+          "name": "CompareCompletionEntries",
+          "line": 3836
+        },
+        {
+          "name": "cloneItems",
+          "line": 3860
+        },
+        {
+          "name": "getKeywordCompletions",
+          "line": 3872
+        },
+        {
+          "name": "getTypescriptKeywordCompletions",
+          "line": 3891
+        },
+        {
+          "name": "isTypeScriptOnlyKeyword",
+          "line": 3931
+        },
+        {
+          "name": "isFunctionLikeBodyKeyword",
+          "line": 3966
+        },
+        {
+          "name": "isClassMemberCompletionKeyword",
+          "line": 3976
+        },
+        {
+          "name": "isInterfaceOrTypeLiteralCompletionKeyword",
+          "line": 3986
+        },
+        {
+          "name": "isContextualKeywordInAutoImportableExpressionSpace",
+          "line": 3990
+        },
+        {
+          "name": "getContextualKeywords",
+          "line": 4002
+        },
+        {
+          "name": "getJSCompletionEntries",
+          "line": 4028
+        },
+        {
+          "name": "getOptionalReplacementSpan",
+          "line": 4056
+        },
+        {
+          "name": "isMemberCompletionKind",
+          "line": 4068
+        },
+        {
+          "name": "tryGetFunctionLikeBodyCompletionContainer",
+          "line": 4074
+        },
+        {
+          "name": "computeCommitCharactersAndIsNewIdentifier",
+          "line": 4093
+        },
+        {
+          "name": "keywordForNode",
+          "line": 4221
+        },
+        {
+          "name": "getScopeNode",
+          "line": 4230
+        },
+        {
+          "name": "isSnippetScope",
+          "line": 4238
+        },
+        {
+          "name": "isProbablyGlobalType",
+          "line": 4251
+        },
+        {
+          "name": "tryGetTypeLiteralNode",
+          "line": 4269
+        },
+        {
+          "name": "getConstraintOfTypeArgumentProperty",
+          "line": 4289
+        },
+        {
+          "name": "tryGetObjectLikeCompletionContainer",
+          "line": 4337
+        },
+        {
+          "name": "tryGetObjectLiteralContextualType",
+          "line": 4395
+        },
+        {
+          "name": "getPropertiesForObjectExpression",
+          "line": 4416
+        },
+        {
+          "name": "getApparentProperties",
+          "line": 4462
+        },
+        {
+          "name": "containsNonPublicProperties",
+          "line": 4475
+        },
+        {
+          "name": "filterObjectMembersList",
+          "line": 4483
+        },
+        {
+          "name": "isCurrentlyEditingNode",
+          "line": 4544
+        },
+        {
+          "name": "setMemberDeclaredBySpreadAssignment",
+          "line": 4549
+        },
+        {
+          "name": "tryGetConstructorLikeCompletionContainer",
+          "line": 4567
+        },
+        {
+          "name": "isConstructorParameterCompletion",
+          "line": 4587
+        },
+        {
+          "name": "tryGetObjectTypeDeclarationCompletionContainer",
+          "line": 4594
+        },
+        {
+          "name": "isFromObjectTypeDeclaration",
+          "line": 4691
+        },
+        {
+          "name": "filterClassMembersList",
+          "line": 4696
+        },
+        {
+          "name": "tryGetContainingJsxElement",
+          "line": 4742
+        },
+        {
+          "name": "filterJsxAttributes",
+          "line": 4806
+        },
+        {
+          "name": "isTypeKeywordTokenOrIdentifier",
+          "line": 4832
+        },
+        {
+          "name": "setItemDefaults",
+          "line": 4839
+        },
+        {
+          "name": "specificKeywordCompletionInfo",
+          "line": 4912
+        },
+        {
+          "name": "getJsxClosingTagCompletion",
+          "line": 4936
+        },
+        {
+          "name": "createLSPCompletionItem",
+          "line": 5022
+        },
+        {
+          "name": "getLabelCompletionsAtPosition",
+          "line": 5118
+        },
+        {
+          "name": "getLabelStatementCompletions",
+          "line": 5145
+        },
+        {
+          "name": "isCompletionListBlocker",
+          "line": 5194
+        },
+        {
+          "name": "isInStringOrRegularExpressionOrTemplateLiteral",
+          "line": 5209
+        },
+        {
+          "name": "isSolelyIdentifierDefinitionLocation",
+          "line": 5221
+        },
+        {
+          "name": "isVariableDeclarationListButNotTypeArgument",
+          "line": 5365
+        },
+        {
+          "name": "isFunctionLikeButNotConstructor",
+          "line": 5370
+        },
+        {
+          "name": "isPreviousPropertyDeclarationTerminated",
+          "line": 5374
+        },
+        {
+          "name": "isDotOfNumericLiteral",
+          "line": 5380
+        },
+        {
+          "name": "isInJsxText",
+          "line": 5390
+        },
+        {
+          "name": "clientSupportsItemLabelDetails",
+          "line": 5422
+        },
+        {
+          "name": "clientSupportsItemSnippet",
+          "line": 5426
+        },
+        {
+          "name": "clientSupportsItemCommitCharacters",
+          "line": 5430
+        },
+        {
+          "name": "clientSupportsItemInsertReplace",
+          "line": 5434
+        },
+        {
+          "name": "clientSupportsDefaultCommitCharacters",
+          "line": 5438
+        },
+        {
+          "name": "clientSupportsDefaultEditRange",
+          "line": 5442
+        },
+        {
+          "name": "getArgumentInfoForCompletions",
+          "line": 5452
+        },
+        {
+          "name": "ResolveCompletionItem",
+          "line": 5488
+        },
+        {
+          "name": "getCompletionDocumentationFormat",
+          "line": 5512
+        },
+        {
+          "name": "getCompletionItemDetails",
+          "line": 5516
+        },
+        {
+          "name": "getSymbolCompletionFromItemData",
+          "line": 5626
+        },
+        {
+          "name": "createSimpleDetails",
+          "line": 5698
+        },
+        {
+          "name": "createCompletionDetails",
+          "line": 5706
+        },
+        {
+          "name": "createCompletionDetailsForSymbol",
+          "line": 5734
+        },
+        {
+          "name": "getImportStatementCompletionInfo",
+          "line": 5746
+        },
+        {
+          "name": "getSingleLineReplacementSpanForImportCompletionNode",
+          "line": 5821
+        },
+        {
+          "name": "couldBeTypeOnlyImportSpecifier",
+          "line": 5879
+        },
+        {
+          "name": "canCompleteFromNamedBindings",
+          "line": 5883
+        },
+        {
+          "name": "getPotentiallyInvalidImportSpecifier",
+          "line": 5911
+        },
+        {
+          "name": "isModuleSpecifierMissingOrEmpty",
+          "line": 5921
+        },
+        {
+          "name": "hasDocComment",
+          "line": 5935
+        },
+        {
+          "name": "getJSDocTagAtPosition",
+          "line": 5941
+        },
+        {
+          "name": "tryGetTypeExpressionFromTag",
+          "line": 5953
+        },
+        {
+          "name": "isTagWithTypeExpression",
+          "line": 5971
+        },
+        {
+          "name": "jsDocCompletionInfo",
+          "line": 5983
+        },
+        {
+          "name": "getJSDocTagNameCompletions",
+          "line": 6118
+        },
+        {
+          "name": "getJSDocTagCompletions",
+          "line": 6122
+        },
+        {
+          "name": "getJSDocParameterCompletions",
+          "line": 6126
+        },
+        {
+          "name": "getJSDocParamAnnotation",
+          "line": 6274
+        },
+        {
+          "name": "getJSDocParamNameWithInitializer",
+          "line": 6360
+        },
+        {
+          "name": "generateJSDocParamTagsForDestructuring",
+          "line": 6368
+        },
+        {
+          "name": "jsDocParamPatternWorker",
+          "line": 6411
+        },
+        {
+          "name": "jsDocParamElementWorker",
+          "line": 6484
+        },
+        {
+          "name": "getJSDocParameterNameCompletions",
+          "line": 6545
+        },
+        {
+          "name": "getExhaustiveCaseSnippets",
+          "line": 6586
+        },
+        {
+          "name": "typeNodeToExpression",
+          "line": 6724
+        },
+        {
+          "name": "entityNameToExpression",
+          "line": 6786
+        },
+        {
+          "name": "printNode",
+          "line": 6812
+        },
+        {
+          "name": "printUnescapedNode",
+          "line": 6820
+        },
+        {
+          "name": "printAndFormatNode",
+          "line": 6827
+        },
+        {
+          "name": "printAndFormatNodeWithSettings",
+          "line": 6831
+        },
+        {
+          "name": "createSnippetPrinter",
+          "line": 6854
+        },
+        {
+          "name": "Write",
+          "line": 6878
+        },
+        {
+          "name": "WriteComment",
+          "line": 6882
+        },
+        {
+          "name": "WriteStringLiteral",
+          "line": 6886
+        },
+        {
+          "name": "WriteParameter",
+          "line": 6890
+        },
+        {
+          "name": "WriteProperty",
+          "line": 6894
+        },
+        {
+          "name": "WriteSymbol",
+          "line": 6898
+        },
+        {
+          "name": "escapingWrite",
+          "line": 6906
+        }
+      ]
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/string_completions.go",
+      "sha256": "b42d12e865608ddce669ac860ddac19875cf0a22cd997349b2a97cdbf50431e9",
+      "destination": "src/TypeScript.Scanner/LanguageServices/StringCompletions.cs",
+      "workers": 61,
+      "functions": [
+        {
+          "name": "getStringLiteralCompletions",
+          "line": 57
+        },
+        {
+          "name": "convertStringLiteralCompletions",
+          "line": 95
+        },
+        {
+          "name": "convertPathCompletions",
+          "line": 206
+        },
+        {
+          "name": "getStringLiteralCompletionEntries",
+          "line": 263
+        },
+        {
+          "name": "fromContextualType",
+          "line": 440
+        },
+        {
+          "name": "toCompletionsFromTypes",
+          "line": 446
+        },
+        {
+          "name": "toStringLiteralCompletionsFromTypes",
+          "line": 456
+        },
+        {
+          "name": "fromUnionableLiteralType",
+          "line": 466
+        },
+        {
+          "name": "stringLiteralCompletionsForObjectLiteral",
+          "line": 555
+        },
+        {
+          "name": "stringLiteralCompletionsFromProperties",
+          "line": 578
+        },
+        {
+          "name": "getStringLiteralCompletionsFromModuleNames",
+          "line": 587
+        },
+        {
+          "name": "toPathCompletions",
+          "line": 612
+        },
+        {
+          "name": "pathCompletionReplacementSpan",
+          "line": 622
+        },
+        {
+          "name": "moduletToScriptElementKind",
+          "line": 633
+        },
+        {
+          "name": "isAnyDirectorySeparator",
+          "line": 645
+        },
+        {
+          "name": "getDirectoryFragmentRange",
+          "line": 650
+        },
+        {
+          "name": "getStringLiteralCompletionsFromModuleNamesWorker",
+          "line": 663
+        },
+        {
+          "name": "getCompletionEntriesForNonRelativeModules",
+          "line": 707
+        },
+        {
+          "name": "getFragmentDirectory",
+          "line": 879
+        },
+        {
+          "name": "getPatternFromFirstMatchingCondition",
+          "line": 889
+        },
+        {
+          "name": "getAmbientModuleCompletions",
+          "line": 908
+        },
+        {
+          "name": "getAmbientModuleName",
+          "line": 927
+        },
+        {
+          "name": "getCompletionEntriesFromTypings",
+          "line": 935
+        },
+        {
+          "name": "getCompletionEntriesFromTypingsDirectories",
+          "line": 959
+        },
+        {
+          "name": "tryRemoveDirectoryPrefix",
+          "line": 1004
+        },
+        {
+          "name": "enumerateNodeModulesVisibleToScript",
+          "line": 1015
+        },
+        {
+          "name": "getExtensionOptions",
+          "line": 1036
+        },
+        {
+          "name": "getSupportedExtensionsForModuleResolution",
+          "line": 1054
+        },
+        {
+          "name": "moduleResolutionUsesNodeModules",
+          "line": 1078
+        },
+        {
+          "name": "isPathRelativeToScript",
+          "line": 1084
+        },
+        {
+          "name": "getCompletionEntriesForRelativeModules",
+          "line": 1088
+        },
+        {
+          "name": "getCompletionEntriesForDirectoryFragmentWithRootDirs",
+          "line": 1118
+        },
+        {
+          "name": "getBaseDirectoriesFromRootDirs",
+          "line": 1154
+        },
+        {
+          "name": "deduplicateDirectoryNames",
+          "line": 1178
+        },
+        {
+          "name": "deduplicateModuleCompletions",
+          "line": 1193
+        },
+        {
+          "name": "add",
+          "line": 1232
+        },
+        {
+          "name": "getCompletionEntriesForDirectoryFragment",
+          "line": 1255
+        },
+        {
+          "name": "addCompletionEntriesFromRelativePathPatterns",
+          "line": 1359
+        },
+        {
+          "name": "addCompletionEntriesFromPaths",
+          "line": 1370
+        },
+        {
+          "name": "addCompletionEntriesFromPathsOrExportsOrImports",
+          "line": 1410
+        },
+        {
+          "name": "getCompletionsForPathMapping",
+          "line": 1497
+        },
+        {
+          "name": "getFileExtension",
+          "line": 1595
+        },
+        {
+          "name": "getModulesForPathsPattern",
+          "line": 1608
+        },
+        {
+          "name": "containsSlash",
+          "line": 1825
+        },
+        {
+          "name": "withoutStartAndEnd",
+          "line": 1829
+        },
+        {
+          "name": "removeLeadingDirectorySeparator",
+          "line": 1837
+        },
+        {
+          "name": "getPossibleOriginalInputPathWithoutChangingExt",
+          "line": 1841
+        },
+        {
+          "name": "getFilenameWithExtensionOption",
+          "line": 1857
+        },
+        {
+          "name": "walkUpParentheses",
+          "line": 1913
+        },
+        {
+          "name": "getStringLiteralTypes",
+          "line": 1924
+        },
+        {
+          "name": "getAlreadyUsedTypesInStringLiteralUnion",
+          "line": 1945
+        },
+        {
+          "name": "hasIndexSignature",
+          "line": 1960
+        },
+        {
+          "name": "isRequireCallArgument",
+          "line": 1968
+        },
+        {
+          "name": "kindModifiersFromExtension",
+          "line": 1973
+        },
+        {
+          "name": "getStringLiteralCompletionsFromSignature",
+          "line": 2006
+        },
+        {
+          "name": "getStringLiteralCompletionDetails",
+          "line": 2048
+        },
+        {
+          "name": "stringLiteralCompletionDetails",
+          "line": 2074
+        },
+        {
+          "name": "isInReferenceComment",
+          "line": 2107
+        },
+        {
+          "name": "hasTripleSlashPrefix",
+          "line": 2116
+        },
+        {
+          "name": "parseTripleSlashDirectiveFragment",
+          "line": 2136
+        },
+        {
+          "name": "getTripleSlashReferenceCompletions",
+          "line": 2190
+        }
+      ]
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/jsdoc_snippet.go",
+      "sha256": "296d287662b6a4fecdc66f869b6dcaa35e7d6d2a3357f63d7e2459f81b43145a",
+      "destination": "src/TypeScript.Scanner/LanguageServices/JSDocSnippet.cs",
+      "workers": 31,
+      "functions": [
+        {
+          "name": "getJSDocSnippetCompletion",
+          "line": 29
+        },
+        {
+          "name": "isPotentiallyValidJSDocSnippetCompletionPosition",
+          "line": 74
+        },
+        {
+          "name": "getJSDocSnippetCompletionRange",
+          "line": 87
+        },
+        {
+          "name": "getDocCommentTemplateAtPosition",
+          "line": 124
+        },
+        {
+          "name": "getDocCommentEndAtPosition",
+          "line": 181
+        },
+        {
+          "name": "skipWhitespace",
+          "line": 194
+        },
+        {
+          "name": "getCommentOwnerInfo",
+          "line": 208
+        },
+        {
+          "name": "getCommentOwnerInfoWorker",
+          "line": 218
+        },
+        {
+          "name": "hasReturn",
+          "line": 270
+        },
+        {
+          "name": "getRightHandSideOfAssignment",
+          "line": 287
+        },
+        {
+          "name": "parameterDocComments",
+          "line": 304
+        },
+        {
+          "name": "returnsDocComment",
+          "line": 328
+        },
+        {
+          "name": "getIndentationStringAtPosition",
+          "line": 332
+        },
+        {
+          "name": "isNonEmptyJSDoc",
+          "line": 349
+        },
+        {
+          "name": "hasJSDocTags",
+          "line": 357
+        },
+        {
+          "name": "templateToSnippet",
+          "line": 366
+        },
+        {
+          "name": "stripJSDocTemplateIndentation",
+          "line": 377
+        },
+        {
+          "name": "transformJSDocTemplateLines",
+          "line": 390
+        },
+        {
+          "name": "lineHasOnlyJSDocAsterisk",
+          "line": 408
+        },
+        {
+          "name": "transformJSDocParamLine",
+          "line": 413
+        },
+        {
+          "name": "transformJSDocReturnsLine",
+          "line": 460
+        },
+        {
+          "name": "scanNonWhitespace",
+          "line": 475
+        },
+        {
+          "name": "isJSDocSnippetPrefix",
+          "line": 492
+        },
+        {
+          "name": "getJSDocSnippetPrefixStart",
+          "line": 512
+        },
+        {
+          "name": "isJSDocSnippetSuffix",
+          "line": 525
+        },
+        {
+          "name": "getJSDocSnippetSuffixEnd",
+          "line": 541
+        },
+        {
+          "name": "trimRightSingleLineWhitespace",
+          "line": 552
+        },
+        {
+          "name": "skipSingleLineWhitespace",
+          "line": 567
+        },
+        {
+          "name": "isOnlySingleLineWhitespace",
+          "line": 578
+        },
+        {
+          "name": "startsWithSingleLineWhitespace",
+          "line": 582
+        },
+        {
+          "name": "isOnlySpacesOrTabs",
+          "line": 590
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Completions.cs",
+      "sha256": "2e56a9c288a1909276a6d4a4bdc341a26587042bf82584a9ebb85465e5a54d0f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/StringCompletions.cs",
+      "sha256": "4c044821a3f7943fa612d7fcdf3b2f5d4b156870f0b44a1fb6be81cff27fcb5d"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/JSDocSnippet.cs",
+      "sha256": "bb38fcfbed80b7cc07adf11504c50596ce947f8ddc6b0fcac230b58385226556"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Printer/SyntheticFile.cs",
+      "sha256": "071aba75b0fbe59d55ba2ee3a0faca2a557cacc786f9349b2001b03e68b350d0"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/CompletionChecks.cs",
+      "sha256": "2792eabccdb0065a25d0d23b6aef9c3a8898d843184936d0198b1ff8d250d669"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/CompletionTests.cs",
+      "sha256": "a66cf41955bc5074d43514ee46b10bc151123b19764cd8ae12c0d3c4a0109c70"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ModuleSpecifiers/Util.cs",
+      "scope": "existing raw NonJS declaration filename worker private-to-internal; body unchanged",
+      "sha256": "e773235a216e2a749bc0d47bb536d395908ff2bac2a0bf9bbbd444ee0b0f37c0"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/CompletionServiceExports.cs",
+      "sha256": "753a4043535317e2e28c379f497237f6753d29448293adaca4452efb77d7ff5a"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Services.cs",
+      "sha256": "877530ece6f647110d8a3b9121dffc344df2a4d504c05ce36bbb9b71e0b75600"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Utilities.cs",
+      "sha256": "d55bc34fc9d4dc304b7aa5b9937dff714d9f7ee7bd7fb2340194be50ae553e09"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Checker.cs",
+      "sha256": "ad9e8e12f2783bd6bd2b34d854dbbe278398aed84b8c78fc2380132624933841"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Utilities.cs",
+      "sha256": "9ec7a54277a2c8877bf1a3ede55d9eb29ec82ceba0417f61c0e5fe76f8e3ffeb"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Printer/Utilities.ServiceValues.cs",
+      "sha256": "a04b9b4b71936f2629d9f7ae3fdb95bcbab52de9130099d422d634e357e06aae"
+    }
+  ],
+  "removed": [
+    "src/TypeScript.Scanner/LanguageServices/Completions.SharedLeaves.cs"
+  ],
+  "sharedLeaves": [
+    "CompletionLinePositions.cs",
+    "CompletionSnippetText.cs",
+    "CompletionSupplementalFiles.cs"
+  ],
+  "adaptations": [
+    "Three one-to-one source counterparts assembled from ignored complete body components; no empty service methods.",
+    "Accepted switched-type/equality leaves rehomed unchanged. Line/snippet/supplemental helpers have one separately promoted actual partial owner.",
+    "All snippet embedded writer methods forward to retained ChangeTrackerWriter through real EmitTextWriter interface; same writer state and escapes/output owner.",
+    "Raw string literal names and SourceFile text use actual borrowed headers. Required Core.Map/result copies, caches, tuple headers and newly generated syntax nodes remain.",
+    "Raw EscapeStringValue forwards same existing flags/Grow/worker/output. SyntheticFile byte overload preserves source factory/parent-setting producer while retaining immutable builder bytes; existing string API unchanged.",
+    "Original package-internal directory-prefix assertion gains only focused internal visibility; original Unicode inputs cross real UTF8 fixture boundary."
+  ],
+  "verification": {
+    "originalFunctions": 1,
+    "name": "TestTryRemoveDirectoryPrefixCaseFoldingShrinksPrefix",
+    "authoredControls": 0,
+    "managed": "pending",
+    "native": "pending",
+    "fullEditorCorpus": "pending"
+  },
+  "limits": "Source-written packet is not feature/runtime acceptance; centralized compiler feedback will reconcile actual API bindings.",
+  "integration70Corrections": "Actual ulong symbol IDs; Scanner NodeFactory alias; retained CodeActions owner and Api.ErrNeedsAutoImports singleton; reserved tuple label renamed only; duplicate EscapeStringValue removed in favor of existing Utilities.ServiceValues worker.",
+  "integration71Corrections": "Whole compiler-binding families: explicit raw literal headers; existing AST/scanner/formatting/checker owners; original Slice append/map/clone and numeric symbol-ID owners; actual factory and emit-context constructors; nullable source pointer annotations; shared checker raw exports; same-body IsKnownSymbol/IsEmptyAnonymousObjectType visibility; original CheckEachDefined same-header assertion; source-set completion unique-name consumers. String family bound separately by protocol owner. Central compilation still required. Peer allocation corrections: null-safe unique-name Set consumers; completionConcat delegates to existing ByteStringValue.Concat params ReadOnlySpan with required result copy and no array/builder bridge. Utilities type-argument scanner consumes SourceFile.TextView rather than inherited token text.",
+  "integration72Corrections": "Actual SetByteTextInternal borrowed scanner input, byte newline predicate, pointer/nullable entry annotations, and raw contextual-property checker overload; successful final uniqueNames producer restored to the explicitly sized Go NewSetWithSizeHint owner, including empty allocation. Earlier peer lazy-producer attribution was incorrect; no performance claim."
+}

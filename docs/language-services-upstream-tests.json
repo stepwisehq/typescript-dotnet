@@ -1351,31 +1351,126 @@
           "name": "TestRegistryLifecycle",
           "line": 25,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Concurrent.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.ContentMapped.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Dispatch.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Entrypoint.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Helpers.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Hidden.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Invalidation.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Lifecycle.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Monorepo.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.SymlinkFiles.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Symlinks.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.WorkspaceChanges.cs"
+          ],
+          "managedEvidence": "artifacts/language-services/integration-6/tests/dependencies-74.trx",
+          "nativeEvidence": "artifacts/language-services/integration-6/native-run-74.log",
+          "adaptation": "All original Registry assertions/subtests with actual Session and injected component host; fixture retains upstream empty-parent directory lifetime.",
+          "qualification": "Combined managed and Native74 passes; original failed intermediate67 IPC fixture log retained."
         },
         {
           "name": "TestContentMappedNodeModulesFileUsesProjectBucket",
           "line": 946,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Concurrent.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.ContentMapped.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Dispatch.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Entrypoint.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Helpers.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Hidden.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Invalidation.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Lifecycle.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Monorepo.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.SymlinkFiles.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Symlinks.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.WorkspaceChanges.cs"
+          ],
+          "managedEvidence": "artifacts/language-services/integration-6/tests/dependencies-74.trx",
+          "nativeEvidence": "artifacts/language-services/integration-6/native-run-74.log",
+          "adaptation": "All original Registry assertions/subtests with actual Session and injected component host; fixture retains upstream empty-parent directory lifetime.",
+          "qualification": "Combined managed and Native74 passes; original failed intermediate67 IPC fixture log retained."
         },
         {
           "name": "TestHiddenDirectoriesInNodeModules",
           "line": 993,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Concurrent.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.ContentMapped.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Dispatch.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Entrypoint.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Helpers.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Hidden.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Invalidation.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Lifecycle.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Monorepo.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.SymlinkFiles.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Symlinks.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.WorkspaceChanges.cs"
+          ],
+          "managedEvidence": "artifacts/language-services/integration-6/tests/dependencies-74.trx",
+          "nativeEvidence": "artifacts/language-services/integration-6/native-run-74.log",
+          "adaptation": "All original Registry assertions/subtests with actual Session and injected component host; fixture retains upstream empty-parent directory lifetime.",
+          "qualification": "Combined managed and Native74 passes; original failed intermediate67 IPC fixture log retained."
         },
         {
           "name": "TestAutoImportEntrypointDirectorySearch",
           "line": 1078,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Concurrent.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.ContentMapped.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Dispatch.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Entrypoint.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Helpers.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Hidden.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Invalidation.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Lifecycle.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Monorepo.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.SymlinkFiles.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Symlinks.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.WorkspaceChanges.cs"
+          ],
+          "managedEvidence": "artifacts/language-services/integration-6/tests/dependencies-74.trx",
+          "nativeEvidence": "artifacts/language-services/integration-6/native-run-74.log",
+          "adaptation": "All original Registry assertions/subtests with actual Session and injected component host; fixture retains upstream empty-parent directory lifetime.",
+          "qualification": "Combined managed and Native74 passes; original failed intermediate67 IPC fixture log retained."
         },
         {
           "name": "TestUpdateIndexesConcurrentMapSafety",
           "line": 1227,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Concurrent.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.ContentMapped.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Dispatch.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Entrypoint.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Helpers.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Hidden.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Invalidation.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Lifecycle.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Monorepo.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.SymlinkFiles.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.Symlinks.cs",
+            "validation/LanguageServices.Checks/AutoImportRegistryChecks.WorkspaceChanges.cs"
+          ],
+          "managedEvidence": "artifacts/language-services/integration-6/tests/dependencies-74.trx",
+          "nativeEvidence": "artifacts/language-services/integration-6/native-run-74.log",
+          "adaptation": "All original Registry assertions/subtests with actual Session and injected component host; fixture retains upstream empty-parent directory lifetime.",
+          "qualification": "Combined managed and Native74 passes; original failed intermediate67 IPC fixture log retained."
         }
       ]
     },
@@ -1804,7 +1899,15 @@
           "name": "TestSelectionRangeDepthIsLimited",
           "line": 17,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/SelectionRangeChecks.cs"
+          ],
+          "managedEvidence": "artifacts/language-services/integration-6/tests/dependencies-74.trx",
+          "nativeEvidence": "artifacts/language-services/integration-6/native-run-74.log",
+          "adaptation": "Exact original12000-depth/1000-chain/ranges/actual response serialization; production CLR stack continuation preserves algorithm.",
+          "qualification": "Combined managed and Native74 passes; original failed intermediate67 IPC fixture log retained."
         }
       ]
     },
@@ -1817,7 +1920,14 @@
           "name": "TestTryRemoveDirectoryPrefixCaseFoldingShrinksPrefix",
           "line": 18,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/CompletionChecks.cs"
+          ],
+          "adaptation": "Whole original case-folded shrinking-prefix assertions; no expected-value change.",
+          "managedEvidence": "artifacts/language-services/integration-6/tests/dependencies-74.trx",
+          "nativeEvidence": "artifacts/language-services/integration-6/native-run-74.log"
         }
       ]
     },
@@ -63025,10 +63135,10 @@
       ]
     }
   ],
-  "implementationNote": "Dependency48 passes312 whole original TypeScript test functions plus one separately adapted original watcher runtime observer. Four AstNav entries retain selected Go channels with remaining channels pending. Full service/server/fourslash and remaining direct originals are unfinished; source inventory alone grants no execution credit.",
+  "implementationNote": "Dependency74 passes323 whole original TypeScript functions plus one separately adapted original watcher runtime observer. Four AstNav entries retain selected channels with remaining assertions pending. Full service/server/fourslash and remaining direct originals remain unfinished.",
   "executionDispositionTotals": {
-    "inventoried-not-executed": 4658,
-    "managed-and-native-assertions-passed": 316,
+    "inventoried-not-executed": 4651,
+    "managed-and-native-assertions-passed": 323,
     "partial-managed-native-channels-passed-remaining-channels-pending": 4,
     "external-go-source-generator-not-runtime-closure": 1,
     "excluded-platform-backend-outside-linux-contract": 26,

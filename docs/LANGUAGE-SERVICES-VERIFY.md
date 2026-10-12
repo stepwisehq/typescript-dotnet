@@ -1,7 +1,7 @@
 # Language-services verification
 
 The [completion contract](./LANGUAGE-SERVICES-CONTRACT.md) is still in progress.
-The current [dependency result](../validation/results/language-services-dependencies-55.json)
+The current [dependency result](../validation/results/language-services-dependencies-74.json)
 records a passing managed and Linux x64 Native AOT dependency run, its source hashes,
 and its limitations. This does not establish an operational language server.
 Subsequent source changes require their own integration verification.
@@ -25,34 +25,37 @@ as assertion groups; do not count a selected channel as an entire original funct
 Run from the repository so source fixtures and unchanged upstream baselines are found.
 Publishing alone is insufficient: execute the produced native binary.
 
-The current dependency55 packet passes **400 ordinary xUnit cases**, zero failures
-or skips, and actual Linux x64 Native AOT execution of316 whole original TypeScript-repository
-functions, one separately adapted original watcher runtime observation and60 authored controls. External dependency functions and selected
-channels remain separately reported; the new generic replacement channel contains49
-original rows and does not claim whole TestReplacer. The
-[assessment](./progress/lsp-dependencies-55.md),
-[independent review](./progress/lsp-dependencies-55-review.json) and
-[execution record](../validation/results/language-services-dependencies-55.json)
-bind exact logs, source hashes, actual native compiler inputs and binary hash.
-Eight unchanged isolated decoder probes retain dependency23 evidence; they were not
-added to400 or rerun in55. To reproduce just this ordinary managed packet, add
-`--filter 'FullyQualifiedName!~AuthoredRecursive'` to the test command above.
+The current dependency74 packet passes **420 xUnit cases**, zero failures/skips,
+including eight retained decoder-depth probes. Actual Linux x64 Native AOT executes
+323 whole original TypeScript-repository functions, one separately adapted original
+watcher runtime observation and62 authored controls. External dependency and partial
+channels remain separately reported; see the
+[assessment](./progress/lsp-dependencies-74.md),
+[independent review](./progress/lsp-dependencies-74-review.json) and
+[execution record](../validation/results/language-services-dependencies-74.json).
+The retained parser suite additionally passes18,799 data-driven cases:
+
+```sh
+dotnet test tests/Parser.Tests/Parser.Tests.csproj -c Release
+artifacts/language-services/native/LanguageServices.Validation --selection-depth
+```
+
+The second command runs the exact original12,000-parenthesis selection assertion
+separately. Production synchronous stack continuation is exercised under Native AOT;
+no test-only enlarged stack or reduced depth substitutes for the original input.
 
 The isolated `--ipc-fatal-notification` native control must run as a child with a
 bounded timeout and core dumps disabled. Success requires nonzero termination,
-the exact `authored fatal IPC notification` marker, and no timeout. An arbitrary
-crash is not a pass. Native55 returned-6 with the required marker and no timeout.
-This checks the upstream unhandled-notification boundary, not actual server transport.
+the exact `authored fatal IPC notification` marker, and no timeout. Native74 returned
+-6 with that marker. This verifies the original notification boundary, not actual
+server transport.
 
-Source reviews cover Session/watcher production, original pool/watcher assertions,
-JSON indentation and the ten semantic counterparts. Complete Session and all115
-Linux/shared watcher originals are now accounted for:114 watcher functions preserve
-their whole assertions and one uses a separately adapted CLR thread observer.
-Snapshot/API/refcount originals and the original References worklist now pass. Registry originals remain pending. The full
-service corpus, public stdio server and comprehensive retained compiler/emit gates
-are still unfinished. Source-reviewed hover/definition implementations are not yet
-claimed behaviorally verified services. Earlier dependency33/23 evidence remains
-historical proof of its exact source and scope.
+All five Registry originals and full Session/Snapshot/refcount/pool assertions now
+pass. New complete semantic-service source counterparts are reviewed and compile;
+the original editor corpus and actual public stdio server are still pending. A
+Native dependency executable can trim uncalled services, so its passing run is not
+whole-server acceptance. Comprehensive retained compiler/emit gates remain final
+epic work. Earlier dependency records retain their exact historical scopes.
 
 The four authored diagnostics/Emit comparisons use the tracked Go witness with the
 same bundled library environment. To reproduce the reference without changing upstream:
@@ -134,3 +137,24 @@ The [verification design](./progress/lsp-verification-design.md) records the rem
 workspace, original-harness and real-transport requirements. Public server launch and
 editor-connection instructions will be added when the actual server is implemented
 and verified; `tscheck --lsp --stdio` is currently only the planned command.
+
+## New original and authored comparisons in dependency74
+
+The completion-prefix and deep-selection checks preserve the original Go assertions.
+Run the upstream controls with the bundled toolchain:
+
+```sh
+(cd upstream/TypeScript/tsc && ../../../tools/.cache/go/bin/go test ./internal/ls \
+  -run '^(TestSelectionRangeDepthIsLimited|TestTryRemoveDirectoryPrefixCaseFoldingShrinksPrefix)$' -count=1)
+tools/.cache/go/bin/go test strings -run '^TestTrimFunc$' -count=1
+tools/.cache/go/bin/go test slices -run '^(TestIndexFunc|TestContainsFunc)$' -count=1
+```
+
+The authored document-symbol witness is
+[document_symbols_alias_test.go](../tools/language-services-oracle/document_symbols_alias_test.go).
+Its historical name does not imply private-header alias parity. Overlay it at
+`internal/project/document_symbols_alias_control_test.go` using the same Go overlay
+pattern above, then run `TestAuthoredDocumentSymbolChildrenAliases`. Candidate
+`DocumentSymbolExpandoTests` compares both complete hierarchical/flat responses and
+is included in the shared Native runner. The retained capture log and exact overlay
+are linked from the dependency74 execution record.

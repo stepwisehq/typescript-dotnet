@@ -102,7 +102,7 @@ for name, spec in types.items():
     if spec['kind'] == 'scalar':
         base = spec['type']
         if base == 'string':
-            lines.extend([f'internal readonly struct {name}(ByteStringValue value) : IEquatable<{name}>', '{', '    internal readonly ByteStringValue Value = value;', f'    public bool Equals({name} other) => Value.EqualsValue(other.Value);', f'    public override bool Equals(object? other) => other is {name} typed && Equals(typed);', '    public override int GetHashCode() => ByteStringKey.FromValue(Value).GetHashCode();', f'    public static bool operator ==({name} left, {name} right) => left.Equals(right);', f'    public static bool operator !=({name} left, {name} right) => !left.Equals(right);'])
+            lines.extend([f'internal readonly {"partial " if name == "CodeActionKind" else ""}struct {name}(ByteStringValue value) : IEquatable<{name}>', '{', '    internal readonly ByteStringValue Value = value;', f'    public bool Equals({name} other) => Value.EqualsValue(other.Value);', f'    public override bool Equals(object? other) => other is {name} typed && Equals(typed);', '    public override int GetHashCode() => ByteStringKey.FromValue(Value).GetHashCode();', f'    public static bool operator ==({name} left, {name} right) => left.Equals(right);', f'    public static bool operator !=({name} left, {name} right) => !left.Equals(right);'])
             for constant, value in constants[name]:
                 suffix = constant.removeprefix(name)
                 lines.append(f'    internal static readonly {name} {suffix} = new(ByteStringValue.FromString({value.strip()}));')

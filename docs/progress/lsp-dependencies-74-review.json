@@ -1,0 +1,49 @@
+{
+  "status": "clear",
+  "scope": "Independent checkpoint evidence and claim review; retained source reviews were not repeated and no workloads were rerun.",
+  "proofSha256": "0a14d2fd20eaaf71d16750bf5b701d2ede4fe7c377815640f54544a19d00e36f",
+  "reviewedHashes": {
+    "validation/results/language-services-dependencies-74.json": "0a14d2fd20eaaf71d16750bf5b701d2ede4fe7c377815640f54544a19d00e36f",
+    "docs/progress/lsp-dependencies-74.md": "9339ed3614d76c4f5e8ce31bf8423de959afc2c01b8537e302012ae3c90577d1",
+    "docs/LANGUAGE-SERVICES-VERIFY.md": "7263c86ddcaf22c70169354fa353a94e092221cc5553dd9676e4291d44f1ff36",
+    "docs/language-services-upstream-tests.json": "b24a21edbf6ba0fb4aaa761443d9e64c5c950ce02720e2221f7464353dbe0caa",
+    "source-map.json": "ff34e7a22b879000900850894926b4de40de8245ce713ddd3a8b0b07d8f45aba",
+    "artifacts/language-services/integration-6/source-74.json": "114ba3d6aa1c44f6e5ddab1cf7082606f7f29ffa4bf5928f008c102955bc936d",
+    "artifacts/language-services/integration-6/native-inputs-74.json": "1272c99ff03bc1dc2705a2f0f0698ac2eaa6b0359adfb0fa1531a3232737c5f8",
+    "artifacts/language-services/integration-6/native-74.ilc.rsp": "f7fd17bbe4667b334d92f4a41adcad3a4f39fef0ec9d91c026c76131cfb567c0",
+    "artifacts/language-services/integration-6/native-run-74.log": "1e205c6b238631474baa7e05de720690002b4c85006c015a4286a3b2e9083b14",
+    "artifacts/language-services/integration-6/tests/dependencies-74.trx": "fab214da4e5bf6a74af3d00355d346ce50d6a3b8fdeaa5ea259d1398b7393bf2",
+    "artifacts/language-services/integration-6/tests/parser-retained-74.trx": "bff7d131e932c7ea7ae5b9206199628656fbd6ae8b823cd751dec205b7b34dbd"
+  },
+  "verified": {
+    "managedIndividualOutcomes": 420,
+    "retainedParserIndividualOutcomes": 18799,
+    "nativeWholeTypeScriptOriginalFunctions": 323,
+    "adaptedOriginalWatcherObservations": 1,
+    "authoredControls": 62,
+    "compiledSourcePaths": 79,
+    "sourceDrift": [],
+    "actualIlcInputHashes": 179,
+    "ilcInputDrift": [],
+    "responseFileInputs": "179 resolved inputs, including project-relative root assembly and rebuilt Scanner/Checks references",
+    "nativeSha256": "95116c200af392092865ed4ee0effd4dc08a4b7b6776663d77aff26c22b1f9a2",
+    "nativeFormat": "ELF64 little-endian x86-64",
+    "inventoryTestFunctions": 5006,
+    "inventoryWholePassed": 323,
+    "inventoryPartial": 4,
+    "inventoryAdapted": 1,
+    "inventoryUnexecuted": 4651,
+    "inventoryExcludedDarwin": 26,
+    "inventoryExternalGenerator": 1,
+    "packageLifecycleEntriesSeparate": 6
+  },
+  "findings": [],
+  "qualifications": [
+    "Whole original functions, xUnit cases, external assertion channels and authored controls are distinct counts. Original editor corpus and complete Server transport acceptance remain pending; no whole-service acceptance is inferred from compilation.",
+    "Failed managed67 evidence remains retained. The IPC correction changes only the extra harness deadline on original untimed receives; original timed assertions remain unchanged.",
+    "The parser stack-continuation adaptation passed the unchanged original 12000-depth selection assertions and retained 18799 parser cases. Arbitrary-depth/resource equivalence to Go growable stacks is not claimed.",
+    "External regex/NFD and partial AstNav assertion channels remain separately accounted. No excluded or reference-only original is credited as a candidate whole-function pass.",
+    "Retained parser compatibility build has eleven existing observer nullable warnings; the service build is clean. Comprehensive retained compiler/emit final-epic execution remains pending."
+  ],
+  "finalStatusTransition": "Coordinator finalized only reviewed result status after CLEAR; proof hash rebound, evidence unchanged."
+}

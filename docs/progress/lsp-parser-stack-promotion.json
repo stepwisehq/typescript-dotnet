@@ -1,0 +1,25 @@
+{
+  "status": "promoted; independent source review clear; managed and Native runtime execution pending",
+  "adaptation": "Synchronous standard CLR stack continuation at thirteen recursive parser hubs; original parser algorithms and exclusive owners retained. Ordinary path only checks runtime stack admission. Fixed 4MiB segments retain blocked parent threads; no arbitrary-depth or Go resource-topology parity claim.",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/Parser/Parser.cs",
+      "sha256": "f43280bf4f27fa85115184f99633a8386609d9d020759b56e306ed9a4cb3e6e2"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Parser/Jsdoc.cs",
+      "sha256": "14672b2f4f2bdea14ba30a7713521a997e3927fed13b3d7b50655b450012324f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Runtime/SynchronousStackContinuation.cs",
+      "sha256": "567ef1f4be638e00e78f62139e1d11f345caa371e9d6854259bb4155251e00d2"
+    }
+  ],
+  "frontier": "artifacts/language-services/drafts/parser-stack/guard-frontier.json",
+  "review": "artifacts/language-services/source-review/parser-stack-continuation.json",
+  "runtime_reference": {
+    "url": "https://raw.githubusercontent.com/dotnet/runtime/v10.0.12/src/coreclr/nativeaot/System.Private.CoreLib/src/System/Runtime/CompilerServices/RuntimeHelpers.NativeAot.cs",
+    "x64_reserved_margin_bytes": 131072
+  },
+  "acceptance": "unchanged original SelectionRangeDepth12000; managed and actual Native pending"
+}

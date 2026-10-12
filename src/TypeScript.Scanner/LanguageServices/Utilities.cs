@@ -125,9 +125,9 @@ internal sealed partial class LanguageService
     private static CommentRange? isInComment(SourceFile file, int position, Node tokenAtPosition) => getRangeOfEnclosingComment(file, position, AstNav.FindPrecedingToken(file, position), tokenAtPosition);
     private static bool positionBelongsToNode(Node candidate, int position, SourceFile file) => LsUtil.PositionBelongsToNode(candidate, position, file);
     // utilities.go:112. Token balancing preserves incomplete generic argument syntax.
-    private static PossibleTypeArgumentInfo? getPossibleTypeArgumentsInfo(Node tokenIn, SourceFile sourceFile)
+    private static PossibleTypeArgumentInfo? getPossibleTypeArgumentsInfo(Node? tokenIn, SourceFile sourceFile)
     {
-        if (sourceFile.TextValue().LastIndexOf((byte)'<') == -1)
+        if (ByteStringValue.FromView(sourceFile.TextView()).LastIndexOf((byte)'<') == -1)
             return null;
         Node? token = tokenIn;
         int remainingLessThanTokens = 0, nTypeArguments = 0;
@@ -977,10 +977,11 @@ internal sealed partial class LanguageService
     {
         var closeText = ByteStringValue.FromString(ScannerApi.TokenToString(token.Kind));
         var matchingText = ByteStringValue.FromString(ScannerApi.TokenToString(matchingKind));
-        int bestGuess = file.TextValue().LastIndexOf(matchingText);
+        var sourceText = ByteStringValue.FromView(file.TextView());
+        int bestGuess = sourceText.LastIndexOf(matchingText);
         if (bestGuess == -1)
             return null;
-        if (file.TextValue().LastIndexOf(closeText) < bestGuess)
+        if (sourceText.LastIndexOf(closeText) < bestGuess)
         {
             var guessed = AstNav.FindPrecedingToken(file, bestGuess + 1);
             if (guessed != null && guessed.Kind == matchingKind)

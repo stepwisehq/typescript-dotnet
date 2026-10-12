@@ -1002,7 +1002,7 @@ public sealed partial class Checker
 
     // utilities.go:1022. Internal prefix contains a raw 0xFE byte.
     internal static bool IsPrivateIdentifierSymbol(Symbol symbol) => symbol != null && symbol.NameValue.StartsWith([0xFE, (byte)'#']);
-    private static bool IsKnownSymbol(Symbol symbol) => isLateBoundName(symbol.NameValue);
+    internal static bool IsKnownSymbol(Symbol symbol) => isLateBoundName(symbol.NameValue);
     internal static bool isLateBoundName(string name) => name.Length >= 2 && name[0] == '\u00FE' && name[1] == '@';
     // utilities.go:1029. Internal symbol names are raw bytes, including 0xFE.
     internal static bool isLateBoundName(ByteStringValue name)
@@ -1932,7 +1932,7 @@ public sealed partial class Checker
     }
 
     // utilities.go:1914. A setter's optional this parameter precedes its value.
-    private static Node GetSetAccessorValueParameter(Node accessor)
+    internal static Node GetSetAccessorValueParameter(Node accessor)
     {
         var parameters = accessor.Parameters();
         if ((parameters.Count) > 0)

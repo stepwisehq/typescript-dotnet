@@ -15,6 +15,8 @@ public sealed class CommandLineOptionNameMap : Dictionary<string, CommandLineOpt
     }
 
     public CommandLineOption? Get(string name) => TryGetValue(name, out var value) || TryGetValue(TsOptions.goLower(name), out value) ? value : null;
+    // Same original exact/lower lookup, borrowing raw UTF8 through alternate string-key lookup.
+    internal CommandLineOption? Get(ByteStringValue name) => name.TryGetValue(this, out var value) || GoStrings.ToLower(name).TryGetValue(this, out value) ? value : null;
     public CommandLineOption? GetSpellingSuggestion(string name) => Core.GetSpellingSuggestion(name, Values, option => option.Name, (a, b) => Math.Sign(string.CompareOrdinal(a.Name, b.Name)));
 }
 

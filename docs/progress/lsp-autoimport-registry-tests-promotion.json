@@ -1,0 +1,210 @@
+{
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "source": "upstream/TypeScript/tsc/internal/ls/autoimport/registry_test.go",
+  "sourceSha256": "b445f23ca540c9b85bb670e070d34821ca678d351fca608392d0718b2b00014a",
+  "status": "promoted-reviewed-source-central-compile-pending",
+  "fixture": "Real accepted ProjectSessionFixture/Session and actual registry; no replacement Session or stubbed registry.",
+  "completeOriginalFunctionsSourceWritten": [
+    "TestRegistryLifecycle",
+    "TestContentMappedNodeModulesFileUsesProjectBucket",
+    "TestHiddenDirectoriesInNodeModules",
+    "TestAutoImportEntrypointDirectorySearch",
+    "TestUpdateIndexesConcurrentMapSafety"
+  ],
+  "partialOriginalFunctions": [],
+  "pendingOriginalFunctions": [],
+  "reference": "artifacts/language-services/integration-2/autoimport-diagnostics-original-go.jsonl",
+  "scheduling": "Go T.Parallel scheduling hints sequential in shared bodies; real registry parallel work preserved.",
+  "files": [
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportLifecycleFixture.cs",
+      "sha256": "1ef59bf5a17fa50826b646625ff8af136884fb23c3d9f3a0da62365b9bb1a15c"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportMonorepoFixture.cs",
+      "sha256": "8a9c3c9cca8cb2675bac5e4a316736a2c8ea448ea16661ffbc7d7cf51d2e4f65"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportRegistryChecks.Concurrent.cs",
+      "sha256": "120393f87de3752956b9df52dcc081f3f3dea8586080408fe6b5b481e6a31c16"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportRegistryChecks.ContentMapped.cs",
+      "sha256": "b5dc0d14a69baa1e13db354d6a97ffc06c33c9079aa400048b039552ffa10e3b"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportRegistryChecks.Dispatch.cs",
+      "sha256": "ba292b978812322c3397d5e33352046e08950fed1d567f75906666fc7d755a11"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportRegistryChecks.Entrypoint.cs",
+      "sha256": "c2ad95553ed6c11db32f398e03d3f8087271afc281a6b381f178f8702c99f081"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportRegistryChecks.Helpers.cs",
+      "sha256": "a580e0ed16a15a2f5f4c03c63a5721ef272c62c906233a86e940f3a6c38eaa1c"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportRegistryChecks.Hidden.cs",
+      "sha256": "73629a1e339ba9d450994197ab283c0b6b861885840da0c72df218fa5e2e6554"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportRegistryChecks.Invalidation.cs",
+      "sha256": "e749c7d2658c8f329b9771082a47dca724ab35fb0be93af8c5487712edce38d2"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportRegistryChecks.Lifecycle.cs",
+      "sha256": "05bb10b4569c70f1d33dde8648d370733b564e06e81d8e98bc037378c7b93a76"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportRegistryChecks.Monorepo.cs",
+      "sha256": "9eee3e31bd070155531bee6e4b600ede62d06f81240899a9e9fee75efd7a3ec3"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportRegistryChecks.SymlinkFiles.cs",
+      "sha256": "6ec82ba77bb3d4ad1bdd9350ce387c26bd8462db932f71a7e4b65df1fad04cc6"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportRegistryChecks.Symlinks.cs",
+      "sha256": "59036b725096540a6cf0fae8067830a244c856e32150e6cbb1d3da5e89a36f5b"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportRegistryChecks.WorkspaceChanges.cs",
+      "sha256": "2f8dfe26ccb7470ae11c266e0f7252cbe2c644ae57750aa14b5071eab9a8ef7c"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/AutoImportRegistryTests.cs",
+      "sha256": "a74d67d2b9a2a57c1ff73f91826aa3d4528e01df6a062c916259648a014a2412"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/ContentMapperComponentFixture.Protocol.cs",
+      "sha256": "aabbcca0cae14d8e2875e0c36d94310be64ee324aa38597b9c1fef0f6c01263d"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/ContentMapperComponentFixture.Transform.cs",
+      "sha256": "68f4de25cc5a9c3fecfc5268d0b3edf20a8e16f20d9bc64d93eab4fb562a295b"
+    },
+    {
+      "path": "artifacts/language-services/drafts/registry-originals/ProjectSessionFixture.cs",
+      "sha256": "1f617f7b002e6c3b10f4538d2768513c967da5c1fc0201c251e0666454ebcf6a"
+    }
+  ],
+  "requiredFixtureClosure": "Actual Session fixture optional Spawner admission plus selected original autoimporttestutil lifecycle/monorepo and full contentmappertest component transformation/protocol/spawner closure. No production substitute.",
+  "originalSubtests": 20,
+  "scopeLimitations": [
+    "Original embedded-library guard is satisfied by actual Bundled.Embedded=true build; nonembedded build variant is external.",
+    "Selected component spawner only admits the actual component-mapper command used by this original fixture; other contentmappertest handler families are not claimed by this helper.",
+    "Shared assertion schedule is sequential rather than reproducing Go T.Parallel hints; actual production registry concurrency and request-time snapshot lease are unchanged.",
+    "No C# execution or acceptance claim."
+  ],
+  "originalSubtestGroups": 20,
+  "failureScheduling": "All fifteen Lifecycle and four Entrypoint siblings execute through named failure aggregation; original whole-function failure retained.",
+  "destinations": [
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportLifecycleFixture.cs",
+      "sha256": "1ef59bf5a17fa50826b646625ff8af136884fb23c3d9f3a0da62365b9bb1a15c",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportMonorepoFixture.cs",
+      "sha256": "8a9c3c9cca8cb2675bac5e4a316736a2c8ea448ea16661ffbc7d7cf51d2e4f65",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRegistryChecks.Concurrent.cs",
+      "sha256": "120393f87de3752956b9df52dcc081f3f3dea8586080408fe6b5b481e6a31c16",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRegistryChecks.ContentMapped.cs",
+      "sha256": "b5dc0d14a69baa1e13db354d6a97ffc06c33c9079aa400048b039552ffa10e3b",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRegistryChecks.Dispatch.cs",
+      "sha256": "ba292b978812322c3397d5e33352046e08950fed1d567f75906666fc7d755a11",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRegistryChecks.Entrypoint.cs",
+      "sha256": "c2ad95553ed6c11db32f398e03d3f8087271afc281a6b381f178f8702c99f081",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRegistryChecks.Helpers.cs",
+      "sha256": "a580e0ed16a15a2f5f4c03c63a5721ef272c62c906233a86e940f3a6c38eaa1c",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRegistryChecks.Hidden.cs",
+      "sha256": "73629a1e339ba9d450994197ab283c0b6b861885840da0c72df218fa5e2e6554",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRegistryChecks.Invalidation.cs",
+      "sha256": "e749c7d2658c8f329b9771082a47dca724ab35fb0be93af8c5487712edce38d2",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRegistryChecks.Lifecycle.cs",
+      "sha256": "05bb10b4569c70f1d33dde8648d370733b564e06e81d8e98bc037378c7b93a76",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRegistryChecks.Monorepo.cs",
+      "sha256": "9eee3e31bd070155531bee6e4b600ede62d06f81240899a9e9fee75efd7a3ec3",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRegistryChecks.SymlinkFiles.cs",
+      "sha256": "6ec82ba77bb3d4ad1bdd9350ce387c26bd8462db932f71a7e4b65df1fad04cc6",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRegistryChecks.Symlinks.cs",
+      "sha256": "59036b725096540a6cf0fae8067830a244c856e32150e6cbb1d3da5e89a36f5b",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRegistryChecks.WorkspaceChanges.cs",
+      "sha256": "2f8dfe26ccb7470ae11c266e0f7252cbe2c644ae57750aa14b5071eab9a8ef7c",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/AutoImportRegistryTests.cs",
+      "sha256": "a74d67d2b9a2a57c1ff73f91826aa3d4528e01df6a062c916259648a014a2412",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperComponentFixture.Protocol.cs",
+      "sha256": "aabbcca0cae14d8e2875e0c36d94310be64ee324aa38597b9c1fef0f6c01263d",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperComponentFixture.Transform.cs",
+      "sha256": "68f4de25cc5a9c3fecfc5268d0b3edf20a8e16f20d9bc64d93eab4fb562a295b",
+      "scope": "whole selected original assertions or genuine fixture dependency"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectSessionFixture.cs",
+      "sha256": "1f617f7b002e6c3b10f4538d2768513c967da5c1fc0201c251e0666454ebcf6a",
+      "scope": "focused optional actual spawner admission, other accepted fixture bodies unchanged"
+    }
+  ],
+  "nativeDispatch": {
+    "method": "AutoImportRegistryChecks.RunAll",
+    "wholeOriginalFunctions": 5,
+    "originalSubtestGroups": 20,
+    "authoredControls": 0
+  },
+  "registry60FixtureCorrection": {
+    "file": {
+      "path": "validation/LanguageServices.Checks/ProjectTestFileSystem.cs",
+      "sha256": "942149a15608f685ef7d8580283d5d3669bc1026d08005231566974bad5def20"
+    },
+    "source": "upstream/TypeScript/tsc/internal/vfs/vfstest/vfstest.go:214",
+    "cause": "Rebuilding from explicit leaves discarded synthesized parent directories when the last package subtree was removed. Preserve existing parent owners before subtree removal; original bucket assertion remains unchanged.",
+    "execution": "Managed66 exposed root-input fixture mismatch; corrected, central rerun pending.",
+    "rootRepresentationCorrection": "The immutable backing host synthesizes its root and rejects explicit root input entries. Parent retention stops before the lexical root and skips a symlink target resolving to the implicit root; no path normalization or stored spelling changes."
+  }
+}

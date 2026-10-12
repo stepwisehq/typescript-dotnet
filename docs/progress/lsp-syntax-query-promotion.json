@@ -1,0 +1,66 @@
+{
+  "status": "source-written; independent source review clear after lazy zero-set correction; central compile pending",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "upstream": [
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/folding.go",
+      "sha256": "09ae67c05d22c74c99f80c584b03a3e2239752ed72a517ca22e5fca632c97d67"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/selectionranges.go",
+      "sha256": "0b81801cb589e0681a3c3ced05eb5803fc1d8bff4fc92c2440668eec4c903b37"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/linkedediting.go",
+      "sha256": "521a0e0b791a917b47f44f91d85e405d5e9f62e5d3555520870e1354ffca7c23"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/completions.go",
+      "sha256": "e4adcb389f45cf83df58cb15d0d6d2411270bca8f4dba32f39406d5e4ea26304"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ls/selectionranges_test.go",
+      "sha256": "b4a1135af851e56157e74dd5e9e70275cabd735e1e741dd31eb19396508afa82"
+    }
+  ],
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Folding.cs",
+      "sha256": "b105b199d08ac24e9dbd0b068573fdfa0741b6850eaaa26978f567904a8042c5"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/SelectionRanges.cs",
+      "sha256": "42ce785a3b79958824dc12e9e253474eac6fd31caea234e5845de8dde9fa34f3"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/LinkedEditing.cs",
+      "sha256": "048aa9bee83b7995c7a43e3b14d1fc2f8470fc2584e0de0ed16dc104da8e2e24"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/CompletionLinePositions.cs",
+      "sha256": "94372f1c98d0a5a4e89686be19c89a9c4ae4b46ec77f0a896afeb7f86a58e7db"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/SelectionRangeChecks.cs",
+      "sha256": "630e598ad44545f9bf31b5e650f2cb429d9d0b1d72c3d39965a924ef9b9632b8"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/SelectionRangeTests.cs",
+      "sha256": "faecd6f10fc4d49d906ba7274b3a39d4a2b67679f1ffa9c7494be5566f72fd13"
+    }
+  ],
+  "scope": "Complete Folding/SelectionRanges/LinkedEditing owner algorithms (37 workers), exact two shared completion line helpers, whole original TestSelectionRangeDepthIsLimited assertion",
+  "originalTests": [
+    "TestSelectionRangeDepthIsLimited"
+  ],
+  "nativeDispatch": "SelectionRangeChecks.RunAll(): 1 original function",
+  "adaptations": [
+    "Go callbacks remain synchronous with original traversal and depth bounds; Slice headers retain original required ownership.",
+    "Folding dedup key compares raw byte content through ByteStringKey and preserves optional-field presence.",
+    "Shared completion line helpers moved once out of the ignored Completions draft; no duplicate owner.",
+    "Original partial Go LanguageService admission reuses the existing same-package test constructor with nil Program and real converter only.",
+    "Original 12000 nested parentheses, maximum 1000 selection ancestors, inner/full-file range assertions and actual response JSON serialization retained.",
+    "Build57 mechanical joins use explicit borrowed ByteStringView/line-start spans, actual GoBuilder owner, and narrow ScannerApi alias; no materialized arrays or text encodings."
+  ],
+  "evidence": "No candidate execution yet; ordinary editor-response corpus remains required."
+}

@@ -4905,7 +4905,7 @@ public sealed partial class Checker
         return false;
     }
 
-    private bool IsEmptyAnonymousObjectType(Type t)
+    internal bool IsEmptyAnonymousObjectType(Type t)
     {
         return (t.objectFlags & ObjectFlags.Anonymous) != 0 && ((t.objectFlags & ObjectFlags.MembersResolved) != 0 && isEmptyResolvedType(t.AsStructuredType()) || t.symbol != null && (t.symbol.Flags & SymbolFlags.TypeLiteral) != 0 && (getMembersOfSymbol(t.symbol)?.Count ?? 0) == 0);
     }

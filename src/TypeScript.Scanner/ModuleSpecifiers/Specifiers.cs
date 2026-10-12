@@ -664,7 +664,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:639:1.
-    private static ModuleSpecifier processEnding(ModuleSpecifier specifier, RootedFilePath sourceFileName, List<ModuleSpecifierEnding> allowedEndings, CompilerOptions options, IModuleSpecifierGenerationHost host)
+    private static ModuleSpecifier processEnding(ModuleSpecifier specifier, RootedFilePath sourceFileName, Slice<ModuleSpecifierEnding> allowedEndings, CompilerOptions options, IModuleSpecifierGenerationHost host)
     {
         var fileName = specifier.AsValue();
         if (TsPath.FileExtensionIsOneOf(fileName, new List<string> { TsPath.ExtensionJson, TsPath.ExtensionMjs, TsPath.ExtensionCjs }))
@@ -768,7 +768,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:712:1.
-    private static ModuleSpecifier tryGetModuleNameFromRootDirs(List<RootedDirectoryPath> rootDirs, RootedFilePath moduleFileName, RootedDirectoryPath sourceDirectory, List<ModuleSpecifierEnding> allowedEndings, CompilerOptions compilerOptions, IModuleSpecifierGenerationHost host)
+    private static ModuleSpecifier tryGetModuleNameFromRootDirs(List<RootedDirectoryPath> rootDirs, RootedFilePath moduleFileName, RootedDirectoryPath sourceDirectory, Slice<ModuleSpecifierEnding> allowedEndings, CompilerOptions compilerOptions, IModuleSpecifierGenerationHost host)
     {
         var normalizedTargetPaths = getPathsRelativeToRootDirs(moduleFileName, rootDirs, host.CaseSensitivity());
         if ((GoRuntime.Len(normalizedTargetPaths) == 0))
@@ -904,7 +904,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:846:1.
-    private static pkgJsonDirAttemptResult tryDirectoryWithPackageJson(RootedDirectoryPath packageRootDirectory, RootedDirectoryPath packageBaseDirectory, ByteStringValue packageName, ModulePath pathObj, SourceFile importingSourceFile, IModuleSpecifierGenerationHost host, ResolutionMode overrideMode, CompilerOptions options, List<ModuleSpecifierEnding> allowedEndings)
+    private static pkgJsonDirAttemptResult tryDirectoryWithPackageJson(RootedDirectoryPath packageRootDirectory, RootedDirectoryPath packageBaseDirectory, ByteStringValue packageName, ModulePath pathObj, SourceFile importingSourceFile, IModuleSpecifierGenerationHost host, ResolutionMode overrideMode, CompilerOptions options, Slice<ModuleSpecifierEnding> allowedEndings)
     {
         var packageJsonPath = packageRootDirectory.ResolveFile("package.json");
         var moduleFileToTry = pathObj.FileName;
@@ -1190,7 +1190,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:1116:1.
-    private static ByteStringValue tryGetModuleNameFromPaths(ByteStringValue relativeToBaseUrl, RootedFilePath fileName, OrderedMap<string, List<string>> paths, List<ModuleSpecifierEnding> allowedEndings, RootedDirectoryPath baseDirectory, IModuleSpecifierGenerationHost host, CompilerOptions compilerOptions)
+    private static ByteStringValue tryGetModuleNameFromPaths(ByteStringValue relativeToBaseUrl, RootedFilePath fileName, OrderedMap<string, List<string>> paths, Slice<ModuleSpecifierEnding> allowedEndings, RootedDirectoryPath baseDirectory, IModuleSpecifierGenerationHost host, CompilerOptions compilerOptions)
     {
         var caseSensitivity = host.CaseSensitivity();
         {
@@ -1218,7 +1218,7 @@ internal static partial class ModuleSpecifiers
                             {
                                 var _2 = range4.Key;
                                 var ending = range4.Value;
-                                var result = processEnding(TsPath.ToModuleSpecifier(relativeToBaseUrl), fileName, new List<ModuleSpecifierEnding> { ending }, compilerOptions, host);
+                                var result = processEnding(TsPath.ToModuleSpecifier(relativeToBaseUrl), fileName, Slice<ModuleSpecifierEnding>.FromArray([ending]), compilerOptions, host);
                                 candidates = GoRuntime.Append(candidates, new specPair { ending = ending, value = result });
                             }
                         }
@@ -1271,7 +1271,7 @@ internal static partial class ModuleSpecifiers
     // Upstream tsc/internal/modulespecifiers/specifiers.go:1219:1.
     private static bool validateEnding(specPair c, ByteStringValue relativeToBaseUrl, RootedFilePath fileName, CompilerOptions compilerOptions, IModuleSpecifierGenerationHost host)
     {
-        return ((c.ending != ModuleSpecifierEnding.Minimal) || (c.value == processEnding(TsPath.ToModuleSpecifier(relativeToBaseUrl), fileName, new List<ModuleSpecifierEnding> { c.ending }, compilerOptions, host)));
+        return ((c.ending != ModuleSpecifierEnding.Minimal) || (c.value == processEnding(TsPath.ToModuleSpecifier(relativeToBaseUrl), fileName, Slice<ModuleSpecifierEnding>.FromArray([c.ending]), compilerOptions, host)));
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:1230:1.
@@ -1473,4 +1473,29 @@ internal static partial class ModuleSpecifiers
 
         return default;
     }
+    // specifiers.go:1388. Preserve the old import spelling preference for moved files.
+    internal static ModuleSpecifier UpdateModuleSpecifier(CompilerOptions compilerOptions, IModuleSpecifierGenerationHost host,
+        SourceFile importingSourceFile, RootedFilePath importingSourceFileName, ModuleSpecifier oldImportSpecifier,
+        RootedFilePath toFileName, UserPreferences userPreferences, ModuleSpecifierOptions options)
+        => getModuleSpecifierWithPreferences(compilerOptions, host, importingSourceFile, importingSourceFileName,
+            oldImportSpecifier, toFileName, userPreferences, options);
+
+    // specifiers.go:1411. Node-module candidates precede the original local-path fallback.
+    private static ModuleSpecifier getModuleSpecifierWithPreferences(CompilerOptions compilerOptions, IModuleSpecifierGenerationHost host,
+        SourceFile importingSourceFile, RootedFilePath importingSourceFileName, ModuleSpecifier oldImportSpecifier,
+        RootedFilePath toFileName, UserPreferences userPreferences, ModuleSpecifierOptions options)
+    {
+        var info = getInfo(importingSourceFileName, host);
+        var modulePaths = getAllModulePaths(info, toFileName, host, compilerOptions, userPreferences, options);
+        var preferences = getModuleSpecifierPreferences(userPreferences, host, compilerOptions, importingSourceFile, oldImportSpecifier.AsValue());
+        var resolutionMode = options.OverrideImportMode;
+        if (resolutionMode == ResolutionMode.None) resolutionMode = host.GetDefaultResolutionModeForFile(importingSourceFile);
+        foreach (var modulePath in modulePaths)
+        {
+            var firstDefined = tryGetModuleNameAsNodeModule(modulePath, info, importingSourceFile, host, compilerOptions, userPreferences, false, options.OverrideImportMode);
+            if (firstDefined.AsValue().Length > 0) return firstDefined;
+        }
+        return getLocalModuleSpecifier(toFileName, info, compilerOptions, host, resolutionMode, preferences, false);
+    }
+
 }

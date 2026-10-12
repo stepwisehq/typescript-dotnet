@@ -63,7 +63,9 @@ public static class IpcAsyncChecks
     private static void Nil(Exception? error) => Assert(error is null, error?.ToString() ?? "");
     private static void Contains(Exception? error, string text) => Assert(error?.Message.Contains(text, StringComparison.Ordinal) == true, "missing error: " + text + "; actual " + error);
     private static bool Is(Exception? error, Exception wanted) => ReferenceEquals(error, wanted) || error is not null && (Is(error.InnerException, wanted) || error is AsyncConn.JoinedError joined && Is(joined.Second, wanted));
-    private static T Await<T>(Task<T> task) => task.WaitAsync(TimeSpan.FromSeconds(1)).GetAwaiter().GetResult();
+    // Original channel receives have no per-receive deadline. This is only a
+    // deadlock safety bound; source-timed assertions pass their own exact limit.
+    private static T Await<T>(Task<T> task, TimeSpan? sourceDeadline = null) => task.WaitAsync(sourceDeadline ?? TimeSpan.FromSeconds(30)).GetAwaiter().GetResult();
     // Authored catastrophic probe: invoke only in an isolated Native child.
     // Go has no notification recovery; its panic must not become successful Run.
     public static void RunFatalNotificationControl()
@@ -184,7 +186,7 @@ public static class IpcAsyncChecks
     private static void CancelsOnEOF()
     {
         var connection = AsyncConn.NewAsyncConnWithProtocol(null, new QueuedProtocol(Slice<GenericMessage>.FromArray([Request("request")])), new ContextHandler());
-        Nil(Await(Task.Run(() => connection.Run(default))));
+        Nil(Await(Task.Run(() => connection.Run(default)), TimeSpan.FromSeconds(1)));
     }
 
     private static void NilTransportFailure()
@@ -295,11 +297,11 @@ public static class IpcAsyncChecks
         var connection = AsyncConn.NewAsyncConn(server, handler);
         var run = Task.Run(() => connection.Run(default));
         Nil(JSONRPCProtocol.NewJSONRPCProtocol(client).WriteRequest(ID.NewIDInt(1), Text("transform"), null));
-        Await(handler.Started.Reader.ReadAsync().AsTask());
+        Await(handler.Started.Reader.ReadAsync().AsTask(), TimeSpan.FromSeconds(1));
         client.Dispose();
         Assert(!run.Wait(TimeSpan.FromMilliseconds(100)), "connection stopped while request handler was blocked");
         handler.Release.Set();
-        Contains(Await(run), "ipc: failed to write response");
+        Contains(Await(run, TimeSpan.FromSeconds(1)), "ipc: failed to write response");
         Contains(connection.Call(default, Text("transform"), null).Error, "ipc: failed to write response");
         Contains(connection.Notify(default, Text("changed"), null), "ipc: failed to write response");
     }

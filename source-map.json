@@ -549,7 +549,13 @@
         ],
         "correctnessEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json",
         "performanceEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json"
-      }
+      },
+      "stackAdaptation": {
+        "record": "docs/progress/lsp-parser-stack-promotion.json",
+        "review": "docs/progress/lsp-parser-stack-review.md",
+        "scope": "Thirteen recursive hubs preserve algorithms via synchronous low-stack continuation. Fixed4MiB segments/blocked threads differ from Go resources. Exact original12000-depth managed/Native67 passes, not arbitrary-depth parity."
+      },
+      "destinationSha256": "f43280bf4f27fa85115184f99633a8386609d9d020759b56e306ed9a4cb3e6e2"
     },
     {
       "upstream": "tsc/internal/parser/jsdoc.go",
@@ -574,7 +580,13 @@
         "adaptation": "Parser reparse/await/JSDoc range scratch and source-file reparse publication use Go-like Slice headers with source mark/rewind, deletion/tail-clear and detached sorted publication behavior.",
         "snapshot": "artifacts/vscode-type-constituent-slices/build/snapshot-1/snapshot.json",
         "verification": "docs/VSCODE-CHECK-STATUS.md"
-      }
+      },
+      "stackAdaptation": {
+        "record": "docs/progress/lsp-parser-stack-promotion.json",
+        "review": "docs/progress/lsp-parser-stack-review.md",
+        "scope": "Thirteen recursive hubs preserve algorithms via synchronous low-stack continuation. Fixed4MiB segments/blocked threads differ from Go resources. Exact original12000-depth managed/Native67 passes, not arbitrary-depth parity."
+      },
+      "destinationSha256": "14672b2f4f2bdea14ba30a7713521a997e3927fed13b3d7b50655b450012324f"
     },
     {
       "upstream": "tsc/internal/parser/reparser.go",
@@ -8781,11 +8793,11 @@
       "upstream": "tsc/internal/ls/crossproject.go",
       "destination": "src/TypeScript.Scanner/LanguageServices/Project.cs",
       "status": "integration-pending",
-      "scope": "complete three-method Project contract only; cross-project service family unported",
+      "scope": "Complete three-method shared Project contract; complete cross-project algorithms mapped separately to CrossProject.cs.",
       "upstreamSha256": "48cf96e0992a6cd90560ad28af2b0218ec404e6125dc2ad9a68f306a052cf63f",
       "languageServicesContract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
       "languageServicesCampaign": {
-        "scope": "complete three-method Project contract only; cross-project service family unported",
+        "scope": "Complete three-method shared Project contract; complete cross-project algorithms mapped separately to CrossProject.cs.",
         "sourceStatus": "production-build16-passed-graph-authored-managed-passed-full-session-tests-and-review-pending",
         "destinations": [
           "src/TypeScript.Scanner/LanguageServices/Project.cs"
@@ -8796,7 +8808,12 @@
         "upstreamFunctionCount": 0
       },
       "languageServicesState": "source-written-integration-pending",
-      "upstreamFunctionCount": 0
+      "upstreamFunctionCount": 0,
+      "destinationSha256": "e26ead8f7fd63eace2c231f0db9b21725ad626a6e8e6317e74bf8dccb080e000",
+      "languageServicesCurrentPacket": {
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      }
     },
     {
       "upstream": "Go1.27.1/src/os/removeall_at.go; path_unix.go; file_unix.go",
@@ -9181,7 +9198,8 @@
         "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
         "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
         "upstreamFunctionCount": 7
-      }
+      },
+      "destinationSha256": "6326f4252295cbb744d8c970789f034d729da4a62939c9bcecbd4f8a95b19500"
     },
     {
       "upstream": "tsc/internal/ls/lsutil/children.go",
@@ -9199,7 +9217,8 @@
         "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
         "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
         "upstreamFunctionCount": 5
-      }
+      },
+      "destinationSha256": "1913b1b5838a22db3c9544a7816610e188c3deab7a265c73c7567062cce9d488"
     },
     {
       "upstream": "tsc/internal/ls/lsutil/completednode.go",
@@ -9217,7 +9236,8 @@
         "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
         "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
         "upstreamFunctionCount": 4
-      }
+      },
+      "destinationSha256": "69c77af83f03d725fbcbc38e94cef439595540b59d3435c2168f3930a0e9aaeb"
     },
     {
       "upstream": "tsc/internal/ls/lsutil/formatcodeoptions.go",
@@ -9235,7 +9255,8 @@
         "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
         "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
         "upstreamFunctionCount": 3
-      }
+      },
+      "destinationSha256": "c6a135666294c67ebc9f6532eccd3236c4d3b96374d09eb75ecf576895bb40cf"
     },
     {
       "upstream": "tsc/internal/ls/lsutil/organizeimports.go",
@@ -9253,7 +9274,8 @@
         "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
         "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
         "upstreamFunctionCount": 37
-      }
+      },
+      "destinationSha256": "4b32c09e2038c139b875760b3f30ed5a14799169a065aeeb1b9e5487025fe593"
     },
     {
       "upstream": "tsc/internal/ls/lsutil/symbol_display.go",
@@ -9271,7 +9293,8 @@
         "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
         "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
         "upstreamFunctionCount": 9
-      }
+      },
+      "destinationSha256": "165bc91184e31d40e351854ac529e482b44c1a46585a6529c1d2e47c787e87a0"
     },
     {
       "upstream": "tsc/internal/ls/lsutil/userpreferences.go",
@@ -9289,7 +9312,8 @@
         "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
         "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
         "upstreamFunctionCount": 14
-      }
+      },
+      "destinationSha256": "0ae5186d645102e7b809bb86681eb2b18b4e172162e9301205b7902395118bb3"
     },
     {
       "upstream": "tsc/internal/ls/lsutil/userpreferences_generated.go",
@@ -9307,7 +9331,8 @@
         "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
         "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
         "upstreamFunctionCount": 19
-      }
+      },
+      "destinationSha256": "e878372a8d529813022a4da7f4eeb53f127d755b0f62458d6f2e90633e3cfe62"
     },
     {
       "upstream": "tsc/internal/ls/lsutil/utilities.go",
@@ -9325,7 +9350,8 @@
         "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
         "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance.",
         "upstreamFunctionCount": 7
-      }
+      },
+      "destinationSha256": "eaec2f24a418a83765bbc404d38088dacd7072193d09a4c466b75d7da3ad79e0"
     },
     {
       "upstream": "tsc/internal/jsonrpc/baseproto.go",
@@ -9526,7 +9552,8 @@
         "mappingPacket": "docs/progress/lsp-protocol-mapping.json",
         "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
         "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
-      }
+      },
+      "destinationSha256": "1345745f79ce32ccdde09e48497a4e2a8df2054210b89cd73621389704faab39"
     },
     {
       "upstream": "tsc/internal/ls/lsconv/converters.go",
@@ -9549,7 +9576,8 @@
         "mappingPacket": "docs/progress/lsp-protocol-mapping.json",
         "dependencyEvidence": "validation/results/language-services-dependencies-23.json",
         "verification": "Shared managed/Native dependency execution is recorded separately from implementation coverage. See packet and proof for selected assertions, remaining consumers and unexercised paths; no full service/server acceptance."
-      }
+      },
+      "destinationSha256": "9134abc5b7761514b06ff5d2bfce01d2290d3dceff83f6c47d04c3d35cfda25c"
     },
     {
       "upstream": "tsc/internal/core/context.go",
@@ -9583,7 +9611,8 @@
         "scope": "See mapping packet for exact upstream closure.",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "43cf76020b3be4b3f3cea7ad776a27621f282bc5f00cf092c93c050c93c4b478"
     },
     {
       "upstream": "tsc/internal/ls/change/trackerimpl.go",
@@ -9596,7 +9625,8 @@
         "scope": "See mapping packet for exact upstream closure.",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "bae5e915d60b9f6476a0e08540c32d6b6505d14199c9defadad2192538cf41b1"
     },
     {
       "upstream": "tsc/internal/ls/change/delete.go",
@@ -9609,7 +9639,8 @@
         "scope": "See mapping packet for exact upstream closure.",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "b9e6ad422c9a7faf524216c0a5d248691eb2f1ab8277df4bccfca8de19d09bcb"
     },
     {
       "upstream": "tsc/internal/ipc/conn.go",
@@ -9794,7 +9825,8 @@
         "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "cbeca20a31b26990dd3dd0a399ec94187ced8523a7c80479f2d856dc1a18eb65"
     },
     {
       "upstream": "tsc/internal/ls/autoimport/export.go",
@@ -9807,7 +9839,8 @@
         "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "9645d61b7d5e7dbbea6deefeb1a7fcf11de08840210c6080eedb64c10bce4bde"
     },
     {
       "upstream": "tsc/internal/ls/autoimport/export_stringer_generated.go",
@@ -9820,7 +9853,8 @@
         "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "e5e268715cfa61ff04f0fda89fd383e234eb64006bb225f61744b23bccc25b42"
     },
     {
       "upstream": "tsc/internal/ls/autoimport/extract.go",
@@ -9833,7 +9867,8 @@
         "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "b1b057375663342799b86e74168ab7e87f82a2f536f08db6b6a7dc122528ef82"
     },
     {
       "upstream": "tsc/internal/ls/autoimport/fix.go",
@@ -9846,7 +9881,8 @@
         "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "1f88be02839b34f5e75c932ca760bb061820a67f18e2deaa4e43674d6e4fbb54"
     },
     {
       "upstream": "tsc/internal/ls/autoimport/import_adder.go",
@@ -9859,7 +9895,8 @@
         "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "2a42eea1fa2b2f97038dcab05e65527bc36d9eb873db3c272d409c032229c042"
     },
     {
       "upstream": "tsc/internal/ls/autoimport/index.go",
@@ -9872,7 +9909,8 @@
         "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "297a2c6338c37eea962d81d1df2d771dac88aa0b5d27a52bfdb354cda8bf951f"
     },
     {
       "upstream": "tsc/internal/ls/autoimport/registry.go",
@@ -9885,7 +9923,8 @@
         "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "1338f42eaf14b58e4fa4ae94984d1c69f0d1b517658996925db08ecd529772a5"
     },
     {
       "upstream": "tsc/internal/ls/autoimport/specifiers.go",
@@ -9898,7 +9937,8 @@
         "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "8a4db133b8d42a642871616c23ba2bd1f2c02bb51ed387c5ce19d4bd88f30674"
     },
     {
       "upstream": "tsc/internal/ls/autoimport/util.go",
@@ -9911,7 +9951,8 @@
         "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "69b1ef9cc59b081e1c64352eba2b9462f2ff71e16f06fcf937817354e97490dd"
     },
     {
       "upstream": "tsc/internal/ls/autoimport/view.go",
@@ -9924,7 +9965,8 @@
         "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "fbca8db9605cf7e76618704abc2ae18ec23fbc4f0b94731daea96b0d7d0de769"
     },
     {
       "upstream": "tsc/internal/ls/host.go",
@@ -9937,6 +9979,11 @@
         "scope": "complete original core counterpart; real checker leases/host contract; later semantic feature counterparts remain separate unfinished owners",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
+      },
+      "destinationSha256": "0b2d9d3f62f79c6fb2946f54069ade7536a152b53c8ee82895098a6517366fa2",
+      "languageServicesCurrentPacket": {
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
       }
     },
     {
@@ -9950,6 +9997,11 @@
         "scope": "complete original core counterpart; real checker leases/host contract; later semantic feature counterparts remain separate unfinished owners",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
+      },
+      "destinationSha256": "758df804dd7f7a6352435f5f6d0e2de363844cb3d10cc302470ab8fcca133a1b",
+      "languageServicesCurrentPacket": {
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
       }
     },
     {
@@ -9963,6 +10015,11 @@
         "scope": "complete original core counterpart; real checker leases/host contract; later semantic feature counterparts remain separate unfinished owners",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
+      },
+      "destinationSha256": "3b2470d8bcf9d1b2bef9bbdc77b904341b1d7135f4188068138f2553fbf20b13",
+      "languageServicesCurrentPacket": {
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
       }
     },
     {
@@ -9976,7 +10033,8 @@
         "scope": "whole TestAliasResolverGetDiagnosticsDoesNotPanic; original fake clone host fixture retained",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "66f62055734aacf11137fba5f16123410e94328cfe8987752784e7366c26de0a"
     },
     {
       "upstream": "tsc/internal/ls/autoimport/export_test.go",
@@ -9989,7 +10047,8 @@
         "scope": "whole TestModuleIDVariants assertions",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "c1f2f5711cca2adc340ccf936c840bb9f938d954b4ce0bd6ad36f41e2ea68c2b"
     },
     {
       "upstream": "tsc/internal/ls/autoimport/index_test.go",
@@ -10002,7 +10061,8 @@
         "scope": "whole TestWordIndices and TestIndexClone assertions; original scheduling hints adapted to sequential shared checks",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "c1f2f5711cca2adc340ccf936c840bb9f938d954b4ce0bd6ad36f41e2ea68c2b"
     },
     {
       "upstream": "tsc/internal/ls/autoimport/util_test.go",
@@ -10015,7 +10075,8 @@
         "scope": "whole three symlink-cache originals; existing real MapFS assertion adapter; sequential scheduling hints",
         "evidence": "validation/results/language-services-dependencies-33.json",
         "state": "source-reviewed; scoped assertions passed; complete services/server pending"
-      }
+      },
+      "destinationSha256": "5d4ab9b5dfba4ff515a9d96a4848f1b2667a455a5cba2d84c340cd9668938a11"
     },
     {
       "upstream": "tsc/internal/ls/utilities.go",
@@ -10032,9 +10093,11 @@
         "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
         "upstreamFunctionCount": 78,
-        "evidence": "validation/results/language-services-dependencies-39.json",
-        "assessment": "docs/progress/lsp-dependencies-39.md"
-      }
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      },
+      "destinationSha256": "9ec7a54277a2c8877bf1a3ede55d9eb29ec82ceba0417f61c0e5fe76f8e3ffeb"
     },
     {
       "upstream": "tsc/internal/ls/source_map.go",
@@ -10051,9 +10114,11 @@
         "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
         "upstreamFunctionCount": 13,
-        "evidence": "validation/results/language-services-dependencies-39.json",
-        "assessment": "docs/progress/lsp-dependencies-39.md"
-      }
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      },
+      "destinationSha256": "2a4a4531e926e64a45309337383363fb9a5332ebab4052dede6a3a54236d79db"
     },
     {
       "upstream": "tsc/internal/ls/displaypartswriter.go",
@@ -10070,9 +10135,11 @@
         "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
         "upstreamFunctionCount": 33,
-        "evidence": "validation/results/language-services-dependencies-39.json",
-        "assessment": "docs/progress/lsp-dependencies-39.md"
-      }
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      },
+      "destinationSha256": "316757cd2996cdfb511d9a2c83f30f5c192c56822754e437a9b6e70c4f498d81"
     },
     {
       "upstream": "tsc/internal/ls/jsdoc.go",
@@ -10089,9 +10156,11 @@
         "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
         "upstreamFunctionCount": 12,
-        "evidence": "validation/results/language-services-dependencies-39.json",
-        "assessment": "docs/progress/lsp-dependencies-39.md"
-      }
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      },
+      "destinationSha256": "b25ce5b6f5b25edc5c7f284fc98db735297d2de1e06e0d33966e3efe9cc29c0a"
     },
     {
       "upstream": "tsc/internal/ls/hover.go",
@@ -10108,9 +10177,11 @@
         "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
         "upstreamFunctionCount": 27,
-        "evidence": "validation/results/language-services-dependencies-39.json",
-        "assessment": "docs/progress/lsp-dependencies-39.md"
-      }
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      },
+      "destinationSha256": "3149c8c2f4a479d813dcbdbc44f7b0dfc618096c2326ff7c4a4644bf6e12c4a4"
     },
     {
       "upstream": "tsc/internal/ls/hovericon.go",
@@ -10127,9 +10198,11 @@
         "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
         "upstreamFunctionCount": 3,
-        "evidence": "validation/results/language-services-dependencies-39.json",
-        "assessment": "docs/progress/lsp-dependencies-39.md"
-      }
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      },
+      "destinationSha256": "c0fbba577889975fe3069794faacf0ac67d95d6315051f5ddcea874b68856b2f"
     },
     {
       "upstream": "tsc/internal/ls/signaturehelp.go",
@@ -10146,9 +10219,11 @@
         "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
         "upstreamFunctionCount": 42,
-        "evidence": "validation/results/language-services-dependencies-39.json",
-        "assessment": "docs/progress/lsp-dependencies-39.md"
-      }
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      },
+      "destinationSha256": "0eb0dd683d8bcb55998d204fc0c8ffb57da648603d0df57b2d07e7eeff3d9b2a"
     },
     {
       "upstream": "tsc/internal/ls/format.go",
@@ -10165,9 +10240,11 @@
         "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
         "upstreamFunctionCount": 10,
-        "evidence": "validation/results/language-services-dependencies-39.json",
-        "assessment": "docs/progress/lsp-dependencies-39.md"
-      }
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      },
+      "destinationSha256": "1f08e7c71b62ffac771947300832d90a81bf1a47f8016e4b820bd5c3d5cd34f1"
     },
     {
       "upstream": "tsc/internal/ls/definition.go",
@@ -10184,9 +10261,11 @@
         "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
         "upstreamFunctionCount": 20,
-        "evidence": "validation/results/language-services-dependencies-39.json",
-        "assessment": "docs/progress/lsp-dependencies-39.md"
-      }
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      },
+      "destinationSha256": "2bfacbd1eb8e71b8189a166fd7b005ce5e1d84b452ca57edbddbe1d0b2096d11"
     },
     {
       "upstream": "tsc/internal/ls/sourcedefinition.go",
@@ -10203,9 +10282,11 @@
         "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
         "upstreamFunctionCount": 30,
-        "evidence": "validation/results/language-services-dependencies-39.json",
-        "assessment": "docs/progress/lsp-dependencies-39.md"
-      }
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "assessment": "docs/progress/lsp-dependencies-39.md",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      },
+      "destinationSha256": "20d6511d83cc37018794bc38c2e8ba94cc73a41b58a6bf19a0c505f31ae772ad"
     },
     {
       "upstream": "tsc/internal/ls/findallreferences.go",
@@ -10215,30 +10296,28 @@
       "upstreamSha256": "48b95717c9504c9e96d20c59ed0ea155a77255c70316b672b0ad66611a8572c5",
       "languageServicesCurrentPacket": {
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
-        "evidence": "validation/results/language-services-dependencies-55.json",
+        "evidence": "validation/results/language-services-dependencies-74.json",
         "assessment": "docs/progress/lsp-dependencies-55.md",
         "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
-        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending.",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
       },
       "destinationSha256": "914dd2e704d6e7d8b150c4ce62828d6a8f44272cf1a6254796d66982679b824f"
     },
     {
       "upstream": "tsc/internal/ls/completions.go",
-      "destination": "src/TypeScript.Scanner/LanguageServices/Completions.SharedLeaves.cs",
-      "status": "integration-pending",
-      "scope": "partial getSwitchedType/isEqualityOperatorKind; full completion remains pending",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Completions.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
       "upstreamSha256": "e4adcb389f45cf83df58cb15d0d6d2411270bca8f4dba32f39406d5e4ea26304",
       "languageServicesCurrentPacket": {
-        "mappingPacket": "docs/progress/lsp-semantic-promotion.json",
-        "destinations": [
-          "src/TypeScript.Scanner/LanguageServices/Completions.SharedLeaves.cs"
-        ],
-        "scope": "partial getSwitchedType/isEqualityOperatorKind; full completion remains pending",
-        "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
-        "evidence": "validation/results/language-services-dependencies-39.json",
-        "assessment": "docs/progress/lsp-dependencies-39.md"
-      }
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 196
+      },
+      "destinationSha256": "2e56a9c288a1909276a6d4a4bdc341a26587042bf82584a9ebb85465e5a54d0f"
     },
     {
       "upstream": "src/strings/strings.go",
@@ -10559,7 +10638,8 @@
         "sourceStatus": "source-reviewed and integrated; scoped original/authored dependency assertions passed managed and Linux x64 Native AOT; service/server comparison and remaining original assertion closure pending",
         "evidence": "validation/results/language-services-dependencies-39.json",
         "assessment": "docs/progress/lsp-dependencies-39.md"
-      }
+      },
+      "destinationSha256": "ba1b03b04ed7bf7a45fb158d8ea9798f540836271274e857698edeab24e689dd"
     },
     {
       "upstream": "tsc/internal/json/json.go",
@@ -10680,10 +10760,11 @@
       "destinationSha256": "5a1e06d1d41b1f3e994b6d5a98644e5e8a5fcae292dbc655ee258a8ef2f1863e",
       "languageServicesCurrentPacket": {
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
-        "evidence": "validation/results/language-services-dependencies-55.json",
+        "evidence": "validation/results/language-services-dependencies-74.json",
         "assessment": "docs/progress/lsp-dependencies-55.md",
         "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
-        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending.",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
       }
     },
     {
@@ -10695,10 +10776,11 @@
       "destinationSha256": "d864757673e8ce3909cc5b57af8ebda406fea186ebea00b44d4d0f477dca7450",
       "languageServicesCurrentPacket": {
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
-        "evidence": "validation/results/language-services-dependencies-55.json",
+        "evidence": "validation/results/language-services-dependencies-74.json",
         "assessment": "docs/progress/lsp-dependencies-55.md",
         "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
-        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending.",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
       }
     },
     {
@@ -10710,10 +10792,11 @@
       "destinationSha256": "dac1aa941a4c345dbda1c1920fc0636d75f7214541897193703be70476deb1c1",
       "languageServicesCurrentPacket": {
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
-        "evidence": "validation/results/language-services-dependencies-55.json",
+        "evidence": "validation/results/language-services-dependencies-74.json",
         "assessment": "docs/progress/lsp-dependencies-55.md",
         "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
-        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending.",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
       }
     },
     {
@@ -10725,10 +10808,11 @@
       "destinationSha256": "1f31b1ba7bb6f6bd298dc747a3ae4bebf56c9be098bb7c57456f10cff34ea358",
       "languageServicesCurrentPacket": {
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
-        "evidence": "validation/results/language-services-dependencies-55.json",
+        "evidence": "validation/results/language-services-dependencies-74.json",
         "assessment": "docs/progress/lsp-dependencies-55.md",
         "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
-        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending.",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
       }
     },
     {
@@ -10740,10 +10824,11 @@
       "destinationSha256": "4ce9bde1ae8d5db3b8910da7dc1430a6e085b203731d9de46b3fa8f4abcd01fa",
       "languageServicesCurrentPacket": {
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
-        "evidence": "validation/results/language-services-dependencies-55.json",
+        "evidence": "validation/results/language-services-dependencies-74.json",
         "assessment": "docs/progress/lsp-dependencies-55.md",
         "scope": "Complete upstream counterpart; full semantic service verification remains pending.",
-        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending.",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
       }
     },
     {
@@ -10780,17 +10865,18 @@
     },
     {
       "upstream": "tsc/internal/ls/symbols.go",
-      "destination": "src/TypeScript.Scanner/LanguageServices/Symbols.SharedLeaves.cs",
-      "status": "partial",
-      "scope": "Required isInNodeModules helper only; complete Symbols owner remains in progress.",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Symbols.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; full original editor corpus verification pending. Two authored full Go expando responses pass managed/Native67.",
       "upstreamSha256": "6c886c97b2a531cfe6eac62f7ecbf290e658793277a4dbb035ef3e6d4c277bfb",
-      "destinationSha256": "e443512af2b174c498b818e3e408d6f981bf86e98d74f0da97af4c566418345f",
+      "destinationSha256": "a4581d124269a4fb6d663799357873ddc3a1de8518e5dff9c7185a8159592d52",
       "languageServicesCurrentPacket": {
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
-        "evidence": "validation/results/language-services-dependencies-55.json",
-        "assessment": "docs/progress/lsp-dependencies-55.md",
-        "scope": "Required isInNodeModules helper only; complete Symbols owner remains in progress.",
-        "sourceStatus": "Independent source review clear; combined managed/Linux x64 Native dependency assertions pass. Whole service/cross-project/transport comparison remains pending."
+        "scope": "Complete upstream counterpart; full original editor corpus verification pending. Two authored full Go expando responses pass managed/Native67.",
+        "sourceStatus": "Independent source review clear; build67 and Native dependency runner pass. Full managed67 has a separate fixture deadline failure; no whole service acceptance.",
+        "nativeExecution": "artifacts/language-services/integration-6/native-run-67.log",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
       }
     },
     {
@@ -10911,6 +10997,341 @@
         "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md"
       },
       "upstreamSha256": "737b28abf2df3bdee417144c7c8d4de2540ded0efff23984742f1ebce499d46d"
+    },
+    {
+      "upstream": "tsc/internal/ls/autoinsert.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/AutoInsert.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; full original editor corpus verification pending.",
+      "upstreamSha256": "6e325825732238a62ed5fd91168ab04742d2f76bf3371431ef8bec8146334817",
+      "destinationSha256": "800d21dc29c173f287bbc4348c6b06b334dfe12b1f6c0d918b4cc915dab4e31e",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "scope": "Complete upstream counterpart; full original editor corpus verification pending.",
+        "sourceStatus": "Independent source review clear; build67 and Native dependency runner pass. Full managed67 has a separate fixture deadline failure; no whole service acceptance.",
+        "nativeExecution": "artifacts/language-services/integration-6/native-run-67.log",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/folding.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Folding.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; full original editor corpus verification pending.",
+      "upstreamSha256": "09ae67c05d22c74c99f80c584b03a3e2239752ed72a517ca22e5fca632c97d67",
+      "destinationSha256": "b105b199d08ac24e9dbd0b068573fdfa0741b6850eaaa26978f567904a8042c5",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "scope": "Complete upstream counterpart; full original editor corpus verification pending.",
+        "sourceStatus": "Independent source review clear; build67 and Native dependency runner pass. Full managed67 has a separate fixture deadline failure; no whole service acceptance.",
+        "nativeExecution": "artifacts/language-services/integration-6/native-run-67.log",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/selectionranges.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SelectionRanges.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; full original editor corpus verification pending. Original depth12000/ranges/serialization passes managed/Native67.",
+      "upstreamSha256": "0b81801cb589e0681a3c3ced05eb5803fc1d8bff4fc92c2440668eec4c903b37",
+      "destinationSha256": "42ce785a3b79958824dc12e9e253474eac6fd31caea234e5845de8dde9fa34f3",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "scope": "Complete upstream counterpart; full original editor corpus verification pending. Original depth12000/ranges/serialization passes managed/Native67.",
+        "sourceStatus": "Independent source review clear; build67 and Native dependency runner pass. Full managed67 has a separate fixture deadline failure; no whole service acceptance.",
+        "nativeExecution": "artifacts/language-services/integration-6/native-run-67.log",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/linkedediting.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/LinkedEditing.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; full original editor corpus verification pending.",
+      "upstreamSha256": "521a0e0b791a917b47f44f91d85e405d5e9f62e5d3555520870e1354ffca7c23",
+      "destinationSha256": "048aa9bee83b7995c7a43e3b14d1fc2f8470fc2584e0de0ed16dc104da8e2e24",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "scope": "Complete upstream counterpart; full original editor corpus verification pending.",
+        "sourceStatus": "Independent source review clear; build67 and Native dependency runner pass. Full managed67 has a separate fixture deadline failure; no whole service acceptance.",
+        "nativeExecution": "artifacts/language-services/integration-6/native-run-67.log",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/codeactions_missingmemberfixer.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/CodeActionsMissingMemberFixer.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; full original editor corpus verification pending.",
+      "upstreamSha256": "615cb5a56e7ec1efb8cb2e34e32103c46971c4fb6a67e6cf65ff0e1f4f9cffab",
+      "destinationSha256": "2de07c22ac28b5a09dd168cadac1bad1806877ff82482bb8618c700b14f09e32",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "scope": "Complete upstream counterpart; full original editor corpus verification pending.",
+        "sourceStatus": "Independent source review clear; build67 and Native dependency runner pass. Full managed67 has a separate fixture deadline failure; no whole service acceptance.",
+        "nativeExecution": "artifacts/language-services/integration-6/native-run-67.log",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/completions.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/CompletionLinePositions.cs",
+      "status": "partial",
+      "scope": "Exact borrowed/shared helper companion; broader upstream owner tracked separately.",
+      "upstreamSha256": "e4adcb389f45cf83df58cb15d0d6d2411270bca8f4dba32f39406d5e4ea26304",
+      "destinationSha256": "94372f1c98d0a5a4e89686be19c89a9c4ae4b46ec77f0a896afeb7f86a58e7db",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "scope": "Exact borrowed/shared helper companion; broader upstream owner tracked separately.",
+        "sourceStatus": "Independent source review clear; build67 and Native dependency runner pass. Full managed67 has a separate fixture deadline failure; no whole service acceptance.",
+        "nativeExecution": "artifacts/language-services/integration-6/native-run-67.log",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/completions.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/CompletionSnippetText.cs",
+      "status": "partial",
+      "scope": "Exact borrowed/shared helper companion; broader upstream owner tracked separately.",
+      "upstreamSha256": "e4adcb389f45cf83df58cb15d0d6d2411270bca8f4dba32f39406d5e4ea26304",
+      "destinationSha256": "57df70bb7cb6bf8c6cea9f3465f795274e306fba9b5db68aee85ad3ad0fcf12c",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "scope": "Exact borrowed/shared helper companion; broader upstream owner tracked separately.",
+        "sourceStatus": "Independent source review clear; build67 and Native dependency runner pass. Full managed67 has a separate fixture deadline failure; no whole service acceptance.",
+        "nativeExecution": "artifacts/language-services/integration-6/native-run-67.log",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending."
+      }
+    },
+    {
+      "upstream": "tsc/internal/ast/utilities.go",
+      "destination": "src/TypeScript.Scanner/Ast/EntityNameValue.cs",
+      "status": "partial",
+      "scope": "Exact borrowed/shared helper companion; broader upstream owner tracked separately.",
+      "upstreamSha256": "44c9e10ee88fd004b599e764fababedb173d94afd9476998489cac471243bac3",
+      "destinationSha256": "07f95c9fac39519fced94eedffc34b96e1a814f0f7ddb359f9d2e496fdeae27b",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "scope": "Exact borrowed/shared helper companion; broader upstream owner tracked separately.",
+        "sourceStatus": "Independent source review clear; build67 and Native dependency runner pass. Full managed67 has a separate fixture deadline failure; no whole service acceptance.",
+        "nativeExecution": "artifacts/language-services/integration-6/native-run-67.log"
+      }
+    },
+    {
+      "upstream": "tsc/internal/stringutil/util.go",
+      "destination": "src/TypeScript.Scanner/StringUtil/TruncateValue.cs",
+      "status": "partial",
+      "scope": "Exact borrowed/shared helper companion; broader upstream owner tracked separately.",
+      "upstreamSha256": "e15d8030900518eb0d8bd926751df2f7c7cfda6d49c7a82da36d58daeed22b9e",
+      "destinationSha256": "072ad4249ed1aae6d7bdede42fabdf9baac92eef3f48c4c779cc4594b8122fcb",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "scope": "Exact borrowed/shared helper companion; broader upstream owner tracked separately.",
+        "sourceStatus": "Independent source review clear; build67 and Native dependency runner pass. Full managed67 has a separate fixture deadline failure; no whole service acceptance.",
+        "nativeExecution": "artifacts/language-services/integration-6/native-run-67.log"
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/string_completions.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/StringCompletions.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
+      "upstreamSha256": "b42d12e865608ddce669ac860ddac19875cf0a22cd997349b2a97cdbf50431e9",
+      "destinationSha256": "4c044821a3f7943fa612d7fcdf3b2f5d4b156870f0b44a1fb6be81cff27fcb5d",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 61
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/jsdoc_snippet.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/JSDocSnippet.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
+      "upstreamSha256": "296d287662b6a4fecdc66f869b6dcaa35e7d6d2a3357f63d7e2459f81b43145a",
+      "destinationSha256": "bb38fcfbed80b7cc07adf11504c50596ce947f8ddc6b0fcac230b58385226556",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 31
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/codeactions.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/CodeActions.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
+      "upstreamSha256": "66654903948334dead74b7776eee05e5b5e4a23c06893955cf314fa3bdb4129f",
+      "destinationSha256": "049ecbdc6b42ebce9eb38a353e80fd08c1d65b3414b1e29331b9ec2152e159b4",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 14
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/codeactions_importfixes.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/CodeActionsImportFixes.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
+      "upstreamSha256": "2e295f3f53326e480c2043e3d55e28366d5580d013712956d11d922e6fdcf777",
+      "destinationSha256": "fbf69aa0496f469a6a5bc28fb41345f569fa877e4c3dbf657c17ed585024e72b",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 13
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/codeactions_fixmissingtypeannotation.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/CodeActionsFixMissingTypeAnnotation.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
+      "upstreamSha256": "26d16b882762cc35a3084f5dfa1e0347e5a12a497f05667fca153efed74cb37b",
+      "destinationSha256": "347cff1c2c269f0546cf22c1fd9804e27ac76f44fe7a80187a93a635fc0d7b72",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 40
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/codeactions_fixclassincorrectlyimplementsinterface.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/CodeActionsFixClassIncorrectlyImplementsInterface.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
+      "upstreamSha256": "818604968e0dc7c429f462dbf984c29ffb16d42ff2cf00a76a4b4202e225294e",
+      "destinationSha256": "ed4491a0509511c285d8f41823059382f2965c428ffceb81a178b96ca6ee4def",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 10
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/organizeimports.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/OrganizeImports.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
+      "upstreamSha256": "f8d88d4a228686c626e414f40824c5e93be76dfbb94a0775bbc8a0b35c36536a",
+      "destinationSha256": "eec978e00054cdae3626a5c5baab5950389f3a46b1f7b4d2aede0a4942758820",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 18
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/file_rename.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/FileRename.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
+      "upstreamSha256": "c89427a2f36ddfc2323c98295eda8200c7f9f951d0db5073856d03103446d026",
+      "destinationSha256": "2c4770eb1fb2cae8b3f2949438adeffa13aab4c7db0e8600003118b7ef15dad9",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 16
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/semantictokens.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/SemanticTokens.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
+      "upstreamSha256": "a4cda56b2e1c62282e8c7dc07ee20df929c3c0c67bd502283c1a11df20b41e85",
+      "destinationSha256": "8b1b706eed809ec909478a3e5e02c9843c3693d2c0e71fac15a3d780b040562b",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 16
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/inlay_hints.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/InlayHints.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
+      "upstreamSha256": "2bcd9d8a15e9e921ae841bc400b0d86dcfca19e8dc1c67b7a83e49a82d2fd92e",
+      "destinationSha256": "ddc0f65ace69c0449d05ab574b67f3856b10f8a2270b5c788e3d83e590bc7d48",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 29
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/callhierarchy.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/CallHierarchy.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
+      "upstreamSha256": "53cbc16aa8611eac9a816b329db8d0ca0d4836ac491eb77dea00013f3a33fb00",
+      "destinationSha256": "09ad1ce54c81aa793689cbeb87187169de39767ffb463db2da94a09aaaafeb47",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 33
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/codelens.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/CodeLens.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
+      "upstreamSha256": "7af15fda97b8a6fcc18dbdba4ef9c2591736d0109b7865aeaf103fe10369b85c",
+      "destinationSha256": "98e4e8ecaf0e9f0ca53c4454dfc89275e9474d96e63d41ba182bafce6798183b",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 6
+      }
+    },
+    {
+      "upstream": "tsc/internal/ls/completions.go",
+      "destination": "src/TypeScript.Scanner/LanguageServices/CompletionSupplementalFiles.cs",
+      "status": "ported",
+      "scope": "Complete upstream counterpart; independent source review clear. Full original editor corpus and Server verification remain pending.",
+      "upstreamSha256": "e4adcb389f45cf83df58cb15d0d6d2411270bca8f4dba32f39406d5e4ea26304",
+      "destinationSha256": "a66ae549bb5d7d204900869186a8bbb689fcd084a26dde0dda36452a7e3e85e7",
+      "languageServicesCurrentPacket": {
+        "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+        "evidence": "validation/results/language-services-dependencies-74.json",
+        "sourceStatus": "complete source; independent review clear",
+        "verification": "Dependency74 managed and actual Native passed; full original editor corpus and Server verification remain pending.",
+        "upstreamWorkers": 2
+      }
     }
   ],
   "activePhase": "Language-services and LSP epic from accepted emit/performance 9b8fa74a: comprehensive dependency-first implementation, review, original tests and actual Linux x64 Native AOT transport acceptance. Shared dependency execution passed; complete services and server remain unfinished.",
@@ -11338,13 +11759,16 @@
     "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
     "state": "active dependency implementation; no service/server acceptance yet",
     "sourceMappingPolicy": "New owners mapped as integration-pending until reviewed and verified; partial model/interface counterparts remain explicit.",
-    "dependencyExecution": "validation/results/language-services-dependencies-23.json",
-    "verification": "Reviewed dependency23 managed/Native execution, including isolated decode-depth controls; full services, actual server transport and retained comprehensive regressions remain pending. The result explicitly qualifies one post-run test-metadata correction.",
+    "dependencyExecution": "validation/results/language-services-dependencies-74.json",
+    "verification": "Dependency74 source-reviewed; managed420/420, retained Parser18799/18799, Native323 whole TypeScript originals +1 separately adapted +62 authored controls passed. Source79 and actual ILC179 bindings have no drift. Full services/editor corpus, actual server transport and epic gates remain pending.",
     "mappingPackets": [
       "docs/progress/lsp-project-mapping.json",
       "docs/progress/lsp-services-mapping.json",
       "docs/progress/lsp-service-standard-library-mapping.json",
-      "docs/progress/lsp-protocol-mapping.json"
+      "docs/progress/lsp-protocol-mapping.json",
+      "docs/progress/lsp-completions-promotion.json",
+      "docs/progress/lsp-readonly-services-promotion.json",
+      "docs/progress/lsp-parser-stack-promotion.json"
     ],
     "dependencyReviews": [
       "docs/progress/lsp-project-owner-review.md",
@@ -11390,6 +11814,14 @@
           "portSha256": "8d12370c9ef6616b8a517803ead22dc42dc969e4aa2c600fc94164bd32c22352"
         }
       }
+    },
+    "src/TypeScript.Scanner/Runtime/SynchronousStackContinuation.cs": {
+      "classification": "authored CLR compatibility support",
+      "scope": "Runtime stack continuation supporting unchanged parser algorithms, not a Go compiler algorithm port.",
+      "portSha256": "567ef1f4be638e00e78f62139e1d11f345caa371e9d6854259bb4155251e00d2",
+      "mappingPacket": "docs/progress/lsp-parser-stack-promotion.json",
+      "verification": "Original SelectionRange depth12000 passes managed and actual Native67/74; retained parser18799 rows pass74.",
+      "limits": "Standard synchronous 4MiB stack segments retain blocked parent OS threads, exclusive parser ownership, explicit static state, ExecutionContext and original exception propagation. Resource-bound adaptation, not Go growable-stack topology parity; ordinary guard performance protection remains pending."
     }
   }
 }

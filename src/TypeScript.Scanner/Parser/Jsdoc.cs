@@ -1266,8 +1266,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:858:1.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private Node parseNestedTypeLiteral(Node typeExpression, Node name, propertyLikeParse target, int indent)
     {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+            return SynchronousStackContinuation.Run((Parser: this, Arg0: typeExpression, Arg1: name, Arg2: target, Arg3: indent), static state => state.Parser.parseNestedTypeLiteral(state.Arg0, state.Arg1, state.Arg2, state.Arg3));
         if (((typeExpression != null) && isObjectOrObjectArrayTypeReference(typeExpression.Type())))
         {
             var pos = this.nodePos();
@@ -1450,8 +1453,11 @@ public partial class Parser
     }
 
     // Upstream upstream/TypeScript/tsc/internal/parser/jsdoc.go:992:1.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
     private Node parseJSDocTypeNameWithNamespace(bool nested)
     {
+        if (!System.Runtime.CompilerServices.RuntimeHelpers.TryEnsureSufficientExecutionStack())
+            return SynchronousStackContinuation.Run((Parser: this, Arg0: nested), static state => state.Parser.parseJSDocTypeNameWithNamespace(state.Arg0));
         var start = this.scanner.TokenStart();
         if (!tokenIsIdentifierOrKeyword(this.token))
         {

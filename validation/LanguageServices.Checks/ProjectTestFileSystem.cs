@@ -72,6 +72,23 @@ internal sealed class ProjectTestFileSystem : IFS, IMutableFileSystem
     {
         lock (gate)
         {
+            // MapFS.remove deletes the requested subtree, not its existing parents.
+            // Retain the directories synthesized by the immutable backing fixture
+            // before rebuilding from the surviving explicit entries.
+            var parent = path.Directory();
+            while (current.DirectoryExists(parent))
+            {
+                var next = parent.AsPath().Directory();
+                if (next == parent)
+                    break;
+                var actual = current.Realpath(parent.AsPath());
+                // The backing fixture synthesizes its root; it is not a valid
+                // explicit input entry. A directory link may also resolve there.
+                if (actual.Directory().AsPath() != actual)
+                    inputs.TryAdd(sensitivity.PathKey(actual), new(actual.AsString(), Directory: true));
+                parent = next;
+            }
+
             var key = sensitivity.PathKey(path);
             foreach (var candidate in inputs.Keys.ToArray())
                 if (key.ContainsPath(candidate))
