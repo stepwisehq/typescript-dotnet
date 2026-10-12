@@ -227,6 +227,7 @@ internal sealed class LegacyResolutionHost(ProjectDiskHost disk) : TypeScript.Mo
             throw new ProjectException("resolvedFileForm", "Upstream resolution selects an unsupported user file: " + text, text);
         return exists;
     }
+    public Exception? WriteFile(RootedFilePath path, string data) => new IOException("Legacy resolution admission host is read-only; compiler output uses the real Program host.");
     public (string Contents, bool Ok) ReadFile(RootedFilePath path)
     {
         string text = path.ToUnicode();

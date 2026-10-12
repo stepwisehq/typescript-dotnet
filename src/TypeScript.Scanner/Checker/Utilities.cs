@@ -880,7 +880,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static Diagnostic NewDiagnosticForNode(Node node, Message message, params object[] args)
+    internal static Diagnostic NewDiagnosticForNode(Node node, Message message, params object[] args)
     {
         if (node == null)
             return Ast.NewDiagnostic(null, new TextRange(0, 0), message, args);

@@ -11,10 +11,23 @@ public interface IFS
     CaseSensitivity CaseSensitivity();
     bool FileExists(RootedFilePath path);
     (string Contents, bool Ok) ReadFile(RootedFilePath path);
+    // vfs.go:25. Content is the original Go byte string; failure is returned, never silently ignored.
+    Exception? WriteFile(RootedFilePath path, string data);
     bool DirectoryExists(RootedDirectoryPath path);
     Entries GetAccessibleEntries(RootedDirectoryPath path);
     FileInfo? Stat(RootedPath path);
     RootedPath Realpath(RootedPath path);
+}
+
+// Internal output transport retains writer-owned byte headers across genuine FS wrappers.
+internal interface IOutputTextFileSystem
+{
+    Exception? WriteOutputText(RootedFilePath path, ByteStringValue data);
+}
+internal static class OutputTextWriters
+{
+    internal static Exception? Write(IFS fs, RootedFilePath path, ByteStringValue data) =>
+        fs is IOutputTextFileSystem output ? output.WriteOutputText(path, data) : fs.WriteFile(path, data.Materialize()!);
 }
 
 // Optional internal transport for privately owned immutable source bytes. The

@@ -1,0 +1,107 @@
+{
+  "authored": true,
+  "goObservation": {
+    "Root": "/tmp/vscode-agent-codex-sandbox-pluwKO/TestAuthoredActualWriteFailure2114243709/001",
+    "RuntimeError": "mkdir /tmp/vscode-agent-codex-sandbox-pluwKO/TestAuthoredActualWriteFailure2114243709/001/blocker: not a directory",
+    "EmitSkipped": false,
+    "EmittedFiles": null,
+    "Diagnostics": [
+      {
+        "File": null,
+        "Start": -1,
+        "Length": 0,
+        "End": -1,
+        "Code": 5033,
+        "Category": 1,
+        "Key": "Could_not_write_file_0_Colon_1_5033",
+        "Message": "Could not write file '/tmp/vscode-agent-codex-sandbox-pluwKO/TestAuthoredActualWriteFailure2114243709/001/blocker/out/main.js': mkdir /tmp/vscode-agent-codex-sandbox-pluwKO/TestAuthoredActualWriteFailure2114243709/001/blocker: not a directory.",
+        "Args": [
+          "/tmp/vscode-agent-codex-sandbox-pluwKO/TestAuthoredActualWriteFailure2114243709/001/blocker/out/main.js",
+          "mkdir /tmp/vscode-agent-codex-sandbox-pluwKO/TestAuthoredActualWriteFailure2114243709/001/blocker: not a directory"
+        ],
+        "Source": "",
+        "ReportsUnnecessary": false,
+        "ReportsDeprecated": false,
+        "SkippedOnNoEmit": false,
+        "Chain": [],
+        "Related": [],
+        "Repopulate": null
+      }
+    ]
+  },
+  "normalizedDiagnostic": {
+    "File": null,
+    "Start": -1,
+    "Length": 0,
+    "End": -1,
+    "Code": 5033,
+    "Category": 1,
+    "Key": "Could_not_write_file_0_Colon_1_5033",
+    "Message": "Could not write file '/blocker/out/main.js': mkdir /blocker: not a directory.",
+    "Args": [
+      "/blocker/out/main.js",
+      "mkdir /blocker: not a directory"
+    ],
+    "Source": "",
+    "ReportsUnnecessary": false,
+    "ReportsDeprecated": false,
+    "SkippedOnNoEmit": false,
+    "Chain": [],
+    "Related": [],
+    "Repopulate": null
+  },
+  "rawBytesHex": "efbbbf00ff80c3a90d0a0a",
+  "limits": [
+    "Linux exact syscall diagnostic; no permission-dependent failure fixture."
+  ],
+  "goDirectoryObservation": {
+    "Root": "/tmp/vscode-agent-codex-sandbox-pluwKO/TestAuthoredActualOutputDirectoryFailure1487803655/001",
+    "RuntimeError": "open /tmp/vscode-agent-codex-sandbox-pluwKO/TestAuthoredActualOutputDirectoryFailure1487803655/001/out/main.js: is a directory",
+    "EmitSkipped": false,
+    "EmittedFiles": null,
+    "Diagnostics": [
+      {
+        "File": null,
+        "Start": -1,
+        "Length": 0,
+        "End": -1,
+        "Code": 5033,
+        "Category": 1,
+        "Key": "Could_not_write_file_0_Colon_1_5033",
+        "Message": "Could not write file '/tmp/vscode-agent-codex-sandbox-pluwKO/TestAuthoredActualOutputDirectoryFailure1487803655/001/out/main.js': open /tmp/vscode-agent-codex-sandbox-pluwKO/TestAuthoredActualOutputDirectoryFailure1487803655/001/out/main.js: is a directory.",
+        "Args": [
+          "/tmp/vscode-agent-codex-sandbox-pluwKO/TestAuthoredActualOutputDirectoryFailure1487803655/001/out/main.js",
+          "open /tmp/vscode-agent-codex-sandbox-pluwKO/TestAuthoredActualOutputDirectoryFailure1487803655/001/out/main.js: is a directory"
+        ],
+        "Source": "",
+        "ReportsUnnecessary": false,
+        "ReportsDeprecated": false,
+        "SkippedOnNoEmit": false,
+        "Chain": [],
+        "Related": [],
+        "Repopulate": null
+      }
+    ]
+  },
+  "normalizedDirectoryDiagnostic": {
+    "File": null,
+    "Start": -1,
+    "Length": 0,
+    "End": -1,
+    "Code": 5033,
+    "Category": 1,
+    "Key": "Could_not_write_file_0_Colon_1_5033",
+    "Message": "Could not write file '/out/main.js': open /out/main.js: is a directory.",
+    "Args": [
+      "/out/main.js",
+      "open /out/main.js: is a directory"
+    ],
+    "Source": "",
+    "ReportsUnnecessary": false,
+    "ReportsDeprecated": false,
+    "SkippedOnNoEmit": false,
+    "Chain": [],
+    "Related": [],
+    "Repopulate": null
+  }
+}

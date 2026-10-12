@@ -1,20 +1,60 @@
 # Emit implementation inventory
 
+## Accepted whole-emit record
+
+The ManyFiles workload exposed nested ThreadPool/Lazy starvation. The reviewed
+WorkGroup fix lets callbacks and waiters claim ready actions exactly once, preserving
+queue-start, wakeup and recursive completion/failure rules without changing the
+workload or thread limits. Fresh build, all 2,223 managed records, six Native
+publications and direct Native controls passed. Native ManyFiles completes, and the
+isolated 50-run original workload cohort is complete. Fresh Native corpus, command and full retained noEmit revalidation passed; older results below remain explicitly prior-candidate evidence. See the [assessment](EMIT-ASSESSMENT.md) for exact timings/allocation ranges,
+source adaptation and current limits.
+
 Pinned upstream: `fed0bf24149fb1ed36039212648bafdafc1ea10e`. Baseline: `e3131a5b`.
-This is the initial source inventory, not an implementation or execution claim.
+The source inventory below records the initial baseline and subsequent dependency checkpoints.
+Current implementation is source-complete and accepted within the contract.
 The [contract](EMIT-CONTRACT.md) defines completion and dependencies; the
 [test inventory](EMIT-TEST-INVENTORY.md) separately tracks verification.
-Existing partial files must be reconciled function by function against upstream.
+In-scope counterparts were reconciled function by function against upstream;
+partial external owners remain explicitly outside the contract.
 Agent progress records list implemented symbols, adaptations and review evidence.
 
-## Current prerequisite checkpoint
+## Current integrated state
+
+The remaining declaration family (181 functions), compiler EmitHost/emitter and Program
+output, filesystem write path, and user-facing compilation command are implemented
+and independently source-reviewed. Required checker comment ranges and contextual
+parameter-cache behavior were restored from upstream when full output testing exposed
+omissions. Source mapping records the focused changes to existing owners.
+
+The full 15,330-configuration managed development run completed without runtime
+failures. The six formatted content-mapper discrepancies were subsequently repaired
+and independently reviewed. Final execution passed 2,223 managed records, including
+493 Emit records and 1,730 retained checks. Six fresh Linux x64 Native publications
+bind actual ILC root and dependency paths/hashes; direct Emit and retained native
+controls passed. The full Native emit corpus observed all 15,330 configurations:
+15,285 exact public matches and 13,571 complete original assertion sets. Only six
+incremental metadata differences remain visible under the reviewed external boundary.
+Command execution passed six disk, three guard and three runtime cases.
+
+The prior candidate matched all 15,304 retained Native noEmit public records.
+Fresh scheduling-repair noEmit revalidation also matched all 15,304 records. All 50 isolated in-repository
+benchmark observations completed; independent final execution and completion-claim reviews are clear.
+The coordinator accepted the contract-qualified scope.
+
+Incremental snapshot/build-info scheduling and language-service-only serialization
+remain external owners. The command explicitly rejects unsupported incremental or
+composite execution after preserving genuine configuration diagnostics.
+
+## Historical synthesis prerequisite checkpoint
 
 Complete implementations: all six source-map files (52 functions), synthesis
 EmitContext (85), Factory (91), NameGenerator (25), generated-name flags (9),
 helper descriptors/text/callbacks, emit flags, Transformer and ModifierVisitor.
 Required Core.Splice and AST inheritance/borrowed coordinate joins are complete.
-Printer utilities remain partial; full printer, resolver/serialization, chains,
-lowering transforms and Program output are still pending. The baseline table
+At this historical checkpoint printer utilities were partial and the remaining
+printer, resolver, transforms and Program output were pending; subsequent families
+completed those implementations. The baseline table
 below remains historical; live file status is in [source-map.json](../source-map.json).
 
 Independent source/assertion review, 1,107 managed cases and actual Linux x64
@@ -23,7 +63,7 @@ Native AOT (78 original functions plus 30 authored controls) passed. See
 [durable evidence](../validation/results/emit-foundation-verified.json).
 This completes prerequisites, not the whole-emit contract or output comparison.
 
-## Full printer and semantic dependency packet
+## Historical printer and semantic dependency checkpoint
 
 The next packet completes all 378 printer functions and 51 utilities, the writer
 implementations, Binder ReferenceResolver 15 functions, the 44-method resolver
@@ -32,8 +72,8 @@ serialization, tracker hooks, CopyOnWrite scopes and the transform chain now use
 genuine implementations. The three hover-only methods stay outside emit; the
 large checker files are reviewed for their demanded changes, not relabeled as
 new full-file ports. Shared transformer Utilities 22 and Destructuring 28 are complete,
-as is TypeEraser 5 with its direct original 69-row test table. Only the required dotted
-module leaf of RuntimeSyntax is present; its remaining 39 functions are next work.
+as is TypeEraser 5 with its direct original 69-row test table. At this historical checkpoint only the demanded dotted-module RuntimeSyntax leaf
+was present. The subsequent complete TS family replaced that partial state.
 
 Independent source and original-assertion review is clear. The integrated managed
 gate passed 1,186 cases (169 emit,832 checker,84 type-system,101 selected no-emit), with
@@ -43,7 +83,7 @@ separate. See [printer progress](progress/emit-printer.md),
 [semantic progress](progress/emit-resolver.md), and
 [shared transform progress](progress/emit-transform-shared.md).
 
-## Complete TypeScript transform family
+## TypeScript transform dependency checkpoint
 
 All seven upstream files are now implemented: TypeEraser 5, ImportElision 7,
 RuntimeSyntax 40, Utilities 1, Metadata 19, TypeSerializer 22, LegacyDecorators 48
@@ -61,7 +101,7 @@ compiler-output parity. ES, JSX, module and declaration families, Program output
 the whole original corpus remain ahead. See [verification](EMIT-VERIFY.md) and
 [bound evidence](../validation/results/emit-ts-transforms-verified.json).
 
-## Complete ES transform family
+## ES transform dependency checkpoint
 
 All 17 pinned files and 407 functions are implemented: full target-dependent
 lowering, async/iteration, resource management, class fields/private elements,
@@ -82,7 +122,7 @@ test is Go-runtime-only evidence, separate from authored CLR hinted behavior.
 [Verification](EMIT-VERIFY.md) and [proof](../validation/results/emit-es-transforms-verified.json)
 distinguish this subsystem from pending JSX/module/declaration/Program output.
 
-## Complete JSX, module and const-enum family
+## JSX, module and const-enum dependency checkpoint
 
 All seven pinned files/175 functions are implemented and independently reviewed:
 JSX48, ConstEnum3, CommonJS83 and shared module files41. Required adaptations are

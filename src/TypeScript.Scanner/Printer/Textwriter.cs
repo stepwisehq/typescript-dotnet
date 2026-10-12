@@ -36,6 +36,7 @@ internal class TextWriter : EmitTextWriter, GrowableEmitTextWriter
     public virtual int GetIndent() => indent;
     public virtual int GetLine() => lineCount;
     public virtual string String() => builder.String();
+    public virtual ByteStringValue TextValue() => builder.Value();
     public virtual int GetTextPos() => builder.Len();
     public virtual bool HasTrailingComment() => hasTrailingCommentState;
     public virtual bool HasTrailingWhitespace()

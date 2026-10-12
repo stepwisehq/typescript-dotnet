@@ -34,9 +34,17 @@ public static partial class Bundled
     private static readonly Slice<ByteStringValue> libNameValues;
     static Bundled() => libNameValues = Core.MapSlice(LibNames, static name => ByteStringValue.FromString(name));
 
-    private sealed class WrappedFS(IFS fs) : IFS, ISourceTextFileSystem
+    private sealed class WrappedFS(IFS fs) : IFS, ISourceTextFileSystem, IOutputTextFileSystem
     {
         public CaseSensitivity CaseSensitivity() => fs.CaseSensitivity();
+        // embed.go:106. Embedded files are not writable, matching the original panic.
+        public Exception? WriteFile(RootedFilePath path, string data) => WriteOutputText(path, ByteStringValue.FromString(data));
+        public Exception? WriteOutputText(RootedFilePath path, ByteStringValue data)
+        {
+            if (SplitPath(path.AsValue()).Ok) throw new InvalidOperationException("cannot write to embedded file system");
+            return OutputTextWriters.Write(fs, path, data);
+        }
+
         public bool FileExists(RootedFilePath path)
         {
             var (rest, ok) = SplitPath(path.AsValue());

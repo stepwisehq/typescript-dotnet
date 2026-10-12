@@ -240,6 +240,7 @@ internal sealed class ReadFileSystemOverrides(IFS basis) : IFS
     public CaseSensitivity CaseSensitivity() => Sensitivity?.Invoke() ?? basis.CaseSensitivity();
     public bool FileExists(RootedFilePath path) => basis.FileExists(path);
     public bool DirectoryExists(RootedDirectoryPath path) => basis.DirectoryExists(path);
+    public Exception? WriteFile(RootedFilePath path, string data) => basis.WriteFile(path, data);
     public (string Contents, bool Ok) ReadFile(RootedFilePath path) => basis.ReadFile(path);
     public Entries GetAccessibleEntries(RootedDirectoryPath path) => Entries?.Invoke(path) ?? basis.GetAccessibleEntries(path);
     public TypeScript.Vfs.FileInfo? Stat(RootedPath path) => Info is null ? basis.Stat(path) : Info(path);

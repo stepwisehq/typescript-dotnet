@@ -11,7 +11,7 @@ public interface IOutputPathsHost
     CaseSensitivity CaseSensitivity();
 }
 
-public sealed class OutputFilePaths
+public sealed class OutputFilePaths : TypeScript.Transformers.Declarations.IDeclarationOutputPaths
 {
     internal RootedFilePath jsFilePath, sourceMapFilePath, declarationFilePath, declarationMapPath;
     public RootedFilePath JsFilePath() => jsFilePath;

@@ -2407,7 +2407,11 @@ public sealed partial class Checker
             var t = getTypeOfVariableOrParameterOrPropertyWorker(symbol);
             if (t == null)
                 throw new InvalidOperationException("Unexpected nil type");
-            links.resolvedType ??= t;
+            // checker.go:16937–16944. Context-sensitive parameters may receive a
+            // contextual type later; an earlier emit query must not cache the
+            // provisional type before assignParameterType performs that work.
+            if (links.resolvedType == null && !isParameterOfContextSensitiveSignature(symbol))
+                links.resolvedType = t;
             return t;
         }
 

@@ -101,3 +101,18 @@ passed, executing all42 original map functions and19 authored map controls withi
 the shared78-original/30-authored suite. Retained checker/type-system/selected
 no-emit regressions passed. [Durable evidence](../../validation/results/emit-foundation-verified.json).
 Printer/Program map integration remains a later whole-emit obligation.
+
+Whole-emit original observation support is now complete in validation/Program.Checks/CompilerSourceMapRecorder.cs and CompilerSourceMapBaseline.cs: full pinned harnessutil recorder/GetSourceMapRecord plus original map count/inline/preview and record baseline assertions. It preserves raw Go text, CRLF record lines, UTF16-to-byte position conversion, all three first-line BOMs, and both documented pinned recorder bugs. Original channel naming and expected baseline comparisons remain in the shared corpus consumer; raw file equality alone is not this assertion gate. Foundation independent source review is clear in artifacts/emit/source-review/compiler-sourcemap-baselines.json; integration compile/full corpus execution/Native acceptance remain pending. Source map packet is /tmp/emit-sourcemap-baseline-source-map-entries.json.
+
+The complete original source-map baseline and record assertion consumers are now
+landed in `validation/Program.Checks/CompilerSourceMapBaseline.cs` and
+`CompilerSourceMapRecorder.cs`, independently reviewed by foundation. All three
+raw BOM forms, original marker/error ordering, retained source bytes and UTF16
+column conversion are preserved. Integration execution remains coordinator-owned.
+
+The demanded original noCheck diff dependency is source-written in
+`validation/Program.Checks/CompilerPatienceDiff.cs`: exact patience v0.3.0
+unique-element/LCS recursion and unified three-line context renderer, using the
+existing raw-byte SplitLines producer. Its MIT license is retained in
+`licenses/Patience-LICENSE.txt`. Inventory independently reviews this new consumer
+support; no managed acceptance is claimed from source readiness.

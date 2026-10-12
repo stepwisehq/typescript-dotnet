@@ -1,5 +1,15 @@
 # Complete remaining ES runtime transforms
 
+Prior candidate integrated correctness update: 2,223 managed records passed; actual Native Emit
+passed 152 original functions and 251 authored controls; all 15,330 emit configurations
+were observed, with only six reviewed external incremental metadata deltas visible.
+All 13,571 original assertion sets and all 15,304 retained Native noEmit public records
+match. Disk/guard/runtime controls passed 6/3/3. A reviewed nested WorkGroup starvation fix is now undergoing fresh coordinated
+revalidation. Fresh managed/direct/publication gates and all 50 original workload
+observations passed. Fresh Native corpus and command revalidation also passed;
+full retained noEmit passed. Independent final reviews are clear; the coordinator accepted the contract-qualified scope. Benchmark summaries/allocation semantics are in the assessment. Earlier checkpoint/pending descriptions below are historical;
+[assessment](../EMIT-ASSESSMENT.md) records current scope and freeze qualification.
+
 From accepted TS checkpoint `b0cf6af4`, inventory owns all13 remaining ES counterparts: Async, ForAwait, Using, ObjectRestSpread, Exponentiation, LogicalAssignment, NullishCoalescing, OptionalCatch, OptionalChain, TaggedTemplate, UseStrict, Utilities and Definitions. Original source totals4,319 lines/165 functions; final mapping will count actual counterparts. Foundation owns ESDecorators/NamedEvaluation, maps owns ClassFields/ClassThis. Root coordinates complete-family integration; no independent .NET builds.
 
 Shared namespace is `TypeScript.Transformers.EsTransforms`; package helpers live in internal static partial `EsTransforms`. Shared Utilities exposes actual class-conversion/accessor-backing helpers. Async and ForAwait share a `SuperAccessTransformer : Transformer` base containing the original embedded superAccessState storage/methods, avoiding wrapper forwarding and preserving separate initialization/state ownership. All definitions call genuine complete factory implementations in pinned target order, with no placeholder transforms.

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Port of selected tsc/internal/core/workgroup.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
 // WorkGroup and both scheduling implementations; ThrottleGroup is external.
+using System.Collections.Concurrent;
 using System.Runtime.ExceptionServices;
 
 namespace TypeScript.Scanner;
@@ -20,6 +21,7 @@ internal static partial class Core
 internal sealed class ParallelWorkGroup : IWorkGroup
 {
     private readonly object gate = new();
+    private readonly ConcurrentQueue<Action> ready = new();
     private bool done;
     private int pending;
     private ExceptionDispatchInfo? failure;
@@ -31,13 +33,24 @@ internal sealed class ParallelWorkGroup : IWorkGroup
             if (done)
                 throw new InvalidOperationException("Queue called after RunAndWait returned");
             pending++;
+            ready.Enqueue(action);
+            // A waiting caller can help recursively queued work. Publish and wake
+            // under the same gate used for the empty-queue/wait transition.
+            Monitor.PulseAll(gate);
         }
-        // Source WaitGroup.Go starts work during Queue. The pending count is
-        // reserved before scheduling and includes work recursively queued by it.
-        // A work group exposes no Task result. Keep normal ExecutionContext flow
-        // and the thread pool's local-queue preference with an explicit value state.
-        _ = ThreadPool.QueueUserWorkItem(static state => state.Group.Execute(state.Action),
-            (Group: this, Action: action), preferLocal: true);
+        // Queue still starts work immediately, with the accepted static callback
+        // and standard ThreadPool scheduling; no per-job Task or thread owner.
+        // A callback or waiting caller may claim an action, so compiler work state
+        // is explicit rather than relying on the producer's ExecutionContext.
+        _ = ThreadPool.QueueUserWorkItem(static group => group.ExecuteNext(), this, preferLocal: true);
+    }
+
+    private bool ExecuteNext()
+    {
+        if (!ready.TryDequeue(out var action))
+            return false;
+        Execute(action);
+        return true;
     }
 
     private void Execute(Action action)
@@ -63,17 +76,39 @@ internal sealed class ParallelWorkGroup : IWorkGroup
 
     public void RunAndWait()
     {
-        lock (gate)
+        // Go parks a waiting goroutine without occupying its scheduler worker.
+        // CLR Monitor/Lazy waits occupy ThreadPool workers instead. Let the
+        // waiting thread run this group's ready actions, including nested groups,
+        // before blocking; otherwise queued checker construction can starve.
+        try
         {
-            try
+            while (true)
             {
-                while (pending != 0)
+                if (ExecuteNext())
+                    continue;
+                lock (gate)
+                {
+                    if (pending == 0)
+                    {
+                        done = true;
+                        failure?.Throw();
+                        return;
+                    }
+                    // Queue may publish after ExecuteNext finds no work. Its pulse
+                    // shares this gate with the check, avoiding a lost wakeup.
+                    if (!ready.IsEmpty)
+                        continue;
                     Monitor.Wait(gate);
-                failure?.Throw();
+                }
             }
-            finally { done = true; }
+        }
+        finally
+        {
+            lock (gate)
+                done = true;
         }
     }
+
 }
 
 internal sealed class SingleThreadedWorkGroup : IWorkGroup

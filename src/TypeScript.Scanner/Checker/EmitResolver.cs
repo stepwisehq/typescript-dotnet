@@ -772,7 +772,9 @@ public Slice<Node> GetReferencedValueDeclarations(Node node)
 
 // IsNameResolvable returns `true` if the given `name` resolves to any symbol at `location`
 // Upstream upstream/TypeScript/tsc/internal/checker/emitresolver.go:606:1.
-public bool IsNameResolvable(Node location, string name)
+public bool IsNameResolvable(Node location, string name) => IsNameResolvable(location, ByteStringValue.FromString(name));
+// emitresolver.go:606: same lookup/lock with a borrowed Go string header.
+public bool IsNameResolvable(Node location, ByteStringValue name)
 {
     this.checkerMu.Wait();
     try
@@ -784,16 +786,18 @@ public bool IsNameResolvable(Node location, string name)
 }
 
 // Upstream upstream/TypeScript/tsc/internal/checker/emitresolver.go:614:1.
-public string GetElementAccessExpressionName(ElementAccessExpression expression)
+public string GetElementAccessExpressionName(ElementAccessExpression expression) => GetElementAccessExpressionNameValue(expression).Materialize();
+// emitresolver.go:614: retained byte-header result; exact parse-tree guard and lock.
+public ByteStringValue GetElementAccessExpressionNameValue(ElementAccessExpression expression)
 {
     if (!Ast.IsParseTreeNode(expression.AsNode()))
     {
-        return "";
+        return ByteStringValue.FromString("");
     }
     this.checkerMu.Wait();
     try
     {
-        return this.getReferenceResolver().GetElementAccessExpressionName(expression);
+        return this.getReferenceResolver().GetElementAccessExpressionNameValue(expression);
     }
     finally { this.checkerMu.Release(); }
 }

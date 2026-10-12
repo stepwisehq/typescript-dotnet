@@ -4,15 +4,15 @@
 // fed0bf24149fb1ed36039212648bafdafc1ea10e.
 // Generic formatting uses original Go byte strings. Config AST filenames are
 // explicitly raw; ordinary retained AST filenames use their scalar Unicode role.
-// Content-transformed/canonical source adapters are outside this selected slice.
+// Content-mapped diagnostic locations follow the original source/virtual adapters.
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using TypeScript.Scanner;
 using LocaleValue = TypeScript.Locale.Locale;
 using AstDiagnostic = TypeScript.Scanner.Diagnostic;
+using TypeScript.SpanMap;
 
 namespace TypeScript.DiagnosticWriter;
-
 public interface IFileLike : SourceFileLike
 {
     RootedFilePath FileName();
@@ -38,15 +38,61 @@ public sealed class ASTDiagnostic : IDiagnostic
     private readonly bool configFileNames;
     private static readonly ConditionalWeakTable<SourceFile, AstFile> ordinaryFiles = new();
     private static readonly ConditionalWeakTable<SourceFile, AstFile> configFiles = new();
-
     private sealed class AstFile(SourceFile file, bool rawFileName) : IFileLike, ISourceTextFileLike
     {
-        public RootedFilePath FileName() => rawFileName
-            ? RootedFilePath.FromGoString(file.FileName())
-            : RootedFilePath.FromUnicode(file.FileName());
+        public RootedFilePath FileName() => rawFileName ? RootedFilePath.FromGoString(file.FileName()) : RootedFilePath.FromUnicode(file.FileName());
         public string Text() => file.Text();
         ByteStringView ISourceTextFileLike.TextView() => file.TextView();
         public Slice<int> ECMALineMap() => file.ECMALineMap();
+    }
+
+    // diagnosticwriter.go:130–146. Keep the original text owner and freshly
+    // computed original-coordinate line map, rather than the virtual line map.
+    private sealed class OriginalTextFile : IFileLike
+    {
+        private readonly RootedFilePath fileName;
+        private readonly string text;
+        private readonly Slice<int> lineMap;
+        internal OriginalTextFile(SourceFile file, RootedFilePath fileName)
+        {
+            this.fileName = fileName;
+            text = file.OriginalText();
+            lineMap = Core.ComputeECMALineStarts(text);
+        }
+
+        public RootedFilePath FileName() => fileName;
+        public string Text() => text;
+        public Slice<int> ECMALineMap() => lineMap;
+    }
+
+    // diagnosticwriter.go:148–155. Supplemental virtual text uses the canonical
+    // filename but retains its own source text/line-map owner.
+    private sealed class RenamedFile(SourceFile file, RootedFilePath fileName) : IFileLike, ISourceTextFileLike
+    {
+        public RootedFilePath FileName() => fileName;
+        public string Text() => file.Text();
+        ByteStringView ISourceTextFileLike.TextView() => file.TextView();
+        public Slice<int> ECMALineMap() => file.ECMALineMap();
+    }
+
+    private readonly record struct ResolvedLocation(TextRange Loc, bool UseOriginal = false, bool Synthesized = false);
+    // diagnosticwriter.go:109–126. Mapper diagnostics already have original
+    // ranges; compiler ranges map back unless wholly synthesized virtual code.
+    private ResolvedLocation Resolve()
+    {
+        var loc = diagnostic.Loc();
+        var file = diagnostic.File();
+        if (file is null)
+            return new(loc);
+        if (diagnostic.Source() != "")
+            return new(loc, UseOriginal: true);
+        if (file.SpanMap()is { } spanMap)
+        {
+            var(mapped, fidelity) = spanMap.VirtualToOriginalSpan(loc);
+            return fidelity == Fidelity.None ? new(loc, Synthesized: true) : new(mapped, UseOriginal: true);
+        }
+
+        return new(loc);
     }
 
     public ASTDiagnostic(AstDiagnostic diagnostic, bool configFileNames = false)
@@ -58,15 +104,20 @@ public sealed class ASTDiagnostic : IDiagnostic
     public IFileLike? File()
     {
         SourceFile? file = diagnostic.File();
-        if (file is null) return null;
-        return configFileNames
-            ? configFiles.GetValue(file, f => new AstFile(f, true))
-            : ordinaryFiles.GetValue(file, f => new AstFile(f, false));
+        if (file is null)
+            return null;
+        var canonical = file.CanonicalSourceFile();
+        var fileName = RootedFilePath.FromValue((canonical ?? file).FileNameGoValue());
+        if (Resolve().UseOriginal)
+            return new OriginalTextFile(file, fileName);
+        if (canonical is not null && !fileName.Equals(RootedFilePath.FromValue(file.FileNameGoValue())))
+            return new RenamedFile(file, fileName);
+        return configFileNames ? configFiles.GetValue(file, f => new AstFile(f, true)) : ordinaryFiles.GetValue(file, f => new AstFile(f, false));
     }
 
-    public int Pos() => diagnostic.Pos();
-    public int End() => diagnostic.End();
-    public int Len() => diagnostic.Len();
+    public int Pos() => Resolve().Loc.Pos();
+    public int End() => Resolve().Loc.End();
+    public int Len() => Resolve().Loc.Len();
     public int Code() => diagnostic.Code();
     public DiagnosticCategory Category() => diagnostic.Category();
     public string Source() => diagnostic.Source();
@@ -74,10 +125,24 @@ public sealed class ASTDiagnostic : IDiagnostic
     {
         // Original prelocalized external text remains raw. Ordinary message args
         // still use diagnostics.Format's original ToValidUTF8 sanitization.
-        if (diagnostic.message is null && diagnostic.MessageText() != "") return diagnostic.MessageText();
+        if (diagnostic.message is null && diagnostic.MessageText() != "")
+            return diagnostic.MessageText();
         return GoString.ToUtf8(diagnostic.String());
     }
-    public IReadOnlyList<IDiagnostic> MessageChain() => DiagnosticWriter.FromASTDiagnostics(diagnostic.MessageChain(), configFileNames);
+
+    // diagnosticwriter.go:157–168. Preserve existing chain order and append the
+    // actual synthesized-location note only when no original mapping exists.
+    public IReadOnlyList<IDiagnostic> MessageChain()
+    {
+        var chain = diagnostic.MessageChain();
+        var result = new List<IDiagnostic>(chain.Count + 1);
+        foreach (var child in chain)
+            result.Add(new ASTDiagnostic(child, configFileNames));
+        if (Resolve().Synthesized)
+            result.Add(DiagnosticWriter.WrapASTDiagnostic(Ast.NewCompilerDiagnostic(Diagnostics.This_location_is_in_virtual_code_produced_by_the_content_mapper_0_and_has_no_corresponding_location_in_the_original_file, diagnostic.File()!.ContentMapper()), configFileNames));
+        return result;
+    }
+
     public IReadOnlyList<IDiagnostic> RelatedInformation() => DiagnosticWriter.FromASTDiagnostics(diagnostic.RelatedInformation(), configFileNames);
 }
 

@@ -25,6 +25,7 @@ internal interface EmitTextWriter
     void RawWrite(string text);
     void WriteLiteral(string text);
     string String();
+    ByteStringValue TextValue();
     int GetTextPos();
     int GetLine();
     int GetColumn();

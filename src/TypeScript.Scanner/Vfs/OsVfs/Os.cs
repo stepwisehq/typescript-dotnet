@@ -11,11 +11,11 @@ public sealed class FileSystemPathEncodingException(string bytes, Exception? cau
     public string PathBytes { get; } = bytes;
 }
 
-public static class OsVfs
+public static partial class OsVfs
 {
     private static readonly IFS instance = new OsFS();
     public static IFS FS() => instance;
-    private sealed class OsFS : IFS, ISourceTextFileSystem
+    private sealed partial class OsFS : IFS, ISourceTextFileSystem
     {
         private readonly CaseSensitivity sensitivity = detectCaseSensitivity();
         private static string Native(ByteStringValue bytes)

@@ -7,7 +7,7 @@ using TypeScript.Scanner;
 using TypeScript.TsOptions;
 
 namespace TypeScript.Compiler;
-public sealed class Project : ICheckerProgramHost
+public sealed partial class Project : ICheckerProgramHost
 {
     private readonly ProjectConfiguration configuration;
     private readonly ProjectDiskHost? disk;
@@ -61,8 +61,7 @@ public sealed class Project : ICheckerProgramHost
     bool ICheckerProgramHost.SourceFileMayBeEmitted(SourceFile file, bool forceDtsEmit) => ActualHost.SourceFileMayBeEmitted(file, forceDtsEmit);
     SourceOutputAndProjectReference? ICheckerProgramHost.GetProjectReferenceFromOutputDts(PathKey path) => ActualHost.GetProjectReferenceFromOutputDts(path);
     ParsedCommandLine? ICheckerProgramHost.GetRedirectForResolution(SourceFile file) => ActualHost.GetRedirectForResolution(file);
-    private ProjectException MissingProgramService(string operation) =>
-        new("semanticUnsupported", operation + " requires the genuine Program environment.", ConfigurationPath);
+    private ProjectException MissingProgramService(string operation) => new("semanticUnsupported", operation + " requires the genuine Program environment.", ConfigurationPath);
     public Checker Checker
     {
         get
@@ -106,7 +105,7 @@ public sealed class Project : ICheckerProgramHost
         var fs = TypeScript.Bundled.Bundled.WrapFS(TypeScript.Vfs.OsVfs.OsVfs.FS());
         var host = CompilerHosts.NewCachedFSCompilerHost(fs, TypeScript.Bundled.Bundled.LibPath());
         var program = Program.NewProgram(new() { Config = inspection.Parsed!, Host = host });
-        if (program.ModuleResolutionError() is { } error)
+        if (program.ModuleResolutionError()is { } error)
             throw new ProjectException("moduleResolution", error.Message, inspection.ConfigurationPath);
         return new Project(inspection, program);
     }
@@ -122,6 +121,7 @@ public sealed class Project : ICheckerProgramHost
         {
             file.SetFileNameToUnicode();
         }
+
         sourceFiles = program.SourceFiles();
         foreach (var pair in program.FilesByPath())
             filesByPath.Add(pair.Key, pair.Value);
@@ -133,18 +133,18 @@ public sealed class Project : ICheckerProgramHost
             else
                 users.Add(file);
         }
+
         LibraryFiles = libraries.ToArray();
         RootFileNames = (inspection.Parsed!.FileNames() ?? []).Select(path => path.ToUnicode()).ToArray();
         foreach (var root in inspection.Parsed.FileNames() ?? [])
-            if (program.GetSourceFile(root) is { } file && !roots.Contains(file, ReferenceEqualityComparer.Instance))
+            if (program.GetSourceFile(root)is { } file && !roots.Contains(file, ReferenceEqualityComparer.Instance))
                 roots.Add(file);
         parseDiagnostics = parseDiagnostics.Append(program.GetSyntacticDiagnostics());
         programDiagnostics = programDiagnostics.Append(program.GetProgramDiagnostics());
         foreach (var file in sourceFiles)
             foreach (var import in file.Imports())
-                if (program.GetResolvedModuleFromModuleSpecifier(file, import) is { } resolved)
-                    edges.Add(new(file, import, ProjectDiskHost.DecodeModuleReference(import.TextValue()),
-                        program.GetModeForUsageLocation(file, import), resolved, program.GetSourceFileForResolvedModule(resolved)));
+                if (program.GetResolvedModuleFromModuleSpecifier(file, import)is { } resolved)
+                    edges.Add(new(file, import, ProjectDiskHost.DecodeModuleReference(import.TextValue()), program.GetModeForUsageLocation(file, import), resolved, program.GetSourceFileForResolvedModule(resolved)));
     }
 
     private Project(ProjectConfiguration configuration)
@@ -236,6 +236,7 @@ public sealed class Project : ICheckerProgramHost
                     }
                 }
             }
+
             // Declaration-output diagnostics remain outside this no-emit disk
             // adapter; this consumer does not acquire an emitter.
             return Program.SortAndDeduplicateDiagnostics(diagnostics).AsSpan().ToArray();
@@ -269,18 +270,16 @@ public sealed class Project : ICheckerProgramHost
     private ResolvedModule? GetResolvedModuleValue(SourceFile importingFile, ByteStringValue moduleReference, ResolutionMode mode)
     {
         ValidateOwned(importingFile);
-        return genuineProgram is not null ? genuineProgram.GetResolvedModule(importingFile, moduleReference, mode)
-            : GetResolvedModule(importingFile, ProjectDiskHost.DecodeModuleReference(moduleReference), mode);
+        return genuineProgram is not null ? genuineProgram.GetResolvedModule(importingFile, moduleReference, mode) : GetResolvedModule(importingFile, ProjectDiskHost.DecodeModuleReference(moduleReference), mode);
     }
+
     string ICheckerProgramHost.GetSourceFileNameGoBytes(SourceFile file)
     {
         ValidateOwned(file);
         return file.FileNameGoBytes();
     }
 
-    public SourceFile? GetSourceFileForResolvedModule(ResolvedModule module) => genuineProgram is not null
-        ? genuineProgram.GetSourceFileForResolvedModule(module)
-        : module.IsResolved() && filesByPath.TryGetValue(ByteStringKey.FromString(module.ResolvedPath.ToUnicode()), out var file) ? file : null;
+    public SourceFile? GetSourceFileForResolvedModule(ResolvedModule module) => genuineProgram is not null ? genuineProgram.GetSourceFileForResolvedModule(module) : module.IsResolved() && filesByPath.TryGetValue(ByteStringKey.FromString(module.ResolvedPath.ToUnicode()), out var file) ? file : null;
     public ModuleKind GetEmitModuleFormatOfFile(SourceFile file)
     {
         ValidateOwned(file);
@@ -329,10 +328,14 @@ public sealed class Project : ICheckerProgramHost
     CaseSensitivity TypeScript.OutputPaths.IOutputPathsHost.CaseSensitivity() => genuineProgram?.CaseSensitivity() ?? CaseSensitivity.CaseSensitive;
     SourceOutputAndProjectReference? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetProjectReferenceFromSource(PathKey path) => genuineProgram?.GetProjectReferenceFromSource(path);
     Slice<RootedFilePath> TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetRedirectTargets(PathKey path) => genuineProgram?.GetRedirectTargets(path) ?? default;
-    RootedFilePath TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file)
+    RootedFilePath TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetSourceOfProjectReferenceIfOutputIncluded(HasFileName file)
     {
-        ValidateOwned(file);
-        return genuineProgram is null ? RootedFilePath.FromValue(file.FileNameGoValue()) : ActualSpecifierHost.GetSourceOfProjectReferenceIfOutputIncluded(file);
+        if (genuineProgram is not null)
+            return ActualSpecifierHost.GetSourceOfProjectReferenceIfOutputIncluded(file);
+        if (file is not SourceFile sourceFile)
+            throw MissingProgramService("module specifier generation for a non-source filename");
+        ValidateOwned(sourceFile);
+        return RootedFilePath.FromValue(sourceFile.FileNameGoValue());
     }
 
     bool TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.FileExists(RootedFilePath path) => genuineProgram is null ? disk!.ModuleSpecifierFileExists(path.ToUnicode()) : ActualSpecifierHost.FileExists(path);
@@ -353,7 +356,9 @@ public sealed class Project : ICheckerProgramHost
         return scoped.Exists() && scoped!.PackageDirectory.AsDirectoryPath() == directory ? scoped : null;
     }
 
-    ResolvedModule? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetResolvedModuleFromModuleSpecifier(SourceFile file, Node specifier) => genuineProgram is not null ? ActualSpecifierHost.GetResolvedModuleFromModuleSpecifier(file, specifier) : GetResolvedModuleValue(file, specifier.TextValue(), GetModeForUsageLocation(file, specifier));
+    ResolvedModule? TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetResolvedModuleFromModuleSpecifier(HasFileName file, Node specifier) => genuineProgram is not null ? ActualSpecifierHost.GetResolvedModuleFromModuleSpecifier(file, specifier) : file is SourceFile sourceFile ? GetResolvedModuleValue(sourceFile, specifier.TextValue(), GetModeForUsageLocation(sourceFile, specifier)) : throw MissingProgramService("module resolution for a non-source filename");
+    ResolutionMode TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetDefaultResolutionModeForFile(HasFileName file) => genuineProgram is not null ? ActualSpecifierHost.GetDefaultResolutionModeForFile(file) : file is SourceFile sourceFile ? GetDefaultResolutionModeForFile(sourceFile) : throw MissingProgramService("resolution mode for a non-source filename");
+    ResolutionMode TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost.GetModeForUsageLocation(HasFileName file, Node specifier) => genuineProgram is not null ? ActualSpecifierHost.GetModeForUsageLocation(file, specifier) : file is SourceFile sourceFile ? GetModeForUsageLocation(sourceFile, specifier) : throw MissingProgramService("usage mode for a non-source filename");
     private void ValidateOwned(SourceFile sourceFile)
     {
         if (!filesByPath.TryGetValue(sourceFile.PathKeyKey(), out SourceFile? owned) || !ReferenceEquals(owned, sourceFile))

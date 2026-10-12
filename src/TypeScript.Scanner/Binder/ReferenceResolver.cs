@@ -10,6 +10,7 @@ internal interface IReferenceResolver
     Node GetReferencedValueDeclaration(Node node);
     Slice<Node> GetReferencedValueDeclarations(Node node);
     string GetElementAccessExpressionName(ElementAccessExpression expression);
+    ByteStringValue GetElementAccessExpressionNameValue(ElementAccessExpression expression);
     Node GetReferencedMemberValueDeclaration(Node node);
 }
 internal sealed class ReferenceResolverHooks
@@ -117,11 +118,13 @@ internal sealed class ReferenceResolver : IReferenceResolver
         }
         return declarations;
     }
-    public string GetElementAccessExpressionName(ElementAccessExpression expression)
+    public string GetElementAccessExpressionName(ElementAccessExpression expression) => GetElementAccessExpressionNameValue(expression).Materialize();
+    // referenceresolver.go: same hook string header; owned projection stays at the legacy wrapper.
+    public ByteStringValue GetElementAccessExpressionNameValue(ElementAccessExpression expression)
     {
         if (expression != null && hooks.GetElementAccessExpressionName != null)
-        { var (name, ok) = hooks.GetElementAccessExpressionName(expression); if (ok) return name.Project(); }
-        return "";
+        { var (name, ok) = hooks.GetElementAccessExpressionName(expression); if (ok) return name; }
+        return ByteStringValue.FromString("");
     }
     public Node GetReferencedMemberValueDeclaration(Node node)
     {

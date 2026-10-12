@@ -1,5 +1,15 @@
 # Emit tests/reference and independent review checkpoint
 
+Prior candidate integrated correctness update: 2,223 managed records passed; actual Native Emit
+passed 152 original functions and 251 authored controls; all 15,330 emit configurations
+were observed, with only six reviewed external incremental metadata deltas visible.
+All 13,571 original assertion sets and all 15,304 retained Native noEmit public records
+match. Disk/guard/runtime controls passed 6/3/3. A reviewed nested WorkGroup starvation fix is now undergoing fresh coordinated
+revalidation. Fresh managed/direct/publication gates and all 50 original workload
+observations passed. Fresh Native corpus and command revalidation also passed;
+full retained noEmit passed. Independent final reviews are clear; the coordinator accepted the contract-qualified scope. Benchmark summaries/allocation semantics are in the assessment. Earlier checkpoint/pending descriptions below are historical;
+[assessment](../EMIT-ASSESSMENT.md) records current scope and freeze qualification.
+
 Baseline `e3131a5b`, pinned Go `fed0bf24149fb1ed36039212648bafdafc1ea10e`.
 Whole-emit acceptance remains pending; do not infer it from this dependency packet.
 

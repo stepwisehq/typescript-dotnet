@@ -6,12 +6,11 @@ using TypeScript.Checking;
 using TypeScript.Scanner;
 using TsScanner = TypeScript.Scanner.Scanner;
 
-const string usage = "Usage: tscheck --runtime-info | --inspect-program <tsconfig> | --inspect-project <tsconfig> | --inspect-config <tsconfig> | --config <tsconfig> [--json] [--noEmit] [--no-gc-region] | --project <tscheck.json> [--json]";
+const string usage = "Usage: tscheck --runtime-info | --inspect-program <tsconfig> | --inspect-project <tsconfig> | --inspect-config <tsconfig> | --config <tsconfig> [--json] [--noEmit] [--listFilesOnly] [--no-gc-region] | --project <tscheck.json> [--json]";
 // Authored runtime probe; reports the executing runtime rather than build intent.
 if (args.Length == 1 && args[0] == "--runtime-info")
 {
-    Console.WriteLine("{\"serverGC\":" + (System.Runtime.GCSettings.IsServerGC ? "true" : "false") +
-        ",\"processorCount\":" + Environment.ProcessorCount.ToString(System.Globalization.CultureInfo.InvariantCulture) + "}");
+    Console.WriteLine("{\"serverGC\":" + (System.Runtime.GCSettings.IsServerGC ? "true" : "false") + ",\"processorCount\":" + Environment.ProcessorCount.ToString(System.Globalization.CultureInfo.InvariantCulture) + "}");
     return 0;
 }
 
@@ -59,9 +58,7 @@ try
     {
         ResolvedProjectGraph graph = Project.InspectResolvedGraph(args[1]);
         var graphDiagnostics = graph.ParseDiagnostics.Concat(graph.InclusionDiagnostics).ToArray();
-        bool failures = graphDiagnostics.Length != 0 || graph.ResolutionEdges.Any(edge => edge.Error is not null || !edge.Resolution.IsResolved()) ||
-            graph.PathReferences.Any(edge => edge.Diagnostic is not null) ||
-            graph.TypeDirectives.Any(edge => edge.Scheduling == DependencyScheduling.Unresolved);
+        bool failures = graphDiagnostics.Length != 0 || graph.ResolutionEdges.Any(edge => edge.Error is not null || !edge.Resolution.IsResolved()) || graph.PathReferences.Any(edge => edge.Diagnostic is not null) || graph.TypeDirectives.Any(edge => edge.Scheduling == DependencyScheduling.Unresolved);
         var output = new CliResult
         {
             ExitCode = failures ? 1 : 0,
@@ -93,18 +90,33 @@ try
     }
 
     using var noGcRegion = options.NoGcRegion ? new NoGcRegionPolicy() : null;
-    Project project = fullConfiguration ? Project.LoadConfiguration(args[1], noEmit ? new CompilerOptions { NoEmit = Tristate.True } : null) : Project.Load(args[1]);
-    IReadOnlyList<Diagnostic> diagnostics = project.Check();
+    CompilerOptions? commandOptions = noEmit || options.ListFilesOnly ? new CompilerOptions
+    {
+        NoEmit = noEmit ? Tristate.True : Tristate.Unknown,
+        ListFilesOnly = options.ListFilesOnly ? Tristate.True : Tristate.Unknown
+    }
+
+    : null;
+    Project project = fullConfiguration ? Project.LoadConfiguration(args[1], commandOptions) : Project.Load(args[1]);
+    ProjectCompilationResult? compilation = fullConfiguration ? project.Compile() : null;
+    IReadOnlyList<Diagnostic> diagnostics = compilation?.Diagnostics ?? project.Check();
     var checkedOutput = new CliResult
     {
-        ExitCode = diagnostics.Count == 0 ? 0 : 1,
+        ExitCode = compilation?.ExitCode ?? (diagnostics.Count == 0 ? 0 : 1),
+        EmitSkipped = compilation?.EmitResult?.EmitSkipped,
+        Listing = compilation?.Listing,
         Diagnostics = diagnostics.Select(diagnostic => Describe(diagnostic, fullConfiguration)).ToArray()
     };
     if (json)
         Console.WriteLine(JsonSerializer.Serialize(checkedOutput, CliJsonContext.Default.CliResult));
     else
+    {
         foreach (CliDiagnostic diagnostic in checkedOutput.Diagnostics)
             Print(diagnostic);
+        if (compilation is not null)
+            Console.Write(compilation.Listing);
+    }
+
     return checkedOutput.ExitCode;
 }
 catch (ConfigurationDiagnosticsException ex)
@@ -168,42 +180,49 @@ static CliDiagnostic Describe(Diagnostic diagnostic, bool rawConfigFiles)
 static string Base64(string bytes) => Convert.ToBase64String(RawBytes(bytes));
 static CliResolvedModule DescribeResolution(TypeScript.Modules.ResolvedModule value) => new()
 {
-    File = DisplayBytes(value.ResolvedFileName.AsString()), FileBase64 = Base64(value.ResolvedFileName.AsString()),
-    PathBase64 = Base64(value.ResolvedPath.AsString()), OriginalPathBase64 = Base64(value.OriginalPath.AsString()),
-    AlternateResultBase64 = Base64(value.AlternateResult.AsString()), Extension = value.Extension,
-    UsingTsExtension = value.ResolvedUsingTsExtension, UsingExtraExtensions = value.ResolvedUsingExtraExtensions,
-    ExternalLibraryImport = value.IsExternalLibraryImport, CustomResolution = value.IsCustomResolution,
-    Package = new() { NameBase64 = Base64(value.PackageId.Name), SubModuleNameBase64 = Base64(value.PackageId.SubModuleName),
-        VersionBase64 = Base64(value.PackageId.Version), PeerDependenciesBase64 = Base64(value.PackageId.PeerDependencies) },
+    File = DisplayBytes(value.ResolvedFileName.AsString()),
+    FileBase64 = Base64(value.ResolvedFileName.AsString()),
+    PathBase64 = Base64(value.ResolvedPath.AsString()),
+    OriginalPathBase64 = Base64(value.OriginalPath.AsString()),
+    AlternateResultBase64 = Base64(value.AlternateResult.AsString()),
+    Extension = value.Extension,
+    UsingTsExtension = value.ResolvedUsingTsExtension,
+    UsingExtraExtensions = value.ResolvedUsingExtraExtensions,
+    ExternalLibraryImport = value.IsExternalLibraryImport,
+    CustomResolution = value.IsCustomResolution,
+    Package = new()
+    {
+        NameBase64 = Base64(value.PackageId.Name),
+        SubModuleNameBase64 = Base64(value.PackageId.SubModuleName),
+        VersionBase64 = Base64(value.PackageId.Version),
+        PeerDependenciesBase64 = Base64(value.PackageId.PeerDependencies)
+    },
     Diagnostics = MapOutput(value.ResolutionDiagnostics, diagnostic => Describe(diagnostic, true))
 };
 // Cold JSON boundary: retain nil versus allocated-empty while creating the
 // schema-owned output array; internal Program storage remains shared headers.
 static U[]? MapOutput<T, U>(Slice<T> values, Func<T, U> map)
 {
-    if (values.IsNil) return null;
+    if (values.IsNil)
+        return null;
     var output = new U[values.Length];
-    for (int i = 0; i < values.Length; i++) output[i] = map(values[i]);
+    for (int i = 0; i < values.Length; i++)
+        output[i] = map(values[i]);
     return output;
 }
 
-static CliTrace[]? DescribeTraces(Slice<TypeScript.Modules.DiagAndArgs> traces) => MapOutput(traces, trace => new CliTrace
+static CliTrace[]? DescribeTraces(Slice<TypeScript.Modules.DiagAndArgs> traces) => MapOutput(traces, trace => new CliTrace { Code = trace.Message.Code(), Arguments = MapOutput(trace.Args, value => value switch
 {
-    Code = trace.Message.Code(),
-    Arguments = MapOutput(trace.Args, value => value switch
-    {
-        string bytes => new CliTraceArgument { Kind = "string", BytesBase64 = Base64(bytes), Text = DisplayBytes(bytes) },
-        RootedFilePath path => new CliTraceArgument { Kind = "rooted-file", BytesBase64 = Base64(path.AsString()), Text = DisplayBytes(path.AsString()) },
-        RootedDirectoryPath path => new CliTraceArgument { Kind = "rooted-directory", BytesBase64 = Base64(path.AsString()), Text = DisplayBytes(path.AsString()) },
-        RootedPath path => new CliTraceArgument { Kind = "rooted-path", BytesBase64 = Base64(path.AsString()), Text = DisplayBytes(path.AsString()) },
-        PathKey path => new CliTraceArgument { Kind = "path-key", BytesBase64 = Base64(path.AsString()), Text = DisplayBytes(path.AsString()) },
-        TypeScript.PackageJson.PackageDirectory path => new CliTraceArgument { Kind = "package-directory", BytesBase64 = Base64(path.AsDirectoryPath().AsString()), Text = DisplayBytes(path.AsDirectoryPath().AsString()) },
-        null => new CliTraceArgument { Kind = "null" },
-        bool boolean => new CliTraceArgument { Kind = "bool", Text = boolean ? "true" : "false" },
-        int or long or uint or ulong => new CliTraceArgument { Kind = "number", Text = Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture) },
-        _ => throw new InvalidOperationException("Unknown resolution trace argument type: " + value.GetType().Name)
-    })
-});
+    string bytes => new CliTraceArgument { Kind = "string", BytesBase64 = Base64(bytes), Text = DisplayBytes(bytes) },
+    RootedFilePath path => new CliTraceArgument { Kind = "rooted-file", BytesBase64 = Base64(path.AsString()), Text = DisplayBytes(path.AsString()) },
+    RootedDirectoryPath path => new CliTraceArgument { Kind = "rooted-directory", BytesBase64 = Base64(path.AsString()), Text = DisplayBytes(path.AsString()) },
+    RootedPath path => new CliTraceArgument { Kind = "rooted-path", BytesBase64 = Base64(path.AsString()), Text = DisplayBytes(path.AsString()) },
+    PathKey path => new CliTraceArgument { Kind = "path-key", BytesBase64 = Base64(path.AsString()), Text = DisplayBytes(path.AsString()) },
+    TypeScript.PackageJson.PackageDirectory path => new CliTraceArgument { Kind = "package-directory", BytesBase64 = Base64(path.AsDirectoryPath().AsString()), Text = DisplayBytes(path.AsDirectoryPath().AsString()) },
+    null => new CliTraceArgument { Kind = "null" },
+    bool boolean => new CliTraceArgument { Kind = "bool", Text = boolean ? "true" : "false" },
+    int or long or uint or ulong => new CliTraceArgument { Kind = "number", Text = Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture) },
+    _ => throw new InvalidOperationException("Unknown resolution trace argument type: " + value.GetType().Name)}) });
 static CliGraph DescribeGraph(ResolvedProjectGraph graph) => new()
 {
     // Explicit user-visible boundary: no hidden Program/global-library construction.
@@ -213,76 +232,30 @@ static CliGraph DescribeGraph(ResolvedProjectGraph graph) => new()
     Sources = MapOutput(graph.SourceFiles, file =>
     {
         var metadata = graph.GetSourceFileMetaData(file);
-        return new CliGraphSource { FileBase64 = Base64(file.FileNameGoBytes()), PathBase64 = Base64(file.PathKey()),
-            ScriptKind = file.ScriptKind.ToString(), Declaration = file.IsDeclarationFile,
-            PackageType = metadata.PackageJsonType, PackageDirectoryBase64 = Base64(metadata.PackageJsonDirectory.AsString()),
+        return new CliGraphSource
+        {
+            FileBase64 = Base64(file.FileNameGoBytes()),
+            PathBase64 = Base64(file.PathKey()),
+            ScriptKind = file.ScriptKind.ToString(),
+            Declaration = file.IsDeclarationFile,
+            PackageType = metadata.PackageJsonType,
+            PackageDirectoryBase64 = Base64(metadata.PackageJsonDirectory.AsString()),
             ImpliedNodeFormat = metadata.ImpliedNodeFormat.ToString(),
             ExternalModule = Ast.IsExternalModule(file),
-            LibraryReferencesBase64 = MapOutput(file.LibReferenceDirectives, reference => Base64(reference.FileName)) };
+            LibraryReferencesBase64 = MapOutput(file.LibReferenceDirectives, reference => Base64(reference.FileName))
+        };
     })!,
-    Edges = graph.ResolutionEdges.Select(edge => new CliGraphEdge
-    {
-        ImporterBase64 = Base64(edge.ImportingFile.FileNameGoBytes()), ReferenceBase64 = Base64(edge.ModuleReference),
-        ByteStart = edge.ModuleSpecifier.Pos(), ByteEnd = edge.ModuleSpecifier.End(), Mode = edge.Mode.ToString(),
-        ImportIndex = edge.ImportIndex, Synthetic = edge.SyntheticKind, Scheduling = edge.Scheduling.ToString(),
-        TargetBase64 = edge.TargetFile is null ? null : Base64(edge.TargetFile.FileNameGoBytes()),
-        Resolution = DescribeResolution(edge.Resolution), Traces = DescribeTraces(edge.Traces), Error = edge.Error?.Message
-    }).ToArray(),
-    PathReferences = graph.PathReferences.Select(edge => new CliGraphReference
-    {
-        ImporterBase64 = Base64(edge.ImportingFile.FileNameGoBytes()), ReferenceBase64 = Base64(edge.Reference.FileName),
-        ByteStart = edge.Reference.Pos(), ByteEnd = edge.Reference.End(), Scheduling = edge.Scheduling.ToString(),
-        FileBase64 = Base64(edge.ResolvedFileName.AsString()), PathBase64 = Base64(edge.ResolvedPath.AsString()),
-        TargetBase64 = edge.TargetFile is null ? null : Base64(edge.TargetFile.FileNameGoBytes()),
-        Diagnostic = edge.Diagnostic is null ? null : Describe(edge.Diagnostic, true)
-    }).ToArray(),
-    TypeDirectives = graph.TypeDirectives.Select(edge => new CliGraphReference
-    {
-        ImporterBase64 = Base64(edge.ImportingFile.FileNameGoBytes()), ReferenceBase64 = Base64(edge.Reference.FileName),
-        ByteStart = edge.Reference.Pos(), ByteEnd = edge.Reference.End(), Scheduling = edge.Scheduling.ToString(), Mode = edge.Mode.ToString(),
-        FileBase64 = edge.Resolution is null ? null : Base64(edge.Resolution.ResolvedFileName.AsString()),
-        PathBase64 = edge.Resolution is null ? null : Base64(edge.Resolution.ResolvedPath.AsString()),
-        TargetBase64 = edge.TargetFile is null ? null : Base64(edge.TargetFile.FileNameGoBytes()), Traces = DescribeTraces(edge.Traces),
-        TypeResolution = edge.Resolution is null ? null : new CliResolvedTypeDirective
-        {
-            FileBase64 = Base64(edge.Resolution.ResolvedFileName.AsString()),
-            PathBase64 = Base64(edge.Resolution.ResolvedPath.AsString()),
-            OriginalPathBase64 = Base64(edge.Resolution.OriginalPath.AsString()),
-            Primary = edge.Resolution.Primary, ExternalLibraryImport = edge.Resolution.IsExternalLibraryImport,
-            Package = new CliPackage
-            {
-                NameBase64 = Base64(edge.Resolution.PackageId.Name),
-                SubModuleNameBase64 = Base64(edge.Resolution.PackageId.SubModuleName),
-                VersionBase64 = Base64(edge.Resolution.PackageId.Version),
-                PeerDependenciesBase64 = Base64(edge.Resolution.PackageId.PeerDependencies)
-            },
-            Diagnostics = MapOutput(edge.Resolution.ResolutionDiagnostics, value => Describe(value, true))
-        }
-    }).ToArray()
+    Edges = graph.ResolutionEdges.Select(edge => new CliGraphEdge { ImporterBase64 = Base64(edge.ImportingFile.FileNameGoBytes()), ReferenceBase64 = Base64(edge.ModuleReference), ByteStart = edge.ModuleSpecifier.Pos(), ByteEnd = edge.ModuleSpecifier.End(), Mode = edge.Mode.ToString(), ImportIndex = edge.ImportIndex, Synthetic = edge.SyntheticKind, Scheduling = edge.Scheduling.ToString(), TargetBase64 = edge.TargetFile is null ? null : Base64(edge.TargetFile.FileNameGoBytes()), Resolution = DescribeResolution(edge.Resolution), Traces = DescribeTraces(edge.Traces), Error = edge.Error?.Message }).ToArray(),
+    PathReferences = graph.PathReferences.Select(edge => new CliGraphReference { ImporterBase64 = Base64(edge.ImportingFile.FileNameGoBytes()), ReferenceBase64 = Base64(edge.Reference.FileName), ByteStart = edge.Reference.Pos(), ByteEnd = edge.Reference.End(), Scheduling = edge.Scheduling.ToString(), FileBase64 = Base64(edge.ResolvedFileName.AsString()), PathBase64 = Base64(edge.ResolvedPath.AsString()), TargetBase64 = edge.TargetFile is null ? null : Base64(edge.TargetFile.FileNameGoBytes()), Diagnostic = edge.Diagnostic is null ? null : Describe(edge.Diagnostic, true) }).ToArray(),
+    TypeDirectives = graph.TypeDirectives.Select(edge => new CliGraphReference { ImporterBase64 = Base64(edge.ImportingFile.FileNameGoBytes()), ReferenceBase64 = Base64(edge.Reference.FileName), ByteStart = edge.Reference.Pos(), ByteEnd = edge.Reference.End(), Scheduling = edge.Scheduling.ToString(), Mode = edge.Mode.ToString(), FileBase64 = edge.Resolution is null ? null : Base64(edge.Resolution.ResolvedFileName.AsString()), PathBase64 = edge.Resolution is null ? null : Base64(edge.Resolution.ResolvedPath.AsString()), TargetBase64 = edge.TargetFile is null ? null : Base64(edge.TargetFile.FileNameGoBytes()), Traces = DescribeTraces(edge.Traces), TypeResolution = edge.Resolution is null ? null : new CliResolvedTypeDirective { FileBase64 = Base64(edge.Resolution.ResolvedFileName.AsString()), PathBase64 = Base64(edge.Resolution.ResolvedPath.AsString()), OriginalPathBase64 = Base64(edge.Resolution.OriginalPath.AsString()), Primary = edge.Resolution.Primary, ExternalLibraryImport = edge.Resolution.IsExternalLibraryImport, Package = new CliPackage { NameBase64 = Base64(edge.Resolution.PackageId.Name), SubModuleNameBase64 = Base64(edge.Resolution.PackageId.SubModuleName), VersionBase64 = Base64(edge.Resolution.PackageId.Version), PeerDependenciesBase64 = Base64(edge.Resolution.PackageId.PeerDependencies) }, Diagnostics = MapOutput(edge.Resolution.ResolutionDiagnostics, value => Describe(value, true)) } }).ToArray()
 };
-
 static CliProgram DescribeProgram(ProgramInspection inspection)
 {
     var program = inspection.Program;
     var modules = new List<CliProgramModule>();
-    program.ForEachResolvedModule((result, name, mode, path) => modules.Add(new()
-    {
-        ImporterPathBase64 = Base64(path.AsString()), NameBase64 = Base64(name), Mode = mode.ToString(),
-        Module = result is null ? null : DescribeResolution(result)
-    }));
+    program.ForEachResolvedModule((result, name, mode, path) => modules.Add(new() { ImporterPathBase64 = Base64(path.AsString()), NameBase64 = Base64(name), Mode = mode.ToString(), Module = result is null ? null : DescribeResolution(result) }));
     var types = new List<CliProgramModule>();
-    program.ForEachResolvedTypeReferenceDirective((result, name, mode, path) => types.Add(new()
-    {
-        ImporterPathBase64 = Base64(path.AsString()), NameBase64 = Base64(name), Mode = mode.ToString(),
-        Type = result is null ? null : new()
-        {
-            FileBase64 = Base64(result.ResolvedFileName.AsString()), PathBase64 = Base64(result.ResolvedPath.AsString()),
-            OriginalPathBase64 = Base64(result.OriginalPath.AsString()), Primary = result.Primary,
-            ExternalLibraryImport = result.IsExternalLibraryImport,
-            Package = new() { NameBase64 = Base64(result.PackageId.Name), SubModuleNameBase64 = Base64(result.PackageId.SubModuleName), VersionBase64 = Base64(result.PackageId.Version), PeerDependenciesBase64 = Base64(result.PackageId.PeerDependencies) },
-            Diagnostics = MapOutput(result.ResolutionDiagnostics, diagnostic => Describe(diagnostic, true))
-        }
-    }));
+    program.ForEachResolvedTypeReferenceDirective((result, name, mode, path) => types.Add(new() { ImporterPathBase64 = Base64(path.AsString()), NameBase64 = Base64(name), Mode = mode.ToString(), Type = result is null ? null : new() { FileBase64 = Base64(result.ResolvedFileName.AsString()), PathBase64 = Base64(result.ResolvedPath.AsString()), OriginalPathBase64 = Base64(result.OriginalPath.AsString()), Primary = result.Primary, ExternalLibraryImport = result.IsExternalLibraryImport, Package = new() { NameBase64 = Base64(result.PackageId.Name), SubModuleNameBase64 = Base64(result.PackageId.SubModuleName), VersionBase64 = Base64(result.PackageId.Version), PeerDependenciesBase64 = Base64(result.PackageId.PeerDependencies) }, Diagnostics = MapOutput(result.ResolutionDiagnostics, diagnostic => Describe(diagnostic, true)) } }));
     var references = new List<CliProgramReference>();
     program.RangeResolvedProjectReference((path, config, parent, index) =>
     {
@@ -300,10 +273,16 @@ static CliProgram DescribeProgram(ProgramInspection inspection)
             var metadata = program.GetSourceFileMetaData(key);
             return new CliProgramSource
             {
-                FileBase64 = Base64(file.FileNameGoBytes()), PathBase64 = Base64(file.PathKey()), ScriptKind = file.ScriptKind.ToString(), Declaration = file.IsDeclarationFile,
-                DefaultLibrary = program.IsSourceFileDefaultLibrary(key), ExternalLibrary = program.IsSourceFileFromExternalLibrary(file),
-                ExternalModule = Ast.IsExternalModule(file), PackageType = metadata.PackageJsonType,
-                PackageDirectoryBase64 = Base64(metadata.PackageJsonDirectory.AsString()), ImpliedNodeFormat = metadata.ImpliedNodeFormat.ToString(),
+                FileBase64 = Base64(file.FileNameGoBytes()),
+                PathBase64 = Base64(file.PathKey()),
+                ScriptKind = file.ScriptKind.ToString(),
+                Declaration = file.IsDeclarationFile,
+                DefaultLibrary = program.IsSourceFileDefaultLibrary(key),
+                ExternalLibrary = program.IsSourceFileFromExternalLibrary(file),
+                ExternalModule = Ast.IsExternalModule(file),
+                PackageType = metadata.PackageJsonType,
+                PackageDirectoryBase64 = Base64(metadata.PackageJsonDirectory.AsString()),
+                ImpliedNodeFormat = metadata.ImpliedNodeFormat.ToString(),
                 LibraryReferencesBase64 = MapOutput(file.LibReferenceDirectives, reference => Base64(reference.FileName))
             };
         })!,
@@ -311,7 +290,8 @@ static CliProgram DescribeProgram(ProgramInspection inspection)
         // not reorder the actual Program sources or per-request trace streams.
         Modules = modules.OrderBy(row => row.ImporterPathBase64, StringComparer.Ordinal).ThenBy(row => row.NameBase64, StringComparer.Ordinal).ThenBy(row => row.Mode, StringComparer.Ordinal).ToArray(),
         Types = types.OrderBy(row => row.ImporterPathBase64, StringComparer.Ordinal).ThenBy(row => row.NameBase64, StringComparer.Ordinal).ThenBy(row => row.Mode, StringComparer.Ordinal).ToArray(),
-        References = references.ToArray(), Traces = DescribeTraces(inspection.Traces),
+        References = references.ToArray(),
+        Traces = DescribeTraces(inspection.Traces),
         ConfigurationDiagnostics = inspection.ConfigurationDiagnostics.Select(diagnostic => Describe(diagnostic, true)).ToArray(),
         SyntacticDiagnostics = inspection.SyntacticDiagnostics.Select(diagnostic => Describe(diagnostic, true)).ToArray(),
         BindDiagnostics = inspection.BindDiagnostics.Select(diagnostic => Describe(diagnostic, true)).ToArray(),
@@ -334,8 +314,16 @@ internal sealed class CliResult
 {
     public int ExitCode { get; set; }
     public string? Error { get; set; }
+
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public bool? EmitSkipped { get; set; }
+
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? Listing { get; set; }
+
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public CliGraph? Graph { get; set; }
+
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public CliProgram? Program { get; set; }
     public CliDiagnostic[] Diagnostics { get; set; } = [];
@@ -380,6 +368,7 @@ internal sealed class CliProgram
     public CliDiagnostic[] ConstructionDiagnostics { get; set; } = [];
     public CliDiagnostic[] InclusionDiagnostics { get; set; } = [];
 }
+
 internal sealed class CliProgramSource
 {
     public string FileBase64 { get; set; } = "";
@@ -394,6 +383,7 @@ internal sealed class CliProgramSource
     public string ImpliedNodeFormat { get; set; } = "";
     public string[]? LibraryReferencesBase64 { get; set; }
 }
+
 internal sealed class CliProgramModule
 {
     public string ImporterPathBase64 { get; set; } = "";
@@ -402,6 +392,7 @@ internal sealed class CliProgramModule
     public CliResolvedModule? Module { get; set; }
     public CliResolvedTypeDirective? Type { get; set; }
 }
+
 internal sealed class CliProgramReference
 {
     public string PathBase64 { get; set; } = "";
@@ -409,6 +400,7 @@ internal sealed class CliProgramReference
     public string ParentConfigBase64 { get; set; } = "";
     public int Index { get; set; }
 }
+
 internal sealed class CliGraph
 {
     public string Boundary { get; set; } = "";
@@ -419,6 +411,7 @@ internal sealed class CliGraph
     public CliGraphReference[] PathReferences { get; set; } = [];
     public CliGraphReference[] TypeDirectives { get; set; } = [];
 }
+
 internal sealed class CliGraphSource
 {
     public string FileBase64 { get; set; } = "";
@@ -431,6 +424,7 @@ internal sealed class CliGraphSource
     public bool ExternalModule { get; set; }
     public string[]? LibraryReferencesBase64 { get; set; }
 }
+
 internal sealed class CliGraphEdge
 {
     public string ImporterBase64 { get; set; } = "";
@@ -446,6 +440,7 @@ internal sealed class CliGraphEdge
     public CliTrace[]? Traces { get; set; }
     public string? Error { get; set; }
 }
+
 internal sealed class CliGraphReference
 {
     public string ImporterBase64 { get; set; } = "";
@@ -459,9 +454,11 @@ internal sealed class CliGraphReference
     public string? TargetBase64 { get; set; }
     public CliDiagnostic? Diagnostic { get; set; }
     public CliTrace[]? Traces { get; set; }
+
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public CliResolvedTypeDirective? TypeResolution { get; set; }
 }
+
 internal sealed class CliResolvedTypeDirective
 {
     public string FileBase64 { get; set; } = "";
@@ -472,6 +469,7 @@ internal sealed class CliResolvedTypeDirective
     public CliPackage Package { get; set; } = new();
     public CliDiagnostic[]? Diagnostics { get; set; }
 }
+
 internal sealed class CliResolvedModule
 {
     public string File { get; set; } = "";
@@ -487,6 +485,7 @@ internal sealed class CliResolvedModule
     public CliPackage Package { get; set; } = new();
     public CliDiagnostic[]? Diagnostics { get; set; }
 }
+
 internal sealed class CliPackage
 {
     public string NameBase64 { get; set; } = "";
@@ -494,8 +493,19 @@ internal sealed class CliPackage
     public string VersionBase64 { get; set; } = "";
     public string PeerDependenciesBase64 { get; set; } = "";
 }
-internal sealed class CliTrace { public int Code { get; set; } public CliTraceArgument[]? Arguments { get; set; } }
-internal sealed class CliTraceArgument { public string Kind { get; set; } = ""; public string? Text { get; set; } public string? BytesBase64 { get; set; } }
+
+internal sealed class CliTrace
+{
+    public int Code { get; set; }
+    public CliTraceArgument[]? Arguments { get; set; }
+}
+
+internal sealed class CliTraceArgument
+{
+    public string Kind { get; set; } = "";
+    public string? Text { get; set; }
+    public string? BytesBase64 { get; set; }
+}
 
 [System.Text.Json.Serialization.JsonSerializable(typeof(CliResult))]
 internal partial class CliJsonContext : System.Text.Json.Serialization.JsonSerializerContext

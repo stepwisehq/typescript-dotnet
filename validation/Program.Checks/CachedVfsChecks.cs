@@ -104,6 +104,7 @@ public static class CachedVfsChecks
             Called("TestStat");
             return fs.Stat(path);
         }
+        public Exception? WriteFile(RootedFilePath path, string data) => fs.WriteFile(path, data);
         public (string Contents, bool Ok) ReadFile(RootedFilePath path)
         {
             Called("TestReadFile");

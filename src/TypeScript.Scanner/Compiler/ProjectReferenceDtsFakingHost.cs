@@ -31,6 +31,8 @@ internal sealed class ProjectReferenceDtsFakingVfs(IResolutionHost host, Project
     private PathKey PathKey(RootedPath path) => CaseSensitivity().PathKey(path);
     public bool FileExists(RootedFilePath file) => host.FS().FileExists(file) || file.IsDeclarationFile() && FileExistsUsingSource(file);
     public (string Contents, bool Ok) ReadFile(RootedFilePath path) => host.FS().ReadFile(path);
+    // projectreferencedtsfakinghost.go:75. This resolver-only owner must never write.
+    public Exception? WriteFile(RootedFilePath path, string data) => throw new InvalidOperationException("should not be called by resolver");
     public bool DirectoryExists(RootedDirectoryPath directory)
     {
         if (host.FS().DirectoryExists(directory))

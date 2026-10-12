@@ -16,6 +16,7 @@ internal class ForwardingFileSystem(IFS inner) : IFS
 
     public virtual CaseSensitivity CaseSensitivity() => Inner.CaseSensitivity();
     public virtual bool FileExists(RootedFilePath path) => Inner.FileExists(path);
+    public virtual Exception? WriteFile(RootedFilePath path, string data) => Inner.WriteFile(path, data);
     public virtual (string Contents, bool Ok) ReadFile(RootedFilePath path) => Inner.ReadFile(path);
     public bool DirectoryExists(RootedDirectoryPath path) => Inner.DirectoryExists(path);
     public Entries GetAccessibleEntries(RootedDirectoryPath path) => Inner.GetAccessibleEntries(path);

@@ -51,6 +51,7 @@ internal interface IEmitResolver : IReferenceResolver
     bool RequiresAddingImplicitUndefined(Node node, Symbol symbol, Node enclosingDeclaration);
     bool IsDeclarationVisible(Node node);
     bool IsNameResolvable(Node location, string name);
+    bool IsNameResolvable(Node location, ByteStringValue name);
     bool IsImportRequiredByAugmentation(ImportDeclaration declaration);
     bool IsDefinitelyReferenceToGlobalSymbolObject(Node node);
     bool IsImplementationOfOverload(Node node);

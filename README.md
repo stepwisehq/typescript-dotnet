@@ -1,33 +1,57 @@
-# TypeScript port feasibility study
+# TypeScript compiler port
 
-The **whole-checker no-emit contract is complete**, verified under actual
-**Linux x64 Native AOT** with retained scanner/parser/AST, binder, semantic,
-configuration, resolution, Program and project regressions.
+The pinned upstream **whole-checker no-emit and ordinary Program emit contracts are
+complete**, verified under actual **Linux x64 Native AOT**. The compiler checks
+configured projects and produces JavaScript, declarations and source maps through
+ported upstream factory, transformation, printing and output infrastructure.
 
-All **15,304 complete checking records** agree with pinned Go in managed and native
-execution, including full applicable diagnostics, original public type/symbol
-observations and original runtime assertions. All 15,340 new xUnit cases pass;
-40,291 selected aggregate executions include retained tests and are not a distinct
-upstream-test count. The full 12,824-file upstream inventory has explicit checking,
-preparation-failure and environment dispositions. This establishes the agreed
-no-emit contract, not exhaustive correctness or full compiler/emit parity.
+Final emit acceptance passed 2,223 xUnit records and the complete 15,330-configuration
+upstream inventory with explicit dispositions: 15,285 exact public-output matches,
+39 original preparation skips and six external incremental build-info metadata
+differences. All 13,571 applicable original assertion sets agree; original option
+policies and channel skips remain separately accounted for. All 15,304 retained
+checker records also agree with pinned Go on the final native build. These are
+separate counting units, not a combined number of distinct upstream tests.
 
-See the [assessment and limitations](./docs/CHECKER-NOEMIT-ASSESSMENT.md),
-[saved-reference verification commands](./docs/CHECKER-NOEMIT-REPRODUCTION.md),
-[durable proof](./validation/results/checker-noemit-verified.json),
+See the [emit assessment and limitations](./docs/EMIT-ASSESSMENT.md),
+[compilation and verification instructions](./docs/EMIT-VERIFY.md),
+[test inventory](./docs/EMIT-TEST-INVENTORY.md),
+[acceptance evidence](./validation/results/emit-verified.json),
 [source mapping](./source-map.json) and [current state](./docs/STATE.md).
-Two unavailable historical internal API declarations remain a documented evidence
-limitation; genuine missing-import diagnostics are retained. Only Linux x64 Native
-AOT has been qualified. Emit, language services and incremental builder scheduling
-remain external. The explicitly authorized VSCode correctness and performance
-evaluation is underway; see [its current status](./docs/VSCODE-CHECK-STATUS.md).
-Evaluation of a broader large-project corpus remains future work.
+The [whole-checker assessment](./docs/CHECKER-NOEMIT-ASSESSMENT.md) retains earlier
+semantic/environment limitations. This establishes the agreed pinned-upstream
+contracts, not exhaustive correctness or parity with every historical tsc feature.
+Only Linux x64 has been qualified. Incremental/build/watch orchestration and language
+services remain outside scope.
+
+The completed VS Code checking performance campaign met its scoped target; see the
+[performance summary](./docs/PERFORMANCE-EPIC-SUMMARY.md). The new emitter's
+[in-repository measurements](./docs/EMIT-ASSESSMENT.md#in-repository-workload-observations)
+are separate evidence. No new external-project performance claim is made.
 
 Ordinary `tscheck --config <tsconfig> --json` uses genuine Program options and unchanged
-upstream libraries. The strict ES2022 [job-stream project](./examples/protocols/job-stream/)
+upstream libraries, checks the project and emits JavaScript, declarations and maps
+as requested by its compiler options. Use `--noEmit` for checking alone. Compiler
+errors exit 1 when the emitter reports a skipped result and 2 otherwise; success
+exits 0. The result flag, rather than the number of written files, determines status. `--listFilesOnly` lists inputs without emitting and is a command flag,
+not a tsconfig option. `listFiles`, `listEmittedFiles` and `explainFiles` retain their
+upstream listing behavior. Incremental or composite command execution reports an
+explicit unsupported snapshot/build-info boundary; the ordinary Program emitter
+does not fabricate build information. Existing `--project <tscheck.json>` remains
+its accepted check-only compatibility path.
+
+```sh
+artifacts/tscheck/tscheck --config path/to/tsconfig.json --json
+artifacts/tscheck/tscheck --config path/to/tsconfig.json --noEmit --json
+artifacts/tscheck/tscheck --config path/to/tsconfig.json --listFilesOnly
+```
+
+The accepted emit checkpoint is recorded in [STATE](./docs/STATE.md). The strict ES2022 [job-stream project](./examples/protocols/job-stream/)
 combines promises, synchronous/asynchronous generators, for-await and disposable
 resources across files. Its [invalid variant](./examples/protocols/job-stream-invalid/)
-reports six complete diagnostics and exits 1; the valid project exits 0. See the
+reports six complete diagnostics; the valid project exits 0. The protocol checkpoint
+used check-only status 1 for its invalid case; genuine compilation follows the emit
+result statuses above. See the
 [project usage guide](./examples/protocols/README.md). No Go process is needed to use
 the C# checker or run tests against committed reference records.
 
@@ -80,7 +104,8 @@ All 115 pinned library files remain embedded unchanged. `--inspect-config`,
 `--inspect-project` and `--inspect-program` inspect configuration, resolved graphs and
 genuine Program environments independently of semantic checking. See their
 [configuration](./docs/CONFIGURATION.md), [resolution](./docs/RESOLUTION.md) and
-[Program](./docs/PROGRAM.md) guides. Emit, build/watch and language services remain external.
+[Program](./docs/PROGRAM.md) guides. Build/watch orchestration and language services remain external;
+ordinary Program emit is described in the [emit guide](./docs/EMIT-VERIFY.md).
 
 A C# port of the Go TypeScript scanner, initial syntax parser/AST, source-file binder
 and bounded scalar/object/data-type, callable and generic-collection checking, pinned to maintained

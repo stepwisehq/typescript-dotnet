@@ -34,6 +34,7 @@ public static partial class CommandLineChecks
     private sealed class ReadFixture(Dictionary<string, string> files) : IFS
     {
         public CaseSensitivity CaseSensitivity() => TypeScript.Scanner.CaseSensitivity.CaseSensitive;
+        public Exception? WriteFile(RootedFilePath path, string data) => new IOException("Authored command-line fixture is read-only.");
         public (string Contents, bool Ok) ReadFile(RootedFilePath path) => files.TryGetValue(path.AsString(), out var contents) ? (contents, true) : ("", false);
         public bool FileExists(RootedFilePath path) => throw new InvalidOperationException("Unselected CLI fixture FileExists");
         public bool DirectoryExists(RootedDirectoryPath path) => throw new InvalidOperationException("Unselected CLI fixture DirectoryExists");

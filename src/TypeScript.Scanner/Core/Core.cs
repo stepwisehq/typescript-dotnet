@@ -267,6 +267,19 @@ internal static partial class Core
     }
     // core.go:80. Signature outputs keep descriptors; other mapped outputs keep
     // their established owned List storage, without projecting the input slice.
+    // core.go:140: fresh append owner; nil remains nil when all mapped slices are empty.
+    public static Slice<U> FlatMap<T, U>(Slice<T> values, Func<T, Slice<U>> map) =>
+        FlatMap(values, map, static (value, callback) => callback(value));
+    public static Slice<U> FlatMap<T, U, TState>(Slice<T> values, TState state, Func<T, TState, Slice<U>> map)
+    {
+        Slice<U> result = default;
+        foreach (var value in values)
+        {
+            var mapped = map(value, state);
+            if (mapped.Length != 0) result = result.Append(mapped);
+        }
+        return result;
+    }
     public static Slice<U> MapSlice<T, U>(Slice<T> values, Func<T, U> map) =>
         MapSlice(values, map, static (value, callback) => callback(value));
 

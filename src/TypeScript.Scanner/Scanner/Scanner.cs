@@ -3910,7 +3910,9 @@ public partial class Scanner
     }
 
     public static string TokenToString(Kind token) => tokenToText[(int)token];
-    public static Kind StringToToken(string s) => ByteStringValue.FromString(s).TryGetValue(textToToken, out var token) ? token : default;
+    public static Kind StringToToken(string s) => StringToToken(ByteStringValue.FromString(s));
+    // scanner.go: same token table lookup; declaration name consumers retain the Go string header.
+    internal static Kind StringToToken(ByteStringValue text) => text.TryGetValue(textToToken, out var token) ? token : default;
     public static string[] GetViableKeywordSuggestions() => textToKeyword.Keys.Where(x => x.Value.Length > 2).Select(x => x.ToString()).ToArray();
     // scanner.go:2255. The Go fixed-size array preserves bounds failures for invalid kinds.
     private static string[] CreateTokenToText()

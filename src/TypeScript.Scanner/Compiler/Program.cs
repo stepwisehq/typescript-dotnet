@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port of selected construction, lifecycle and diagnostic APIs in
 // tsc/internal/compiler/program.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Actual emission and incremental builder/watch execution remain external.
+// Emission lives in mapped compiler counterparts; incremental builder/watch remains external.
 // Semantic acquisition uses the real checker with its explicit capability admission.
 // Retained static diagnostic helpers preserve the named legacy host policy.
 using TypeScript.Scanner;
@@ -58,7 +58,7 @@ public sealed class ProgramOptions
     public Func<ResolverOptions, IResolver>? CreateModuleResolver { get => ProgramFactories.CreateModuleResolver; set => ProgramFactories.CreateModuleResolver = value; }
 }
 
-public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPaths.IOutputPathsHost
+public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPaths.IOutputPathsHost, ISourceFileMayBeEmittedHost
 {
     internal ProgramConfig opts;
     internal ProgramHosts hosts;
@@ -524,8 +524,8 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     ModuleKind ICheckerProgramHost.GetImpliedNodeFormatForEmit(SourceFile file) => (ModuleKind)(int)GetImpliedNodeFormatForEmit(file);
     bool ICheckerProgramHost.IsSourceFileDefaultLibrary(SourceFile file) => IsSourceFileDefaultLibrary(PathKey.FromValue(file.PathKeyValue()));
 
-    // Selected emitter.go:476/538 producers: eligibility and output enumeration only.
-    internal static bool sourceFileMayBeEmitted(SourceFile file, Program host, bool forceDtsEmit, bool forceJsEmit)
+    // emitter.go:476. Shared eligibility is used by Program and its per-file emit host.
+    internal static bool sourceFileMayBeEmitted(SourceFile file, ISourceFileMayBeEmittedHost host, bool forceDtsEmit, bool forceJsEmit)
     {
         var options = host.Options();
         if (!forceJsEmit && options.NoEmitForJsFiles == Tristate.True && Ast.IsSourceFileJS(file))
@@ -1242,7 +1242,11 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     {
         if (file.IsDeclarationFile)
             return Slice<Diagnostic>.Make(0);
-        throw new TypeScript.Checking.UnsupportedSemanticFeatureException("declaration transform diagnostics are outside Program construction");
+        var (cached, loaded) = DeclarationDiagnosticCache.Load(file);
+        if (loaded) return cached;
+        var (host, done) = CompilerEmitHost.New(context, this, file);
+        try { return DeclarationDiagnosticCache.LoadOrStore(file, Emitter.getDeclarationDiagnostics(host, file)).Actual; }
+        finally { done(); }
     }
 
     public long LineCount()

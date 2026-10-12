@@ -7,6 +7,7 @@ using Program.Checks;
 namespace WholeConsumer;
 internal static class Entry {public static int Main(string[] args) {
 if(args.Length==3 && args[0]=="--reconcile-configurations")return Reconcile(Path.GetFullPath(args[1]),args[2]);
+if(args.Length==4 && args[0]=="--emit")return ObserveEmit(Path.GetFullPath(args[1]),args[2],args[3]);
 if(args.Length!=3)throw new ArgumentException("root requests output required");
 string root=Path.GetFullPath(args[0]);
 Dictionary<string,JsonObject> inventory=[];
@@ -29,6 +30,26 @@ foreach(string line in File.ReadLines(args[1])){
  }catch(Exception error){failures++;output.WriteLine(new JsonObject{["name"]=name,["status"]="failed-managed-runtime",["errorBase64"]=Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(error.ToString()))}.ToJsonString());output.Flush();Console.Error.WriteLine(name+": "+error);}
 }
 return failures==0?0:1;}
+private static int ObserveEmit(string root,string requests,string destination)
+{
+    var cases = new CompilerNoEmitCases(root);
+    using var output = new StreamWriter(destination);
+    int failures = 0;
+    foreach (string line in File.ReadLines(requests))
+    {
+        var request = JsonNode.Parse(line)!.AsObject();
+        string name = request["Name"]!.GetValue<string>();
+        try { var observed=cases.ObserveEmit(request); observed["name"]=name; output.WriteLine(observed.ToJsonString()); }
+        catch(Exception error)
+        {
+            failures++;
+            output.WriteLine(new JsonObject { ["name"] = name, ["sourceSha256"] = request["SourceSha256"]!.GetValue<string>(), ["configuration"] = request["Configuration"]!.GetValue<string>(), ["status"] = "failed-managed-runtime", ["errorBase64"] = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(error.ToString())) }.ToJsonString());
+            Console.Error.WriteLine(name + ": " + error);
+        }
+        output.Flush();
+    }
+    return failures == 0 ? 0 : 1;
+}
 private static int Reconcile(string root,string destination)
 {
  int cases=0,exact=0,failed=0,originalFailures=0;

@@ -7,25 +7,24 @@ using TypeScript.Scanner;
 using TypeScript.Vfs;
 
 namespace Program.Checks;
-
 public sealed class CompilerNoEmitCases
 {
     private readonly string root;
     private readonly Dictionary<string, JsonObject> inventory = new(StringComparer.Ordinal);
-
     public CompilerNoEmitCases(string repositoryRoot)
     {
         root = Path.GetFullPath(repositoryRoot);
-        using var input = new StreamReader(new GZipStream(File.OpenRead(Path.Combine(root,
-            "validation/checker-noemit-decoded-inventory/fixtures.jsonl.gz")), CompressionMode.Decompress));
-        while (input.ReadLine() is { } line)
+        using var input = new StreamReader(new GZipStream(File.OpenRead(Path.Combine(root, "validation/checker-noemit-decoded-inventory/fixtures.jsonl.gz")), CompressionMode.Decompress));
+        while (input.ReadLine()is { } line)
         {
             var row = JsonNode.Parse(line)!.AsObject();
             inventory.Add(Path.GetFullPath(Path.Combine(root, row["source"]!.GetValue<string>())), row);
         }
     }
 
-    public JsonObject Observe(JsonObject request)
+    public JsonObject Observe(JsonObject request) => Observe(request, emit: false);
+    public JsonObject ObserveEmit(JsonObject request) => Observe(request, emit: true);
+    private JsonObject Observe(JsonObject request, bool emit)
     {
         if (request.Count != 4 || request.Any(pair => pair.Key is not ("Name" or "Source" or "SourceSha256" or "Configuration")))
             throw new ArgumentException("Exactly Name, Source, SourceSha256 and Configuration are required.");
@@ -40,9 +39,9 @@ public sealed class CompilerNoEmitCases
         string decoded = DecodeSource(bytes);
         var variants = CompilerFixtureConfigurations.Expand(CompilerFixtureParser.ExtractCompilerSettings(decoded));
         var variant = variants.Single(item => item.Name == configuration);
-        return ProgramRunner.ObserveCompilerNoEmit(name, GoString.ToUtf8(source), hash, configuration, decoded,
-            variant.Config ?? new Dictionary<string, string>(StringComparer.Ordinal),
-            Path.Combine(root, "upstream/TypeScript/tsc/testdata"), row["originalPreConfigurationSkip"]!.GetValue<bool>());
+        if (emit)
+            return ProgramRunner.ObserveCompilerEmit(name, GoString.ToUtf8(source), hash, configuration, decoded, variant.Config ?? new Dictionary<string, string>(StringComparer.Ordinal), Path.Combine(root, "upstream/TypeScript/tsc/testdata"), row["originalPreConfigurationSkip"]!.GetValue<bool>());
+        return ProgramRunner.ObserveCompilerNoEmit(name, GoString.ToUtf8(source), hash, configuration, decoded, variant.Config ?? new Dictionary<string, string>(StringComparer.Ordinal), Path.Combine(root, "upstream/TypeScript/tsc/testdata"), row["originalPreConfigurationSkip"]!.GetValue<bool>());
     }
 
     public static string DecodeSource(byte[] bytes) => VfsInternal.DecodeBytes(GoString.FromBytes(bytes)).Contents;

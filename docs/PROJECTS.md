@@ -7,8 +7,31 @@ Linux x64 Native AOT gate passed in 780.934 seconds: 48 exact project comparison
 records the exact source, assets and nine native binary fingerprints. This is not
 general TypeScript project or library parity.
 
-`tscheck` loads a project from disk and type-checks its files. It does not run or emit
-JavaScript, emit declarations, install packages or invoke Go. Its genuine pinned ES5,
+The historical `--project <tscheck.json>` path loads the bounded check-only
+configuration described below. The genuine `--config <tsconfig.json>` path now
+checks and emits JavaScript, declarations and source maps according to compiler
+options; whole emit acceptance is tracked in [STATE](./STATE.md). It does not run
+JavaScript, install packages or invoke Go. Use `--noEmit` for genuine checking alone.
+
+```bash
+artifacts/tscheck/tscheck --config path/to/tsconfig.json --json
+artifacts/tscheck/tscheck --config path/to/tsconfig.json --noEmit --json
+artifacts/tscheck/tscheck --config path/to/tsconfig.json --listFilesOnly
+```
+
+For genuine compilation, success exits **0**, diagnostics with the emitter
+reporting `EmitSkipped` exit **1**, and other diagnostic results exit **2**. The
+result flag determines status even when no output files are written. Unsupported host
+execution also exits **2** with an explicit error. JSON exposes diagnostics,
+`EmitSkipped` and listing text; ordinary listings use upstream LF lines. Compiler
+options `listFiles`, `listEmittedFiles` and `explainFiles` request their normal
+listings. `--listFilesOnly` is command-only: putting it in tsconfig retains the
+upstream unknown-option diagnostic. Incremental or composite compilation requires
+the excluded snapshot/build-info execution owner and is explicitly rejected after
+genuine configuration/program option diagnostics. Existing `Project.Check()` is
+unchanged; `Project.LoadConfiguration(path).Compile()` invokes real Program output.
+
+ Its genuine pinned ES5,
 decorators and decorators.legacy declarations are embedded in the executable.
 
 ## Build and ordinary invocation

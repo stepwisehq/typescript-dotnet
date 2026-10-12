@@ -325,6 +325,7 @@ public static class ResolutionRunner
             return Record("directoryExists", path.AsString(), result, Value(result));
         }
 
+        public Exception? WriteFile(RootedFilePath path, string data) => fileSystem.WriteFile(path, data);
         public (string Contents, bool Ok) ReadFile(RootedFilePath path)
         {
             var result = ValidPath(path.AsString()) ? fileSystem.ReadFile(path) : (Contents: "", Ok: false);

@@ -1,18 +1,20 @@
 # Resume this project
 
-## Active epic: complete upstream emit
+## Accepted epic: complete upstream emit
 
-The user authorized whole-emit completion after performance checkpoint `e3131a5b`
-and summary `56ed2a75`. Read [EMIT-CONTRACT.md](./docs/EMIT-CONTRACT.md) and the top
-of [STATE.md](./docs/STATE.md). Complete coherent dependency subsystems upward,
-then JavaScript/declaration emission and Program output; do not return to vertical
-slices or stop after planning/subsystem commits. GPT-6.1 Sol implements and reviews;
-Astra coordinates. Keep accepted performance adaptations and Go ownership behavior.
-Use targeted development checks and comprehensive subsystem/final gates. External
-project evaluation, including VS Code, is deferred until emit acceptance. These
-directions supersede earlier performance-workload-first and completed-work stop
-instructions for this new epic. Native AOT and upstream-output agreement remain
-mandatory. Language services and unrelated build/watch orchestration stay excluded.
+The whole-emit contract is satisfied at the checkpoint containing
+[emit-verified.json](./validation/results/emit-verified.json). Read the current top of
+[STATE.md](./docs/STATE.md), [EMIT-ASSESSMENT.md](./docs/EMIT-ASSESSMENT.md) and
+[EMIT-VERIFY.md](./docs/EMIT-VERIFY.md). Actual Linux x64 Native AOT passed the full
+applicable output corpus, retained no-emit corpus and direct/runtime checks.
+
+No campaign is active after this delivery. Preserve the six explicit external
+incremental build-info metadata differences and other documented dispositions;
+do not mistake contract completion for build/watch or language-service completion.
+External-project correctness/performance evaluation remains deferred until separately
+authorized. Do not resume historical allocation or emit implementation work merely
+because its instructions remain below. Astra coordinates and GPT-6.1 Sol implements
+and independently reviews subsequent authorized work.
 
 To restart work, give the new session this instruction:
 
@@ -26,7 +28,7 @@ work, report that checkpoint and wait for a new bounded mandate; this resume
 instruction does not authorize emit or unrelated compiler infrastructure. The whole-checker
 mandate below authorizes successive no-emit checking campaigns until its final gate.
 
-## Current operating procedure: comprehensive allocation rollout
+## Historical operating procedure: comprehensive allocation rollout
 
 Latest user boundary (2026-10-11): abandon the debugger/runtime-crash and heap-capture
 investigation after repeated platform classifier errors. Preserve existing evidence;

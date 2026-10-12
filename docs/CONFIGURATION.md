@@ -42,6 +42,12 @@ been type-checked. The published command needs no Go executable or upstream chec
 
 ## Check a supported project
 
+The description below records the accepted configuration/checking checkpoint.
+Current genuine `--config` invocation also emits according to compiler options;
+use `--noEmit` for checking alone. Its status follows the actual emit result:
+0 for no diagnostics, 1 for diagnostics with `EmitSkipped`, and 2 for other
+diagnostic results or unsupported host execution. See [current command usage](PROJECTS.md).
+
 ```bash
 artifacts/tscheck/tscheck --config examples/projects/grouped-records/tsconfig.json
 artifacts/tscheck/tscheck --config examples/projects/grouped-records-invalid/tsconfig.json --json

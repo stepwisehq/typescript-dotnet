@@ -49,6 +49,30 @@ public static class ConstructionBoundaryChecks
             Throws<InvalidOperationException>(() => failed.Queue(() => { }), "failed group is finished");
         }
 
+        // Genuine nested scheduling shape: many workers wait for one lazy owner,
+        // whose initialization queues another parallel group and waits for it.
+        // No thread-limit tuning or benchmark-only checker preparation is involved.
+        var outer = Core.NewWorkGroup(false);
+        int initialized = 0;
+        var lazy = new Lazy<int>(() =>
+        {
+            var inner = Core.NewWorkGroup(false);
+            for (int i = 0; i < 4; i++)
+                inner.Queue(() => Interlocked.Increment(ref initialized));
+            inner.RunAndWait();
+            return initialized;
+        }, LazyThreadSafetyMode.ExecutionAndPublication);
+        int observed = 0;
+        for (int i = 0; i < 200; i++)
+            outer.Queue(() =>
+            {
+                Check.Equal(lazy.Value, 4, "nested lazy construction completed");
+                Interlocked.Increment(ref observed);
+            });
+        outer.RunAndWait();
+        Check.Equal(initialized, 4, "single lazy owner initializes all nested workers once");
+        Check.Equal(observed, 200, "all nested lazy waiters complete before return");
+
         var serial = Core.NewWorkGroup(true);
         List<int> order = [];
         serial.Queue(() => order.Add(1));

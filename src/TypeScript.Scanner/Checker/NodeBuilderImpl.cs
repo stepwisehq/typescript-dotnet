@@ -1428,7 +1428,12 @@ internal sealed partial class NodeBuilderImpl
         {
             var signatures = ch.getSignaturesOfType(ch.filterType(propertyType, t => (t.flags & TypeFlags.Undefined) == 0), SignatureKind.Call);
             foreach (var signature in signatures)
-                typeElements = typeElements.Append(signatureToSignatureDeclarationHelper(signature, Kind.MethodSignature, new() { name = propertyName, questionToken = optionalToken }));
+            {
+                // nodebuilderimpl.go:2681–2686. Retain original overload/prototype documentation.
+                var methodDeclaration = signatureToSignatureDeclarationHelper(signature, Kind.MethodSignature, new() { name = propertyName, questionToken = optionalToken });
+                setCommentRange(methodDeclaration, signature.declaration ?? propertySymbol.ValueDeclaration);
+                typeElements = typeElements.Append(methodDeclaration);
+            }
             if (GoRuntime.Len(signatures) != 0 || optionalToken == null)
                 return typeElements;
         }

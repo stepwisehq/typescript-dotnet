@@ -31,6 +31,7 @@ internal sealed class singleLineStringWriter : EmitTextWriter
     public void WriteProperty(ByteStringValue text) => Write(text);
     public void WriteSymbol(ByteStringValue text, Symbol symbol) => Write(text);
     public string String() => builder.String();
+    public ByteStringValue TextValue() => builder.Value();
     public int GetTextPos() => builder.Len();
     public bool HasTrailingComment() => false;
     public bool HasTrailingWhitespace()

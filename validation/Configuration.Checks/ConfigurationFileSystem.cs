@@ -82,6 +82,7 @@ public sealed class ConfigurationFileSystem : IFS
 
     public bool FileExists(RootedFilePath path) => Lookup(path.AsString()) is { Directory: false };
     public bool DirectoryExists(RootedDirectoryPath path) => Lookup(path.AsString()) is { Directory: true };
+    public Exception? WriteFile(RootedFilePath path, string data) => new IOException("Authored configuration fixture is read-only.");
     public (string Contents, bool Ok) ReadFile(RootedFilePath path)
     {
         Entry? entry = Lookup(path.AsString());

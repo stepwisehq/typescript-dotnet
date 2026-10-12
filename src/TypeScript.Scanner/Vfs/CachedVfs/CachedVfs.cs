@@ -6,7 +6,7 @@ using TypeScript.Scanner;
 using TypeScript.Collections;
 
 namespace TypeScript.Vfs.CachedVfs;
-public sealed class FS : IFS, ISourceTextFileSystem
+public sealed class FS : IFS, ISourceTextFileSystem, IOutputTextFileSystem
 {
     private readonly IFS fs;
     private int enabled;
@@ -39,6 +39,10 @@ public sealed class FS : IFS, ISourceTextFileSystem
         realpathCache.Clear();
         statCache.Clear();
     }
+
+    // cachedvfs.go:145. Writes forward; upstream does not invalidate read caches.
+    public Exception? WriteFile(RootedFilePath path, string data) => fs.WriteFile(path, data);
+    public Exception? WriteOutputText(RootedFilePath path, ByteStringValue data) => OutputTextWriters.Write(fs, path, data);
 
     public bool DirectoryExists(RootedDirectoryPath path)
     {

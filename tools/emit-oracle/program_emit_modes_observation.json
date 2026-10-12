@@ -1,0 +1,93 @@
+{
+  "authored": true,
+  "observations": [
+    {
+      "Name": "TargetSourceFile",
+      "Writes": [
+        {
+          "Name": "/fixture/main.js",
+          "Text": "export const café = 1;\n",
+          "SourceFile": "/fixture/main.ts",
+          "SourceMapUrlPos": -1,
+          "BuildInfoNil": true,
+          "DiagnosticsNil": false,
+          "SkippedDtsWrite": false
+        }
+      ],
+      "EmitSkipped": false,
+      "Diagnostics": [],
+      "EmittedFiles": [
+        "/fixture/main.js"
+      ],
+      "SourceMapsNil": true
+    },
+    {
+      "Name": "ForceJsDespiteNoEmit",
+      "Writes": [
+        {
+          "Name": "/fixture/main.js",
+          "Text": "export const café = 1;\n",
+          "SourceFile": "/fixture/main.ts",
+          "SourceMapUrlPos": -1,
+          "BuildInfoNil": true,
+          "DiagnosticsNil": false,
+          "SkippedDtsWrite": false
+        }
+      ],
+      "EmitSkipped": false,
+      "Diagnostics": [],
+      "EmittedFiles": [
+        "/fixture/main.js"
+      ],
+      "SourceMapsNil": true
+    },
+    {
+      "Name": "BuilderSignatureDespiteNoEmit",
+      "Writes": [
+        {
+          "Name": "/fixture/main.d.ts",
+          "Text": "export declare const café: number;\n",
+          "SourceFile": "/fixture/main.ts",
+          "SourceMapUrlPos": -1,
+          "BuildInfoNil": true,
+          "DiagnosticsNil": false,
+          "SkippedDtsWrite": false
+        }
+      ],
+      "EmitSkipped": false,
+      "Diagnostics": [],
+      "EmittedFiles": [
+        "/fixture/main.d.ts"
+      ],
+      "SourceMapsNil": true
+    },
+    {
+      "Name": "ForceDtsSkippedWrite",
+      "Writes": [
+        {
+          "Name": "/fixture/main.d.ts",
+          "Text": "export declare const café: number;\n",
+          "SourceFile": "/fixture/main.ts",
+          "SourceMapUrlPos": -1,
+          "BuildInfoNil": true,
+          "DiagnosticsNil": false,
+          "SkippedDtsWrite": true
+        }
+      ],
+      "EmitSkipped": false,
+      "Diagnostics": [],
+      "EmittedFiles": null,
+      "SourceMapsNil": true
+    }
+  ],
+  "bindings": [
+    {
+      "path": "artifacts/emit/program-output/program-modes-go-4.log",
+      "sha256": "6bc439eb8f61615619c74f861eb5eef192c81d3f4c1801ee8c007f4235dec7c2"
+    },
+    {
+      "path": "tools/emit-oracle/program_emit_modes_controls_test.go",
+      "sha256": "cfb2032f2bdcc774cb7293cf8745cc75fbe1716a8a8b262db42ee2b427735bd8"
+    }
+  ]
+}

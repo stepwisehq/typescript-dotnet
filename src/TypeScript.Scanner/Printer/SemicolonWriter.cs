@@ -45,6 +45,7 @@ internal sealed class trailingSemicolonDeferringWriter : EmitTextWriter
     public void WriteProperty(ByteStringValue text) { commitSemicolon(); inner.WriteProperty(text); }
     public void WriteSymbol(ByteStringValue text, Symbol symbol) { commitSemicolon(); inner.WriteSymbol(text, symbol); }
     public string String() => inner.String();
+    public ByteStringValue TextValue() => inner.TextValue();
     public int GetTextPos() => inner.GetTextPos();
     public int GetLine() => inner.GetLine();
     public int GetColumn() => inner.GetColumn();

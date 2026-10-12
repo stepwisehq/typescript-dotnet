@@ -1,6 +1,8 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Authored original compiler-harness backing host. Source comparison fixes the
 // retained host's path-role restrictions locally. Matcher queries
-// operate on actual raw Go-byte paths. This host does not implement writes,
+// operate on actual raw Go-byte paths. WriteFile implements the demanded original writable path; this host does not implement
 // clocks or watch/cache invalidation, and its metadata is not an OS ABI claim.
 using TypeScript.Scanner;
 using TypeScript.Vfs;
@@ -14,6 +16,7 @@ public sealed class CompilerBaselineFileSystem : IFS
     public sealed record Input(string Path, string Contents = "", string? Symlink = null, bool Directory = false, bool ReadFailure = false);
     private sealed record Entry(string Path, string Contents, string? Symlink, bool Directory, bool ReadFailure);
     private readonly Dictionary<PathKey, Entry> entries = [];
+    private readonly object fileSystemGate = new();
     private readonly CaseSensitivity sensitivity;
     private static readonly System.Text.UTF8Encoding StrictUTF8 = new(false, true);
 
@@ -172,16 +175,18 @@ public sealed class CompilerBaselineFileSystem : IFS
         catch (System.Text.DecoderFallbackException) { return false; }
     }
 
-    public bool FileExists(RootedFilePath path) => Lookup(path.AsString()) is { Directory: false };
-    public bool DirectoryExists(RootedDirectoryPath path) => Lookup(path.AsString()) is { Directory: true };
-    public (string Contents, bool Ok) ReadFile(RootedFilePath path)
+    public bool FileExists(RootedFilePath path) { lock (fileSystemGate) return Lookup(path.AsString()) is { Directory: false }; }
+    public bool DirectoryExists(RootedDirectoryPath path) { lock (fileSystemGate) return Lookup(path.AsString()) is { Directory: true }; }
+    public (string Contents, bool Ok) ReadFile(RootedFilePath path) { lock (fileSystemGate) return ReadFileWorker(path); }
+    private (string Contents, bool Ok) ReadFileWorker(RootedFilePath path)
     {
         Entry? entry = Lookup(path.AsString());
         if (entry is null || entry.Directory || entry.ReadFailure) return ("", false);
         return VfsInternal.DecodeBytes(entry.Contents);
     }
 
-    public Entries GetAccessibleEntries(RootedDirectoryPath path)
+    public Entries GetAccessibleEntries(RootedDirectoryPath path) { lock (fileSystemGate) return GetAccessibleEntriesWorker(path); }
+    private Entries GetAccessibleEntriesWorker(RootedDirectoryPath path)
     {
         string? resolved = ValidLookupPath(path.AsString()) ? Resolve(path.AsString()) : null;
         if (resolved is null || Lookup(resolved) is not { Directory: true }) return new Entries { Symlinks = [] };
@@ -207,8 +212,65 @@ public sealed class CompilerBaselineFileSystem : IFS
         return result;
     }
 
-    public VfsInfo? Stat(RootedPath path) => Lookup(path.AsString()) is { } entry ? new Info(entry) : null;
-    public RootedPath Realpath(RootedPath path) => RootedPath.FromGoString(Lookup(path.AsString())?.Path ?? path.AsString());
+    public VfsInfo? Stat(RootedPath path) { lock (fileSystemGate) return Lookup(path.AsString()) is { } entry ? new Info(entry) : null; }
+    public RootedPath Realpath(RootedPath path) { lock (fileSystemGate) return RootedPath.FromGoString(Lookup(path.AsString())?.Path ?? path.AsString()); }
+
+    // iovfs/iofs.go:192 and vfstest.go:513. Explicit writable fixture owner:
+    // first attempt, parent creation on any error, exactly one retry.
+    public Exception? WriteFile(RootedFilePath path, string data)
+    {
+        lock (fileSystemGate)
+        {
+            if (WriteFileWorker(path.AsString(), data) is null) return null;
+            try { EnsureDirectory(path.Directory().AsString()); }
+            catch (Exception error) when (error is IOException or InvalidOperationException) { return error; }
+            return WriteFileWorker(path.AsString(), data);
+        }
+    }
+    private Exception? WriteFileWorker(string path, string data)
+    {
+        if (!ValidLookupPath(path)) return new IOException("write: invalid argument");
+        string parent = TsPath.GetDirectoryPath(path);
+        if (parent.Length != 0)
+        {
+            var parentEntry = Lookup(parent);
+            if (parentEntry is null) return new IOException("write: file does not exist");
+            if (!parentEntry.Directory) return new IOException("write: parent path exists but is not a directory");
+        }
+        // Same following-symlink recursion as Resolve, but retain the final
+        // canonical missing path: original MapFS can create a broken link target.
+        string canonicalPath = path;
+        var visited = new HashSet<PathKey>();
+        for (;;)
+        {
+            var key = sensitivity.PathKey(RootedPath.FromGoString(canonicalPath));
+            if (!visited.Add(key)) return new IOException("write: too many levels of symbolic links");
+            if (entries.TryGetValue(key, out var direct) && direct.Symlink is null)
+            {
+                if (direct.Directory) return new IOException("write: path exists but is not a regular file");
+                entries[key] = new Entry(path, data, null, false, false);
+                return null;
+            }
+            string prefix = canonicalPath;
+            Entry? link = null;
+            for (;;)
+            {
+                if (entries.TryGetValue(sensitivity.PathKey(RootedPath.FromGoString(prefix)), out var candidate) && candidate.Symlink != null)
+                { link = candidate; break; }
+                string directory = TsPath.GetDirectoryPath(prefix);
+                if (directory == prefix || directory.Length == 0) break;
+                prefix = directory;
+            }
+            if (link is null)
+            {
+                entries[key] = new Entry(path, data, null, false, false);
+                return null;
+            }
+            string rest = canonicalPath[prefix.Length..].TrimStart('/');
+            string target = link.Symlink ?? throw new InvalidOperationException("Resolved write symlink lost its target.");
+            canonicalPath = rest.Length == 0 ? target : TsPath.CombinePaths(target, rest);
+        }
+    }
 
     private sealed class Info(Entry entry) : VfsInfo
     {

@@ -216,6 +216,7 @@ public static class ByteSourceChecks
         internal int Reads;
         public CaseSensitivity CaseSensitivity() => global::TypeScript.Scanner.CaseSensitivity.CaseSensitive;
         public bool FileExists(RootedFilePath path) => path.AsString() == "/source.ts";
+        public Exception? WriteFile(RootedFilePath path, string data) => new IOException("Authored source-reader fixture is read-only.");
         public (string Contents, bool Ok) ReadFile(RootedFilePath path)
         { Reads++; return FileExists(path) ? (Contents, true) : ("", false); }
         public bool DirectoryExists(RootedDirectoryPath path) => path.AsString() == "/";

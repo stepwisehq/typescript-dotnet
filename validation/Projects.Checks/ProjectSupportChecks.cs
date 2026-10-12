@@ -511,12 +511,12 @@ public static partial class ProjectSupportChecks
         public RootedDirectoryPath GetGlobalTypingsCacheLocation() => throw new InvalidOperationException("Unused original mock service");
         public TypeScript.TsOptions.SourceOutputAndProjectReference? GetProjectReferenceFromSource(PathKey path) => throw new InvalidOperationException("Unused original mock service");
         public Slice<RootedFilePath> GetRedirectTargets(PathKey path) => throw new InvalidOperationException("Unused original mock service");
-        public RootedFilePath GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file) => throw new InvalidOperationException("Unused original mock service");
+        public RootedFilePath GetSourceOfProjectReferenceIfOutputIncluded(HasFileName file) => throw new InvalidOperationException("Unused original mock service");
         public RootedDirectoryPath GetNearestAncestorDirectoryWithPackageJson(RootedDirectoryPath directory) => throw new InvalidOperationException("Unused original mock service");
         public TypeScript.PackageJson.InfoCacheEntry? GetPackageJsonInfo(RootedFilePath path) => throw new InvalidOperationException("Unused original mock service");
-        public ResolutionMode GetDefaultResolutionModeForFile(SourceFile file) => throw new InvalidOperationException("Unused original mock service");
-        public ResolvedModule? GetResolvedModuleFromModuleSpecifier(SourceFile file, Node specifier) => throw new InvalidOperationException("Unused original mock service");
-        public ResolutionMode GetModeForUsageLocation(SourceFile file, Node specifier) => throw new InvalidOperationException("Unused original mock service");
+        public ResolutionMode GetDefaultResolutionModeForFile(HasFileName file) => throw new InvalidOperationException("Unused original mock service");
+        public ResolvedModule? GetResolvedModuleFromModuleSpecifier(HasFileName file, Node specifier) => throw new InvalidOperationException("Unused original mock service");
+        public ResolutionMode GetModeForUsageLocation(HasFileName file, Node specifier) => throw new InvalidOperationException("Unused original mock service");
     }
 
     // Independent original Program + GetModuleSpecifiers observation: the only

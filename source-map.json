@@ -1,6 +1,6 @@
 {
   "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
-  "checkpoint": "Whole-checker no-emit contract accepted with actual Linux x64 Native AOT, complete pinned-Go checking comparisons and retained regressions. Earlier foundation, binder, environment and capability checkpoints remain preserved below. This is not exhaustive correctness, full historical compiler-test success or emit/service/incremental-builder completion. Per-file external scopes remain explicit.",
+  "checkpoint": "Whole upstream emit contract accepted in documented scope with complete mapped compiler/printer/transform/JS/declaration/source-map/Program output responsibilities, independent review, original assertion channels and actual Linux x64 Native AOT. Prior checker/performance checkpoints preserved; explicit language-service, external content-mapper subprocess and incremental build/watch owner boundaries remain.",
   "entries": [
     {
       "upstream": "tsc/internal/scanner/scanner.go",
@@ -1348,7 +1348,7 @@
         "performanceEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json"
       },
       "preFullEmitSemanticScope": "Genuine Program initialization/options and shared TS checking plus restored complete JS/JSDoc, CommonJS/prototype/constructor, modules/import-type/attributes/decorators, JSX caller/context/signature, lifecycle and public type/symbol query responsibilities. Prior D/E/T/P families remain inputs; current whole original feedback repairs omitted source branches. Output emission, configured language services and enabled tracing remain external; no blanket JS or advanced-type exclusion.",
-      "emitCampaignState": "implemented and independently source-reviewed; managed and Linux x64 Native AOT dependency gates passed, subject to documented observations and excluded scope",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
       "emitCampaignReview": [
         "artifacts/emit/source-review/resolver.json"
       ],
@@ -1358,7 +1358,16 @@
       "excludedSymbols": [],
       "emitReviewedPortion": "Only named demanded leaf/accessibility deltas; whole upstream count is source inventory, not new/reviewed total",
       "mergeInstruction": "Merge emitCampaign/emitReviewedPortion/emitAdaptations fields into existing entry; retain existing main scope/status/accepted historical fields.",
-      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json"
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "emitCampaignRepair": {
+        "symbol": "getTypeOfVariableOrParameterOrProperty",
+        "upstreamAnchor": "tsc/internal/checker/checker.go:16930",
+        "scope": "Restore pinned context-sensitive parameter cache deferral; all six cold-emit7006 losses corrected in rootrepair83 against unchanged Go; final full15330 Native output/nine-channel comparison passed in scope.",
+        "status": "verified-in-final-emit-scope",
+        "independentReview": "artifacts/emit/source-review/nodebuilder.json",
+        "evidence": "validation/results/emit-verified.json"
+      },
+      "destinationSha256": "b0a8b61050dee7915cd3ca5e5ced3a77bf87c67022d9c51450fe8399c802a4b7"
     },
     {
       "upstream": "tsc/internal/checker/types.go",
@@ -2008,7 +2017,7 @@
         "verification": "docs/VSCODE-CHECK-STATUS.md"
       },
       "preFullEmitSemanticScope": "Required diagnostic and original fullwalker type serialization, JS/JSDoc/dynamic-name/accessor reuse, binding scopes, module naming, Node16/NodeNext mode retry and unsafe-import tracking. Same-reference symbol/alias predicate and constructor identity restore source recursive display behavior. Configured hover expansion/output execution remain external.",
-      "emitCampaignState": "implemented and independently source-reviewed; managed and Linux x64 Native AOT dependency gates passed, subject to documented observations and excluded scope",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
       "emitCampaignReview": [
         "artifacts/emit/source-review/nodebuilder.json"
       ],
@@ -2026,7 +2035,16 @@
         "116 upstream functions total; constructor newNodeBuilderImpl represented by C# constructor, TypeAlias.ToTypeReferenceNode by aliasToTypeReferenceNode. Existing single-consumer isIdentifierTypeReference/arrayIsHomogeneous/startsWithSquareBracket checks remain inline.",
         "Cache cells LinkStore value refs, byte symbol/property/index names and four lazy COW scope owners preserve source algorithms and comparer/restoration ownership. Reused syntax mapper, computed temporary scope, quote flags and exact three accessor comment joins reconciled."
       ],
-      "emitCampaignEvidence": "validation/results/emit-printer-resolver-verified.json"
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "emitCampaignRepair": {
+        "symbol": "addPropertyToElementList",
+        "upstreamAnchor": "tsc/internal/checker/nodebuilderimpl.go:2681",
+        "scope": "Restore original method comment range from signature declaration or property value declaration; eight original DTS differences repaired against unchanged Go; final full15330 Native output/nine-channel comparison passed in scope.",
+        "status": "verified-in-final-emit-scope",
+        "independentReview": "artifacts/emit/source-review/nodebuilder.json",
+        "evidence": "validation/results/emit-verified.json"
+      },
+      "destinationSha256": "5b783c297443df90408a9c13f5aebe7e3027eed52e58c2d159d91b6cb6e66ccd"
     },
     {
       "upstream": "tsc/internal/checker/printer.go",
@@ -3506,7 +3524,9 @@
       "allocationRolloutAdaptation": "Implemented through accepted integration16: Source-file, include, trace and diagnostic storage/merge paths retain Slice headers and actual source Clip/Clone/Concat/sorting; unresolved/package name sets retain byte keys. Combined integration16 behavioral/Native AOT acceptance passed; source-reviewed snapshots and adaptations in docs/STATE.md.",
       "emitScriptCampaignAdaptation": "Genuine HasFileName GetEmitModuleFormatOfFile overload uses original options/metadata paths, preserves SourceFile borrowed-name fast path; broader Program emit remains pending.",
       "emitScriptCampaignReview": "artifacts/emit/source-review/module-shared.json",
-      "emitScriptCampaignEvidence": "validation/results/emit-script-transforms-verified.json"
+      "emitScriptCampaignEvidence": "validation/results/emit-script-transforms-verified.json",
+      "emitCampaignScope": "Prior genuine Program construction/checking plus actual declaration diagnostics/cache consumer; complete ordinary emit and HasFileName host roles in mapped partial class counterparts. Incremental snapshot/build-info owner remains external.",
+      "emitCampaignState": "Source independently reviewed; integrated development verification in progress, final Native acceptance pending."
     },
     {
       "upstream": null,
@@ -3898,7 +3918,10 @@
         ],
         "correctnessEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/correctness-independent-review.json",
         "performanceEvidence": "artifacts/vscode-allocation-rollout/integration-31-production-delivery/result-independent-review.json"
-      }
+      },
+      "emitCampaignState": "Source implementation present; independent review and current development evidence in per-family progress. Whole Program/corpus and Native acceptance pending.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitCampaignScope": "Authored existing disk CLI --config entry invokes real Project.Compile, exposes diagnostics/emission status/listing, preserves noEmit and optional no-GC policy; legacy --project remains explicit check-only compatibility entry."
     },
     {
       "upstream": null,
@@ -4400,12 +4423,32 @@
       "upstream": "tsc/internal/diagnosticwriter/diagnosticwriter.go",
       "destination": "src/TypeScript.Scanner/DiagnosticWriter/DiagnosticWriter.cs",
       "status": "partial",
-      "scope": "Original generic diagnostic formatting algorithms and ordinary source adapter, preserving configuration baseline text, color, positions, related information and line endings. Content-mapped span execution and translated resources remain external.",
+      "scope": "Original generic diagnostic formatting and ordinary/configuration adapters plus complete demanded ASTDiagnostic content-mapped/canonical location adapter. Translated resources and unrelated consumers remain external.",
       "upstreamSha256": "6db890694b7034a0de80829fcbf95357af81d161e386df500bb49639a7f187d7",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
       "configurationCampaignEvidence": "validation/results/configuration-verified.json",
-      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json."
+      "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
+      "emitCampaignScope": "Complete demanded ASTDiagnostic content-mapped/canonical location adapter and originalTextFile/renamedFile owners (upstream65–169); existing generic formatter bodies unchanged.",
+      "emitCampaignAdaptations": "Preserve accepted ordinary/config file-cache compatibility roles. Original-text wrapper retains raw original string owner and recomputes original ECMALineMap each File call as Go; renamed wrapper borrows actual virtual source text/line-map. MessageChain appends synthesized note with original len+1 capacity. Canonical filename uses accepted FileNameGoValue boundary.",
+      "emitCampaignSymbols": [
+        "ASTDiagnostic.File",
+        "ASTDiagnostic.Pos",
+        "ASTDiagnostic.End",
+        "ASTDiagnostic.Len",
+        "ASTDiagnostic.resolve",
+        "newOriginalTextFile",
+        "originalTextFile.FileName",
+        "originalTextFile.Text",
+        "originalTextFile.ECMALineMap",
+        "renamedFile.FileName",
+        "renamedFile.Text",
+        "renamedFile.ECMALineMap",
+        "ASTDiagnostic.MessageChain"
+      ],
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "cc45cfbed0302f54c6fbccb228ec0eb708e6841776476167ca1164da8ce991a7"
     },
     {
       "upstream": "tsc/internal/glob/glob.go",
@@ -5386,6 +5429,14 @@
         "adaptation": "Source WaitGroup.Go has no future. Standard ThreadPool.QueueUserWorkItem with static value state replaces unused Task and wrapper capture while preserving managed ExecutionContext flow, recursive pending accounting, first failure and finally completion. Managed failure transport remains a documented adaptation.",
         "state": "accepted integration20; independent source review, actual Linux x64 Native AOT FIRST,1721 selected managed, Native Foundation/shared/utilities/Program and full15304 original no-emit passed",
         "evidence": "validation/results/allocation-rollout-verified.json#throughputOwnershipFollowThrough"
+      },
+      "destinationSha256": "0afdf378a3fc84180aa2184422e2c486a57cb927c297a05ab4fd5628695407b6",
+      "emitSchedulingAdaptation": {
+        "adaptation": "ConcurrentQueue owns ready Action references; pending publication and wait transition share one monitor gate. Standard static ThreadPool workers start jobs immediately while RunAndWait caller also claims ready actions, matching Go waiting-goroutine scheduler progress and preventing nested checker Lazy/Monitor starvation. Retains recursive pending accounting, first-failure propagation/finally completion and single-threaded Slice LIFO/release. No eager checker initialization, thread-limit policy or fixture change. Worker callback captures no per-job Task/closure; managed ExecutionContext is not an implicit work-state carrier.",
+        "state": "Complete scoped scheduler adaptation accepted after independent review, actual fresh Native publication/direct gates, unchanged original five-variant benchmark cohort/liveness recovery and complete retained emit/noEmit gates. No external-project or universal performance claim.",
+        "independentReview": "artifacts/emit/source-review/workgroup-nested-liveness.json",
+        "evidence": "validation/results/emit-verified.json",
+        "publicationReview": "artifacts/emit/source-review/workgroup-native-direct-evidence.json"
       }
     },
     {
@@ -7229,9 +7280,431 @@
       "emitCampaignReview": "artifacts/emit/source-review/module-shared.json",
       "emitCampaignEvidence": "validation/results/emit-script-transforms-verified.json",
       "sourceSha256": "8593e21c67732bb1dabc89efaebaa96dddf3812df0904dc8f3c00c3c6df98f4f"
+    },
+    {
+      "upstream": "tsc/internal/transformers/declarations/transform.go",
+      "destination": "src/TypeScript.Scanner/Transformers/Declarations/Transform.cs",
+      "status": "integration-pending",
+      "scope": "Complete pinned 110-function counterpart. All original declaration algorithms/source roles retained; Independent complete source review clear; coordinated integrated compiler/declaration corpus acceptance pending.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitCampaignScope": "Complete pinned 110-function counterpart. All original declaration algorithms/source roles retained; Independent complete source review clear; coordinated integrated compiler/declaration corpus acceptance pending.",
+      "emitAdaptations": "Borrowed UTF8 names and paths across factory/scanner/semantic resolver consumers; six specialized/main visitors and enum/modifier callbacks cached. Diagnostic cleanup closures use value snapshots; all nested defer LIFO cleanup retained. All pinned make capacities and required AST clones retained; lazy byte/identity value-key sets and dictionary zero-value reads. Comment iteration retains established scanner IEnumerable adaptation. Existing pinned JSDoc TODOs unchanged.",
+      "emitFunctionCount": 110,
+      "upstreamSha256": "523115ce37767a739999fbbd0c62d5c46e8b2a6d1891fdb6e1c21dfde28d53e5",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "2a71acd792865017d0c6d11d3d487b3ee74fe515252cac879124be1512f5b369"
+    },
+    {
+      "upstream": "tsc/internal/transformers/declarations/util.go",
+      "destination": "src/TypeScript.Scanner/Transformers/Declarations/Util.cs",
+      "status": "integration-pending",
+      "scope": "Complete pinned 15-function counterpart. All original declaration algorithms/source roles retained; Independent complete source review clear; coordinated integrated compiler/declaration corpus acceptance pending.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitCampaignScope": "Complete pinned 15-function counterpart. All original declaration algorithms/source roles retained; Independent complete source review clear; coordinated integrated compiler/declaration corpus acceptance pending.",
+      "emitAdaptations": "Borrowed UTF8 names and paths across factory/scanner/semantic resolver consumers; six specialized/main visitors and enum/modifier callbacks cached. Diagnostic cleanup closures use value snapshots; all nested defer LIFO cleanup retained. All pinned make capacities and required AST clones retained; lazy byte/identity value-key sets and dictionary zero-value reads. Comment iteration retains established scanner IEnumerable adaptation. Existing pinned JSDoc TODOs unchanged.",
+      "emitFunctionCount": 15,
+      "upstreamSha256": "ec1352c93bf0046d3e7da8357fc6cc8237ed2b3e306d880b1f3bc3817cfa8f28",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "dddfeb80cb1e159fbc5f261043dd0ed39cc99d1641552a9ac20eb6661993547e"
+    },
+    {
+      "upstream": "tsc/internal/transformers/declarations/diagnostics.go",
+      "destination": "src/TypeScript.Scanner/Transformers/Declarations/Diagnostics.cs",
+      "status": "integration-pending",
+      "scope": "Original declaration emit implementation; integration verification pending.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitFunctionCount": 32,
+      "upstreamSha256": "4c20ff82f421a03bd5209f09f29bed58e4f5fc0ad134af76d6d77feac6710924",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "9ae1345eaeddd2a641d920804446c9572c8d802aa1778cbd307f279e291b32cc"
+    },
+    {
+      "upstream": "tsc/internal/transformers/declarations/tracker.go",
+      "destination": "src/TypeScript.Scanner/Transformers/Declarations/Tracker.cs",
+      "status": "integration-pending",
+      "scope": "Original declaration emit implementation; integration verification pending.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitFunctionCount": 21,
+      "upstreamSha256": "2c9654af3945265153f6840d1b3f665450748ca392eec8bd4a302f38646dfc3d",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "e3221b036a161f41b3a0a42ea7f0e1a6c8002a3f2d572a59493ae7773d05b697"
+    },
+    {
+      "upstream": "tsc/internal/transformers/declarations/supplementalreferences.go",
+      "destination": "src/TypeScript.Scanner/Transformers/Declarations/SupplementalReferences.cs",
+      "status": "integration-pending",
+      "scope": "Original declaration emit implementation; integration verification pending.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitFunctionCount": 3,
+      "upstreamSha256": "1281026a4d4d40827f880921838cb28956e71070c62a8f0b17bb5809158a687e",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "8f0cf161f061fc2425f42ee8d78ed26673b192e0a8ea8e518957cdb743fad119"
+    },
+    {
+      "upstream": "tsc/internal/transformers/declarations/transform.go",
+      "destination": "src/TypeScript.Scanner/Transformers/Declarations/Types.cs",
+      "status": "integration-pending",
+      "scope": "Original declaration emit implementation; integration verification pending.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitAdaptations": [
+        "Actual module-specifier/output host inheritance; exact SourceFile/FileReference/RootedFilePath roles.",
+        "Nullable readonly diagnostic payload preserves copied Go struct and nil optional result; no per-result CLR object required."
+      ],
+      "upstreamSha256": "523115ce37767a739999fbbd0c62d5c46e8b2a6d1891fdb6e1c21dfde28d53e5",
+      "upstreamAnchor": "tsc/internal/transformers/declarations/transform.go:28-40",
+      "mappingException": "Shared C# interface contracts from declaration transform and diagnostics headers; algorithm bodies retain direct file counterparts.",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "dd95aaf750a9c6f30eecd75a097753b39b20671b58e03647e00487748dd7d4db"
+    },
+    {
+      "upstream": "tsc/internal/transformers/declarations/diagnostics.go",
+      "destination": "src/TypeScript.Scanner/Transformers/Declarations/Types.cs",
+      "status": "integration-pending",
+      "scope": "Original declaration emit implementation; integration verification pending.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitAdaptations": [
+        "Actual module-specifier/output host inheritance; exact SourceFile/FileReference/RootedFilePath roles.",
+        "Nullable readonly diagnostic payload preserves copied Go struct and nil optional result; no per-result CLR object required."
+      ],
+      "upstreamSha256": "4c20ff82f421a03bd5209f09f29bed58e4f5fc0ad134af76d6d77feac6710924",
+      "upstreamAnchor": "tsc/internal/transformers/declarations/diagnostics.go:10-16",
+      "mappingException": "Shared C# interface contracts from declaration transform and diagnostics headers; algorithm bodies retain direct file counterparts.",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "dd95aaf750a9c6f30eecd75a097753b39b20671b58e03647e00487748dd7d4db"
+    },
+    {
+      "upstream": "tsc/internal/execute/tsc/emit.go",
+      "destination": "src/TypeScript.Scanner/Projects/Compilation.cs",
+      "status": "integration-pending",
+      "scope": "Nonincremental diagnostic/emit/listing/status orchestration from EmitFilesAndReportErrors, listFiles and final status branches of EmitAndReportStatistics; excludes tracing/statistics/incremental/watch infrastructure. Public ProjectCompilationResult retained listing is an authored boundary adapter.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitCampaignScope": "Nonincremental diagnostic/emit/listing/status orchestration from EmitFilesAndReportErrors, listFiles and final status branches of EmitAndReportStatistics; excludes tracing/statistics/incremental/watch infrastructure. Public ProjectCompilationResult retained listing is an authored boundary adapter.",
+      "emitAdaptations": "Genuine Program methods and cancellation token; owned public diagnostic array and UTF16 display listing at public boundary; compiler output and paths remain raw-byte-based. Default skipped result preserves ListFilesOnly behavior.",
+      "upstreamSha256": "d7afe7e5eda05e2dca66e73c749962fe026d38b683fd4042fc405ba85a60cc02",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "ed962cdea1c0aeeb6afc1033dcf4830ff6b7207fcb4aec4dfc0c4f5009be5184"
+    },
+    {
+      "upstream": "tsc/internal/testutil/harnessutil/sourcemap_recorder.go",
+      "destination": "validation/Program.Checks/CompilerSourceMapRecorder.cs",
+      "status": "integration-pending",
+      "scope": "Complete source-map span recorder and decoder/line marker/source text/detail workers; original CRLF/raw-byte records, UTF16-to-byte source positions and pinned upstream char==line/next-line TODO behavior retained.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitCampaignScope": "Complete source-map span recorder and decoder/line marker/source text/detail workers; original CRLF/raw-byte records, UTF16-to-byte source positions and pinned upstream char==line/next-line TODO behavior retained.",
+      "upstreamSha256": "dfe08aef4e3af58d8d4bf83f7344a79a5f912bc20e000b26eef18b365f342075",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "729f2690c7ece7f097586ceaf1d82b2c272c8d796dfdd261aad957408877850e"
+    },
+    {
+      "upstream": "tsc/internal/testutil/harnessutil/harnessutil.go",
+      "destination": "validation/Program.Checks/CompilerSourceMapRecorder.cs",
+      "status": "integration-pending",
+      "scope": "GetSourceMapRecord909: genuine Program/input-source/emitted-file owners and recorded decoded spans.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitCampaignScope": "GetSourceMapRecord909: genuine Program/input-source/emitted-file owners and recorded decoded spans.",
+      "upstreamSha256": "170d8cf5fdd5e146113411c4526a2c409a28e78a17ac23912feae581af50271d",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "729f2690c7ece7f097586ceaf1d82b2c272c8d796dfdd261aad957408877850e"
+    },
+    {
+      "upstream": "tsc/internal/testutil/tsbaseline/sourcemap_baseline.go",
+      "destination": "validation/Program.Checks/CompilerSourceMapBaseline.cs",
+      "status": "integration-pending",
+      "scope": "Complete original map count/inline guards, absence policy, file formatting and preview-link observation; original suffix-association behavior retained. QueryEscape+QueryUnescape exact identity directly base64 encodes raw bytes.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitCampaignScope": "Complete original map count/inline guards, absence policy, file formatting and preview-link observation; original suffix-association behavior retained. QueryEscape+QueryUnescape exact identity directly base64 encodes raw bytes.",
+      "upstreamSha256": "31b8b27f824762553681d0dcfcead7419dc3365368419537eb0ce5b73635f157",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "613025022ef80810933b15945b526f15eef049f163ee825e07431592488b76e6"
+    },
+    {
+      "upstream": "tsc/internal/testutil/tsbaseline/sourcemap_record_baseline.go",
+      "destination": "validation/Program.Checks/CompilerSourceMapBaseline.cs",
+      "status": "integration-pending",
+      "scope": "Complete source-map-record option/noEmitOnError/path-prefix/content policy; baseline filename/channel expected comparisons use common corpus consumer.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitCampaignScope": "Complete source-map-record option/noEmitOnError/path-prefix/content policy; baseline filename/channel expected comparisons use common corpus consumer.",
+      "upstreamSha256": "7d5889bfff0c0e610774fcb0ea3995ce888c7a9f1066085f7b7ac4eb5055b451",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "613025022ef80810933b15945b526f15eef049f163ee825e07431592488b76e6"
+    },
+    {
+      "repository": "https://github.com/peter-evans/patience",
+      "revision": "v0.3.0",
+      "upstream": "patience.go",
+      "destination": "validation/Program.Checks/CompilerPatienceDiff.cs",
+      "status": "partial",
+      "scope": "Diff, uniqueElements, toDiffLines",
+      "license": "licenses/Patience-LICENSE.txt",
+      "upstreamSha256": "6b680aceb1b0b2caa0a91052665f712f1b885ed912025e422b19bb867b47fd80",
+      "mappingException": "Demanded original assertion-only dependency workers grouped in one C# counterpart; unrelated library entrypoints excluded.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignReview": "artifacts/emit/source-review/patience-diff.json",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "06e2f7ec8a3d5759f8ea98bb24b858d3c7febe5e5c5b2a4942b9b3cb12bc2bae"
+    },
+    {
+      "repository": "https://github.com/peter-evans/patience",
+      "revision": "v0.3.0",
+      "upstream": "lcs.go",
+      "destination": "validation/Program.Checks/CompilerPatienceDiff.cs",
+      "status": "partial",
+      "scope": "LCS table, backtracking and reversal",
+      "license": "licenses/Patience-LICENSE.txt",
+      "upstreamSha256": "1d6bcde272086299400438e3a99d0b4e769da71f11351f39ab6596b83a19a7d9",
+      "mappingException": "Demanded original assertion-only dependency workers grouped in one C# counterpart; unrelated library entrypoints excluded.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignReview": "artifacts/emit/source-review/patience-diff.json",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "06e2f7ec8a3d5759f8ea98bb24b858d3c7febe5e5c5b2a4942b9b3cb12bc2bae"
+    },
+    {
+      "repository": "https://github.com/peter-evans/patience",
+      "revision": "v0.3.0",
+      "upstream": "unified.go",
+      "destination": "validation/Program.Checks/CompilerPatienceDiff.cs",
+      "status": "partial",
+      "scope": "makeHunks including context owners",
+      "license": "licenses/Patience-LICENSE.txt",
+      "upstreamSha256": "81bc665cfc6b980505127e836190076de88ebe8f5b726a7b9c7fabef73d7591f",
+      "mappingException": "Demanded original assertion-only dependency workers grouped in one C# counterpart; unrelated library entrypoints excluded.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignReview": "artifacts/emit/source-review/patience-diff.json",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "06e2f7ec8a3d5759f8ea98bb24b858d3c7febe5e5c5b2a4942b9b3cb12bc2bae"
+    },
+    {
+      "repository": "https://github.com/peter-evans/patience",
+      "revision": "v0.3.0",
+      "upstream": "format.go",
+      "destination": "validation/Program.Checks/CompilerPatienceDiff.cs",
+      "status": "partial",
+      "scope": "typeSymbol and UnifiedDiffTextWithOptions demanded rendering only; unrelated public format entrypoints not required",
+      "license": "licenses/Patience-LICENSE.txt",
+      "upstreamSha256": "90c601c8c817c2d94dc35fea501e7b2f891c9949ebda1ae0e1991bc3c6308049",
+      "mappingException": "Demanded original assertion-only dependency workers grouped in one C# counterpart; unrelated library entrypoints excluded.",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignReview": "artifacts/emit/source-review/patience-diff.json",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "06e2f7ec8a3d5759f8ea98bb24b858d3c7febe5e5c5b2a4942b9b3cb12bc2bae"
+    },
+    {
+      "upstream": "tsc/internal/compiler/emitHost.go",
+      "destination": "src/TypeScript.Scanner/Compiler/EmitHost.cs",
+      "status": "ported",
+      "scope": "Complete original EmitHost ownership and delegates",
+      "upstreamSha256": "c579b4d62e4939f08be9ae061b0e4c99d51e15b46ca0c05c55d1811d026fbc38",
+      "destinationSha256": "53eb0646aeecd934f89ff9bbf04144466054270a61dcc490193fd121cf769032",
+      "emitFunctionCount": 26,
+      "emitCampaignReview": "artifacts/emit/source-review/compiler-output.json",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitCampaignEvidence": "validation/results/emit-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/compiler/emitter.go",
+      "destination": "src/TypeScript.Scanner/Compiler/Emitter.cs",
+      "status": "ported",
+      "scope": "Complete original per-source JS/declaration emitter",
+      "upstreamSha256": "c07a04620cc353529f969a1bb1c48dbf26bcfa395216cbb7755ff4e4424ff38f",
+      "destinationSha256": "245ffda32f988a4643a5de782b84d319ccd3b14d86199b48a793aac104759017",
+      "emitFunctionCount": 23,
+      "emitCampaignReview": "artifacts/emit/source-review/compiler-output.json",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "mappingException": "The upstream 23-function family is complete across this counterpart and the retained sourceFileMayBeEmitted helper in Compiler/Program.cs. getSourceFilesToEmit retains the accepted Program adapter as well as the EmitHost consumer; existing source mapping records both.",
+      "emitCampaignEvidence": "validation/results/emit-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/compiler/program.go",
+      "destination": "src/TypeScript.Scanner/Compiler/Program.Emit.cs",
+      "status": "partial",
+      "scope": "Emit, combine, noEmit gating, diagnostics aggregation and declaration cache worker; partial Program counterpart",
+      "upstreamSha256": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c",
+      "destinationSha256": "5350b418275bec0bba4ef41c5f1d1e9b91ae8b23e67c109376c6da3400ba0de4",
+      "emitFunctionCount": 5,
+      "emitCampaignReview": "artifacts/emit/source-review/compiler-output.json",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "mappingException": "Emit and host roles split from the existing Program.cs partial class; together they map to upstream compiler/program.go without changing algorithms.",
+      "emitCampaignEvidence": "validation/results/emit-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/compiler/program.go",
+      "destination": "src/TypeScript.Scanner/Compiler/Program.EmitHost.cs",
+      "status": "partial",
+      "scope": "Four demanded genuine HasFileName metadata/option/resolution counterparts; partial Program",
+      "upstreamSha256": "78427ea44a00ba5175d886b77a9b32b11d6fd917c26a3d2e53c5ac04c3d0b81c",
+      "destinationSha256": "be107eaa2dcbe104078df59ecf275ee7bfa4019d95026890a506390ea9b3ba29",
+      "emitFunctionCount": 4,
+      "emitCampaignReview": "artifacts/emit/source-review/compiler-output.json",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "mappingException": "Emit and host roles split from the existing Program.cs partial class; together they map to upstream compiler/program.go without changing algorithms.",
+      "emitCampaignEvidence": "validation/results/emit-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/stringutil/util.go",
+      "destination": "src/TypeScript.Scanner/StringUtil/EmitOutput.cs",
+      "status": "partial",
+      "scope": "Only demanded EncodeURI/escape/BOM recognition/addition leaves",
+      "upstreamSha256": "e15d8030900518eb0d8bd926751df2f7c7cfda6d49c7a82da36d58daeed22b9e",
+      "destinationSha256": "7f1a7caec9adc55069679ee3708451055c72e82c73c9c544a0641d78bf91971c",
+      "emitFunctionCount": 4,
+      "emitCampaignReview": "artifacts/emit/source-review/compiler-output.json",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitCampaignEvidence": "validation/results/emit-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/vfs/osvfs/os.go",
+      "destination": "src/TypeScript.Scanner/Vfs/OsVfs/Write.cs",
+      "status": "partial",
+      "scope": "Only required write/parent-creation/retry/pool owners; append/remove excluded",
+      "upstreamSha256": "c81584fd673a9d17a7e3631714ada7755b657b7f425274952760248f1e5140f8",
+      "destinationSha256": "14848cfe070a0db9e42c941a2f33f2ec494deb50fb48627ad13d459a2fbd690d",
+      "emitFunctionCount": 4,
+      "emitCampaignReview": "artifacts/emit/source-review/vfs-write.json",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignContract": "docs/EMIT-CONTRACT.md",
+      "emitCampaignEvidence": "validation/results/emit-verified.json"
+    },
+    {
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "upstream": "src/os/path.go",
+      "destination": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxWritePaths.cs",
+      "status": "partial",
+      "scope": "Required original Linux syscall/path error fidelity only; exact parent-first recursion/open/write retry and chunk ownership",
+      "license": "licenses/Go-LICENSE.txt",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignReview": "artifacts/emit/source-review/vfs-write.json",
+      "mappingException": "Required Linux mkdir/open/write syscall behavior grouped at the managed OS boundary; unrelated Go standard-library APIs excluded.",
+      "upstreamSha256": "a901784cb6abfb4817a379bdc909f42090b9cc5e49a6b2dac5c06ee6e844966a",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "ef174ba27fef71057500b44b37fbb8f8b045d383a775de7ff399fc878ad7975b"
+    },
+    {
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "upstream": "src/os/file.go",
+      "destination": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxWritePaths.cs",
+      "status": "partial",
+      "scope": "Required original Linux syscall/path error fidelity only; exact parent-first recursion/open/write retry and chunk ownership",
+      "license": "licenses/Go-LICENSE.txt",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignReview": "artifacts/emit/source-review/vfs-write.json",
+      "mappingException": "Required Linux mkdir/open/write syscall behavior grouped at the managed OS boundary; unrelated Go standard-library APIs excluded.",
+      "upstreamSha256": "d77653afbcbec5256b56aee25dce3df3ed001f964c9b245b848a5d378884bcb3",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "ef174ba27fef71057500b44b37fbb8f8b045d383a775de7ff399fc878ad7975b"
+    },
+    {
+      "repository": "https://go.googlesource.com/go",
+      "revision": "go1.27.1",
+      "upstream": "src/internal/poll/fd_unix.go",
+      "destination": "src/TypeScript.Scanner/Vfs/OsVfs/LinuxWritePaths.cs",
+      "status": "partial",
+      "scope": "Required original Linux syscall/path error fidelity only; exact parent-first recursion/open/write retry and chunk ownership",
+      "license": "licenses/Go-LICENSE.txt",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "emitCampaignReview": "artifacts/emit/source-review/vfs-write.json",
+      "mappingException": "Required Linux mkdir/open/write syscall behavior grouped at the managed OS boundary; unrelated Go standard-library APIs excluded.",
+      "upstreamSha256": "675f74e8cbfc73170e08b43947c131706cd59e498d722555fe3b793618f5f162",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "ef174ba27fef71057500b44b37fbb8f8b045d383a775de7ff399fc878ad7975b"
+    },
+    {
+      "upstream": "tsc/internal/testutil/tsbaseline/js_emit_baseline.go",
+      "destination": "validation/Program.Checks/CompilerJavaScriptBaseline.cs",
+      "status": "ported",
+      "scope": "JS/declaration output baseline and noCheck repeat assertions",
+      "upstreamSha256": "1132fa6724a36f3cf611174e3fcb08571c041194879f6c5e1da74512407ffc37",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "mappingException": "Original baseline/declaration responsibilities split into discoverable partial-class files; authored adapters separately labeled.",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "6e77e027d7623860b4e24863b271971d66b9606d85ef117abb2f11639e2c7a7b"
+    },
+    {
+      "upstream": "tsc/internal/testutil/tsbaseline/js_emit_baseline.go",
+      "destination": "validation/Program.Checks/CompilerDeclarationRecompile.cs",
+      "status": "ported",
+      "scope": "Original declaration output recompilation assertions",
+      "upstreamSha256": "1132fa6724a36f3cf611174e3fcb08571c041194879f6c5e1da74512407ffc37",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "mappingException": "Original baseline/declaration responsibilities split into discoverable partial-class files; authored adapters separately labeled.",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "6e23a62e07aa8f289aee9dbcdf8af046c51ad8c7f993351f780fab17e3ddaa50"
+    },
+    {
+      "upstream": "tsc/internal/testutil/tsbaseline/error_baseline.go",
+      "destination": "validation/Program.Checks/CompilerErrorBaseline.cs",
+      "status": "ported",
+      "scope": "Complete original AST-diagnostic error baseline specialization",
+      "upstreamSha256": "4f9f45448ecdd2082621b5b89428b75fb17f209b11fcb04ddfca8f978c3765e7",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "mappingException": "Runtime/host adaptation explicitly labeled in counterpart.",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "c28c48cea7aecd09a989e45640f7a2ab3e9824f19913b7a808987224f3deb1cf"
+    },
+    {
+      "upstream": "tsc/internal/testutil/tsbaseline/contentmapper_baseline.go",
+      "destination": "validation/Program.Checks/CompilerContentMapperBaseline.cs",
+      "status": "ported",
+      "scope": "Complete original content-mapper baseline assertions",
+      "upstreamSha256": "f184d6d211443502f669d347004220911f2aa1b72f75202f8ed056fc61f8c0b9",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "mappingException": "Runtime/host adaptation explicitly labeled in counterpart.",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "99a4d6ae426b4635c3e3e631c8147d5bd8d8c92e438c61650de0ee99cbbfcb55"
+    },
+    {
+      "upstream": "tsc/internal/execute/tsc/compile.go",
+      "destination": "src/TypeScript.Scanner/Projects/ContentMapperCommandLogger.cs",
+      "status": "partial",
+      "scope": "Required newContentMapperLogger behavior; external process hosting remains outside command",
+      "upstreamSha256": "b1dec6fe39a85d9404531e47971214458704498576cf0de28157eba5159ee77d",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "mappingException": "Runtime/host adaptation explicitly labeled in counterpart.",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "5285c0127e7bb422e7edb6b8c5a1ebe6a2afe76e978882cb734167429626b9e7"
+    },
+    {
+      "upstream": "tsc/internal/execute/tsc/emit_test.go",
+      "destination": "validation/Emit.Checks/CommandLoggerChecks.cs",
+      "status": "partial",
+      "scope": "Original portable logger test assertions with injected environment/stream, separate authored Unicode control. The other original test in emit_test.go owns incremental builder timing and remains excluded.",
+      "upstreamSha256": "3a0c4b9679f58edea2c3aa590d69e1ac784d7e1826e6c7742a15ad85d11f0760",
+      "emitCampaignState": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion.",
+      "mappingException": "Runtime/host adaptation explicitly labeled in counterpart.",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "e4c7e799ae94d3bb05290ea54229ec867c13fab84f9c3175fb67ac577e44cf4b"
+    },
+    {
+      "upstream": "tsc/internal/compiler/emit_test.go",
+      "destination": "validation/Emit.Checks/EmitBenchmarkChecks.cs",
+      "status": "ported",
+      "scope": "Original3benchmarks/fivevariants with authored Stopwatch/GC allocation measurement adapter",
+      "upstreamSha256": "363f1c9903a2708a52c3d8071d7d67d11e3008a82ee77d0c301deceafe7de6e4",
+      "emitCampaignState": "Original three benchmarks/five variants source-reviewed; actual fresh five equal repeats per runtime completed after scheduler correction. All observations retained as runtime-specific elapsed/allocation evidence; no before-change speedup, allocation identity or universal parity claim.",
+      "mappingException": "Runtime/host adaptation explicitly labeled in counterpart.",
+      "emitCampaignEvidence": "validation/results/emit-verified.json",
+      "destinationSha256": "c19e26caf027ff3b585f21eb7f34bf4d7206572b404d39a45cdbab55151e9d4a"
     }
   ],
-  "activePhase": "Whole emit: TS, ES, JSX/module/const-enum families accepted; complete declarations and genuine Program output dependencies next.",
+  "activePhase": "Whole emit complete in accepted contract scope; final clean delivery/proof binding. No implicit authorization for external projects, language services or incremental/watch orchestration.",
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
     "sourceTreeSha256": "3649d542b4bf031beb995de72c02fe9852e205dd4233b94ea7426250d38a30fd"
@@ -7585,5 +8058,41 @@
     "summary": "docs/PERFORMANCE-EPIC-SUMMARY.md",
     "evidence": "docs/VSCODE-CHECK-STATUS.md",
     "scope": "Linux x64 AVX2, matched eight checkers, explicit no-GC option; 6.95/6.06 seconds best of five. Preserve original conditions and limitations."
+  },
+  "emitAuthoredVerification": {
+    "files": [
+      "validation/Program.Checks/CompilerEmitCompilation.cs",
+      "validation/Program.Checks/CompilerEmitRunner.cs",
+      "validation/Program.Checks/CompilerEmitReferenceAssertions.cs",
+      "tests/Emit.Tests/OriginalProgramEmitTests.cs",
+      "tools/run-emit-corpus.py",
+      "tools/emit-oracle/compare-program-output.py",
+      "tools/emit-oracle/command_controls.py",
+      "tools/emit-oracle/command_guard_controls.py",
+      "tools/emit-oracle/runtime_controls.py",
+      "validation/Emit.Checks/EmitWriteFailureChecks.cs",
+      "validation/Emit.Checks/EmitModeChecks.cs"
+    ],
+    "scope": "Authored observation/runner/public-behavior controls; original assertions remain in source-mapped baseline counterparts, no compiler implementation count.",
+    "evidence": "validation/results/emit-verified.json",
+    "state": "Mapped emit contract scope accepted: independent source review,2223 managed passes, actual Linux x64 Native152original functions+251authored controls, full15330 configurations with15285 exact public matches and13571 original nine-channel assertion sets;39 original preparation skips and six explicit external incremental metadata differences retained. All15304 original retained noEmit records exact, CLI6+authoredguards3+runtime3 pass. Not exhaustive all-program correctness or language-service/incremental-builder completion."
+  },
+  "acceptedEmitCheckpoint": {
+    "state": "accepted contract scopes; delivery commit pending coordinator",
+    "evidence": "validation/results/emit-verified.json",
+    "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+    "managedPasses": 2223,
+    "nativeOriginalFunctions": 152,
+    "nativeAuthoredControls": 251,
+    "originalConfigurations": 15330,
+    "publicOutputMatches": 15285,
+    "originalAssertionChannelSets": 13571,
+    "originalPreparationSkips": 39,
+    "externalIncrementalMetadataDifferences": 6,
+    "retainedOriginalNoEmitExact": 15304,
+    "diskGoEqualCases": 6,
+    "authoredDiskBoundaryCases": 3,
+    "originalFixtureRuntimeCases": 3,
+    "qualification": "All original option-policy/output-only/expansion dispositions remain separate; six external metadata differences visible. Partial source entries retain exact mapped/excluded scope. Runtime-specific benchmark observations do not establish universal parity."
   }
 }

@@ -1,138 +1,275 @@
+# Accepted: whole emit contract (2026-10-12)
+
+**No active campaign.** The checkpoint containing
+[emit-verified.json](../validation/results/emit-verified.json) completes the
+[whole-emit contract](EMIT-CONTRACT.md). Implementation, source mapping, independent
+reviews, genuine pinned-Go comparisons and actual Linux x64 Native AOT acceptance
+are recorded in [EMIT-ASSESSMENT.md](EMIT-ASSESSMENT.md),
+[EMIT-TEST-INVENTORY.md](EMIT-TEST-INVENTORY.md) and
+[EMIT-VERIFY.md](EMIT-VERIFY.md). Upstream remains
+`fed0bf24149fb1ed36039212648bafdafc1ea10e`.
+
+The final candidate includes the general WorkGroup scheduling repair: waiting callers
+can execute queued work, avoiding CLR thread starvation during nested lazy checker
+construction. The unchanged original 200-file emit workload reproduced the defect
+and verified its repair. Required ownership/allocation adaptations remain in place.
+
+Final evidence under `artifacts/emit/final-acceptance-workgroup-fix`:
+
+- 2,223 managed xUnit records passed; six actual Native AOT publications verified.
+- Native direct emit: 152 original functions and 251 authored controls passed.
+- All 15,330 original configurations accounted for: 15,285 exact public matches,
+  13,571 matching original assertion sets, 39 preparation skips, 1,720 original
+  option-policy records and six visible incremental metadata differences. Counting
+  categories overlap as documented; the six blocked complete comparisons are not passes.
+- Disk comparisons 6, incremental boundary guards 3 and actual Node runtime comparisons
+  3 passed. Retained Foundation 3,153 + 87 controls, utilities 20 and Program 9 passed.
+- All 15,304 complete retained no-emit records match the original reference.
+- Five original emit workloads, five fresh-process runs per runtime, completed.
+  Best Native/Go ratios are 1.40–2.25×; this is an initial emitter observation, not a
+  before/after speedup or a new VS Code performance result.
+
+Incremental snapshot/build-info/build/watch ownership and language services remain
+external. The CLI rejects incremental/composite execution rather than inventing build
+information. Pinned upstream TODOs, original test dispositions and Linux-only platform
+evidence remain explicit. No external project was evaluated during emit acceptance.
+
+The latest user mandate ends at emit acceptance. Wait for authorization before a new
+external-project evaluation or campaign. The performance summary was replaced with the
+requested conversational account and its earliest sampled cumulative allocation figure
+corrected to 52.02 GB in earlier dedicated commits.
+
+## Historical emit execution notes
+
+The material below preserves implementation and failed-attempt history. Its live session
+IDs, pending labels and active-work instructions are superseded by the accepted status
+above; do not restart those sessions or rerun accepted work on re-entry.
+
 # Active epic: complete upstream emit (2026-10-11)
 
-User authorized autonomous whole-emit completion from performance `e3131a5b`
-(summary `56ed2a75`). The [fixed contract and dependency roadmap](EMIT-CONTRACT.md)
-govern: complete synthesis/context and source-map prerequisites, printer and shared
-transform machinery, all pinned JS/declaration transforms plus semantic support,
-Program output/invocation, then whole-emit acceptance. No vertical slices or new
-assignment requests between subsystem commits. External-project evaluation is deferred
-until emit acceptance. Preserve the accepted baseline and performance adaptations.
+The user authorized autonomous whole-emit completion after performance `e3131a5b`.
+Follow [EMIT-CONTRACT.md](EMIT-CONTRACT.md), [EMIT-PROMPT.md](EMIT-PROMPT.md),
+[EMIT-IMPLEMENTATION.md](EMIT-IMPLEMENTATION.md), [EMIT-TEST-INVENTORY.md](EMIT-TEST-INVENTORY.md)
+and [EMIT-VERIFY.md](EMIT-VERIFY.md). Complete coherent upstream dependency subsystems,
+then whole compiler emission. Do not stop at milestones/commits/compaction or seek
+renewed authorization. Astra coordinates; existing GPT-6.1 Sol agents implement/review.
+No external project or VS Code evaluation until whole-emit acceptance. Preserve
+accepted allocation/runtime adaptations. Language services and unrelated build/watch
+are excluded. Upstream remains fed0bf24149fb1ed36039212648bafdafc1ea10e.
 
-Initial read-only assessment found AST factory/visitor/deepclone already implemented;
-no broad foundation re-audit. Diagnostic printer/context are partial, source maps and
-transformers missing, Program has output-path/blocking foundations but lacks emission.
-Existing no-emit harness intentionally excludes declaration-emit/output observations;
-it remains regression evidence, not emit acceptance.
+## Accepted checkpoints
 
-Latest accepted dependency checkpoint: **`34ade775`**, full printer and semantic
-emit prerequisites. Previous synthesis/source-map checkpoint: `3e78aede`.
-Independent source, original-assertion and execution evidence reviews are clear.
-Managed:169 emit +832 checker +84 type-system +101 selectedno-emit =1,186 passed,
-zero failures/skips. Actual Linuxx64 NativeAOT published20.206s and executed149
-original test functions plus46 authored controls successfully. Source mapping and
-reproduction are committed; all build/test processes finished and the tree was clean.
-[Evidence](../validation/results/emit-printer-resolver-verified.json),
-[independent ACK](../artifacts/emit/printer-resolver/acceptance-independent-review.json).
-No whole-emission or external-project claim follows from this dependency checkpoint.
+- `3e78aede`: synthesis, transform base and source maps.
+- `34ade775`: full printer, reference/emit resolvers, non-hover declaration serialization,
+  shared transform dependencies. 1,186 managed passes; actual Linux x64 Native AOT.
+- `b0cf6af4`: seven TypeScript transform files/142 functions, MultiMap11. 1,222 managed;
+  Native150 original functions+87 authored controls. Full diagnostic projector retained.
+- `13d29ca3`: complete17-file ES family/407 functions, OrderedSet8. 1,304 managed;
+  Native151 originals+168 controls. NamedEvaluation20 count corrected, no missing body.
+- **`e8b11bcf` latest accepted emit checkpoint**: JSX48, ConstEnum3, CommonJS83,
+  shared modules41 (seven files/175 functions); genuine Program HasFileName format
+  join, OrderedMap entry enumerator. 1,379 managed passes; Native publish15.785s,
+  run6.574s,151 original functions+243 authored controls. Evidence
+  validation/results/emit-script-transforms-verified.json and independent ACK under
+  artifacts/emit/script-transforms.75 new exact-Go full-chain/public-diagnostic cases.
+  Two build attempts, three Emit test attempts: harness defaults corrected; actual
+  borrowed-string const-enum consumer defect fixed with unchanged references.
 
-**TypeScript transform family accepted at `b0cf6af4`.**
-All seven pinned files (142 functions total) and required MultiMap (11 functions)
-are complete. The old TypeEraser-owned RuntimeSyntax leaf moved to its full mapped
-counterpart. Focused borrowed-name/helper overloads and SourceFile's explicit C#
-HasFileName declaration preserve accepted algorithms and object identity.
-Independent source and assertion reviews are clear. All 205 emit + 832 checker +
-84 type-system + 101 selected no-emit cases passed (1,222 total, no failures/skips).
-Actual Linux x64 Native AOT published in 15.602s and executed in 1.397s, exit0:
-150 original test functions and 87 authored controls. Final independent evidence ACK:
-artifacts/emit/ts-transforms/acceptance-independent-review.json. Original functions, table rows
-and xUnit records are distinct. Evidence: validation/results/emit-ts-transforms-verified.json.
+These are dependency checkpoints, not whole emit acceptance. Original module utility
+nil/empty TODOs and declaration JSDoc TODOs remain explicitly pinned upstream limitations.
+Three hover-only NodeBuilder methods remain outside scope. No blanket private-state parity.
 
-Original ImportElision's 20 output assertions are preserved with an explicitly
-adapted genuine Program host. Authored 34 TS-stage controls now compare full public
-diagnostics as well as exact output, strengthened before acceptance from codes/order
-only. Future families reuse that projector; code arrays are never called complete
-diagnostics. Declaration-emit diagnostics and full compiler emission remain later gates.
-One initial production build and two compile-only test attempts resolved API joins;
-the third test invocation was the first behavior run and passed. No behavior
-expectations were weakened. Retained regression and Native publication passed first try.
+## Current implementation and ownership
 
-**Complete ES family accepted at `13d29ca3`.**
-All 17 pinned files/407 functions plus OrderedSet8 and narrow OrderedMap enumeration
-are independently reviewed. First managed behavior run passed287 emit; retained
-832checker+84type-system+101selectednoemit passed (1,304 total, none failed/skipped).
-Actual Linux x64 Native AOT publish15.651s/run4.106s passed151originalfunctions and
-168authoredcontrols. All processes finished; source/build metadata remain frozen
-until root commit (now finished; clean checkpoint). Bound evidence: validation/results/emit-es-transforms-verified.json.
-Final independent ACK: artifacts/emit/es-transforms/acceptance-independent-review.json.
+**Complete declaration and genuine Program output implementation is source-written,
+uncommitted, undergoing integrated verification.** All181 declaration functions
+(Transform110/Util15/Diagnostics32/Tracker21/Supplemental3), actual contracts,
+EmitHost26/Emitter23, Program emit/declaration diagnostics/noEmit modes, demanded
+HasFileName joins, pooled writers/parallel input-ordered result collection, real filesystem
+writes, and CLI/Project compile orchestration are present. No permissive stubs.
 
-The80 authored comparisons cover runtime45/classfields21/decorators14 through
-real Program/pinned libraries, exact TS→ES target chain→UseStrict, full public
-diagnostic channels and target-aware output. Original OrderedSet public assertions
-ported; original Go allocation test is Go-only, CLR hinted behavior separately
-labeled. Final compiler corpus/runtime/output gates remain ahead. No external project.
+Existing Sol lanes:
+- emit_foundation: declaration Transform/Util and narrow borrowed scanner/resolver/Core
+  joins; independently reviewed support, compiler and CLI. Authored actual write-failure/
+  raw-byte controls have exact pinned-Go witnesses; current work is pre/post diagnostic
+  loss, then independent whole-output assertion review.
+- emit_print_maps: declaration support/contracts; independently reviewed transform and VFS.
+  Owns command integration/disk controls, original portable logger test, and original
+  source-map baseline/record/recorder assertion ports. These recorder sources are landed,
+  source-reviewed; consumer wiring is inventory-owned. Runtime fixture controls follow.
+- emit_inventory: compiler EmitHost/Emitter/Program, required VFS ownership path and whole
+  original-corpus consumer using existing Program.Checks/Checker.NoEmit.Validation.
+  Owns JS baseline/declaration recompile/noCheck assertions and full comparator integration.
+Root owns central builds, gates, global mapping, final evidence/docs/commits. Use
+followup_task for actionable assignments to completed agents; send_message doesn't wake them.
 
-Four diagnostic builds (1.060/1.733/12.139/7.983s) fixed syntax/declaration/API joins;
-first behavior run passed21.138s including compile, 7s assertions. Source review
-restored explicit Go capacities and cached callbacks. Preserve make capacities and
-clone ownership during initial translation of future families. NamedEvaluation had
-20 actual functions already implemented/reviewed; earlier19 was metadata-only error.
-No source change or test rerun for that count correction.
+Source reviews under artifacts/emit/source-review are clear for declaration-transform,
+declaration-support, vfs-write, compiler-output, command-output and compiler-sourcemap-baselines.
+Review closed actual dictionary missing-key semantics, nested deferred state restoration,
+JSDoc raw Unicode boundary, public zero-emitter nil result, and all-three-BOM recorder
+handling. Source clear is separate from behavioral acceptance.
 
-**JSX, module transforms and const-enum family accepted in the current checkpoint.**
-All seven mapped files/175 functions implemented and independently reviewed: JSX48,
-ConstEnum3, CommonJS83, shared modules41. Program HasFileName format lookup and
-OrderedMap borrowed entry enumeration are the required narrow adaptations.
-Managed test3 passed362 emit; retained832 checker+84type-system+101selectednoemit
-passed:1,379 total, no failures/skips. Actual Linux x64 Native AOT publish15.785s,
-run6.574s exit0,151originalfunctions+243authoredcontrols. Gate27878 finished.
-Final proof: validation/results/emit-script-transforms-verified.json. Independent execution
-ACK: artifacts/emit/script-transforms/acceptance-independent-review.json. All gates finished.
-Four comment-only trailing spaces in JSX are preserved with the frozen source; no behavior impact.
+Required VFS support preserves raw Go bytes through OS/Bundled/Cached owners; write→parent
+creation→retry, bounded write concurrency and errors. Append/remove/clocks unneeded here.
+Original syscall diagnostic fidelity is being checked against Go, not automatically
+excused as a .NET boundary. External subprocess content-mapper host remains an existing
+external environment boundary; portable logger assertions were still ported, not excluded.
 
-The75 new authored full-chain cases compare exact output and five complete public
-pre-emit diagnostic channels against genuine pinned Go Program environments.
-Existing upstream module-utility nil/empty TODOs remain explicitly identified.
-Test1 failed75 new fixtures before transforms because the harness parsed absent Go
-options as enum text; an ingress edit crossed the initial freeze, so that run is
-not accepted frozen evidence. Test2 exposed two actual ConstEnum failures: retained
-ByteStringValue constants were missing from the consumer switch. Existing borrowed
-literal factory now handles them; owned-string/numeric/bigint branches unchanged.
-Independent review approved the fix; test3/retained/Native passed unchanged references.
-Two production builds and three Emit test attempts are retained in artifacts/emit/script-transforms.
+## Current execution — resume here
 
-**Next: complete declarations and genuine output dependencies, then Program emission.**
-GPT-6.1 Sol lanes (implementation released immediately after current checkpoint):
-- emit_foundation: declarations Transform110/Util15.
-- emit_print_maps: Diagnostics32/Tracker21/Supplemental3 and shared declaration contracts.
-- emit_inventory: EmitHost26/Emitter23, Program output/noEmit/declaration diagnostics,
-  required VFS write paths and shared full-output harness.
-Contracts/tracker precede transform consumers; genuine write/host dependencies precede
-emitter/Program consumers. No placeholder joins. Namespace TypeScript.Transformers.Declarations;
-IDeclarationEmitHost/IDeclarationOutputPaths reflect actual upstream interfaces.
-Demanded HasFileName generalization includes usage mode/module lookup/default mode.
-OS writes preserve raw Go-byte output, write→create parents→retry and bounded32
-write concurrency. Bundled/cached/test hosts must propagate actual output/errors.
-Accepted checker/resolver/foundation work remains established input unless a concrete
-required dependency or defect is exposed. Root owns integration builds/map/commits.
-Continue automatically through checkpoints; no renewed assignment needed.
+**Current live gate: root exec session50661** under
+artifacts/emit/final-acceptance-workgroup-fix. Fresh build63.3s, all2223managed148.3s,
+six Native publications96.7s, direct152+251 and retainedFoundation/utilities/Program
+passed. Original ManyFiles liveness reproduced fixed (0.221sprocess, concurrentpub,
+notperformancemeasure). All50 isolated originalbenchmarkobservations completed,
+independentlyreviewed: bestNative/Go1.40–2.25x, noemitthresholdclaim. Full15330emit
+corpus RUNNING, followed automatically by command then15304retainednoemit. Poll50661;
+progress native-emit-corpus/progress.jsonl then noemit/attempt-1/progress.json.
+No source/fixture/tool changes permitted during gates. Newproof writerprepared in
+samegatefolder; execute afterremainingreviews. Final docs/proof/source-map/commit
+remain. Do not stop at this checkpoint or restart prior failedbenchmark cohort.
 
-Retain source and execution reviews from `34ade775`; no broad repeat. Its review
-closed actual computed-name/mapper omissions, quote/context semantics and accessor
-comment ranges. Test1 had four failures; test2/3 stopped on compile joins; test4 had
-one authored expected-comment mismatch. Direct Go/C# bytes proved the implementation
-already matched; only authored expected indentation changed. Final test5 and Native
-passed without weakening originals. There are59 harmless tab-only blank lines in the
-new synthetic test wrapper; staging check reported them at commit. No cleanup campaign
-or behavioral rerun is warranted; formatting may be handled on relevant future edits.
+### Prior candidate and repair history (no longer live sessions)
 
-Latest user clarifications: meaningful Go file/line anchors remain in new ports;
-historical methods are not uniformly anchored. Do not stop after answering tangents.
-The preferred chat performance summary now records first sampled cumulative allocation
-52,015,179,472bytes (52.02GB/48.44GiB), ReleaseCoreCLR, distinctly from later matched
-profiles; correction committed separately at `1eecad58`. No new performance workload.
+**Final correctness gates completed, but emit acceptance remains OPEN.** All final
+2,223 managed tests, six Native publications, direct Emit152+251, Foundation3153+87,
+utilities20, Program9, full15330 emit corpus (only6 external incremental metadata
+differences) and all15304 retained no-emit records passed their qualified gates.
+Command6+guards3+runtime3 passed after an observer-only quoting correction. Reviews
+are clear; earlier phase freeze hashes and transition are preserved.
 
-The full-output registry is prepared: 12,824 original fixtures, 15,330 decoded
-configurations, seven original expansion failures preserved separately. Original
-Go full-harness compilation and one smoke (emitClassDeclarationWithConstructorInES6)
-passed all nine original assertion channels; this validates reference machinery,
-not the port. Evidence: `artifacts/emit/reference-infrastructure/result.json`.
-One reused Go cache is about1.5GiB, one harness binary59MiB, prepared registry9.1MiB;
-no giant export or per-fixture builds. Initial direct inventory: printer106,
-source-map42, transform2 original functions; compiler emit file contains three
-benchmarks (including the line-break control). Original function counts are distinct from data rows/executed outcomes.
+**New concrete issue: original ManyFiles emit benchmark hangs under Native.** Root
+cohort session59661 stopped exit1 after root terminated exact PID687278 after103.7s
+without progress (~zero CPU). Same Go200-file fixture completed process0.116s /58.6ms
+measured Emit. Three preceding long-line paired observations completed; partial data
+is artifacts/emit/final-benchmarks/result.json. native-manyfiles-timeout.json and logs
+preserve failure. This is not a usable speed measurement or accepted benchmark.
+Shared scheduling fix is now source-written and independently clear. Root session
+23728 is running fresh build→managed→six Native publications under
+artifacts/emit/final-acceptance-workgroup-fix; build passed63.3s. Sources frozen.
+Run actual ManyFiles immediately after publication before the remaining broad gates.
+The new benchmark cohort script reuses the unchanged Go binary and has a60s timeout.
 
-User's documentation tangent is complete: the performance summary now contains
-the preferred chat text, committed separately at `13a89a0b`. Emit continues autonomously; do not interpret documentation or subsystem commits as a work stop.
+Sol emit_inventory implemented ConcurrentQueue caller-participation in WorkGroup
+and extended the existing construction-boundary nested-lazy control; emit_foundation
+reviewed exactly-once, recursive completion and lost-wakeup behavior clear.
+No debugger or heap capture. Root coordinates narrow rebuild/reproduction then
+proportionate revalidation of affected gates; previous passed candidate evidence stays
+honest. Candidate proof writer is prepared under final-acceptance but not executed.
+Docs/source mapping closeout pending this defect and final benchmark observations.
+
+### Earlier final execution detail (superseded run status)
+
+
+
+**Final acceptance is RUNNING, root exec session51104.** Poll write_stdin51104.
+All code/build outputs are frozen. Build attempt3, managed2223, six Native publications,
+direct Native152original+251authored Emit and retainedFoundation3153+87/util20/Program9
+passed with independent review. Full Native15330 corpus completed457.382s:15285 public
+matches,13571 complete original assertion sets,39prep skips,1720originalpolicy records,
+ONLY6 reviewed incremental build-info metadata failures. Comparator exit1 remains visible;
+qualified contract gate independently accepted. Corpus/binaries/reference hashes stable.
+
+CLI6 and boundaryguards3 passed. Runtime attempt1 failed in the Go-side Node observer
+because embedded quotes were not escaped; fixed JSON string transport preserves exactly
+the same source/expression/expectations. ONLY tools/emit-oracle/runtime_controls.py changed;
+prior freeze and explicit one-file transition saved command/attempt-1. All earlier phase
+completion records retain their original freeze hash (do not rewrite them). No build or
+corpus repeated. Command attempt2 now PASSED6+3+3 runtime cases; full15304 retained
+noemit comparisons RUNNING, progress final-acceptance/noemit/attempt-1/progress.json.
+
+Build attempt1 failed at3 JSON Add generic/AOT overloads; explicit JsonNode casts fixed.
+Attempt2 failed benchmark setup Slice/List API join; List capacity/order outside timing
+fixed. Both independent reviews clear, failed attempts retained. Recipe now collects
+compile failures across dependency graph before failing, behavioral gates unchanged.
+Managed narrow repair6 and final493Emit cases passed. No more source edits planned.
+
+After noemit: run reviewed in-repo benchmark plan final-acceptance/benchmark-cohort-plan.json
+(5variants×5runs perruntime, no external project). Root executes; foundation review clear.
+Then final proof/docs/map reconciliation, independent completion/evidence review, commit
+and clean tree. No VSCode/profiling work. Reproduction from fresh checkout is documented
+in docs/EMIT-REFERENCE.md and independently reviewed, no regenerations during gate.
+
+**Full development run is complete**: artifacts/emit/program-output/dev-full-2,
+15,330 observations in154 processes,671.071s, zero runtime failures. Frozen original,
+supplement, comparator and154request hashes rechecked unchanged.15,285 exact public
+matches +39 prep skips +6 external incremental differences. All nine original channels
+additionally revealed six contentMapper baseline discrepancies (13565 matched assertion
+sets). Foundation owns exact DiagnosticWriter canonical/source-map location adapter
+completion plus supplemental-file consumer predicate; maps independently reviews.
+No expectations changed. Full Native acceptance has not started.
+
+Inventory prepared122 qualified original xUnit rows (artifacts/emit/final-managed),
+including all eligible repaired cases and representative categories. It now prepares
+a thin final gate script reusing accepted retained commands, with fresh managed/RID
+builds and actual ILC input verification. Root alone runs central builds/gates. Maps
+updates EMIT-VERIFY reproduction and reviews the final recipe. No external-project runs.
+
+Content-mapper repair now passed: consumer-build7 10.961s zero warnings/errors; exact6
+original public outputs and all9 original assertion channels match in1.540s, evidence
+dev-repair-3. Independent maps review clear. No more code changes planned; final
+source freeze and central gates follow reviewed artifacts/emit/final-acceptance/run.py.
+
+First full raw run dev-full-1 had15,208 exact public matches,39 prep skips,83discrepancies:
+63 nil Exports lookups and8 missing method comment ranges are fixed. Remaining6 diagnostic
+failures were the omitted checker.go16942 context-sensitive parameter cache guard;
+exact upstream guard restored, independently reviewed, no harness reordering. Temporary
+public-stage probe isolated the defect and was removed; its evidence remains preserved.
+Build5 passed10.945s; repair83 run4.476s matches all79 original assertion sets and77raw
+outputs. Six raw differences ONLY buildinfo metadata require the separate incremental
+builder/snapshot owner (reviewed existing contract boundary, not passing tests).
+Command explicitly rejects unsupported incremental/composite execution while retaining
+actual configuration diagnostics; ordinary Program and check-only behavior remain.
+
+Complete original9channel consumer and comparator independently reviewed clear, including
+real declaration recompile/noCheck repeats, exact formatted baselines and the11-record
+Go source-map-record collision supplement. Last narrow review fixes: explicit CaseSensitive
+JSON PathKey and full source/config/policy identity checks. Consumer-only build6 passed1.840s.
+All original expectations are unchanged. Source reviews bind current sources; actual
+Native/full retained correctness and final committed checkpoint remain outstanding.
+
+Production build1 stopped on one NodeFactory alias (1.826s), build2 exposed15 API/type
+joins (8.679s), build3 passed10.962s zero warnings/errors. Consumerbuild1 exposed three
+nullable adapter joins; consumerbuild2 passed2.008s. Logs artifacts/emit/program-output.
+First100 original configurations matched90 full public outputs/diagnostics and retained
+10 original prep skips (13 option-policy rows included),2.074s. First actual managedCLI
+six disk controls passed5.933s against actual pinnedGo: JS/dts/maps, Unicode paths,
+output-generated/skipped failures, noEmit/listFilesOnly. Native command/full corpus pending.
+Latest logger-only source change was not in that earlier CLI binary; final gate rebuilds it.
+
+Go reference execution already COMPLETE:15,330 records,13,571 original full-harness passes,
+1,720 option-policy dispositions,39 original preconfiguration skips. Eight output-only
+skips;13,563 output assertions and13,571 each other eight channels passed. Zero original
+assertion failures. Seven fixture-expansion failures stay separately inventoried.
+Same prebuilt binary154 sequential100-request batches,150.417s measured. Raw236,001,291
+observation bytes compressed27,141,120 (logs2,384,030); no duplicate raw batches retained.
+Evidence artifacts/emit/whole-reference/{result.json,original.jsonl.gz}. No observer edits.
+Actual Go CLI six reference cases: artifacts/emit/command-reference/go-controls.json.
+Raw byte reading preserves CRLF/BOM; listFilesOnly is command-only, JSON TS6266 retained.
+
+The nil-map fix preserves Go lookup semantics: only nullable Exports receiver is guarded;
+Symbol remains required. Original GetErrorBaseline and source-map recorders are now
+source-written; original JS baseline/recompile/noCheck joins are in progress. Maps ports
+the demanded pinned patience DiffText helper for exact noCheck failure-baseline assertions.
+Pinned write-failure witness is exact `mkdir <root>/blocker: not a directory`,5033
+full DTO, nil emitted files, EmitSkipped=false. Inventory owns genuine MkdirAll/path
+error adaptation, maps reviews. These are unresolved defects, not accepted platform
+or observation differences. Raw arbitrary-byte/BOM witness also captured successfully.
+
+Next: inspect full development discrepancies; fix ordinary defects with original expectations
+unchanged. Finish original JS/declaration recompile/noCheck/map assertions, independently
+review them; then integrated xUnit, actual Linux x64 Native AOT full corpus and CLI/runtime
+output modes, retained foundation/binder/checker/noEmit correctness and applicable in-repo
+performance gates. No external-project runs. Finish source map/evidence/docs and coherent
+commits; continue to the fixed whole-emit gate, not merely this internal checkpoint.
+Freeze source AND build metadata during acceptance publication (no intervening commits).
+Check actual ILC dependency assemblies rather than assuming top-level build freshness.
+
+User tangents already handled: Go file/line anchors remain in new ports; no historical
+comment cleanup. Preferred chat performance summary replaced repo text at13a89a0b;
+52,015,179,472 sampled bytes (52.02GB/48.44GiB) initial ReleaseCoreCLR cumulative allocation
+clarification committed1eecad58, distinctly from live memory or exact Native bytes.
+Do not redo profiling or stop after answering tangents.
 
 # Accepted final delivery checkpoint (2026-10-11)
 

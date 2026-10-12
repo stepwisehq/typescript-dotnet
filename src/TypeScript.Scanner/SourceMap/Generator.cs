@@ -9,12 +9,12 @@ namespace TypeScript.SourceMap;
 
 // SourceIndex/NameIndex/UTF16Offset use the pinned Go platform's 64-bit ints; source
 // text offsets in the mapper are UTF8 byte offsets, never these UTF16 columns.
-internal sealed class RawSourceMap
+public sealed class RawSourceMap
 {
-    internal int Version;
-    internal ByteStringValue File, SourceRoot, Mappings;
-    internal ByteStringValue[] Sources = [], Names = [];
-    internal ByteStringValue?[]? SourcesContent;
+    public int Version;
+    public ByteStringValue File, SourceRoot, Mappings;
+    public ByteStringValue[] Sources = [], Names = [];
+    public ByteStringValue?[]? SourcesContent;
 }
 internal sealed class Generator
 {
@@ -173,6 +173,7 @@ internal sealed class Generator
         return JsonCodec.Marshal(fields);
     }
     internal string String() => GoString.FromBytes(bytes());
+    internal ByteStringValue Value() => ByteStringValue.FromView(ByteStringView.FromOwnedBytes(bytes()));
     internal string Base64DataURL() => "data:application/json;base64," + Convert.ToBase64String(bytes());
     private static int base64FormatEncode(int value) => value switch { >=0 and <26 => 'A'+value, >=26 and <52 => 'a'+value-26, >=52 and <62 => '0'+value-52, 62 => '+', 63 => '/', _ => throw new InvalidOperationException("not a base64 value") };
 }

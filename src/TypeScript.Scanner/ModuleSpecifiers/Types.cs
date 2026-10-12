@@ -79,13 +79,13 @@ internal interface IModuleSpecifierGenerationHost : TypeScript.OutputPaths.IOutp
     RootedDirectoryPath BaseDirectory();
     TypeScript.TsOptions.SourceOutputAndProjectReference? GetProjectReferenceFromSource(PathKey path);
     Slice<RootedFilePath> GetRedirectTargets(PathKey path);
-    RootedFilePath GetSourceOfProjectReferenceIfOutputIncluded(SourceFile file);
+    RootedFilePath GetSourceOfProjectReferenceIfOutputIncluded(HasFileName file);
     bool FileExists(RootedFilePath path);
     RootedDirectoryPath GetNearestAncestorDirectoryWithPackageJson(RootedDirectoryPath directory);
     InfoCacheEntry? GetPackageJsonInfo(RootedFilePath path);
-    ResolutionMode GetDefaultResolutionModeForFile(SourceFile file);
-    ResolvedModule? GetResolvedModuleFromModuleSpecifier(SourceFile file, Node specifier);
-    ResolutionMode GetModeForUsageLocation(SourceFile file, Node specifier);
+    ResolutionMode GetDefaultResolutionModeForFile(HasFileName file);
+    ResolvedModule? GetResolvedModuleFromModuleSpecifier(HasFileName file, Node specifier);
+    ResolutionMode GetModeForUsageLocation(HasFileName file, Node specifier);
 }
 
 internal enum MatchingMode : byte

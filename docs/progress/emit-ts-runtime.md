@@ -1,5 +1,15 @@
 # TS runtime and import-elision continuation
 
+Prior candidate integrated correctness update: 2,223 managed records passed; actual Native Emit
+passed 152 original functions and 251 authored controls; all 15,330 emit configurations
+were observed, with only six reviewed external incremental metadata deltas visible.
+All 13,571 original assertion sets and all 15,304 retained Native noEmit public records
+match. Disk/guard/runtime controls passed 6/3/3. A reviewed nested WorkGroup starvation fix is now undergoing fresh coordinated
+revalidation. Fresh managed/direct/publication gates and all 50 original workload
+observations passed. Fresh Native corpus and command revalidation also passed;
+full retained noEmit passed. Independent final reviews are clear; the coordinator accepted the contract-qualified scope. Benchmark summaries/allocation semantics are in the assessment. Earlier checkpoint/pending descriptions below are historical;
+[assessment](../EMIT-ASSESSMENT.md) records current scope and freeze qualification.
+
 From accepted printer/resolver checkpoint `34ade775`, inventory owns complete pinned ImportElision7functions/20originaltable rows, RuntimeSyntax40functions and TSUtilities1function. Foundation independently reviews these; maps owns LegacyDecorators and foundation owns Metadata/TypeSerializer/ESUtilities. Root coordinates integration builds.
 
 All48 upstream functions are source-written with original file/line anchors. RuntimeSyntax preserves ancestor/scope restoration, namespace first-declaration byte-key owners, enum evaluation/reverse mapping, required parameter-name clones, prologue Clone and Slice header append/rest traversal. The prior TypeEraser dotted-module leaf now calls its true RuntimeSyntax counterpart. No consumers or ES transforms are substituted.

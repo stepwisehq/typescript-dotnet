@@ -112,12 +112,14 @@ public partial class Scanner
     }
     public static string GetTextOfJSDocComment(NodeList? comment) => ScannerString.ToJsString(GetTextOfJSDocCommentValue(comment));
     public static byte[] GetTextOfJSDocCommentBytes(NodeList? comment) => TextBytes(GetTextOfJSDocCommentValue(comment));
-    internal static string DeclarationNameToStringByteString(Node? name)
+    // scanner utilities: declarationNameToString. Retain borrowed source bytes for emit consumers.
+    internal static ByteStringValue DeclarationNameToStringValue(Node? name)
     {
         if (name == null || name.Pos() == name.End())
-            return "(Missing)";
-        return GetTextOfNodeByteString(name);
+            return ByteStringValue.FromString("(Missing)");
+        return GetTextOfNodeValue(name);
     }
+    internal static string DeclarationNameToStringByteString(Node? name) => DeclarationNameToStringValue(name).Materialize()!;
 
     public static string DeclarationNameToString(Node? name) => ScannerString.ToJsString(DeclarationNameToStringByteString(name));
     public static byte[] DeclarationNameToStringBytes(Node? name) => GoString.Bytes(DeclarationNameToStringByteString(name));
