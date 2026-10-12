@@ -1,7 +1,7 @@
 # Language-services verification
 
 The [completion contract](./LANGUAGE-SERVICES-CONTRACT.md) is still in progress.
-The current [dependency result](../validation/results/language-services-dependencies-23.json)
+The current [dependency result](../validation/results/language-services-dependencies-33.json)
 records a passing managed and Linux x64 Native AOT dependency run, its source hashes,
 and its limitations. This does not establish an operational language server.
 Subsequent source changes require their own integration verification.
@@ -25,23 +25,34 @@ as assertion groups; do not count a selected channel as an entire original funct
 Run from the repository so source fixtures and unchanged upstream baselines are found.
 Publishing alone is insufficient: execute the produced native binary.
 
-The current dependency23 packet passed **142 ordinary xUnit cases and eight separate
-decoder-depth cases**. Actual Linux x64 Native AOT execution passed86 original
-TypeScript dependency functions (including31 protocol and7 formatting functions),
-one original external normalization function,17 complete original regexp functions
-plus5 selected/adapted channels,7 additional NFD channels,4 partial AST-navigation Go
-baseline channels,3 original token subtests and43 authored controls. These units are
-not interchangeable. The result records original corpus skips and source/binary hashes.
+The current dependency33 packet passed **212 ordinary xUnit cases** with no failures
+or skips. Actual Linux x64 Native AOT execution passed137 original TypeScript
+functions,11 original external locale functions, the retained normalization and
+regexp channels, and44 authored controls. New regexp replacement/index coverage is
+one whole original function plus one selected channel; quoting adds one whole
+function; Unicode adds three whole functions and one selected channel. The
+[independently reviewed result](./progress/lsp-dependencies-33-review.json) and
+[execution record](../validation/results/language-services-dependencies-33.json) record source
+and native binary hashes, unchanged original corpus exclusions, and exact logs.
+The eight unchanged isolated decoder probes retain their dependency23 evidence;
+they were not added to the212 count or rerun for dependency33.
 
-[Independent review](./progress/lsp-dependencies-23-review.json) checked the result,
-counts and hashes. [Codec source review](./progress/lsp-codec-review.md),
-[formatting review](./progress/lsp-formatting-review.md) and
-[project graph review](./progress/lsp-project-graph-review.md) are clear for their
-stated scopes. One post-run test-adapter nullability flag was corrected to upstream;
-the original non-null input/assertions are unchanged, no production changed, and the
-record explicitly does not claim execution of that corrected flag. The original
-AST-navigation JavaScript channels, full service corpus, actual server transport and
-comprehensive retained compiler/emit regressions remain pending.
+The isolated `--ipc-fatal-notification` native control must run as a child with a
+bounded timeout and core dumps disabled. Success requires nonzero termination,
+the exact `authored fatal IPC notification` marker, and no timeout. An arbitrary
+crash is not a pass. The dependency33 child returned-6 and the required marker.
+This checks the upstream unhandled-notification boundary; it is not a real-server
+transport test.
+
+[Independent source reviews](./progress/lsp-autoimport-core-review.md) cover this
+packet together with [host](./progress/lsp-contentmapper-host-review.md),
+[localization](./progress/lsp-localization-review.md),
+[IPC](./progress/lsp-ipc-review.md) and earlier change/codec/formatting reviews.
+Five original autoimport registry tests require the genuine Session and remain
+pending. The original AST-navigation JavaScript channels, full service corpus,
+actual server transport and comprehensive retained compiler/emit regressions also
+remain pending. The post-Native23 test-adapter nullability correction has now passed
+managed and native execution without changing its original assertions.
 
 The newly added protocol depth probes have a separate native entrypoint so runtime
 stack admission can be tested without terminating the ordinary assertion packet:

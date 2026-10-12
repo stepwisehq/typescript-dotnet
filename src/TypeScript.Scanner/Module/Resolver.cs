@@ -1982,7 +1982,8 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
         return Core.Deduplicate(result);
     }
 
-    public Slice<ResolvedEntrypoint> GetEntrypointsFromPackageJsonInfo(InfoCacheEntry package, string packageName, bool enableDirectorySearch)
+    public Slice<ResolvedEntrypoint> GetEntrypointsFromPackageJsonInfo(InfoCacheEntry package, string packageName, bool enableDirectorySearch) => GetEntrypointsFromPackageJsonInfo(package, ByteStringValue.FromString(packageName), enableDirectorySearch);
+    internal Slice<ResolvedEntrypoint> GetEntrypointsFromPackageJsonInfo(InfoCacheEntry package, ByteStringValue packageName, bool enableDirectorySearch)
     {
         const Extensions extensions = Extensions.TypeScript | Extensions.Declaration;
         var state = new resolutionState
@@ -1993,7 +1994,7 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
             compilerOptions = compilerOptions
         };
         var dynamicPackage = TsPath.IsEncodedDynamicFileName(package.PackageDirectory.AsDirectoryPath().AsValue());
-        var sourceName = dynamicPackage ? TsPath.DynamicURIPathToModuleSpecifier(ByteStringValue.FromString(packageName)) : ByteStringValue.FromString(packageName);
+        var sourceName = dynamicPackage ? TsPath.DynamicURIPathToModuleSpecifier(packageName) : packageName;
         if (package.Exists() && package.Contents!.Exports.IsPresent())
             return state.loadEntrypointsFromExportMap(package, sourceName, package.Contents.Exports);
         Slice<ResolvedEntrypoint> result = default;

@@ -1047,7 +1047,8 @@
           "name": "TestAliasResolverGetDiagnosticsDoesNotPanic",
           "line": 49,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "evidence": "validation/results/language-services-dependencies-33.json"
         }
       ]
     },
@@ -1060,7 +1061,8 @@
           "name": "TestModuleIDVariants",
           "line": 10,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "evidence": "validation/results/language-services-dependencies-33.json"
         }
       ]
     },
@@ -1073,7 +1075,8 @@
           "name": "TestIndexClone",
           "line": 16,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "evidence": "validation/results/language-services-dependencies-33.json"
         }
       ]
     },
@@ -1136,25 +1139,29 @@
           "name": "TestWordIndices",
           "line": 12,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "evidence": "validation/results/language-services-dependencies-33.json"
         },
         {
           "name": "TestGetPackageRealpathFuncs_FollowsNodeModulesSymlinks",
           "line": 101,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "evidence": "validation/results/language-services-dependencies-33.json"
         },
         {
           "name": "TestGetPackageRealpathFuncs_DuplicateCacheKeys",
           "line": 197,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "evidence": "validation/results/language-services-dependencies-33.json"
         },
         {
           "name": "TestGetPackageRealpathFuncs_NonSymlinkedPackageWithSymlinkedDeps",
           "line": 237,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "evidence": "validation/results/language-services-dependencies-33.json"
         }
       ]
     },
@@ -1167,7 +1174,14 @@
           "name": "TestTextEditsConflictAtSameInsertionPointAcrossProjections",
           "line": 9,
           "kind": "test",
-          "disposition": "inventoried-not-executed"
+          "disposition": "managed-and-native-assertions-passed",
+          "implementationDisposition": "original-assertion-port-executed-managed",
+          "managedEvidence": "validation/results/language-services-dependencies-25.json",
+          "goEvidence": "artifacts/language-services/integration-2/original-go.jsonl",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/ChangeTrackerChecks.cs"
+          ],
+          "evidence": "validation/results/language-services-dependencies-33.json"
         }
       ]
     },
@@ -60691,12 +60705,454 @@
           "nativeEvidence": "validation/results/language-services-dependencies-23.json"
         }
       ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+      "family": "contentmapper-host-dependency",
+      "functions": [
+        {
+          "name": "TestRunnerTransform",
+          "line": 236,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestHostLogging",
+          "line": 252,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestHostDiscardsStderrWithoutLogging",
+          "line": 282,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestMapperDiagnosticName",
+          "line": 298,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestRunnerTransformResponseValidation",
+          "line": 313,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestHostClosesProcessWhenReadLoopFails",
+          "line": 329,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestHostReportsInitializationTimeoutBeforeClosingProcess",
+          "line": 364,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestHostReportsProcessExitBeforeInitialization",
+          "line": 384,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestRunnerTransformDiagnosticDirectives",
+          "line": 436,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestMappedDiagnosticDirectiveJSON",
+          "line": 579,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestRunnerTransformSupplementalOutputs",
+          "line": 646,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestRunnerTransformInvalidSupplementalDiagnosticDirective",
+          "line": 677,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestRunnerRejectsInvalidVirtualExtension",
+          "line": 703,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestRunnerPositionEncodings",
+          "line": 730,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestRunnerRejectsUnsupportedPositionEncoding",
+          "line": 765,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestRunnerRejectsInvalidDiagnosticSource",
+          "line": 774,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestRunnerRejectsPositionsInsideUnicodeCharacters",
+          "line": 793,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestRunnerConsolidatesByIdentity",
+          "line": 813,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestRunnerLeaseLifecycle",
+          "line": 833,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestProjectLifecycle",
+          "line": 971,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestProjectMethodsAfterHostClose",
+          "line": 1076,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestProjectRejectsRelativeWatchedFiles",
+          "line": 1114,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestDynamicProjectRequiresConfigIdentity",
+          "line": 1137,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestStaticMapperRejectsDynamicProjectResponseFields",
+          "line": 1161,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestProjectRejectsInvalidOptionDiagnosticPath",
+          "line": 1193,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestRunnerForwardsProjectOptions",
+          "line": 1217,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestHostSetLocaleRestartsMapper",
+          "line": 1249,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestHostSetLocaleWaitsForTransform",
+          "line": 1277,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        }
+      ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ipc/conn_async_test.go",
+      "sha256": "b06cf392661d5901fac20e3bd478bc3012521695bc39901331f9aaa21f762919",
+      "family": "ipc-async-dependency",
+      "functions": [
+        {
+          "name": "TestAsyncConnRunWaitsForHandlers",
+          "line": 88,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "implementationDisposition": "original-assertion-port-executed-managed",
+          "managedEvidence": "validation/results/language-services-dependencies-25.json",
+          "goEvidence": "artifacts/language-services/integration-2/original-go.jsonl",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/IpcAsyncChecks.cs"
+          ],
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestAsyncConnRunCancelsHandlersOnEOF",
+          "line": 120,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "implementationDisposition": "original-assertion-port-executed-managed",
+          "managedEvidence": "validation/results/language-services-dependencies-25.json",
+          "goEvidence": "artifacts/language-services/integration-2/original-go.jsonl",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/IpcAsyncChecks.cs"
+          ],
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestAsyncConnResponseWriteFailureWithNilTransport",
+          "line": 138,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "implementationDisposition": "original-assertion-port-executed-managed",
+          "managedEvidence": "validation/results/language-services-dependencies-25.json",
+          "goEvidence": "artifacts/language-services/integration-2/original-go.jsonl",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/IpcAsyncChecks.cs"
+          ],
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestAsyncConnCallReturnsWhenPeerCloses",
+          "line": 202,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "implementationDisposition": "original-assertion-port-executed-managed",
+          "managedEvidence": "validation/results/language-services-dependencies-25.json",
+          "goEvidence": "artifacts/language-services/integration-2/original-go.jsonl",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/IpcAsyncChecks.cs"
+          ],
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestAsyncConnCallAfterReadLoopFailureReturnsImmediately",
+          "line": 224,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "implementationDisposition": "original-assertion-port-executed-managed",
+          "managedEvidence": "validation/results/language-services-dependencies-25.json",
+          "goEvidence": "artifacts/language-services/integration-2/original-go.jsonl",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/IpcAsyncChecks.cs"
+          ],
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestAsyncConnTerminalErrorIncludesResponseWriteFailure",
+          "line": 247,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "implementationDisposition": "original-assertion-port-executed-managed",
+          "managedEvidence": "validation/results/language-services-dependencies-25.json",
+          "goEvidence": "artifacts/language-services/integration-2/original-go.jsonl",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/IpcAsyncChecks.cs"
+          ],
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestAsyncConnRunWaitsForRequestAfterPeerCloses",
+          "line": 264,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "implementationDisposition": "original-assertion-port-executed-managed",
+          "managedEvidence": "validation/results/language-services-dependencies-25.json",
+          "goEvidence": "artifacts/language-services/integration-2/original-go.jsonl",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/IpcAsyncChecks.cs"
+          ],
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        }
+      ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ipc/timing_test.go",
+      "sha256": "47b1ee58fd433816371f2deff175bcf1ae29910d8bc93f62b7cf24986f4d0b92",
+      "family": "ipc-timing-dependency",
+      "functions": [
+        {
+          "name": "TestTimingCollector",
+          "line": 10,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "implementationDisposition": "original-assertion-port-executed-managed",
+          "managedEvidence": "validation/results/language-services-dependencies-25.json",
+          "goEvidence": "artifacts/language-services/integration-2/original-go.jsonl",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/IpcTimingChecks.cs"
+          ],
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestServerTimingSnapshotDisabled",
+          "line": 59,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "implementationDisposition": "original-assertion-port-executed-managed",
+          "managedEvidence": "validation/results/language-services-dependencies-25.json",
+          "goEvidence": "artifacts/language-services/integration-2/original-go.jsonl",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/IpcTimingChecks.cs"
+          ],
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestTimingCollectorReset",
+          "line": 67,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "implementationDisposition": "original-assertion-port-executed-managed",
+          "managedEvidence": "validation/results/language-services-dependencies-25.json",
+          "goEvidence": "artifacts/language-services/integration-2/original-go.jsonl",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/IpcTimingChecks.cs"
+          ],
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestDurationToMillis",
+          "line": 87,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "dependency": "Genuine trust-gated contentmapper process host and asynchronous JSON-RPC lifecycle; complete original assertion port pending.",
+          "implementationDisposition": "original-assertion-port-executed-managed",
+          "managedEvidence": "validation/results/language-services-dependencies-25.json",
+          "goEvidence": "artifacts/language-services/integration-2/original-go.jsonl",
+          "sharedChecks": [
+            "validation/LanguageServices.Checks/IpcTimingChecks.cs"
+          ],
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        }
+      ]
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/diagnostics_test.go",
+      "sha256": "e33fec5905592e95ee901d589cd23c92dbfb3466e2ecbbc73a95b04fe0d88d02",
+      "family": "diagnostics-runtime-dependency",
+      "functions": [
+        {
+          "name": "TestLocalize",
+          "line": 22,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestLocalize_ByKey",
+          "line": 124,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestLocaleFiles",
+          "line": 158,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestLocaleFilesIgnoreStaleDiagnostics",
+          "line": 204,
+          "kind": "test",
+          "disposition": "managed-and-native-assertions-passed",
+          "evidence": "validation/results/language-services-dependencies-33.json"
+        },
+        {
+          "name": "TestGenerateLocalizations",
+          "line": 216,
+          "kind": "test",
+          "disposition": "external-go-source-generator-not-runtime-closure",
+          "reason": "Go source generator tooling; exact runtime catalogs and all four runtime test functions retained."
+        }
+      ]
     }
   ],
-  "implementationNote": "Initial TypeScript subsystem inventory4820 entries plus one concrete core BFS dependency entry.86 original functions passed managed and Linux x64 Native dependency23 checks; four AstNav functions have partial passing Go channels with remaining JavaScript channels pending. Source-written and dependency execution do not establish subsystem completion.",
+  "implementationNote": "Initial TypeScript subsystem inventory4820 entries plus core BFS and39 concrete contentmapper/async-IPC dependency entries.86 original functions passed managed and Linux x64 Native dependency23;12 further Change/IPC originals passed managed25, Native pending. Four AstNav functions retain partial Go channels with JavaScript channels pending. The28 host functions are inventoried, not C# executed. Source-written and dependency execution do not establish subsystem completion.",
   "executionDispositionTotals": {
-    "inventoried-not-executed": 4731,
-    "managed-and-native-assertions-passed": 86,
-    "partial-managed-native-channels-passed-remaining-channels-pending": 4
+    "inventoried-not-executed": 4729,
+    "managed-and-native-assertions-passed": 137,
+    "partial-managed-native-channels-passed-remaining-channels-pending": 4,
+    "external-go-source-generator-not-runtime-closure": 1
   }
 }

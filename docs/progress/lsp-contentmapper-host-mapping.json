@@ -1,0 +1,251 @@
+{
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+  "scope": "actual trust-gated Session contentmapper process host; existing accepted transform owners reused",
+  "upstream": "upstream/TypeScript/tsc/internal/contentmapper/hostimpl.go",
+  "upstreamSha256": "4fbafa0b7c9718bcf5007414adcea49afefedd15675e334af2e44554fcd8f4d9",
+  "originalTestSource": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+  "originalTestSourceSha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe",
+  "originalTestFunctions": 28,
+  "testMainLifecycleFunctions": 0,
+  "originalTestRows": [
+    {
+      "name": "TestRunnerTransform",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestHostLogging",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestHostDiscardsStderrWithoutLogging",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestMapperDiagnosticName",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestRunnerTransformResponseValidation",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestHostClosesProcessWhenReadLoopFails",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestHostReportsInitializationTimeoutBeforeClosingProcess",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestHostReportsProcessExitBeforeInitialization",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestRunnerTransformDiagnosticDirectives",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestMappedDiagnosticDirectiveJSON",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestRunnerTransformSupplementalOutputs",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestRunnerTransformInvalidSupplementalDiagnosticDirective",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestRunnerRejectsInvalidVirtualExtension",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestRunnerPositionEncodings",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestRunnerRejectsUnsupportedPositionEncoding",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestRunnerRejectsInvalidDiagnosticSource",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestRunnerRejectsPositionsInsideUnicodeCharacters",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestRunnerConsolidatesByIdentity",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestRunnerLeaseLifecycle",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestProjectLifecycle",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestProjectMethodsAfterHostClose",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestProjectRejectsRelativeWatchedFiles",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestDynamicProjectRequiresConfigIdentity",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestStaticMapperRejectsDynamicProjectResponseFields",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestProjectRejectsInvalidOptionDiagnosticPath",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestRunnerForwardsProjectOptions",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestHostSetLocaleRestartsMapper",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    },
+    {
+      "name": "TestHostSetLocaleWaitsForTransform",
+      "status": "managed-and-native-original-assertions-passed",
+      "source": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go"
+    }
+  ],
+  "excludedClaims": [
+    "embedding IPC endpoint",
+    "live package registry correctness",
+    "null-host substitute for trusted spawner"
+  ],
+  "originalFunctions": 58,
+  "destination": "src/TypeScript.Scanner/ContentMapper/HostImpl.cs",
+  "destinationSha256": "c9069a5071a6a8a835adb1e9bfb8e68be95ed8e8df9ea623cae3b0cae5b820c9",
+  "sourcePacket": [
+    {
+      "path": "src/TypeScript.Scanner/ContentMapper/HostImpl.cs",
+      "sha256": "c9069a5071a6a8a835adb1e9bfb8e68be95ed8e8df9ea623cae3b0cae5b820c9"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ContentMapper/HostCodecs.cs",
+      "sha256": "c0d6029aea9e44ec538301ebc3b14904931f3a9ab9d7a140101b6e3284d28b50"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ContentMapper/Host.cs",
+      "sha256": "44cc8ce1769611f2a9b306d784c2069bb92dffc2e08830d6198e663a1c65cf26"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ContentMapper/Transform.cs",
+      "sha256": "7364a9d5c796cff4b7ad91f439bdf0ebd5a27c8e655e91f2b1076106583e08dc"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ContentMapper/ContentMapper.cs",
+      "sha256": "f7a782305c4203c7c92d8fe6297821254a12f4d3cb14c5fdb793a06710439ea7"
+    },
+    {
+      "path": "src/TypeScript.Scanner/TsOptions/TsConfigParsing.cs",
+      "sha256": "a388a2a0a1b0eff8a108bbf84284f10eaa60646ab534561001558f20bc601acc"
+    },
+    {
+      "path": "src/TypeScript.Scanner/JsonRpc/JsonValue.cs",
+      "sha256": "87bac8540bd6df01fd70a7aa8334b3a44cfe8ebb0eeb799d8978ce0901a1574a"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Outputs.cs",
+      "sha256": "5aa74acce4cef9149c6979aac73919ec6cbb90761de248a57efaa6989060e236"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.ProjectErrors.cs",
+      "sha256": "fe3c2599836aa439bf6a23a6e28615bb52449f9f77d34a122fe11736d4218bfb"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Helpers.cs",
+      "sha256": "ed9b2530bf4903dcb7fa101374beee8cc69feb0682b51e08baf712efdc38f6f0"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Basic.cs",
+      "sha256": "40aea905fbd31dab785a7a334b250f7716562b243d3ebb417d184f62d3a82dd6"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.ProjectFixtures.cs",
+      "sha256": "182b4c9564e43966ae1e18cb9b900eacdfe8f0bb40992f47d194c92792a3a442"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Codecs.cs",
+      "sha256": "a17e83bad14b1f3eb9dcd2cca58f1a1d61c1b8d48f5f357a199d92a985bde2a7"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Unicode.cs",
+      "sha256": "dae53a9014dbf5a7eee59f3f22b1136465f1956e57dd5695e63b0842d9c5ad0b"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Processes.cs",
+      "sha256": "1ee5e75a819f95479f4e9b16cb85e23c527d169d95f9fbc708af0b4901fd2b43"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.cs",
+      "sha256": "2b3185da4c3741db7a5306040152ccd36fadef6a15af1a8f627ce4b14cf9d209"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.ProjectLifecycle.cs",
+      "sha256": "65186e0d55a40b5d1bcbc54d944f3201511cf10f5bad0564397e9ebfb818b3f5"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Leases.cs",
+      "sha256": "7d76ba141c59f6a7c44bffa92868b4ffa5cc48cf0b1663d7f524e92654a1b6da"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ContentMapperHostTests.cs",
+      "sha256": "85912e21be4d9cbfe19f43b01f10b2c19b14a5553cce30a40fd0558dc5730d68"
+    }
+  ],
+  "adaptations": [
+    "Closed AOT JSON/v2 descriptors retain each wire value/pointer root and raw omitted-empty/null admission.",
+    "IpcTestPipe actual rendezvous duplex fixture replaces original net.Pipe; the real production host and IPC run unchanged.",
+    "ProjectSpecIdentity retains ordered mapper and compiler-options reference identity instead of formatting native pointer addresses.",
+    "Linked cancellation registration disposed after cancel; retained token preserves repeated close and lease error behavior.",
+    "OptionPathSegment retains Linux64 Go int with long; existing AST indexing narrows after original bounds admission.",
+    "Owned outgoing RawJsonValue headers shared read-only; decoded values keep their required copying constructor.",
+    "Locale remains the actual typed owner; subprocess exit and error text may retain standard runtime boundary adaptations where explicitly identified during verification.",
+    "WireDiagnostic and WireMappedDiagnosticDirective names distinguish IPC DTO structs from retained Scanner normalized owners; descriptor Go type names remain unchanged.",
+    "Directive overlap ordering uses the existing source-faithful GoSliceSort worker on the required indexed copy; codec semantic error labels retain exact Go slice type names."
+  ],
+  "executionEvidence": "validation/results/language-services-dependencies-33.json"
+}

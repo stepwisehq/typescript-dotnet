@@ -77,18 +77,20 @@ internal static partial class LsUtil
         return first != null ? QuotePreferenceFromString(first) : QuotePreference.Double;
     }
 
-    internal static string ModuleSymbolToValidIdentifier(Symbol moduleSymbol, bool forceCapitalize)
+    internal static string ModuleSymbolToValidIdentifier(Symbol moduleSymbol, bool forceCapitalize) => ModuleSymbolToValidIdentifierValue(moduleSymbol, forceCapitalize).Materialize()!;
+    internal static ByteStringValue ModuleSymbolToValidIdentifierValue(Symbol moduleSymbol, bool forceCapitalize)
     {
         var name = moduleSymbol.NameValue;
         var(ambientName, ok) = Ast.TryGetAmbientModuleNameValueFromSymbolName(name);
         if (ok)
             name = ambientName;
-        return ModuleSpecifierToValidIdentifier(name, forceCapitalize);
+        return ModuleSpecifierToValidIdentifierValue(name, forceCapitalize);
     }
 
     internal static string ModuleSpecifierToValidIdentifier(string moduleSpecifier, bool forceCapitalize) => ModuleSpecifierToValidIdentifier(ByteStringValue.FromString(moduleSpecifier), forceCapitalize);
     // utilities.go:125. Retain the two original rune-array owners and simple Unicode case mapping.
-    internal static string ModuleSpecifierToValidIdentifier(ByteStringValue moduleSpecifier, bool forceCapitalize)
+    internal static string ModuleSpecifierToValidIdentifier(ByteStringValue moduleSpecifier, bool forceCapitalize) => ModuleSpecifierToValidIdentifierValue(moduleSpecifier, forceCapitalize).Materialize()!;
+    internal static ByteStringValue ModuleSpecifierToValidIdentifierValue(ByteStringValue moduleSpecifier, bool forceCapitalize)
     {
         var withoutExtension = TsPath.RemoveAnyFileExtension(moduleSpecifier);
         if (withoutExtension.EndsWith("/index"u8))
@@ -112,8 +114,8 @@ internal static partial class LsUtil
         var builder = new GoBuilder();
         foreach (var rune in result)
             builder.WriteRune(rune);
-        var text = builder.String();
-        return text.Length != 0 && !IsNonContextualKeyword(ScannerApi.StringToToken(text)) ? text : "_" + text;
+        var text = builder.Value();
+        return text.Length != 0 && !IsNonContextualKeyword(ScannerApi.StringToToken(text)) ? text : ByteStringValue.Concat(ByteStringValue.FromString("_"), text);
     }
 
     internal static bool IsNonContextualKeyword(Kind token) => Ast.IsKeywordKind(token) && !Ast.IsContextualKeyword(token);

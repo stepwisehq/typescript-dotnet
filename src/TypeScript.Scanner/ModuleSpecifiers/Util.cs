@@ -655,4 +655,143 @@ internal static partial class ModuleSpecifiers
 
         return TsPath.ToModuleSpecifier(specifier);
     }
+
+internal static ModuleSpecifier ProcessEntrypointEnding(ResolvedEntrypoint entrypoint, UserPreferences prefs, IModuleSpecifierGenerationHost host, CompilerOptions options, SourceFile importingSourceFile, Slice<ModuleSpecifierEnding> allowedEndings)
+    {
+        var specifier = entrypoint.ModuleSpecifier.AsValue();
+        if ((entrypoint.Ending == Ending.Fixed))
+        {
+            return entrypoint.ModuleSpecifier;
+        }
+
+        if ((GoRuntime.Len(allowedEndings) == 0))
+        {
+            allowedEndings = GetAllowedEndingsInPreferredOrderValue(prefs, host, options, importingSourceFile, default, host.GetDefaultResolutionModeForFile(importingSourceFile));
+        }
+
+        var preferredEnding = allowedEndings[0];
+        var dtsExtension = TsPath.GetDeclarationFileExtension(specifier);
+        if ((dtsExtension.Length != 0))
+        {
+            switch (preferredEnding)
+            {
+                case ModuleSpecifierEnding.TsExtension:
+                case ModuleSpecifierEnding.JsExtension:
+                {
+                    var jsExtension = GetJSExtensionValueForDeclarationFileExtension(dtsExtension);
+                    return TsPath.ToModuleSpecifier(TsPath.ChangeAnyExtension(specifier, jsExtension, Slice<ByteStringValue>.FromArray([dtsExtension]), CaseSensitivity.CaseSensitive));
+                }
+
+                case ModuleSpecifierEnding.Minimal:
+                case ModuleSpecifierEnding.Index:
+                {
+                    if ((entrypoint.Ending == Ending.Changeable))
+                    {
+                        if ((dtsExtension.EqualsString(TsPath.ExtensionDts)))
+                        {
+                            specifier = TsPath.RemoveExtension(specifier, dtsExtension);
+                            if ((preferredEnding == ModuleSpecifierEnding.Minimal))
+                            {
+                                specifier = GoStrings.TrimSuffix(specifier, ByteStringValue.FromString("/index"));
+                            }
+
+                            return TsPath.ToModuleSpecifier(specifier);
+                        }
+
+                        var jsExtension2 = GetJSExtensionValueForDeclarationFileExtension(dtsExtension);
+                        return TsPath.ToModuleSpecifier(TsPath.ChangeAnyExtension(specifier, jsExtension2, Slice<ByteStringValue>.FromArray([dtsExtension]), CaseSensitivity.CaseSensitive));
+                    }
+
+                    var jsExtension3 = GetJSExtensionValueForDeclarationFileExtension(dtsExtension);
+                    return TsPath.ToModuleSpecifier(TsPath.ChangeAnyExtension(specifier, jsExtension3, Slice<ByteStringValue>.FromArray([dtsExtension]), CaseSensitivity.CaseSensitive));
+                }
+            }
+
+            return TsPath.ToModuleSpecifier(specifier);
+        }
+
+        if (TsPath.FileExtensionIsOneOf(specifier, TsPath.SupportedTSImplementationExtensions))
+        {
+            switch (preferredEnding)
+            {
+                case ModuleSpecifierEnding.TsExtension:
+                {
+                    return TsPath.ToModuleSpecifier(specifier);
+                }
+
+                case ModuleSpecifierEnding.JsExtension:
+                {
+                    {
+                        var jsExtension4 = ModuleFunctions.TryGetJSExtensionForFile(specifier, options);
+                        if ((jsExtension4 != ""))
+                        {
+                            return TsPath.ToModuleSpecifier(TsPath.pathConcat(TsPath.RemoveFileExtension(specifier), ByteStringValue.FromString(jsExtension4)));
+                        }
+                    }
+
+                    return TsPath.ToModuleSpecifier(specifier);
+                }
+
+                case ModuleSpecifierEnding.Minimal:
+                case ModuleSpecifierEnding.Index:
+                {
+                    if ((entrypoint.Ending == Ending.Changeable))
+                    {
+                        specifier = TsPath.RemoveFileExtension(specifier);
+                        if ((preferredEnding == ModuleSpecifierEnding.Minimal))
+                        {
+                            specifier = GoStrings.TrimSuffix(specifier, ByteStringValue.FromString("/index"));
+                        }
+
+                        return TsPath.ToModuleSpecifier(specifier);
+                    }
+
+                    {
+                        var jsExtension5 = ModuleFunctions.TryGetJSExtensionForFile(specifier, options);
+                        if ((jsExtension5 != ""))
+                        {
+                            return TsPath.ToModuleSpecifier(TsPath.pathConcat(TsPath.RemoveFileExtension(specifier), ByteStringValue.FromString(jsExtension5)));
+                        }
+                    }
+
+                    return TsPath.ToModuleSpecifier(specifier);
+                }
+            }
+
+            return TsPath.ToModuleSpecifier(specifier);
+        }
+
+        if (TsPath.FileExtensionIsOneOf(specifier, TsPath.SupportedJSExtensionsFlat))
+        {
+            switch (preferredEnding)
+            {
+                case ModuleSpecifierEnding.TsExtension:
+                case ModuleSpecifierEnding.JsExtension:
+                {
+                    return TsPath.ToModuleSpecifier(specifier);
+                }
+
+                case ModuleSpecifierEnding.Minimal:
+                case ModuleSpecifierEnding.Index:
+                {
+                    if ((entrypoint.Ending == Ending.Changeable))
+                    {
+                        specifier = TsPath.RemoveFileExtension(specifier);
+                        if ((preferredEnding == ModuleSpecifierEnding.Minimal))
+                        {
+                            specifier = GoStrings.TrimSuffix(specifier, ByteStringValue.FromString("/index"));
+                        }
+
+                        return TsPath.ToModuleSpecifier(specifier);
+                    }
+
+                    return TsPath.ToModuleSpecifier(specifier);
+                }
+            }
+
+            return TsPath.ToModuleSpecifier(specifier);
+        }
+
+        return TsPath.ToModuleSpecifier(specifier);
+    }
 }

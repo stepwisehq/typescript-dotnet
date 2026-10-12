@@ -430,7 +430,7 @@ public static partial class TsOptions
                 {
                     var elements = node!.Elements();
                     if (segment.Index < elements.Count)
-                        next = elements[segment.Index];
+                        next = elements[checked((int)segment.Index)];
                 }
                 else if (!segment.IsIndex && Ast.IsObjectLiteralExpression(node))
                     next = ForEachPropertyAssignment(node!.AsObjectLiteralExpression(), segment.Property, property => property.Initializer);

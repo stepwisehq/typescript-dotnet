@@ -86,4 +86,26 @@ internal static partial class GoQuote
         index = Search(exceptions, rune);
         return index == exceptions.Length || exceptions[index] != rune;
     }
+
+internal static bool CanBackquote(ByteStringValue text)
+    {
+        while (text.Length > 0)
+        {
+            var(rune, width) = text.IsBytes ? Utf8.DecodeRuneInString(text.ByteSpan) : Utf8.DecodeRuneInString(text.CharSpan);
+            text = text.Slice(width);
+            if (width > 1)
+            {
+                if (rune == 0xfeff)
+                    return false;
+                continue;
+            }
+
+            if (rune == Utf8.RuneError)
+                return false;
+            if ((rune < ' ' && rune != '\t') || rune == '`' || rune == 0x7f)
+                return false;
+        }
+
+        return true;
+    }
 }

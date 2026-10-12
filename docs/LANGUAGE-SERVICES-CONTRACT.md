@@ -62,6 +62,12 @@ Direct Go-to-C# mappings and meaningful adaptations belong in
 - Include client and fallback filesystem watching needed by sessions. The separate
   command-line solution builder, incremental build-info orchestration and build/watch
   command remain outside scope; they are not the editor snapshot implementation.
+  Complete the shared `lspwatcher`/`fswatch` algorithms and required Linux inotify,
+  fanotify and filesystem-specific fallback transport. The pinned Linux server disables
+  fallback initialization when the client lacks dynamic registration because Linux
+  backends do not report fast recursive support; preserve that rule without omitting
+  the separately exercised watcher implementation. Native Windows/macOS/BSD backends
+  are outside this Linux implementation boundary, not merely claimed unverified.
 - Include ATA package discovery, installation/state algorithms and the injected npm
   process host. Verify deterministic upstream executor cases and local host behavior;
   live registry availability and the contents of arbitrary downloaded packages are
@@ -96,6 +102,13 @@ index observations; complete that concrete closure before its consumer. Unused
 standard-library find-all APIs remain outside the caller closure. This dependency decision
 does not authorize an unrelated general-purpose library project. Source-grounded
 compatibility findings still require behavioral verification.
+
+Locale-aware server diagnostics also require the genuine diagnostic lookup/cache,
+13 pinned message catalogs, and the missing pinned `x/text` language matcher and
+likely-subtag/canonicalization workers. Reuse the existing locale parser; do not
+substitute .NET culture selection or silently return English for supported locales.
+The original Go-source localization generator is a tooling-test disposition, distinct
+from runtime catalog assertions and actual Native AOT resource-loading verification.
 
 ## Acceptance
 

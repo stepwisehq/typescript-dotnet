@@ -1,0 +1,177 @@
+{
+  "status": "complete-selected-production-and-original-assertion-source-review-clear",
+  "upstreamTypeScript": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "xText": "v0.42.0",
+  "reviewer": "emit_foundation",
+  "executionClaim": false,
+  "findings": [
+    {
+      "kind": "required-consumer-join",
+      "path": "src/TypeScript.Scanner/ProjectSystem/ProjectCompilerHost.cs",
+      "resolution": "Typed Default locale overload replaces temporary display-English-to-raw encoding bridge, exact compilerhost.go164\u2013166."
+    },
+    {
+      "kind": "original-assertion-observer-correction",
+      "path": "validation/LanguageServices.Checks/LocaleMatcherChecks.cs",
+      "resolution": "Managed29 TestScript exposed ID-versus-public-string mismatch at x-abc. Original Script.String maps internal zero to Zzzz; exact lookup.go342 leaf now supplies original string observation, with confidence unchanged. Peer narrow review clear against lookup.go342; execution retake remains pending."
+    }
+  ],
+  "verified": [
+    "Complete selected matcher construction/index expansion, confidence thresholds, precedence/pinning and extension/region result assembly reconcile with source.",
+    "Likely-subtag/maximize/minimize, canonicalization and tag builder use explicit copied Tag headers where Go takes values; no caller-owner mutation.",
+    "Exact thirteen gzip archive hashes and decoded string-map admission match pinned catalogs; embedded resource logical names match real load paths.",
+    "Matching table generator --check succeeds against pinned v0.42.0 tables.",
+    "Nil cached English/no-match results and catalog once loading preserve source cache behavior.",
+    "Raw UTF8 translation/argument formatting and invalid-run replacement remain separate from the retained display-English API.",
+    "Four original TypeScript runtime diagnostic assertion functions preserve tables, exact active catalog equality, sorted quotation/CRLF and stale-message observations; generator tooling has no false runtime function credit.",
+    "Eight original selected x/text assertion functions retain actual worker calls and field/content equality; compliance uses the source Raw.Make ingress (mk), original combined-tag comparison and unchanged source skip map, not a new oracle.",
+    "Coverage.BaseLanguages preserves original capacity 8798, canonical-und exclusion and sequential langNoIndex bitset enumeration used by original canonicalization idempotence assertions.",
+    "Added original SetTypeForKey36 rows including zero cached-string secondary assertions, internal Contains12 rows, and public Script12 rows/confidence reconcile with exact pinned tables and original worker entry boundaries. ScriptWithConfidence preserves all Tag.Script source branches; ScriptOf projects only its existing script result."
+  ],
+  "bindings": [
+    {
+      "path": "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Maximize.cs",
+      "sha256": "02a7a7b3d93e05b7a9671a9e252e486c686fad7cdc972f675407e6fe521f9540"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Compose.cs",
+      "sha256": "483db3be722f26d306cfb26093e60f40d62d5b515f60acc46d2fb1558382fe8d"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Locale/XText/InternalLanguage/TagSettings.cs",
+      "sha256": "5c418181f61585ace30ba00b89022dce3205532b58543d8832ddd9f2766e5b08"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Locale/XText/InternalLanguage/MatcherTables.Generated.cs",
+      "sha256": "804b8783fbb3fbaf823219bcc5d82405ee74264ed9ea08b846cc6ead46682424"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Locale/XText/Language/Canonicalize.cs",
+      "sha256": "9dbe46d57cb9618d15125d6030ab7a7e587c5b587a5d4148d7bf1546a56527e1"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Locale/XText/Language/Matcher.cs",
+      "sha256": "cf4cb4e93aa12f29142f5ccc2eccabc8830dcae47c7e0032f40c9c28728557ca"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Locale/XText/Language/BestMatch.cs",
+      "sha256": "02f742b53b1b8c5cb18804d3a8be75380f0d6fb40b4e435cd97c1ec73d25e9db"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Localization.cs",
+      "sha256": "762fcde1d119d94df6e1370d870b5458ca2a8864515bd1ff07b7feca9deb22c3"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Message.Localization.cs",
+      "sha256": "c4e23860b024b06fe97eee437e61a9fb272703104ad86f5de0e6aedb935e9849"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Ast/Diagnostic.cs",
+      "sha256": "7ef9434103e0941c0ddcb53e808742b92bccc0b91387492bf645715b6f545249"
+    },
+    {
+      "path": "src/TypeScript.Scanner/DiagnosticWriter/DiagnosticWriter.cs",
+      "sha256": "6b7463a00b7c4d0ca536806d66e4ffb4227846ec4ecdcb8ef85d8bc887601b84"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/ProjectCompilerHost.cs",
+      "sha256": "1e8c6900a4ddcc07d93efe7f316129af9e91ade54eff43bc265a3f88666bc58b"
+    },
+    {
+      "path": "src/TypeScript.Scanner/TypeScript.Scanner.csproj",
+      "sha256": "199f18ff8518764ff3ce53afb046a6834864a338e9881e865687b97675853e25"
+    },
+    {
+      "path": "tools/configuration-generate-locale-match-tables.py",
+      "sha256": "041daf69d6ad41701558501cf5247bf840dabd3442381ead6c3fe34aee16b126"
+    },
+    {
+      "path": "tools/configuration-copy-localization-catalogs.py",
+      "sha256": "748e682fa54e328c0236fd60d2393da026bd464d4998d728384b3ac06cc5b10d"
+    },
+    {
+      "path": "docs/progress/lsp-localization-catalogs.json",
+      "sha256": "5528270653a6f2349799c896ee492f2ab028d51f3a3fad821ad4bfe07f16ef3e"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/DiagnosticLocaleChecks.cs",
+      "sha256": "a1499cee19f1e272dfdd72ed2075bb4ab2ea806502411a7e771e28f4eba3dc53"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Locales/fr-FR.json.gz",
+      "sha256": "24f194abb5c1122548027c6e9634fc77d4ee178daca456781d824231e2e312fe"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Locales/ru-RU.json.gz",
+      "sha256": "1da7bf512b3652deec856049619c4c682a5de8ff4deb6e23ab03852f7c5d0758"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Locales/ko-KR.json.gz",
+      "sha256": "f46452d9267a47e1391f1856a699744d2f3cf97054ee5c6027c09874cc882da9"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Locales/zh-TW.json.gz",
+      "sha256": "ad7a4eaa4b97abd42a7edf8f88a5cd13883d1da0cef03ca036fbf993b3f28ea7"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Locales/de-DE.json.gz",
+      "sha256": "c3384a2c07022af5959f55c1e7ca5db4bee8959d35d986da0146b775eaf603ca"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Locales/pt-BR.json.gz",
+      "sha256": "16b991089fe09ce4c74198d881c7ac8fbc4e73b85b7f2300ef00ce25c728ae48"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Locales/ja-JP.json.gz",
+      "sha256": "5dc9accf9de45921269523f40aa1e282fd7611e69c04125e4ea153b8b093fabd"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Locales/zh-CN.json.gz",
+      "sha256": "a915b2eb1a7c2718839ddc26195d2e62710b8228cd6a497cc13e8b4f9710956a"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Locales/cs-CZ.json.gz",
+      "sha256": "fbb1f059abc46773635c20142b508924b7bfb57570c0a6fac38864f9412236ae"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Locales/pl-PL.json.gz",
+      "sha256": "57eecc4c1bfe01858ee172b61752c65bca5f6068a85442634d36a58b86c1d0cd"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Locales/es-ES.json.gz",
+      "sha256": "c3bc4d34b29d63a1999f39c5949b0215a5e2e5c165a65341396c0a19e6fd4151"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Locales/tr-TR.json.gz",
+      "sha256": "0e01f37bc574ccae966233157b3e9ef6f5fed84fbb6fc061fc3872b84a0f2290"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Diagnostics/Locales/it-IT.json.gz",
+      "sha256": "9bbf5ae8f87bf03248e043ffc643529cc3a4afaa4879a406756a38a73b35299c"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/LocaleMatcherChecks.cs",
+      "sha256": "9485c2258e8074f4dd43b3d36c2d87daf1f6956619d22975a991d330152932f7"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/LocaleMatcherChecks.Generated.cs",
+      "sha256": "dfc037288f83029dab2f794d3dab90922bf845bb0e2d78a83bcb1e679d0d79be"
+    },
+    {
+      "path": "tools/configuration-generate-locale-matcher-tests.py",
+      "sha256": "8c433780a55a0e220e3b78c260afbf23ebc0f72e8f9b9deb519bc27abfb21037"
+    },
+    {
+      "path": "docs/progress/lsp-localization-test-provenance.json",
+      "sha256": "a714ff9a0f1f4e32e05412d176720543ebd0cfcbf27fd3b20a6e70cbe9b536ab"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Coverage.cs",
+      "sha256": "37fdb13d71d789b2edcd10b5d732c1fafca57ca207ca68922498c51fc3be5361"
+    }
+  ],
+  "externalOriginalFunctions": 11,
+  "typeScriptOriginalRuntimeFunctions": 4,
+  "originalCompliancePolicySkips": 8,
+  "assertionScope": "53 likely-subtag rows, complete original minimize table, 100 rows each builder/set-tag, 38 canonicalization rows plus original base-language idempotence, 275 compliance rows with 8 unchanged source skips, original region/paradigm tables. Added SetTypeForKey36, Contains12, Script12 original rows; visibility-only helper admission preserves bodies."
+}

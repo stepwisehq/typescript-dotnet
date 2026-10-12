@@ -1,0 +1,117 @@
+{
+  "status": "clear-source-and-original-assertion-review-execution-pending",
+  "reviewer": "emit_print_maps",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "originalFunctions": 58,
+  "originalTestFunctions": 28,
+  "scope": [
+    "Complete hostimpl process lifecycle/leases/locale/timing and closed DTO codecs",
+    "All28 original host assertion functions and real duplex IPC fixtures",
+    "Focused normalized-owner aliases, signed64 option indexing and retained raw JSON adapters"
+  ],
+  "findingsResolved": [
+    "Indexed overlap sort now uses existing GoSliceSort.SortFunc, preserving source tie ordering.",
+    "Seven array error labels and both PositionEncoding reads retain exact Go semantic type names."
+  ],
+  "reviewedInvariants": [
+    "Lifecycle locks span active transforms and locale reset exactly; failed-start caching and last-reference close outside map mutex retained.",
+    "Required mapper clone, timing-map snapshot and separate indexed directive copy retained.",
+    "Outgoing typed payloads retain value-root descriptors and immutable raw headers; decode copies survive input lifetime.",
+    "Initialization records cancellation/exit before close and preserves original error precedence.",
+    "Project identity preserves ordered mapper/options reference identity; leases retain once-close semantics.",
+    "Signed64 coordinate admission narrows only after real source-buffer bounds; nonnil empty span map is distinct from unmapped nil.",
+    "All original inputs and byte/field/error/count assertions preserved; Go goroutines/net.Pipe/t.Parallel have explicit standard CLR fixture adaptations."
+  ],
+  "execution": "No reviewer builds/tests/workloads. Pinned Go31 contentmapper functions passed (28host plus3 retained transform); candidate host behavior pending root integration.",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/ContentMapper/HostImpl.cs",
+      "sha256": "c9069a5071a6a8a835adb1e9bfb8e68be95ed8e8df9ea623cae3b0cae5b820c9"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ContentMapper/HostCodecs.cs",
+      "sha256": "c0d6029aea9e44ec538301ebc3b14904931f3a9ab9d7a140101b6e3284d28b50"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ContentMapper/Host.cs",
+      "sha256": "44cc8ce1769611f2a9b306d784c2069bb92dffc2e08830d6198e663a1c65cf26"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ContentMapper/Transform.cs",
+      "sha256": "7364a9d5c796cff4b7ad91f439bdf0ebd5a27c8e655e91f2b1076106583e08dc"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ContentMapper/ContentMapper.cs",
+      "sha256": "f7a782305c4203c7c92d8fe6297821254a12f4d3cb14c5fdb793a06710439ea7"
+    },
+    {
+      "path": "src/TypeScript.Scanner/TsOptions/TsConfigParsing.cs",
+      "sha256": "a388a2a0a1b0eff8a108bbf84284f10eaa60646ab534561001558f20bc601acc"
+    },
+    {
+      "path": "src/TypeScript.Scanner/JsonRpc/JsonValue.cs",
+      "sha256": "87bac8540bd6df01fd70a7aa8334b3a44cfe8ebb0eeb799d8978ce0901a1574a"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Outputs.cs",
+      "sha256": "5aa74acce4cef9149c6979aac73919ec6cbb90761de248a57efaa6989060e236"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.ProjectErrors.cs",
+      "sha256": "fe3c2599836aa439bf6a23a6e28615bb52449f9f77d34a122fe11736d4218bfb"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Helpers.cs",
+      "sha256": "ed9b2530bf4903dcb7fa101374beee8cc69feb0682b51e08baf712efdc38f6f0"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Basic.cs",
+      "sha256": "40aea905fbd31dab785a7a334b250f7716562b243d3ebb417d184f62d3a82dd6"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.ProjectFixtures.cs",
+      "sha256": "182b4c9564e43966ae1e18cb9b900eacdfe8f0bb40992f47d194c92792a3a442"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Codecs.cs",
+      "sha256": "a17e83bad14b1f3eb9dcd2cca58f1a1d61c1b8d48f5f357a199d92a985bde2a7"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Unicode.cs",
+      "sha256": "dae53a9014dbf5a7eee59f3f22b1136465f1956e57dd5695e63b0842d9c5ad0b"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Processes.cs",
+      "sha256": "1ee5e75a819f95479f4e9b16cb85e23c527d169d95f9fbc708af0b4901fd2b43"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.cs",
+      "sha256": "2b3185da4c3741db7a5306040152ccd36fadef6a15af1a8f627ce4b14cf9d209"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.ProjectLifecycle.cs",
+      "sha256": "65186e0d55a40b5d1bcbc54d944f3201511cf10f5bad0564397e9ebfb818b3f5"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperHostChecks.Leases.cs",
+      "sha256": "7d76ba141c59f6a7c44bffa92868b4ffa5cc48cf0b1663d7f524e92654a1b6da"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ContentMapperHostTests.cs",
+      "sha256": "85912e21be4d9cbfe19f43b01f10b2c19b14a5553cce30a40fd0558dc5730d68"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/contentmapper/hostimpl.go",
+      "sha256": "4fbafa0b7c9718bcf5007414adcea49afefedd15675e334af2e44554fcd8f4d9"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/contentmapper/host_test.go",
+      "sha256": "b965db686a197bc0092af377e906431b0c4af32cdf7ed08f5aeb0f375248cafe"
+    },
+    {
+      "path": "docs/progress/lsp-contentmapper-host-mapping.json",
+      "sha256": "34861346762bab481b2c83c7c256b1ccede2614248518754d24aefb8fc1eeb05"
+    }
+  ],
+  "narrowIntegrationJoins": "Build28 original-test API joins reviewed: Locales owner, explicit same-literal RootedFilePath, mapper-specific InitializeResult, explicit same-value UnusedExpectDirectiveDiagnostic. Inputs/assertions and production hashes unchanged."
+}

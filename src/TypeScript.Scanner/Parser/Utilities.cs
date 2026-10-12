@@ -43,7 +43,7 @@ public partial class Parser
         => GoSlices.ToListOrNull(GetJSDocCommentRanges(f,
             Slice<CommentRange>.FromArray(commentRanges?.ToArray()), node, (ByteStringView)text));
 
-    private static Slice<CommentRange> GetJSDocCommentRanges(NodeFactory f, Slice<CommentRange> commentRanges, Node node, ByteStringView text)
+    internal static Slice<CommentRange> GetJSDocCommentRanges(NodeFactory f, Slice<CommentRange> commentRanges, Node node, ByteStringView text)
     {
         switch (node.Kind)
         {

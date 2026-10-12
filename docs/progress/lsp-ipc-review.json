@@ -1,0 +1,112 @@
+{
+  "status": "clear-source-and-original-assertion-review-execution-pending",
+  "reviewer": "emit_foundation",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "originalFunctions": 27,
+  "originalTestFunctions": 11,
+  "scope": [
+    "Complete required Conn contracts, AsyncConn, JSONRPCProtocol and timing counterpart algorithms",
+    "ID value-key adapter and explicit Go value/pointer message descriptors",
+    "Seven async and four timing original assertion functions; net.Pipe fixture adaptation",
+    "Fatal notification control is separate authored process-only observation"
+  ],
+  "findingsResolved": [
+    {
+      "finding": "Ordinary disposed-stream error escaped IPC I/O error boundary",
+      "resolution": "ObjectDisposedException is now captured alongside IOException solely at frame read/write and discarded transport-close error boundaries; handler panic classification is unchanged."
+    }
+  ],
+  "reviewedInvariants": [
+    "Response registration precedes write; removal/completion serialized independently from buffered response delivery",
+    "Terminal ErrConnClosed cause is joined once, including late request write failure after clean EOF",
+    "Run closes pending calls, cancels handler context, waits for all live handlers, then joins request failure",
+    "Request recovery scope excludes timing meta-requests; notification panic is unrecovered",
+    "Go raw-byte method/ID headers retained; pending ID copies have value equality",
+    "Timing snapshot requires detached nonnil-empty slice and ordered ring copy; reset restores nil ring",
+    "Typed IPC payloads preserve Go root descriptor, without reflection/default serializer"
+  ],
+  "adaptations": [
+    "CancellationToken and standard channels/mutexes implement actual upstream context/channel/WaitGroup operations",
+    "Request panic response uses CLR stack text; no fabricated Go stack equality",
+    "Duplex rendezvous test stream replaces net.Pipe while preserving original close/write observations"
+  ],
+  "execution": "No builds or workloads performed by reviewer. Combined managed/Native integration pending.",
+  "files": [
+    {
+      "path": "upstream/TypeScript/tsc/internal/ipc/conn.go",
+      "sha256": "795e88d0e171b683e6a35bc318a10e223d826aa29ea2cce77672720cd5c5433e"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ipc/conn_async.go",
+      "sha256": "6c6bf2a14c7dd847d208ebca0d075421ebe015bcef1606544dc77cd7cb030498"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ipc/protocol.go",
+      "sha256": "36e829cce0ceacaa611d50c6d892c0dd2dcf3509ab13d53fbe3dbb2bd07ebbb0"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ipc/protocol_jsonrpc.go",
+      "sha256": "052a8f8d1a2b90db66284fd7731c3803a73aa0bbf94152e20a53adcd8cfec0b6"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ipc/timing.go",
+      "sha256": "50a214b617bea782d8d62676b03ff53c74ee08b2bae1d1623ef04667b7931a4b"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Ipc/Conn.cs",
+      "sha256": "035b6581a65883ed373fee721c66cfbe4edc6da958337ac0f855f936bbbaf855"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Ipc/AsyncConn.cs",
+      "sha256": "543598bae80341cd7dc7904747a5ff7bdc6d1c2e1d8a2872e52ee14e7aa38a17"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Ipc/Protocol.cs",
+      "sha256": "80e653415146b253be4f758022fa770ff3f0253842dd97059308b5523be049ba"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Ipc/JSONRPCProtocol.cs",
+      "sha256": "139502e4550fb56df1d044f1811fe4e301877c90799b478e4a20da044fff0452"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Ipc/Timing.cs",
+      "sha256": "c0ade9783043928b65dba0944044e725782c926963163066c967f6965ab98ca1"
+    },
+    {
+      "path": "src/TypeScript.Scanner/JsonRpc/ID.MapKey.cs",
+      "sha256": "a896734c7393a3d4e21432ce7103125b6a23c17ab2dbcb12b75a8a475dc6e5fb"
+    },
+    {
+      "path": "src/TypeScript.Scanner/JsonRpc/IDKey.cs",
+      "sha256": "fc9f591a4f2169159793c8be4bb90fe7fde726e3bd59c5911954ffa76e9fce1f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/JsonRpc/GenericMessageCodecs.cs",
+      "sha256": "cc7b976525e9fd40c5585e5525442682f32a300c51fbf3cd6f3356920a8d49dc"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/IpcAsyncChecks.cs",
+      "sha256": "06fb8fb2ebc441fc217fc4480b6c4b2b426759163b6da4257759a30569791960"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/IpcTimingChecks.cs",
+      "sha256": "792ee9eea9f026c176c18334d6c9588a3cbc3282452e610b4448b32008b9056b"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/IpcTestPipe.cs",
+      "sha256": "ec13567515ef686f23d8d13a22ebb1650bc9c9a194b7d57b76337a9747e61893"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/IpcTests.cs",
+      "sha256": "88150b4fc206b88497440e6fe64bf714a2612d5119d783940cbd08ec24d1f04c"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ipc/conn_async_test.go",
+      "sha256": "b06cf392661d5901fac20e3bd478bc3012521695bc39901331f9aaa21f762919"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/ipc/timing_test.go",
+      "sha256": "47b1ee58fd433816371f2deff175bcf1ae29910d8bc93f62b7cf24986f4d0b92"
+    }
+  ]
+}

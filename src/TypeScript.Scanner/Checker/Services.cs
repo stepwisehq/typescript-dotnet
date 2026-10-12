@@ -413,7 +413,8 @@ public sealed partial class Checker
     }
 
     // Upstream internal/checker/services.go:295:1.
-    public Symbol TryGetMemberInModuleExportsAndProperties(string memberName, Symbol moduleSymbol)
+    public Symbol TryGetMemberInModuleExportsAndProperties(string memberName, Symbol moduleSymbol) => TryGetMemberInModuleExportsAndProperties(ByteStringValue.FromString(memberName), moduleSymbol);
+    internal Symbol TryGetMemberInModuleExportsAndProperties(ByteStringValue memberName, Symbol moduleSymbol)
     {
         var symbol = this.TryGetMemberInModuleExports(memberName, moduleSymbol);
         if ((symbol != null))
@@ -437,7 +438,8 @@ public sealed partial class Checker
     }
 
     // Upstream internal/checker/services.go:313:1.
-    public Symbol TryGetMemberInModuleExports(string memberName, Symbol moduleSymbol)
+    public Symbol TryGetMemberInModuleExports(string memberName, Symbol moduleSymbol) => TryGetMemberInModuleExports(ByteStringValue.FromString(memberName), moduleSymbol);
+    internal Symbol TryGetMemberInModuleExports(ByteStringValue memberName, Symbol moduleSymbol)
     {
         var symbolTable = this.getExportsOfModule(moduleSymbol);
         return symbolTable?[memberName];

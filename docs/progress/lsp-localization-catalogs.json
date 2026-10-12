@@ -1,0 +1,70 @@
+{
+  "revision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "resources": {
+    "zh-CN": {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc/zh-CN.json.gz",
+      "sha256": "a915b2eb1a7c2718839ddc26195d2e62710b8228cd6a497cc13e8b4f9710956a",
+      "handbackSha256": "2b5505353a58d9b63d7907ba41b103fcf51951c2c68330725af288ac6589cb1d"
+    },
+    "zh-TW": {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc/zh-TW.json.gz",
+      "sha256": "ad7a4eaa4b97abd42a7edf8f88a5cd13883d1da0cef03ca036fbf993b3f28ea7",
+      "handbackSha256": "5799a8373d90290e79fb4e46cf095a5862cb8db7b583ec0eb07a4959f6939c39"
+    },
+    "cs-CZ": {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc/cs-CZ.json.gz",
+      "sha256": "fbb1f059abc46773635c20142b508924b7bfb57570c0a6fac38864f9412236ae",
+      "handbackSha256": "2218338eafe861d6ddc458c38bc9ed6c9aebd48e12936887a696d252c715303d"
+    },
+    "de-DE": {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc/de-DE.json.gz",
+      "sha256": "c3384a2c07022af5959f55c1e7ca5db4bee8959d35d986da0146b775eaf603ca",
+      "handbackSha256": "7fa06cc694c65df28ca2b6e1b976fee4a92b21b353737c14e5615ef714e4f74e"
+    },
+    "es-ES": {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc/es-ES.json.gz",
+      "sha256": "c3bc4d34b29d63a1999f39c5949b0215a5e2e5c165a65341396c0a19e6fd4151",
+      "handbackSha256": "1b063161534c464e45ccd6b382aee0d6408fffb113a2e7f339b86ee2a5fd5915"
+    },
+    "fr-FR": {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc/fr-FR.json.gz",
+      "sha256": "24f194abb5c1122548027c6e9634fc77d4ee178daca456781d824231e2e312fe",
+      "handbackSha256": "255d7c0e7772bf347e6fd6cd37969c9207c9c64792f74c7bf3a851276795d9c1"
+    },
+    "it-IT": {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc/it-IT.json.gz",
+      "sha256": "9bbf5ae8f87bf03248e043ffc643529cc3a4afaa4879a406756a38a73b35299c",
+      "handbackSha256": "982930e05da44e736e34c9531ab67f9d9b176731f67acd23198cc86ab8d65ef2"
+    },
+    "ja-JP": {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc/ja-JP.json.gz",
+      "sha256": "5dc9accf9de45921269523f40aa1e282fd7611e69c04125e4ea153b8b093fabd",
+      "handbackSha256": "737e22863e09440fdec81d72e800d9670113caf9394ef81e612955cf994d519e"
+    },
+    "ko-KR": {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc/ko-KR.json.gz",
+      "sha256": "f46452d9267a47e1391f1856a699744d2f3cf97054ee5c6027c09874cc882da9",
+      "handbackSha256": "e47f6c41bc4d94c41856f7382ebef46cce007fbd347abd2eac1690825fe68203"
+    },
+    "pl-PL": {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc/pl-PL.json.gz",
+      "sha256": "57eecc4c1bfe01858ee172b61752c65bca5f6068a85442634d36a58b86c1d0cd",
+      "handbackSha256": "93b550c04f4c23f267c97a0387c2e7d8221e19a527e7d81dcef9400dd72e15d5"
+    },
+    "pt-BR": {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc/pt-BR.json.gz",
+      "sha256": "16b991089fe09ce4c74198d881c7ac8fbc4e73b85b7f2300ef00ce25c728ae48",
+      "handbackSha256": "8a4e037d1c8082aad4f75703313fa57880496714c56994754f712e5f4a081f0b"
+    },
+    "ru-RU": {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc/ru-RU.json.gz",
+      "sha256": "1da7bf512b3652deec856049619c4c682a5de8ff4deb6e23ab03852f7c5d0758",
+      "handbackSha256": "321d81faec608a09dc521fd8ffa16393cb88fd1723257a65c30b9ca2fe863a5b"
+    },
+    "tr-TR": {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc/tr-TR.json.gz",
+      "sha256": "0e01f37bc574ccae966233157b3e9ef6f5fed84fbb6fc061fc3872b84a0f2290",
+      "handbackSha256": "0a28771fb14ea38828ed10cc979b74219ca9a59e5c6de1b8ac9ddfff26218aca"
+    }
+  }
+}

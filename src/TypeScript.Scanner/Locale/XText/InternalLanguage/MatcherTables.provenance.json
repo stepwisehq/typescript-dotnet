@@ -1,0 +1,9 @@
+{
+  "revision": "v0.42.0",
+  "sources": {
+    "internal/language/tables.go": "876a73fb8b8fffd239efa592ffdf903c25757b4d17b715fc80d7aee8db2b985e",
+    "language/tables.go": "cb3c6aa474902c2728c47bcdebd5fcac0c6aa0f7e29934e984d46434c98ce716"
+  },
+  "outputSha256": "804b8783fbb3fbaf823219bcc5d82405ee74264ed9ea08b846cc6ead46682424",
+  "scope": "complete matching/likely-subtag table owners required by diagnostic locale matcher"
+}

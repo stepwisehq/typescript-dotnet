@@ -1,0 +1,172 @@
+{
+  "status": "independent-source-and-original-assertion-review-clear-execution-pending",
+  "upstreamPin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "reviewer": "emit_foundation",
+  "reviewedFiles": [
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Fix.cs",
+      "sha256": "1f88be02839b34f5e75c932ca760bb061820a67f18e2deaa4e43674d6e4fbb54"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Specifiers.cs",
+      "sha256": "8a4db133b8d42a642871616c23ba2bd1f2c02bb51ed387c5ce19d4bd88f30674"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Index.cs",
+      "sha256": "297a2c6338c37eea962d81d1df2d771dac88aa0b5d27a52bfdb354cda8bf951f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/ExportStringer.Generated.cs",
+      "sha256": "e5e268715cfa61ff04f0fda89fd383e234eb64006bb225f61744b23bccc25b42"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Export.cs",
+      "sha256": "9645d61b7d5e7dbbea6deefeb1a7fcf11de08840210c6080eedb64c10bce4bde"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Util.cs",
+      "sha256": "69b1ef9cc59b081e1c64352eba2b9462f2ff71e16f06fcf937817354e97490dd"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/View.cs",
+      "sha256": "fbca8db9605cf7e76618704abc2ae18ec23fbc4f0b94731daea96b0d7d0de769"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/AliasResolver.cs",
+      "sha256": "cbeca20a31b26990dd3dd0a399ec94187ced8523a7c80479f2d856dc1a18eb65"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Registry.cs",
+      "sha256": "1338f42eaf14b58e4fa4ae94984d1c69f0d1b517658996925db08ecd529772a5"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Extract.cs",
+      "sha256": "b1b057375663342799b86e74168ab7e87f82a2f536f08db6b6a7dc122528ef82"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/ImportAdder.cs",
+      "sha256": "2a42eea1fa2b2f97038dcab05e65527bc36d9eb873db3c272d409c032229c042"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Host.cs",
+      "sha256": "0b2d9d3f62f79c6fb2946f54069ade7536a152b53c8ee82895098a6517366fa2"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/LanguageService.cs",
+      "sha256": "758df804dd7f7a6352435f5f6d0e2de363844cb3d10cc302470ab8fcca133a1b"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Api.cs",
+      "sha256": "3b2470d8bcf9d1b2bef9bbdc77b904341b1d7135f4188068138f2553fbf20b13"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/DiffMaps.cs",
+      "sha256": "fd35574ecce595c3f74950b465d12397d41bc4dfd42eb2a3cdd943f85f028f64"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/MinAllFunc.cs",
+      "sha256": "1b5cb82ae6039e9f128e789834d38cd8af06c750a80cd6e3002599e43910b858"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/UnorderedEqual.cs",
+      "sha256": "3d98f92087e4bb3d3626cbdf4f0945b8662feb9b753060f0c1a97772ca606146"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Vfs/WrapVfs.cs",
+      "sha256": "0238cbdc29585a3d82b29c335a6f52447f11d1fce0b2cbfbc002bf352fa9afce"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Services.cs",
+      "sha256": "377ac14c5a18611e770e675484ba9e11e746a31da8489db8d6cff3fe7614075e"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/ServiceExports.cs",
+      "sha256": "dca638b746202ccab32ffe4b336133d57d493c0eb80d8cc589158d925d199c96"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Printer.Services.cs",
+      "sha256": "1f7b7bdad1a75df71c9267e4c254f191c31d9d05e931a887703eb644477d3a6e"
+    },
+    {
+      "path": "src/TypeScript.Scanner/StringUtil/ServiceComparison.cs",
+      "sha256": "c273601b889bdae35fbc6b50d342bbe98fd7938ab087d394d34a2b52182f6a73"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Module/Resolver.cs",
+      "sha256": "741affc9d775a5e18bf27dcce6183c98c847dffed92184c1688fe11e745e3a94"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Module/Util.cs",
+      "sha256": "475c1fd0bb4304534b26acb51a120e7af7ca0b8d295303c1dd6253c26cb2ee60"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Utilities/Utilities.cs",
+      "sha256": "eaec2f24a418a83765bbc404d38088dacd7072193d09a4c466b75d7da3ad79e0"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/WorkGroup.cs",
+      "sha256": "b39324f1fa3db435a3a9834292f8745e7f97114fd13d68db3ebe3486efc69aaf"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ModuleSpecifiers/Preferences.cs",
+      "sha256": "f313012ecada7d57e97d9b17cbc72792ed05376c6d8be808fc290fbea1287be0"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ModuleSpecifiers/Util.cs",
+      "sha256": "9bb9fa3a1ad4513a46f9f6318c3246e6c8f1697f4e96b9fcf63215d73ae63d4f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/TsPath/Path.cs",
+      "sha256": "c90d05730f93cee8e866e992ee6e79b7d9a3b529f874eab76699549efa5c5ca5"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/Project.cs",
+      "sha256": "42b0b056154b0fb9d60bfd03c3d0f814eee11ffeb75cdcb365bb5c890165cef2"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportOwnerChecks.cs",
+      "sha256": "c1f2f5711cca2adc340ccf936c840bb9f938d954b4ce0bd6ad36f41e2ea68c2b"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRealpathChecks.cs",
+      "sha256": "5d4ab9b5dfba4ff515a9d96a4848f1b2667a455a5cba2d84c340cd9668938a11"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportAliasResolverChecks.cs",
+      "sha256": "66f62055734aacf11137fba5f16123410e94328cfe8987752784e7366c26de0a"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportWorkGroupChecks.cs",
+      "sha256": "4b08b21d6ebbc6f4f9f19247c6e7b3da5d7543cfaef8a26cca61abdfa1ba1f50"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/AutoImportTests.cs",
+      "sha256": "f9e210e5a5210b5ddec2eb775d7f3a62c02517f5f39891286e1d753c7579820c"
+    }
+  ],
+  "reviewedAutoimportFunctions": 190,
+  "originalDirectTestFunctions": 7,
+  "authoredWorkGroupControls": 1,
+  "originalSessionTestFunctionsPending": 5,
+  "scope": [
+    "All eleven autoimport counterparts, actual LS Host/LanguageService/Api, focused borrowed checker/module/path/preference dependencies, WrapVfs and successful-phase reusable WorkGroup adaptation.",
+    "Original direct assertion inputs/results retained; the existing compiler baseline virtual filesystem is the explicit fixture adaptation. External eleven-file regex/Unicode/quotation packet independently reviewed by emit_print_maps, excluded here."
+  ],
+  "resolvedFindings": [
+    "Nil registry readiness uses source nil-receiver static worker and returns ErrNeedsAutoImports; current-view source invariant remains unchanged.",
+    "Default export-name fallback consumes existing borrowed value producer, without materializing an intermediate string.",
+    "Source Kind.String panic spelling retained at unsupported clause and unexpected import-node boundaries.",
+    "New entrypoint-ending consumer reuses exact existing TS/JS extension sets rather than allocating literal List owners each query."
+  ],
+  "ownership": [
+    "Required index/import/bucket clones, explicit capacities and nil-versus-empty slice headers retained.",
+    "Registry discovery, unique realpath extraction, @types fallback, bucket build/install and ambient second pass preserve original phase ordering.",
+    "Checker borrow/release and pool close are protected by genuine owner cleanup; resolver options copied by value and immutable dirty-map finalized identities retained.",
+    "Reusable WorkGroup opt-in admits only subsequent successful quiescent phases; original one-shot behavior unchanged and failures remain terminal."
+  ],
+  "limits": [
+    "Source review is not candidate managed or Native execution acceptance. Build30/31/32 API diagnostics and corrections remain recorded by coordinator.",
+    "Five Session-driven registry original functions require real Session closure and are not credited here.",
+    "Standard CLR ThreadPool/BlockingCollection scheduling is an explicit runtime adaptation, not Go scheduler equivalence. Existing source TODO/panic leaves remain unchanged."
+  ]
+}

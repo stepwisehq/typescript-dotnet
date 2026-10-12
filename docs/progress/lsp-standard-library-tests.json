@@ -1,8 +1,8 @@
 {
   "status": "selected-dependency-applicability-record-with-explicit-remaining-channels",
-  "scope": "Compile/MatchString chosen engines and NFD.String actual worker closure; mixed APIs require explicit selected assertion channels, not whole-function credit",
+  "scope": "Selected Go regexp matching/replacement/index, Unicode/quoting and pinned x/text normalization/locale dependency closures; selected channels never imply whole-function credit.",
   "separateFromTypeScriptTestInventory": true,
-  "functions": 86,
+  "functions": 102,
   "entries": [
     {
       "package": "Go1.27.1 regexp",
@@ -52,8 +52,9 @@
       "sourceSha256": "caffaf144a8db14a7fd0476f8cc4ba51dba750f3b3f32e26cfee6629ee33057c",
       "function": "TestReplaceAll",
       "line": 269,
-      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
-      "reason": "Original TestReplaceAll requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+      "disposition": "selected-original-ReplaceAllString-channel-managed-and-Native33-passed",
+      "reason": "All72 original string replacement rows retained; byte and literal variants remain outside this consumer closure.",
+      "evidence": "validation/results/language-services-dependencies-33.json"
     },
     {
       "package": "Go1.27.1 regexp",
@@ -234,8 +235,9 @@
       "sourceSha256": "5a9927c57cb1e440832256d6c43ccae295481f415abd8cee79c4dd78450f7168",
       "function": "TestFindStringIndex",
       "line": 243,
-      "disposition": "outside-selected-Compile-MatchString-closure-original-wrapper-requires-unselected-API",
-      "reason": "Original TestFindStringIndex requires public capture/find/replacement/serialization/copy or syntax-printing observations outside this selected dependency; no whole-function pass claimed."
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "reason": "Original93 cases and source maximum-zero observation omission retained.",
+      "evidence": "validation/results/language-services-dependencies-33.json"
     },
     {
       "package": "Go1.27.1 regexp",
@@ -757,6 +759,151 @@
       "disposition": "outside-selected-NFD.String-closure-original-wrapper-requires-unselected-API",
       "reason": "Original TestPerformance observes performance rather than selected correctness; no whole-function pass claimed.",
       "originalGoDisposition": "skipped-prevent-download-unless-long-local-or-UNICODE_DIR"
+    },
+    {
+      "package": "Go1.27.1",
+      "source": "tools/.cache/go/src/unicode/letter_test.go",
+      "sourceSha256": "bea1ce251a42d3a9e798d99f0724c203e049784872c04798830bb72419fe3a5d",
+      "function": "TestIsLetter",
+      "line": 238,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "Go1.27.1",
+      "source": "tools/.cache/go/src/unicode/letter_test.go",
+      "sourceSha256": "bea1ce251a42d3a9e798d99f0724c203e049784872c04798830bb72419fe3a5d",
+      "function": "TestLetterOptimizations",
+      "line": 346,
+      "disposition": "selected-Letter-and-Lower-channels-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "Go1.27.1",
+      "source": "tools/.cache/go/src/unicode/digit_test.go",
+      "sourceSha256": "99ab5483340c24eaefd238b6d8b371d7ce960e81be635ca76e5f51c28357717d",
+      "function": "TestDigit",
+      "line": 106,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "Go1.27.1",
+      "source": "tools/.cache/go/src/unicode/digit_test.go",
+      "sourceSha256": "99ab5483340c24eaefd238b6d8b371d7ce960e81be635ca76e5f51c28357717d",
+      "function": "TestDigitOptimization",
+      "line": 120,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "Go1.27.1",
+      "source": "tools/.cache/go/src/strconv/quote_test.go",
+      "sourceSha256": "7fc6b61c20729f12e7fd6cd7d5b2c01cf312d5b35db8d173276c2acef588d2b6",
+      "function": "TestCanBackquote",
+      "line": 230,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "golang.org/x/text@v0.42.0",
+      "source": "internal/language/match_test.go",
+      "sourceSha256": "22a3f52ea0c0fb82a283a950dc5c016fffe7c6b40edff68f4c7dbd7876e98d35",
+      "function": "TestAddLikelySubtags",
+      "line": 14,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "golang.org/x/text@v0.42.0",
+      "source": "internal/language/match_test.go",
+      "sourceSha256": "22a3f52ea0c0fb82a283a950dc5c016fffe7c6b40edff68f4c7dbd7876e98d35",
+      "function": "TestMinimize",
+      "line": 106,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "golang.org/x/text@v0.42.0",
+      "source": "internal/language/compose_test.go",
+      "sourceSha256": "b2fbaab61d78d6479dd17c665d853798c3bf9a92e85a809c9e6d58792ff66e61",
+      "function": "TestBuilder",
+      "line": 33,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "golang.org/x/text@v0.42.0",
+      "source": "internal/language/compose_test.go",
+      "sourceSha256": "b2fbaab61d78d6479dd17c665d853798c3bf9a92e85a809c9e6d58792ff66e61",
+      "function": "TestSetTag",
+      "line": 56,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "golang.org/x/text@v0.42.0",
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "function": "TestContains",
+      "line": 265,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "golang.org/x/text@v0.42.0",
+      "source": "internal/language/language_test.go",
+      "sourceSha256": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+      "function": "TestSetTypeForKey",
+      "line": 424,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "golang.org/x/text@v0.42.0",
+      "source": "language/match_test.go",
+      "sourceSha256": "4492a9bd16fba1c4cd51574025b427e4c3efb9f9e38096d386d20394ac2c93eb",
+      "function": "TestCompliance",
+      "line": 24,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json",
+      "originalOmissions": "8 skip-map rows omitted by original callback before t.Run;275 assertion rows retained."
+    },
+    {
+      "package": "golang.org/x/text@v0.42.0",
+      "source": "language/match_test.go",
+      "sourceSha256": "4492a9bd16fba1c4cd51574025b427e4c3efb9f9e38096d386d20394ac2c93eb",
+      "function": "TestRegionGroups",
+      "line": 164,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "golang.org/x/text@v0.42.0",
+      "source": "language/match_test.go",
+      "sourceSha256": "4492a9bd16fba1c4cd51574025b427e4c3efb9f9e38096d386d20394ac2c93eb",
+      "function": "TestIsParadigmLocale",
+      "line": 195,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "golang.org/x/text@v0.42.0",
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "function": "TestScript",
+      "line": 153,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
+    },
+    {
+      "package": "golang.org/x/text@v0.42.0",
+      "source": "language/language_test.go",
+      "sourceSha256": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+      "function": "TestCanonicalize",
+      "line": 480,
+      "disposition": "complete-original-assertions-managed-and-Native33-passed",
+      "evidence": "validation/results/language-services-dependencies-33.json"
     }
   ],
   "referenceEvidence": {
@@ -776,35 +923,7 @@
     },
     "qualification": "Reference-only example/unused-API assertions do not increase C# coverage; default norm run excludes build-tagged TestProperties."
   },
-  "latestManagedEvidence": {
-    "trx": "artifacts/language-services/integration-1/tests/dependencies-6.trx",
-    "trxSha256": "0556884d2681c9ab152889ddfab2ed8c626226649d53144d0eb54226cab995e9",
-    "scope": "All142 ordinary xUnit cases passed, zero skips, against clean build23. All current22 regexp groups, authored module-regex group and7 added selected NFD channels passed. Actual refreshed Native execution remains pending.",
-    "corpusCounters": {
-      "RE2Search": {
-        "consumed": 1888,
-        "matched": 1804,
-        "matchAssertions": 7216,
-        "unsupportedByteEscapeSkips": 80,
-        "utf8ByteBoundarySkips": 4,
-        "failures": 0
-      },
-      "RE2Exhaustive": {
-        "consumed": 5716884,
-        "matched": 5202968,
-        "matchAssertions": 20811872,
-        "unsupportedByteEscapeSkips": 511220,
-        "utf8ByteBoundarySkips": 2696,
-        "failures": 0
-      },
-      "Fowler": {
-        "consumed": 347,
-        "matched": 346,
-        "originalCompileRejections": 1,
-        "sourceControlRowsExcludedBeforeConsumedCount": 17
-      }
-    }
-  },
+  "latestManagedEvidence": "validation/results/language-services-dependencies-33.json",
   "priorManagedEvidence": {
     "trx": "artifacts/language-services/integration-1/tests/dependencies-5.trx",
     "trxSha256": "0a65a2ffdb9783d35427b82d95be638a06601082328372c5e5c47798cf62696c",
@@ -834,11 +953,5 @@
       }
     }
   },
-  "latestNativeEvidence": {
-    "proof": "validation/results/language-services-dependencies-23.json",
-    "proofSha256": "257f0027aea78d97351e33a851a83a9c4892773a3f02904b66b849b761dcb759",
-    "log": "artifacts/language-services/integration-1/native-run-23.log",
-    "status": "selected-dependency-assertion-packet-Native-passed",
-    "qualification": "Unused APIs/mixed original functions remain excluded; no LS/server or retained-regression acceptance."
-  }
+  "latestNativeEvidence": "validation/results/language-services-dependencies-33.json"
 }

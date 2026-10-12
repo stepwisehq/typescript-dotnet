@@ -1,7 +1,8 @@
 # Active: language-services and LSP epic (2026-10-12)
 
 Authorized from accepted emit/performance `9b8fa74a`; human performance summary
-`e003f22f`; contract/re-entry checkpoint `bcd69dab`. Pin:
+`e003f22f`; contract/re-entry checkpoint `bcd69dab`; reviewed shared-dependency
+checkpoint `f655a303` (clean working tree at commit). Pin:
 `fed0bf24149fb1ed36039212648bafdafc1ea10e`, `upstream/TypeScript/tsc`.
 Follow [LANGUAGE-SERVICES-CONTRACT.md](./LANGUAGE-SERVICES-CONTRACT.md).
 Continue autonomously through complete dependencies, services, real server transport,
@@ -10,29 +11,116 @@ The whole epic and its first subsystem are unfinished; a dependency gate passed 
 
 ## Active owners and immediate continuation
 
+**Latest gate:** build33 is clean (19.23s, zero warnings/errors); all212 ordinary
+xUnit cases passed (zero skipped/failed,5s). Both managed29 harness failures are
+resolved with original assertions retained. Both independent autoimport/core and
+external regexp/Unicode reviews are clear. Actual Linux x64 Native AOT publication
+and execution passed, including137 original TS functions,11 locale originals,
+retained external channels and44 authored controls. The isolated fatal IPC child
+passed marker/nonzero/no-timeout assertions. [Independent evidence review](./progress/lsp-dependencies-33-review.json) is clear,
+including actual ILC inputs, source/binary hashes and all scope qualifications. Source snapshot
+is integration-2/source-33.json (116 changed source/resource paths vs f655a303).
+Pinned Go watcher reference also passed: lspwatcher16 functions/2 subtests and
+fswatch115 functions/233 subtests, no reported skips/failures. Candidate watcher
+implementation remains an ignored draft. Session and shared semantic services also
+continue outside compilation. Earlier integration chronology below is retained;
+this paragraph supersedes its pending-build statements.
+
+
 Astra coordinates; three reused GPT-6.1 Sol lanes own disjoint source families.
 Root centralizes builds/publication/tests; agents implement and independently review.
-The current dependency gate is **build23: passed**, including actual Linux x64
+The last Native dependency gate is **build23: passed**, including actual Linux x64
 Native AOT execution. Managed checks passed142 ordinary cases plus8 isolated decoder-
 depth cases; the native executable passed the same shared packet and all8 separate
 process depth probes. See [source-bound evidence](../validation/results/language-services-dependencies-23.json)
 and [independent evidence review](./progress/lsp-dependencies-23-review.json).
 Project graph144 functions, formatting235 functions, and closed protocol codecs have
 clear scoped independent source reviews. No server/whole-epic acceptance is implied.
-There is no running build or publication. Future complete consumer owners remain
-outside compilation until announced integration; the publication freeze is released.
-One post-run test-only optional-string nullability flag was corrected to upstream;
-its non-null original input/assertions are unchanged. The evidence explicitly binds
-the compiled flag and records the unexecuted correction; production is unchanged.
+Combined Change+IPC build24 stopped on16 Change API diagnostics (11.58s):
+Range/Position equality, actual printer factory adapter, CommentRange properties.
+Those source joins were corrected for build25; that historical freeze is over.
+Pinned Go reference passed IPC13 tests/3 subtests, change1, contentmapper31/30 subtests
+(no skips/failures), in integration-2/original-go.jsonl. IPC includes2 SyncConn tests
+outside the required closure; contentmapper includes3 previously accepted transform
+tests plus28 new host tests. These Go passes are not C# execution claims.
+Build25 is clean (19.42s), narrow Change re-review clear, and154/154 ordinary xUnit
+cases passed with zero skips/failures. [Managed25 evidence](../validation/results/language-services-dependencies-25.json)
+binds the compiled18-file delta; Native runner is explicitly uncompiled. No new
+Native execution yet. Freeze released; Trace default-English argument correction
+was identified after the compiled snapshot and is now saved for the next batch.
+No build or publication is running. Complete contentmapper HostImpl (58 original
+functions/28 original test functions) and localization (13 original catalogs,
+four TS runtime tests plus eight x/text test functions) are now promoted, unverified.
+Build26 stopped in2.03s on18 wire-versus-normalized diagnostic namespace errors;
+distinct WireDiagnostic/WireMappedDiagnosticDirective owners fixed the entire family.
+Build27 production compiled clean; shared checks stopped on two missing RawJsonValue
+imports (17.62s total), now fixed. Review found one consequential directive-sort join:
+use existing GoSliceSort for original equal-key/overlap-index behavior. Foundation is
+authorized to save that focused correction before the next full gate; no build runs.
+Host and localization source reviews are clear. Build28 production is clean; 63 host
+check-only API diagnostics were corrected without changed assertions. Checks29 (5.38s)
+and wrappers29 (1.64s) compiled clean against that unchanged production DLL.
+Managed29 completed197 cases:195 passed, two failed, zero skipped (5s). All28 host
+originals passed. Foundation investigates Script x-abc expected261/actual0 (original
+public string versus internal-ID observation may matter); protocol investigates IPC
+TestAsyncConnCallReturnsWhenPeerCloses expected ErrConnClosed, which passed earlier25.
+Both failures are now diagnosed and independently corrected in test adaptation:
+Script.String renders zero script ID as Zzzz (original spelling/confidence assertions
+retained), and the in-process pipe must preserve a fully consumed write acknowledgement
+when its Task.WaitAsync cancellation proxy races subsequent close. Production Script
+inference and AsyncConn are unchanged. Corrections await combined execution; no
+expectations were weakened or rerun-until-pass substituted for diagnosis.
+Exact log/TRX/source snapshot are under integration-2/tests-29.log,
+tests/dependencies-29.trx and source-29.json. Freeze is released; inventory may promote
+its complete autoimport/core packet, with seven direct originals and five genuine
+Session-driven registry originals explicitly pending. No build/test is running.
+Native runner is wired but not newly published. Eight-function matcher count is
+superseded by eleven. Next Native gate will include the coherent consumer packet.
+The46-file autoimport/core/replacement packet is now promoted. Disjoint external11-file
+regex/Unicode/quoting review is clear; foundation reviews the other35 paths.
+Build30 stopped2s on10 namespace ambiguities, fixed with exact owner qualification.
+Peer review also corrected the real nil-registry readiness caller/Host contract;
+no empty registry fallback was added. Build31 stopped12.82s on24 new-family API joins
+(borrowed bytes, existing collection owner, required path helper, package accessibility,
+typed preference comparisons and source nullability invariants). Inventory owns the
+complete correction; no build/test runs and no native acceptance is added.
+Seven direct original autoimport functions plus external5 whole/2 selected groups
+and1 authored reusable-workgroup control are wired; five Session originals remain pending.
+Build32 (12.03s) reduced the remaining compile diagnostics to two nullable joins in
+Extract/Specifiers. Inventory is saving those exact source invariants and the reviewed
+immutable extension-membership ownership correction together; no gate is running.
+Its semantic utilities/source-map/documentation/hover/signature owners continue as
+ignored drafts. Protocol now owns complete Linux fswatch+lspwatcher (~3.9k Go lines)
+as a required fallback dependency: preserve source kernel-event/fallback algorithms,
+not a simplified FileSystemWatcher substitute. Original Linux default-disable policy
+is separate from the directly tested watcher owner; Windows/macOS/BSD native backends
+are explicit platform implementation boundaries. Root explained this contract dependency.
+Autoimport/core and Snapshot/Session/server owners continue as ignored drafts.
+The next pinned-Go reference batch passed autoimport12 original functions/36 subtests
+and diagnostics4 runtime functions/28 subtests, zero failures/skips. The exact log is
+`artifacts/language-services/integration-2/autoimport-diagnostics-original-go.jsonl`;
+the Go-source localization-generator test was intentionally outside this runtime batch.
+These are reference results, not candidate execution. The corpus strategy now uses
+the [original harness with a candidate backend](./progress/lsp-verification-design.md),
+preserving its real non-wire host/state assertions; implementation/review are pending.
+One post-Native23 test-only optional-string nullability flag was corrected to upstream;
+its non-null original input/assertions are unchanged. Native23 evidence binds its
+compiled flag and qualification; the corrected flag passed managed25. Production is unchanged.
 
-Current work: change tracking; full autoimport and genuine LS core/Host; server queue,
+Current work: complete Change68 family is promoted, with its original shared assertion
+and Native runner wired; [independent source review](./progress/lsp-change-review.json)
+is clear after accessor/error-text fixes. Change and IPC passed managed25; their
+Native execution awaits the next coherent consumer packet.
+Full autoimport and genuine LS core/Host; server queue,
 progress, transport and sanitization. Sanitization concretely requires Go capture
 replacement, so the actual MustCompile/ReplaceAllString/expand/extract/index workers
 and required Unicode/quoting dependencies are being added before the consumer. This
 extends the prior matching-only dependency closure, without substituting .NET regex.
 
-- `emit_foundation`: complete three-file `ls/change` owner family; then return to
-  preserved Snapshot/Session drafts when real autoimport and LS core are available.
+- `emit_foundation`: Change68 is promoted, independently reviewed and managed-tested.
+  Complete the genuine contentmapper/hostimpl.go process host, DTO serializers and
+  original host assertions, then preserved Snapshot/Session against real autoimport
+  and LS core. Existing interfaces/results alone do not implement process hosting.
   Project graph and all ten formatting counterparts are source-reviewed; original
   BFS, project dependency controls and all seven original formatting functions passed
   managed/Native. Preserve Program.UpdateProgram and parse-cache acquire/ref/deref.
@@ -47,7 +135,16 @@ extends the prior matching-only dependency closure, without substituting .NET re
   [mapping](./progress/lsp-services-mapping.json),
   [standard-library mapping](./progress/lsp-service-standard-library-mapping.json),
   [autoimport progress](./progress/lsp-autoimport-core.md).
-- `emit_print_maps`: actual server lifecycle dependencies. Complete protocol599
+- `emit_print_maps`: Change review and required IPC
+  Conn/AsyncConn/Protocol/JSONRPC/timing with original async/timing assertions are
+  complete at the managed gate; continue localization and server lifecycle integration. SyncConn,
+  named endpoints and embedding APIs remain outside this concrete closure.
+  IPC original11 now passed managed25. Progress draft retains all11 original subtests
+  (one top-level test), with a narrow optional quiescence seam for original synctest
+  assertions. Next complete genuine diagnostic localization:13 pinned gzip catalogs,
+  upstream lookup/cache and x/text matcher/maximize/compose closure (~1.3–1.8k lines),
+  reusing accepted locale parsing. No Culture fallback or English-only substitution.
+  Complete protocol599
   readers/599 writers,749 lazy root shapes and104 method infos are source-reviewed;
   all31 original protocol test functions passed managed/Native. Queue/transport/
   progress/sanitizer drafts are durable outside compilation. Separate native decoder
@@ -65,7 +162,7 @@ separate from the dependency executable. No external-project evaluation is requi
 
 The concrete source graph is `format → ls/change → full autoimport`, with Snapshot/
 Session consuming autoimport.Registry and real ls.LanguageService. Formatting is
-verified; `emit_foundation` continues complete change tracking. Preserve Snapshot/
+verified; change tracking is source-reviewed and passed managed25. Preserve Snapshot/
 Session drafts rather than introducing consumer stubs. `emit_inventory` owns full
 autoimport, genuine LS core/Host and newly required replacement workers.
 `emit_print_maps` continues server lifecycle owners on the verified codecs.

@@ -40,9 +40,11 @@ project/session test acceptance or language-service/server completion.
 ## Bound files
 
 - [Project.cs](../../src/TypeScript.Scanner/ProjectSystem/Project.cs): `6981d60771d5fd2df74f117a5d01bff3a85375f4623f3db29ff6bbd46a4375e6`
-- [ProjectCompilerHost.cs](../../src/TypeScript.Scanner/ProjectSystem/ProjectCompilerHost.cs): `1e8c6900a4ddcc07d93efe7f316129af9e91ade54eff43bc265a3f88666bc58b`
+- [ProjectCompilerHost.cs](../../src/TypeScript.Scanner/ProjectSystem/ProjectCompilerHost.cs): `a16065ac77e8c171e5325611e282a1c085cf3fa88251aad3cdd95ab7317a28fd`
 - [ProjectCollection.cs](../../src/TypeScript.Scanner/ProjectSystem/ProjectCollection.cs): `8c70cd08e4e5dcc119071d9c890bc58a92cd9db11da099486c34b6d2dc85f1c0`
 - [ConfigFileRegistryBuilder.cs](../../src/TypeScript.Scanner/ProjectSystem/ConfigFileRegistryBuilder.cs): `94994864b851daac5226e0799b6684cd1c1cfd37ec704b118391225e1ce8e8bf`
 - [ProjectCollectionBuilder.cs](../../src/TypeScript.Scanner/ProjectSystem/ProjectCollectionBuilder.cs): `795ca0c2cc7262aea0a09afffcbad4d7270728184bca29c854dbbed8d987e060`
 - [ProjectDiagnosticEquality.cs](../../src/TypeScript.Scanner/ProjectSystem/ProjectDiagnosticEquality.cs): `b4d210f691cc753f3ecd65ebb9790189531aa12ae131892822ad0f56b6f6d8a3`
 - [ProjectGraphOwnershipChecks.cs](../../validation/LanguageServices.Checks/ProjectGraphOwnershipChecks.cs): `bcb53e4cce240d0955be5a8fb9872fa0a04cdf56afb1527533abcc001ca320d7`
+
+Narrow build25 trace rebind: `Trace` now passes only the original formatting argument array to the existing default-English `Message.Localize` API and converts its display text to raw Go UTF8 at the logging boundary. The prior locale-plus-array call bound two formatting arguments. This corrects that caller join; it does not claim locale-catalog implementation or repeat the graph audit.

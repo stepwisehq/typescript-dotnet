@@ -78,3 +78,36 @@ CLI no-GC region. Record cold initialization separately from repeated request/ed
 latency, allocation and retained memory. Investigate concrete retention/reuse defects
 with focused observations. No external project or exhaustive cache equivalence is
 required by this epic.
+
+## Selected corpus backend, pending implementation review
+
+The coordinator selects an additive candidate backend for the original Go fourslash
+harness. Preserve its test bodies, assertion workers and expected baselines. Replace
+the test-client construction with the real C# production Server over framed stdio,
+plus a validation-only host-control connection. No reference Server or Session may
+supply candidate observations. This is adapted harness evidence with preserved
+assertions, not a claim that all Go test bodies were ported to xUnit.
+
+The concrete source assessment finds three non-wire server joins: inferred options
+before initialize, InitComplete, and printStateDiff. Preserve the first two through
+the actual candidate APIs. Port the original state-diff projection against the real
+C# snapshot: in particular, program/source identity changes drive existing
+`*modified*` assertions and may not be replaced by content-only comparisons. Return
+its text to the unchanged original baseline comparison. This is a required original
+assertion, not an invitation to broaden private-state observation.
+
+Keep the original fixture filesystem authoritative. A validation host forwards its
+actual filesystem API (including case behavior, symlinks/realpath, stat, reads and
+writes), so fixture mutations and fsDiffer observe the same storage. Preserve the
+injected content-mapper Spawner through owned streams and lifecycle/error forwarding.
+The host-control connection must remain independent of the LSP reader so synchronous
+host calls cannot deadlock request dispatch. It is validation infrastructure, never
+an advertised editor capability. Keep exact bundled declarations and prebuilt fixture
+inputs; do not flatten paths or replace the host with a shadow project.
+
+This choice avoids translating thousands of test bodies and the entire 8,358-line
+Go harness while retaining their intended observations. It still requires independent
+review of every adapted join and full test dispositions. Direct subsystem assertions
+continue in shared C# checks called by xUnit and Native AOT. The actual public
+disk-backed server gate remains separate: remote-host corpus timings do not establish
+ordinary server responsiveness. No backend has been implemented or executed yet.

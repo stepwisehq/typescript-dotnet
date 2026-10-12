@@ -125,7 +125,7 @@ internal static partial class LanguageParser
         }
     }
 
-    private static string TypeForKey(Tag t, string key)
+    internal static string TypeForKey(Tag t, string key)
     {
         var(_, start, end, _) = FindTypeForKey(t, key);
         if (end == start)

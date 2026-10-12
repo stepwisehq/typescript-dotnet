@@ -3,6 +3,7 @@
 // Port of tsc/internal/contentmapper/transform.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
 using System.Globalization;
 using TypeScript.Scanner;
+using MappedDiagnosticDirective = TypeScript.Scanner.MappedDiagnosticDirective;
 using TypeScript.SpanMap;
 
 namespace TypeScript.ContentMapper;
@@ -15,9 +16,7 @@ public struct SourceFiles
 public static partial class ContentMappers
 {
     // Explicit managed parse-option filename role; the source API path remains bytes.
-    private static RootedFilePath fileNameFromParseOptions(SourceFileParseOptions options) =>
-        options.FileNameIsGoBytes ? RootedFilePath.FromValue(options.FileNameValue.IsNull ? default : options.FileNameValue) :
-            RootedFilePath.FromUnicode(options.FileName ?? "");
+    private static RootedFilePath fileNameFromParseOptions(SourceFileParseOptions options) => options.FileNameIsGoBytes ? RootedFilePath.FromValue(options.FileNameValue.IsNull ? default : options.FileNameValue) : RootedFilePath.FromUnicode(options.FileName ?? "");
     public static (SourceFiles Files, Exception? Error) TransformAndParse(SourceFileParseOptions parseOptions, string content, Mapper mapper, IProject project)
     {
         var(identity, error) = project.Identity(mapper);

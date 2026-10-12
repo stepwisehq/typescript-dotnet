@@ -1,0 +1,32 @@
+{
+  "status": "independent-source-review-clear-execution-pending",
+  "reviewer": "emit_print_maps",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "originalFunctions": 68,
+  "originalTestFunctions": 1,
+  "scope": [
+    "All three change owners: projected edit conversion and atomic unmappable-file dropping; stable sort, duplicate compaction and conflict semantics; node/range/text insertion, ASI and list deletion; trivia byte/rune roles and original Collect/Map slice ownership; existing genuine synthetic printer/formatter boundary.",
+    "Parser.Utilities scoped visibility-only change to borrowed GetJSDocCommentRanges, body unchanged.",
+    "Original same-insertion-point conflict function and thin xUnit wrapper preserve both assertions; no claim one test exercises all68 functions."
+  ],
+  "resolvedFindings": [
+    "InsertAtTopOfFile undefined segments local joined actual SpanMap.Segments cloned result with nil-header iteration preserved.",
+    "Three error paths use Go Kind.String token spelling; overlap panic renders original Go Range value with invariant uint numbers.",
+    "Build24 API-only joins: CompareRanges/ComparePositions zero preserves Go field-value equality; existing retained EmitContext.Factory supplies actual printer factory; all11 CommentRange Pos/End property reads preserve original offsets."
+  ],
+  "limitations": [
+    "Source review only. Central compile, shared original assertion execution and later edit/code-action/fourslash consumer behavior remain required; no whole service acceptance."
+  ],
+  "sourceHashes": {
+    "src/TypeScript.Scanner/LanguageServices/Change/Tracker.cs": "43cf76020b3be4b3f3cea7ad776a27621f282bc5f00cf092c93c050c93c4b478",
+    "src/TypeScript.Scanner/LanguageServices/Change/TrackerImpl.cs": "bae5e915d60b9f6476a0e08540c32d6b6505d14199c9defadad2192538cf41b1",
+    "src/TypeScript.Scanner/LanguageServices/Change/Delete.cs": "b9e6ad422c9a7faf524216c0a5d248691eb2f1ab8277df4bccfca8de19d09bcb",
+    "src/TypeScript.Scanner/Parser/Utilities.cs": "04b72bc641a09815aa3240e54862f9af175f640e4e158d1abbcb6b04dc2ac8a7",
+    "validation/LanguageServices.Checks/ChangeTrackerChecks.cs": "91826a266e47cd666ff346563c0f1ebe41c6d2c92a061afb6741b953fa7e4c87",
+    "tests/LanguageServices.Tests/ChangeTrackerTests.cs": "39f5f0eb94cdf8dde35ceed528ffcf8dc5d6a3e9be18ffc779931b288b9682fb",
+    "upstream/TypeScript/tsc/internal/ls/change/tracker.go": "966231e8d5956147a96b0b4c196c47d58b3b55a301e3086644f96a69af583e9e",
+    "upstream/TypeScript/tsc/internal/ls/change/trackerimpl.go": "b51bb84854b7388e7a401facbb4dacbee294ae86eb9bb486c2d7e99bb1ced4f6",
+    "upstream/TypeScript/tsc/internal/ls/change/delete.go": "0d9106ac3158dd17d3729c955bb7f5435efb2a084074b54393083ede81fb67bc",
+    "upstream/TypeScript/tsc/internal/ls/change/trackerimpl_test.go": "2a328068ac25e29e6b932d4a5cce6d72c57933c3cce3134fbe44ee1eeb8b9705"
+  }
+}

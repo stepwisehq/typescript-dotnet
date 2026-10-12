@@ -3,7 +3,8 @@
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
 // Port of tsc/internal/diagnostics/diagnostics.go.
 namespace TypeScript.Scanner;
-// Pinned default-English diagnostic metadata and argument formatting; translated locale catalogs are excluded.
+// Diagnostic metadata and retained display-English formatting; locale-aware raw
+// UTF8 lookup/cache is separately implemented in Localization.cs.
 public enum DiagnosticCategory
 {
     Warning,
@@ -12,7 +13,7 @@ public enum DiagnosticCategory
     Message
 }
 
-public sealed class Message(int code, DiagnosticCategory category, string key, string text, bool reportsUnnecessary = false, bool reportsDeprecated = false, bool elidedInCompatibilityPyramid = false)
+public sealed partial class Message(int code, DiagnosticCategory category, string key, string text, bool reportsUnnecessary = false, bool reportsDeprecated = false, bool elidedInCompatibilityPyramid = false)
 {
     public bool ElidedInCompatibilityPyramid() => elidedInCompatibilityPyramid;
     public bool ReportsUnnecessary() => reportsUnnecessary;
@@ -90,7 +91,8 @@ public static partial class Diagnostics
             messages[message.Key()] = message;
         return messages;
     });
-    // Default-English counterpart of diagnostics.go Localize; locale catalogs are outside this contract.
+    // Compatibility display-English entrypoint; typed locale overload retains the
+    // upstream raw UTF8 lookup/format boundary.
     internal static Message? KeyToMessage(string key) => messagesByKey.Value.TryGetValue(key, out var message) ? message : null;
     public static string Localize(string key, params string[] args)
     {

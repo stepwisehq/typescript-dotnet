@@ -1,8 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Port of tsc/internal/contentmapper/host.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Interfaces/results/errors/timing arithmetic; subprocess/IPC hostimpl.go is external.
+// Interfaces/results/errors/timing arithmetic; HostImpl.cs owns the subprocess/IPC implementation.
 using TypeScript.Scanner;
+using Diagnostic = TypeScript.Scanner.Diagnostic;
+using MappedDiagnosticDirective = TypeScript.Scanner.MappedDiagnosticDirective;
 using Span = TypeScript.SpanMap.SpanMap;
 using LocaleValue = TypeScript.Locale.Locale;
 

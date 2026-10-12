@@ -105,7 +105,8 @@ public static class ModuleUtilities
         var builder = new GoBuilder(); builder.WriteByte((byte)'@'); builder.WriteString(name.Slice(0, separator)); builder.WriteByte((byte)'/'); builder.WriteString(name.Slice(separator + 2));
         return builder.Value();
     }
-    public static string GetTypesPackageName(string name) => "@types/" + MangleScopedPackageName(name);
+    public static string GetTypesPackageName(string name) => GetTypesPackageNameValue(ByteStringValue.FromString(name)).Materialize()!;
+    internal static ByteStringValue GetTypesPackageNameValue(ByteStringValue name) => ByteStringValue.Concat(ByteStringValue.FromString("@types/"), MangleScopedPackageName(name));
     public static string GetPackageNameFromTypesPackageName(string name) => name is null ? throw new NullReferenceException() : GetPackageNameFromTypesPackageNameValue(ByteStringValue.FromString(name)).Materialize()!;
     internal static ByteStringValue GetPackageNameFromTypesPackageNameValue(ByteStringValue name) => name.StartsWith("@types/"u8) ? UnmangleScopedPackageNameValue(name.Slice(7)) : name;
 

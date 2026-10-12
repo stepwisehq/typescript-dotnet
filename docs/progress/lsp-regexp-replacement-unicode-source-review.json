@@ -1,0 +1,79 @@
+{
+  "status": "clear-independent-source-and-selected-original-assertion-review-execution-pending",
+  "reviewer": "emit_print_maps",
+  "pin": "Go1.27.1 Unicode17.0.0",
+  "scope": "Root-assigned disjoint eleven files; new regexp replacement/capture, shared Unicode owners/predicates, CanBackquote and selected original assertions. Prior matching engines and other thirty-five packet files excluded.",
+  "reconciliation": {
+    "rangeTableOwners": 219,
+    "categoryScriptFoldKeyReferencePairs": 221,
+    "ReplaceAllStringOriginalByteTuples": 72,
+    "FindStringIndexOriginalByteMaxFirstIndexTuples": 93,
+    "CanBackquoteOriginalByteResultTuples": 43,
+    "unicodeOriginalTables": {
+      "UpperLetters": 22,
+      "Letters": 32,
+      "NonLetters": 9,
+      "Digits": 56,
+      "DigitNonLetters": 32
+    }
+  },
+  "reviewedInvariants": [
+    "Exact empty-match suppression and rune/EOF forward progress",
+    "Capture count clamped to original program count and reused capacity-two capture destination",
+    "Expand/extract longest-name, brace, leading-zero, numeric-limit, missing/unmatched group and dollar escape behavior",
+    "Required final immutable replacement copy and borrowed source capture slices preserved",
+    "Shared Unicode aliases retain same table owners; no CLR Unicode database substitution",
+    "Original maximum-zero FindStringIndex rows retain no observation, rather than inventing assertion",
+    "Three complete Unicode original functions plus only LetterAndLower channels of TestLetterOptimizations; replacement only string channel of TestReplaceAll, not claim whole original function"
+  ],
+  "findingsResolved": [
+    "Existing generate-regex-unicode.py now also emits the three exact shared Ll/L/Nd table owners; no generated numerical value changed."
+  ],
+  "execution": "Read-only numerical/source/table reconciliation only; no compiler build, matcher workload, managed or Native execution by reviewer. Root integrated execution pending.",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/Runtime/UnicodeServiceCategories.Generated.cs",
+      "sha256": "2ebcaa29b123c8d5933ec1af6e3bbe800ce55a858972232da83563ff3b4020c1"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Runtime/UnicodeServicePredicates.cs",
+      "sha256": "85b9be81340c31a2e0c91e82d44e5f391a8ec0faa6a894d00ab5f0044014cd6c"
+    },
+    {
+      "path": "src/TypeScript.Scanner/RegularExpressions/Syntax/UnicodeTables.Generated.cs",
+      "sha256": "1a1d212c484d97f2c5f3a61faa2e399d0e42e011f72e0407dcd456e2253b2c2c"
+    },
+    {
+      "path": "src/TypeScript.Scanner/RegularExpressions/Regexp.cs",
+      "sha256": "ca4568d1d08a2156f6b99ac714c270ec62bffe3d8167baf5687de17964d87e2f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Runtime/GoQuote.cs",
+      "sha256": "d7e3f0ef056232aa7c334d54d49def3b611c29992b45627a620d6d5494455c9f"
+    },
+    {
+      "path": "tools/generate-regex-unicode.py",
+      "sha256": "4f16c57d3c4f993ef27f10aaf02c0db1cdfc0c9c41f24dc4227c1745a298477e"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/RegexReplacementChecks.cs",
+      "sha256": "c909b296dd8b5c3294a34f54a3a559723ef9b05363617d1747a7fd305398ad2e"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/CanBackquoteChecks.cs",
+      "sha256": "ed7ae928a19274a5a3239c053616569fc9d53b3c8d067555c49abafd7a08bbfb"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/UnicodeServiceChecks.cs",
+      "sha256": "423ecc6ee92c5d140d5928402c1eafb1ce0accc3b489d47de1c737981dce0608"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/RegexReplacementTests.cs",
+      "sha256": "a0a8a36530e726745d6e73515d113ed710570eaab9607754c07a750bc1313d3d"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/UnicodeServiceTests.cs",
+      "sha256": "6358d00b5a82cc1c862ec8de234aedcccb96c30de0d9778eefdff6774b79a223"
+    }
+  ]
+}

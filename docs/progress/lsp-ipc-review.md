@@ -1,0 +1,7 @@
+# IPC dependency source review
+
+The complete required asynchronous IPC closure is independently clear against the pinned Go source: 27 original functions, seven asynchronous connection assertion functions and four timing assertion functions. [The hash-bound review](../../artifacts/language-services/source-review/ipc.json) identifies the reviewed sources. Compilation and actual managed/Native execution remain pending. Sync connections and embedding endpoints are outside this required closure.
+
+The review checked buffered response registration/removal/completion races, terminal-cause joining, cancellation before live-handler completion, request recovery and unrecovered notification panic, typed message root ownership, timing ring order and detached snapshot copies. Original assertions retain their inputs and error-identity/content checks. The duplex fixture is an explicit standard-stream adaptation of `net.Pipe`; it preserves rendezvous writes and close wakeups.
+
+One concrete boundary finding was corrected: ordinary `ObjectDisposedException` from managed stream read/write/close is handled as an I/O error at those transport boundaries, alongside `IOException`. The correction does not swallow handler exceptions. CLR request stack text remains an explicitly qualified runtime adaptation; Go frames are not fabricated. The separate fatal-notification process control is authored evidence, not additional original-function credit.

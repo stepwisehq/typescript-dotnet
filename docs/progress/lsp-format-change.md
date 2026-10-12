@@ -109,3 +109,14 @@ and original-document indentation restoration. These are saved outside compilati
 with the remaining printer/adjusted-trivia helpers and full API reconciliation still
 required before coherent promotion. No change implementation completeness or behavior
 claim is made from these drafts.
+
+## Change promotion
+
+The full three-file change family is promoted: tracker42, trackerimpl16 and delete10
+functions, with the one original projection-conflict assertion and thin wrapper.
+[Exact source mapping](./lsp-change-mapping.json) records the68-function closure.
+Independent [Change review](../../artifacts/language-services/source-review/change.json)
+is clear after correcting the actual Segments binding and four source error-text
+projections. Central compilation/execution and real downstream edit consumers remain
+pending. The borrowed JSDoc parser worker now has internal accessibility only;
+its implementation and original owned wrapper are unchanged.

@@ -16,7 +16,7 @@ using Program = TypeScript.Compiler.Program;
 using Diagnostic = TypeScript.Scanner.Diagnostic;
 
 namespace TypeScript.ProjectSystem;
-internal readonly struct ID(ByteStringValue value) : IEquatable<ID>, Logging.IGoLogStringer, Ata.IAtaProjectID
+internal readonly struct ID(ByteStringValue value) : IEquatable<ID>, Logging.IGoLogStringer, Ata.IAtaProjectID, TypeScript.LanguageServices.AutoImport.IProjectID
 {
     internal ByteStringValue Value { get; } = value;
 

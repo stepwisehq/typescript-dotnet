@@ -1,0 +1,47 @@
+{
+  "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "entries": [
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/change/tracker.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Change/Tracker.cs",
+      "upstreamFunctions": 42,
+      "upstreamSha256": "966231e8d5956147a96b0b4c196c47d58b3b55a301e3086644f96a69af583e9e",
+      "portSha256": "43cf76020b3be4b3f3cea7ad776a27621f282bc5f00cf092c93c050c93c4b478"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/change/trackerimpl.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Change/TrackerImpl.cs",
+      "upstreamFunctions": 16,
+      "upstreamSha256": "b51bb84854b7388e7a401facbb4dacbee294ae86eb9bb486c2d7e99bb1ced4f6",
+      "portSha256": "bae5e915d60b9f6476a0e08540c32d6b6505d14199c9defadad2192538cf41b1"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/change/delete.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Change/Delete.cs",
+      "upstreamFunctions": 10,
+      "upstreamSha256": "0d9106ac3158dd17d3729c955bb7f5435efb2a084074b54393083ede81fb67bc",
+      "portSha256": "b9e6ad422c9a7faf524216c0a5d248691eb2f1ab8277df4bccfca8de19d09bcb"
+    }
+  ],
+  "originalAssertion": {
+    "name": "TestTextEditsConflictAtSameInsertionPointAcrossProjections",
+    "shared": "validation/LanguageServices.Checks/ChangeTrackerChecks.cs",
+    "wrapper": "tests/LanguageServices.Tests/ChangeTrackerTests.cs",
+    "functions": 1
+  },
+  "adaptations": [
+    "Tracker implements existing NodeFactoryCoercible; retained actual factory identity",
+    "borrowed Parser.GetJSDocCommentRanges worker accessibility only",
+    "explicit-state synchronous newline callback; source Collect temporary slice owners retained",
+    "Go Map/MapNonNil exact Slice owner loops and strings.Join zero/single-header reuse plus exact grow",
+    "existing printer raw-byte string API retained; optional signed64 indentation joined to checked CLR repeat-size boundary"
+  ],
+  "review": "artifacts/language-services/source-review/change.json",
+  "execution": {
+    "managed": "Build25 combined packet154/154 passed, including original Change assertion",
+    "native": "Pending next integrated publication",
+    "wholeEditConsumers": "Pending actual autoimport/Session/server"
+  },
+  "executionEvidence": "validation/results/language-services-dependencies-33.json"
+}

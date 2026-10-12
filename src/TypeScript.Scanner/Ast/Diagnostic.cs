@@ -89,6 +89,11 @@ public sealed class Diagnostic
     }
 
     public string Localize() => message is null && messageText != "" ? ScannerString.ToJsString(messageText) : (message ?? Diagnostics.KeyToMessage(messageKey) ?? throw new InvalidOperationException("Unknown diagnostic message: " + messageKey)).FormatByteArguments(displayMessageArgs());
+    // diagnostic.go:117–122. Retain external prelocalized raw text; ordinary
+    // localization uses alias-adjusted raw arguments, not the display projection.
+    public string Localize(TypeScript.Locale.Locale locale) => message is null && messageText != ""
+        ? messageText
+        : DiagnosticLocalization.Localize(locale, message, messageKey, displayMessageArgs() ?? []);
     public string String() => Localize();
     public override string ToString() => String();
     public Diagnostic Clone() => (Diagnostic)MemberwiseClone();

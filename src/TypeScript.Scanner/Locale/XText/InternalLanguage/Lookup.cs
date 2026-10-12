@@ -5,6 +5,8 @@
 namespace TypeScript.Locale.XText;
 internal static partial class LanguageParser
 {
+    // lookup.go:342. Unspecified script has the public Zzzz spelling.
+    internal static string ScriptString(int id) => id == 0 ? "Zzzz" : script.Substring(id * 4, 4);
     internal static bool FixCase(string form, char[] b)
     {
         if (form.Length != b.Length)

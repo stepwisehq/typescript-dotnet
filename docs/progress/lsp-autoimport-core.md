@@ -1,10 +1,17 @@
 # Autoimport and language-service core owner
 
-The complete pinned autoimport family is now the next dependency owner. Production
-and checks remain frozen for the current combined dependency gate; new source drafts
-are outside the compile glob under `artifacts/language-services/drafts/autoimport`
-and `artifacts/language-services/drafts/core`. No autoimport execution or service
-acceptance is claimed.
+The complete autoimport/core dependency packet is promoted and formatted after the
+managed29 gate. Its production and shared checks are frozen for independent owner
+review and root-central integration. The [promotion manifest](./lsp-autoimport-promotion.json)
+binds all 46 current source/check/generator hashes. Managed33 and actual Linux x64 Native33 now pass the scoped packet. No
+whole-service acceptance is claimed; five Session registry originals remain pending.
+
+Seven direct original TypeScript test functions are preserved, alongside five
+whole external dependency functions, two selected external assertion channels and
+one authored reusable-workgroup control. Five Session-driven registry originals
+remain pending the genuine Session harness; no replacement fixture stands in for
+those lifecycle and concurrency assertions. The existing pinned Go reference
+passed all twelve autoimport originals and 36 subtests.
 
 The source pin is `fed0bf24149fb1ed36039212648bafdafc1ea10e`. The eleven
 production/generated autoimport counterparts contain 5,507 lines and 190 functions.
@@ -29,8 +36,9 @@ Namespaces are `TypeScript.LanguageServices.AutoImport` and
 `TypeScript.LanguageServices`. Foundation owns
 `TypeScript.LanguageServices.Change.Tracker` and complete formatting. The supplied
 Tracker constructor takes request context, CompilerOptions, FormatCodeSettings and
-Converters; GetChanges returns grouped edits and unmappable paths. The actual
-ImportAdder/Fix consumers will determine all additional API joins before promotion.
+Converters; GetChanges returns grouped edits and unmappable paths. The promoted
+ImportAdder/Fix consumers use these actual APIs; central compilation will resolve
+any remaining declaration joins without substituting owners or outputs.
 
 The first index draft retains the original pointer owner, borrowed name headers,
 UTF8 byte offsets, Unicode case/fold operations, required result capacities and
@@ -55,3 +63,30 @@ and returns nil diagnostics-only maps. These leaves retain upstream anchors and
 limitations. All actual binding, resolution and concurrent cache workers are being
 ported; the original GetDiagnostics crash assertion remains required. No authored
 empty-success replacements are added.
+
+Current draft assembly includes the complete registry admission/dirty marking, project and package extraction, granular replacement and multi-phase orchestration workers. Their real dirty-map finalization preserves unchanged owner identity. The approved reusable work-group adaptation retains its queue/gate across successful quiescent phases, keeps default callers single-use and treats worker failures as terminal. Import fix/edit consumers, original autoimport assertions and final API reconciliation remain unfinished; none of these drafts is promoted or verified.
+
+The ignored drafts now contain the complete Fix promotion and ImportAdder accumulation,
+edit generation and import-type conversion workers. The real checker TypeToTypeNode
+boundary retains the caller's identifier-symbol map through the existing fresh node
+builder. Borrowed identifier, module resolver and allowed-ending Slice paths are being
+reconciled with the accepted shared owners before promotion. Seven original direct
+assertion functions are drafted; their Go parallel scheduling hints are sequential,
+with assertions unchanged. The five original registry functions depend on the actual
+Session/lifecycle harness and remain pending that consumer rather than replaced by
+an authored registry fixture. The pinned Go reference passed all12 functions and36
+subtests in integration-2; none of these new candidate drafts has been executed.
+
+## Next semantic owner closure
+
+The next seven complete counterparts total 4,881 upstream lines: LS utilities,
+source-map composition, classified display writer, JSDoc, hover/icon, and signature
+help. Assembly is outside compilation while the promoted autoimport packet is
+reviewed and centrally compiled. Source-map, display writer, JSDoc and hover-icon
+bodies are drafted; utility/hover/signature-help assembly and actual API reconciliation
+remain unfinished. No request handler or empty feature response is promoted.
+
+Cross-file results must retain content-mapper feature filtering before declaration
+source-map traversal. Documentation keeps alias resolution caller-owned and follows
+the original inherited-member and static/intersection-base query paths. Classified
+run slices borrow immutable text headers and allocate the original result DTO owners.

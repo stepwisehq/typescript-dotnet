@@ -210,6 +210,8 @@ public static partial class TsPath
     combinePaths(path, paths, static value => ByteStringValue.FromString(value));
     public static ByteStringValue CombinePaths(ByteStringValue path, ByteStringValue trailing) =>
     combinePaths(path, (ReadOnlySpan<ByteStringValue>)[trailing], static value => value);
+    internal static ByteStringValue CombinePaths(ByteStringValue path, ReadOnlySpan<ByteStringValue> paths) =>
+    combinePaths(path, paths, static value => value);
     public static ByteStringValue CombinePaths(ByteStringValue path, Slice<ByteStringValue> paths) =>
     combinePaths(path, paths.AsSpan(), static value => value);
     // path.go:87. One append-only builder keeps the original logical start
@@ -769,6 +771,18 @@ public static partial class TsPath
 
         return (segLen == 1 && dotCount == 1) || (segLen == 2 && dotCount == 2);
     }
+    // path.go:1312. Only '/' counts, exactly strings.Count; no filesystem normalization.
+    internal static int CompareNumberOfDirectorySeparators(ByteStringValue first, ByteStringValue second)
+    {
+        int firstCount = 0, secondCount = 0;
+        for (int i = 0; i < first.Length; i++)
+            if (first[i] == (byte)'/')
+                firstCount++;
+        for (int i = 0; i < second.Length; i++)
+            if (second[i] == (byte)'/')
+                secondCount++;
+        return firstCount.CompareTo(secondCount);
+    }
 }
 public enum CaseSensitivity : byte
 {
@@ -840,4 +854,6 @@ public static class CaseSensitivityOperations
         }
         return (a.Length - ai).CompareTo(b.Length - bi);
     }
+
+
 }

@@ -352,3 +352,58 @@ handwritten/generated counterparts, original source hashes, explicit authored
 closed-codec support and required partial-file dependency joins. This complements
 the source-hash review packet and lets the coordinator merge discoverable entries
 into the primary manifest without marking unrelated partial runtime files complete.
+
+### Current IPC content-mapper dependency (after dependency23)
+
+The complete required `internal/ipc/{conn,conn_async,protocol,protocol_jsonrpc,timing}.go`
+closure is now source-promoted under `src/TypeScript.Scanner/Ipc/`, with
+[direct mapping](./lsp-ipc-mapping.json); it is not yet compiled or accepted.
+Durable ignored drafts remain under `artifacts/language-services/drafts/ipc/`.
+The namespace is `TypeScript.Ipc`, with real `IConn`, `IProtocol` and `IHandler`
+contracts. The content-mapper host consumes a duplex `Stream`, cancellation tokens,
+borrowed byte-string methods, closed typed payload descriptors and owned
+`JsonRpc.RawJsonValue` response bytes. SyncConn and named/embedding transport
+endpoints are outside this actual dependency closure.
+
+The connection preserves separate pending/write locks, copied JSON-RPC ID value
+keys, terminal-error joining, buffered single responses, handler cancellation and
+waiting at read-loop exit. The timing collector retains nanosecond duration input,
+its original five-element ring and detached snapshots. Request-panic stack text is
+an explicitly different runtime boundary; no fabricated Go frames are emitted.
+All original seven async and four timing functions are now shared assertions with
+xUnit wrappers; central execution and independent review remain pending.
+A separate fatal-notification control must run only in an isolated child and verify
+the genuine fatal exception marker, rather than treating every nonzero exit as success. Server queue/progress/transport
+and sanitizer drafts remain preserved beside this packet, awaiting genuine
+Session/LanguageService and regexp replacement consumers.
+
+IPC integration25 production, shared checks and xUnit wrappers compiled cleanly;
+all154 ordinary dependency cases passed, including the original seven async and
+four timing functions. Independent [IPC review](./lsp-ipc-review.md) is clear.
+Pinned Go passed all13 IPC originals (two SyncConn originals are reference-only,
+not C# credit), the one Change original and31 contentmapper originals. IPC Native
+execution and the isolated fatal-notification probe remain pending. The original
+progress function's eleven subtests are now durable ignored drafts using a standard
+manual TimeProvider and a narrow optional worker-wait observation instead of wall
+sleep expectations; actual Server reporter and full server promotion remain ahead.
+
+The next demanded localization owner is diagnostics.go65–126 and loc_generated.go,
+including lazy13 gzip catalogs and the pinned x/text matcher/maximize/distance
+closure. Existing language Parse is retained; matcher support must be genuine
+source, not a CultureInfo fallback or locale-as-message-argument workaround.
+
+Localization work is resumable in the ignored directory
+`artifacts/language-services/drafts/localization/`. The source-derived generator
+retains complete likely-subtag, region-containment, suppress-script and CLDR matching
+tables, with input/output hashes; the current direct workers cover maximize/minimize,
+canonicalization, matcher index construction and ranking, and tag composition.
+The remaining typed-key/extension and script inference joins, lazy catalog owner,
+locale-aware diagnostic boundary and original assertions must close before promotion.
+No localization compilation, differential or Native acceptance is claimed.
+
+The real content-mapper DTO consumer also requires two narrow raw-JSON ownership
+joins: `RawJsonValue.BorrowOwnedBytes()` lends its immutable retained owner to the
+existing canonicalization worker, and `FromRetainedBytes(byte[])` models outgoing
+`json.Value` header assignment without an invented clone. Deferred decoder fields
+continue to use the copying constructor. These joins are post-integration25 source
+and will be reviewed with the full host DTO packet before the next coherent gate.

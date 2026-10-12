@@ -127,7 +127,7 @@ public sealed class ASTDiagnostic : IDiagnostic
         // still use diagnostics.Format's original ToValidUTF8 sanitization.
         if (diagnostic.message is null && diagnostic.MessageText() != "")
             return diagnostic.MessageText();
-        return GoString.ToUtf8(diagnostic.String());
+        return diagnostic.Localize(locale);
     }
 
     // diagnosticwriter.go:157–168. Preserve existing chain order and append the
@@ -176,10 +176,10 @@ public static class DiagnosticWriter
 
     public delegate void FormattedWriter(TextWriter output, string text, string formatStyle);
 
-    // Default-English catalog remains the retained diagnostic dependency. The
-    // generic IDiagnostic.Localize contract supports a caller's real locale.
+    // Actual locale-aware raw UTF8 summary boundary. Args already have Go's
+    // string role, so neither decode them nor encode the result again.
     private static string localize(Message message, LocaleValue locale, params object[] args) =>
-        GoString.ToUtf8(message.Localize(args.Select(arg => arg is string bytes ? (object)GoString.ToString(bytes) : arg).ToArray()));
+        message.Localize(locale, args);
 
     private static string formatFileNameRelativeTo(RootedFilePath fileName, RootedDirectoryPath directory, CaseSensitivity caseSensitivity)
     {

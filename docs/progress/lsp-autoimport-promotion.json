@@ -1,0 +1,411 @@
+{
+  "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "autoimportOriginalProductionFunctions": 190,
+  "autoimportOriginalDirectFunctions": 7,
+  "autoimportSessionOriginalFunctionsPending": 5,
+  "externalOriginalWholeFunctions": 5,
+  "externalSelectedAssertionChannels": 2,
+  "newAuthoredControls": 1,
+  "candidateBuildOrExecution": "managed33 and actual Native33 passed; five Session registry originals pending",
+  "sourceFiles": [
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Fix.cs",
+      "sha256": "1f88be02839b34f5e75c932ca760bb061820a67f18e2deaa4e43674d6e4fbb54"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Specifiers.cs",
+      "sha256": "8a4db133b8d42a642871616c23ba2bd1f2c02bb51ed387c5ce19d4bd88f30674"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Index.cs",
+      "sha256": "297a2c6338c37eea962d81d1df2d771dac88aa0b5d27a52bfdb354cda8bf951f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/ExportStringer.Generated.cs",
+      "sha256": "e5e268715cfa61ff04f0fda89fd383e234eb64006bb225f61744b23bccc25b42"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Export.cs",
+      "sha256": "9645d61b7d5e7dbbea6deefeb1a7fcf11de08840210c6080eedb64c10bce4bde"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Util.cs",
+      "sha256": "69b1ef9cc59b081e1c64352eba2b9462f2ff71e16f06fcf937817354e97490dd"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/View.cs",
+      "sha256": "fbca8db9605cf7e76618704abc2ae18ec23fbc4f0b94731daea96b0d7d0de769"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/AliasResolver.cs",
+      "sha256": "cbeca20a31b26990dd3dd0a399ec94187ced8523a7c80479f2d856dc1a18eb65"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Registry.cs",
+      "sha256": "1338f42eaf14b58e4fa4ae94984d1c69f0d1b517658996925db08ecd529772a5"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/Extract.cs",
+      "sha256": "b1b057375663342799b86e74168ab7e87f82a2f536f08db6b6a7dc122528ef82"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/AutoImport/ImportAdder.cs",
+      "sha256": "2a42eea1fa2b2f97038dcab05e65527bc36d9eb873db3c272d409c032229c042"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Host.cs",
+      "sha256": "0b2d9d3f62f79c6fb2946f54069ade7536a152b53c8ee82895098a6517366fa2"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/LanguageService.cs",
+      "sha256": "758df804dd7f7a6352435f5f6d0e2de363844cb3d10cc302470ab8fcca133a1b"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Api.cs",
+      "sha256": "3b2470d8bcf9d1b2bef9bbdc77b904341b1d7135f4188068138f2553fbf20b13"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/DiffMaps.cs",
+      "sha256": "fd35574ecce595c3f74950b465d12397d41bc4dfd42eb2a3cdd943f85f028f64"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/MinAllFunc.cs",
+      "sha256": "1b5cb82ae6039e9f128e789834d38cd8af06c750a80cd6e3002599e43910b858"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/UnorderedEqual.cs",
+      "sha256": "3d98f92087e4bb3d3626cbdf4f0945b8662feb9b753060f0c1a97772ca606146"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Runtime/UnicodeServiceCategories.Generated.cs",
+      "sha256": "2ebcaa29b123c8d5933ec1af6e3bbe800ce55a858972232da83563ff3b4020c1"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Runtime/UnicodeServicePredicates.cs",
+      "sha256": "85b9be81340c31a2e0c91e82d44e5f391a8ec0faa6a894d00ab5f0044014cd6c"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Vfs/WrapVfs.cs",
+      "sha256": "0238cbdc29585a3d82b29c335a6f52447f11d1fce0b2cbfbc002bf352fa9afce"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Services.cs",
+      "sha256": "377ac14c5a18611e770e675484ba9e11e746a31da8489db8d6cff3fe7614075e"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/ServiceExports.cs",
+      "sha256": "dca638b746202ccab32ffe4b336133d57d493c0eb80d8cc589158d925d199c96"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/Printer.Services.cs",
+      "sha256": "1f7b7bdad1a75df71c9267e4c254f191c31d9d05e931a887703eb644477d3a6e"
+    },
+    {
+      "path": "src/TypeScript.Scanner/StringUtil/ServiceComparison.cs",
+      "sha256": "c273601b889bdae35fbc6b50d342bbe98fd7938ab087d394d34a2b52182f6a73"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Module/Resolver.cs",
+      "sha256": "741affc9d775a5e18bf27dcce6183c98c847dffed92184c1688fe11e745e3a94"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Module/Util.cs",
+      "sha256": "475c1fd0bb4304534b26acb51a120e7af7ca0b8d295303c1dd6253c26cb2ee60"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Utilities/Utilities.cs",
+      "sha256": "eaec2f24a418a83765bbc404d38088dacd7072193d09a4c466b75d7da3ad79e0"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Core/WorkGroup.cs",
+      "sha256": "b39324f1fa3db435a3a9834292f8745e7f97114fd13d68db3ebe3486efc69aaf"
+    },
+    {
+      "path": "src/TypeScript.Scanner/RegularExpressions/Syntax/UnicodeTables.Generated.cs",
+      "sha256": "1a1d212c484d97f2c5f3a61faa2e399d0e42e011f72e0407dcd456e2253b2c2c"
+    },
+    {
+      "path": "src/TypeScript.Scanner/RegularExpressions/Regexp.cs",
+      "sha256": "ca4568d1d08a2156f6b99ac714c270ec62bffe3d8167baf5687de17964d87e2f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Runtime/GoQuote.cs",
+      "sha256": "d7e3f0ef056232aa7c334d54d49def3b611c29992b45627a620d6d5494455c9f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ModuleSpecifiers/Preferences.cs",
+      "sha256": "f313012ecada7d57e97d9b17cbc72792ed05376c6d8be808fc290fbea1287be0"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ModuleSpecifiers/Util.cs",
+      "sha256": "9bb9fa3a1ad4513a46f9f6318c3246e6c8f1697f4e96b9fcf63215d73ae63d4f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/TsPath/Path.cs",
+      "sha256": "c90d05730f93cee8e866e992ee6e79b7d9a3b529f874eab76699549efa5c5ca5"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/Project.cs",
+      "sha256": "42b0b056154b0fb9d60bfd03c3d0f814eee11ffeb75cdcb365bb5c890165cef2"
+    },
+    {
+      "path": "tools/generate-regex-unicode.py",
+      "sha256": "4f16c57d3c4f993ef27f10aaf02c0db1cdfc0c9c41f24dc4227c1745a298477e"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportOwnerChecks.cs",
+      "sha256": "c1f2f5711cca2adc340ccf936c840bb9f938d954b4ce0bd6ad36f41e2ea68c2b"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportRealpathChecks.cs",
+      "sha256": "5d4ab9b5dfba4ff515a9d96a4848f1b2667a455a5cba2d84c340cd9668938a11"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportAliasResolverChecks.cs",
+      "sha256": "66f62055734aacf11137fba5f16123410e94328cfe8987752784e7366c26de0a"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AutoImportWorkGroupChecks.cs",
+      "sha256": "4b08b21d6ebbc6f4f9f19247c6e7b3da5d7543cfaef8a26cca61abdfa1ba1f50"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/RegexReplacementChecks.cs",
+      "sha256": "c909b296dd8b5c3294a34f54a3a559723ef9b05363617d1747a7fd305398ad2e"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/CanBackquoteChecks.cs",
+      "sha256": "ed7ae928a19274a5a3239c053616569fc9d53b3c8d067555c49abafd7a08bbfb"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/UnicodeServiceChecks.cs",
+      "sha256": "423ecc6ee92c5d140d5928402c1eafb1ce0accc3b489d47de1c737981dce0608"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/AutoImportTests.cs",
+      "sha256": "f9e210e5a5210b5ddec2eb775d7f3a62c02517f5f39891286e1d753c7579820c"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/RegexReplacementTests.cs",
+      "sha256": "a0a8a36530e726745d6e73515d113ed710570eaab9607754c07a750bc1313d3d"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/UnicodeServiceTests.cs",
+      "sha256": "6358d00b5a82cc1c862ec8de234aedcccb96c30de0d9778eefdff6774b79a223"
+    }
+  ],
+  "runtimeAssumptions": [
+    "Autoimport checker private bounded channel maps to standard BlockingCollection with CLR processor count; original caller closes only after all jobs return checkers.",
+    "Reusable WorkGroup requires successful quiescent prior wait before another phase; default stays one-shot and failures stay terminal."
+  ],
+  "limits": [
+    "Five original registry functions await actual Session/lifecycle harness, not replaced by a new fixture.",
+    "Semantic feature counterparts beyond genuine LS core/host/api remain future ownership; no success stubs."
+  ],
+  "reference": "artifacts/language-services/integration-2/autoimport-diagnostics-original-go.jsonl",
+  "sourceCorrectionsAfterBuild30": [
+    "Explicit LSUtil preference alias and Collections.SyncMap owner qualification",
+    "Nullable actual Host registry and static nil-safe readiness worker before View construction",
+    "Existing Unicode generator now emits shared Ll/L/Nd owners"
+  ],
+  "sourceCorrectionsAfterBuild31": [
+    "Actual collection factory and package-access extractor",
+    "Slash-count worker correctly placed in TsPath",
+    "Borrowed span multi-path combine and identifier consumer",
+    "Ordinal raw-string and preference value comparisons",
+    "Source-grounded nullable owner proofs and nil-safe configured Types traversal"
+  ],
+  "independentReviews": [
+    "artifacts/language-services/source-review/autoimport-core.json",
+    "artifacts/language-services/source-review/regexp-replacement-unicode.json"
+  ],
+  "entries": [
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/aliasresolver.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/AutoImport/AliasResolver.cs",
+      "upstreamFunctions": 37,
+      "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
+      "upstreamSha256": "71a44511d109218b610ba5f5b4e7c7973aab9b527217a83da1b80006c7a6c57a",
+      "portSha256": "cbeca20a31b26990dd3dd0a399ec94187ced8523a7c80479f2d856dc1a18eb65",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/export.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/AutoImport/Export.cs",
+      "upstreamFunctions": 13,
+      "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
+      "upstreamSha256": "f4ae50a1719aedeb61a3d85c5bab0016c44d3280a4838ef031739f7085ff64b5",
+      "portSha256": "9645d61b7d5e7dbbea6deefeb1a7fcf11de08840210c6080eedb64c10bce4bde",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/export_stringer_generated.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/AutoImport/ExportStringer.Generated.cs",
+      "upstreamFunctions": 2,
+      "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
+      "upstreamSha256": "36fc3191ebf5657726230d082eb0f78a38d02852085cacf81962685f2127f859",
+      "portSha256": "e5e268715cfa61ff04f0fda89fd383e234eb64006bb225f61744b23bccc25b42",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/extract.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/AutoImport/Extract.cs",
+      "upstreamFunctions": 18,
+      "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
+      "upstreamSha256": "484e7962d5b3082502f84f05efd76c74b459b06326be3da1683e289519f3aa6c",
+      "portSha256": "b1b057375663342799b86e74168ab7e87f82a2f536f08db6b6a7dc122528ef82",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/fix.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/AutoImport/Fix.cs",
+      "upstreamFunctions": 40,
+      "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
+      "upstreamSha256": "feb884d74a75f07d1c8b7e836a37eef4a89904f7d0764c2a6d4e352721ce7180",
+      "portSha256": "1f88be02839b34f5e75c932ca760bb061820a67f18e2deaa4e43674d6e4fbb54",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/import_adder.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/AutoImport/ImportAdder.cs",
+      "upstreamFunctions": 17,
+      "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
+      "upstreamSha256": "6b17cc096634c91afae76dbe92a4ce7094fdfae30b2b838c28420dd982503dfb",
+      "portSha256": "2a42eea1fa2b2f97038dcab05e65527bc36d9eb873db3c272d409c032229c042",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/index.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/AutoImport/Index.cs",
+      "upstreamFunctions": 5,
+      "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
+      "upstreamSha256": "1f0b1a41bfcb05867d18c6b63bbf365186c64700a41873be6f0cddae2c16bab5",
+      "portSha256": "297a2c6338c37eea962d81d1df2d771dac88aa0b5d27a52bfdb354cda8bf951f",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/registry.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/AutoImport/Registry.cs",
+      "upstreamFunctions": 38,
+      "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
+      "upstreamSha256": "d675e3ced1f2593274dc89222770ccebf9c70034a63ff8dc136a99d6781ac166",
+      "portSha256": "1338f42eaf14b58e4fa4ae94984d1c69f0d1b517658996925db08ecd529772a5",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/specifiers.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/AutoImport/Specifiers.cs",
+      "upstreamFunctions": 1,
+      "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
+      "upstreamSha256": "d24af82296dd5ca60582ba4fb2fc28253107aa3470eac54e85e7bd1b5ae3e811",
+      "portSha256": "8a4db133b8d42a642871616c23ba2bd1f2c02bb51ed387c5ce19d4bd88f30674",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/util.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/AutoImport/Util.cs",
+      "upstreamFunctions": 13,
+      "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
+      "upstreamSha256": "2b49c7f4a3b373e03a736b83adb3c7e7cb513241afb9eb0820045cbf9c62080e",
+      "portSha256": "69b1ef9cc59b081e1c64352eba2b9462f2ff71e16f06fcf937817354e97490dd",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/view.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/AutoImport/View.cs",
+      "upstreamFunctions": 6,
+      "scope": "complete original counterpart; preserved upstream panic/nil leaves and required owned copies",
+      "upstreamSha256": "349385283aa8168058199c81b9f0c10d49be2cc459008e734e4a82714e0fac5d",
+      "portSha256": "fbca8db9605cf7e76618704abc2ae18ec23fbc4f0b94731daea96b0d7d0de769",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/host.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Host.cs",
+      "upstreamFunctions": 0,
+      "scope": "complete original core counterpart; real checker leases/host contract; later semantic feature counterparts remain separate unfinished owners",
+      "upstreamSha256": "c4a9c0fb37f39256a36e7b557cb2c86ddea8dc7c1f1a39013a5277ed0ab15dc4",
+      "portSha256": "0b2d9d3f62f79c6fb2946f54069ade7536a152b53c8ee82895098a6517366fa2",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/languageservice.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/LanguageService.cs",
+      "upstreamFunctions": 15,
+      "scope": "complete original core counterpart; real checker leases/host contract; later semantic feature counterparts remain separate unfinished owners",
+      "upstreamSha256": "ed9d7aadbfae7ddb859c38c8a4e506e4304b05909f0bc1a77cfca2ebe1212834",
+      "portSha256": "758df804dd7f7a6352435f5f6d0e2de363844cb3d10cc302470ab8fcca133a1b",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/api.go",
+      "port": "src/TypeScript.Scanner/LanguageServices/Api.cs",
+      "upstreamFunctions": 3,
+      "scope": "complete original core counterpart; real checker leases/host contract; later semantic feature counterparts remain separate unfinished owners",
+      "upstreamSha256": "9a5b7e39e1cd18366649d34cc26f805a9fcff0c187445bc2a34c947a37a0391a",
+      "portSha256": "3b2470d8bcf9d1b2bef9bbdc77b904341b1d7135f4188068138f2553fbf20b13",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/aliasresolver_crash_test.go",
+      "port": "validation/LanguageServices.Checks/AutoImportAliasResolverChecks.cs",
+      "upstreamFunctions": 7,
+      "scope": "whole TestAliasResolverGetDiagnosticsDoesNotPanic; original fake clone host fixture retained",
+      "upstreamSha256": "119dc09c03a8cc6e710e8dbe32005c6647503af0f744058ee7aeeb7f8398abc6",
+      "portSha256": "66f62055734aacf11137fba5f16123410e94328cfe8987752784e7366c26de0a",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/export_test.go",
+      "port": "validation/LanguageServices.Checks/AutoImportOwnerChecks.cs",
+      "upstreamFunctions": 1,
+      "scope": "whole TestModuleIDVariants assertions",
+      "upstreamSha256": "96ae6e210921565e4c636985f27ebbe0c682fe7f1e2f34f2e21c67cdd150834c",
+      "portSha256": "c1f2f5711cca2adc340ccf936c840bb9f938d954b4ce0bd6ad36f41e2ea68c2b",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/index_test.go",
+      "port": "validation/LanguageServices.Checks/AutoImportOwnerChecks.cs",
+      "upstreamFunctions": 2,
+      "scope": "whole TestWordIndices and TestIndexClone assertions; original scheduling hints adapted to sequential shared checks",
+      "upstreamSha256": "1ae71283daa8ab00ce69598417be3dbad2b952f162b1e4eca92a312bee005dc5",
+      "portSha256": "c1f2f5711cca2adc340ccf936c840bb9f938d954b4ce0bd6ad36f41e2ea68c2b",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/autoimport/util_test.go",
+      "port": "validation/LanguageServices.Checks/AutoImportRealpathChecks.cs",
+      "upstreamFunctions": 4,
+      "scope": "whole three symlink-cache originals; existing real MapFS assertion adapter; sequential scheduling hints",
+      "upstreamSha256": "ad303c92c7d5a4cd2a30813e39cbf7b9dd107735bdef84b05bbce49643974190",
+      "portSha256": "5d4ab9b5dfba4ff515a9d96a4848f1b2667a455a5cba2d84c340cd9668938a11",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+      "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e"
+    }
+  ],
+  "managedEvidence": {
+    "gate": "managed33",
+    "allCasesPassed": 212,
+    "newPacketCases": 15,
+    "scope": "dependency assertions; not whole service/server acceptance"
+  },
+  "executionEvidence": "validation/results/language-services-dependencies-33.json"
+}

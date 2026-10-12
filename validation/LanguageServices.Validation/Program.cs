@@ -1,5 +1,12 @@
 using LanguageServices.Checks;
 
+// Deliberately process-fatal; invoke only as an isolated child with a timeout.
+if (args is ["--ipc-fatal-notification"])
+{
+    IpcAsyncChecks.RunFatalNotificationControl();
+    return 1;
+}
+
 // Run stack-boundary probes in separate processes so a runtime stack failure
 // cannot hide the result of the ordinary dependency assertions.
 if (args.Length != 0)
@@ -8,7 +15,7 @@ if (args.Length != 0)
         !int.TryParse(args[2], out int depth) || depth < 1 ||
         args[1] is not ("model" or "any"))
     {
-        Console.Error.WriteLine("Usage: LanguageServices.Validation [--protocol-depth model|any DEPTH]");
+        Console.Error.WriteLine("Usage: LanguageServices.Validation [--protocol-depth model|any DEPTH | --ipc-fatal-notification]");
         return 2;
     }
     if (args[1] == "model") ProtocolCodecChecks.RunModelDepthBoundary(depth);
@@ -37,8 +44,17 @@ originalFunctions += BreadthFirstSearchChecks.RunAll();
 originalFunctions += UserPreferenceChecks.RunAll();
 originalFunctions += LsUtilityChecks.RunAll();
 originalFunctions += FormattingChecks.RunAll();
+originalFunctions += ChangeTrackerChecks.RunAll();
+originalFunctions += IpcAsyncChecks.RunAll();
+originalFunctions += IpcTimingChecks.RunAll();
+originalFunctions += ContentMapperHostChecks.RunAll();
+originalFunctions += DiagnosticLocaleChecks.RunAll();
+originalFunctions += AutoImportOwnerChecks.RunAll();
+originalFunctions += AutoImportRealpathChecks.RunAll();
+originalFunctions += AutoImportAliasResolverChecks.RunAll();
 Console.WriteLine($"Original language-service dependency test functions executed: {originalFunctions}");
 Console.WriteLine($"Original external normalization dependency test functions executed: {NormalizationChecks.RunAll()}");
+Console.WriteLine($"Original external language-matcher dependency test functions executed: {LocaleMatcherChecks.RunAll()}");
 // Regex groups include explicitly named selected assertion channels; this is not
 // a count of wholly ported upstream test functions.
 Console.WriteLine($"External regexp assertion groups executed: {RegexChecks.RunAll()}");
@@ -46,6 +62,9 @@ Console.WriteLine($"External regexp syntax assertion groups executed: {RegexSynt
 Console.WriteLine($"Original external regexp compiler test functions executed: {RegexCompileChecks.RunAll()}");
 Console.WriteLine($"Selected original RE2 matching channels executed: {RegexRe2Checks.RunAll()}");
 Console.WriteLine($"Selected original Fowler matching channels executed: {RegexFowlerChecks.RunAll()}");
+Console.WriteLine($"External regexp replacement/index assertion groups executed: {RegexReplacementChecks.RunAll()}");
+Console.WriteLine($"Original external quoting dependency test functions executed: {CanBackquoteChecks.RunAll()}");
+Console.WriteLine($"External Unicode service assertion groups executed: {UnicodeServiceChecks.RunAll()}");
 int normalizationChannels = NormalizationPropertyChecks.RunAll();
 normalizationChannels += NormalizationSpanChecks.RunAll();
 normalizationChannels += NormalizationStringChannels.RunAll();
@@ -67,5 +86,6 @@ authoredControls += ConverterChecks.RunCoordinateBoundaryControls();
 authoredControls += UserPreferenceChecks.RunAuthoredControls();
 authoredControls += NormalizationChecks.RunAuthoredControls();
 authoredControls += ModuleRegexChecks.RunAll();
+authoredControls += AutoImportWorkGroupChecks.RunAll();
 Console.WriteLine($"Authored dependency controls executed: {authoredControls}");
 return 0;

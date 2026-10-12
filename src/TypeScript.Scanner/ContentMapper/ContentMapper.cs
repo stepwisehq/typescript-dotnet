@@ -24,7 +24,7 @@ public sealed class Manifest
 }
 
 // Configuration metadata for locating an option diagnostic; external mapper execution is not invoked.
-public readonly record struct OptionPathSegment(string Property, int Index, bool IsIndex);
+public readonly record struct OptionPathSegment(string Property, long Index, bool IsIndex);
 public sealed class Mapper : Definition
 {
     public Manifest Manifest = new();

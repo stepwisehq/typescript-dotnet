@@ -1,0 +1,217 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+  "entries": [
+    {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/diagnostics.go",
+      "sourceSha256": "6b2c77f34b0051682584e4e3b6bd36acf5a263b9d8cf8b508042ce9cc4fe6238",
+      "destinations": [
+        "src/TypeScript.Scanner/Diagnostics/Diagnostics.cs",
+        "src/TypeScript.Scanner/Diagnostics/Localization.cs",
+        "src/TypeScript.Scanner/Diagnostics/Message.Localization.cs"
+      ],
+      "scope": "runtime locale lookup/cache/StringifyArgs/Format; retained existing category/metadata/default display paths",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/diagnostics/loc_generated.go",
+      "sourceSha256": "330fa076a7589381a8151b25db3157daac51d0174e2903a8f4e6b5ce33f8e7c9",
+      "destinations": [
+        "src/TypeScript.Scanner/Diagnostics/Localization.cs",
+        "src/TypeScript.Scanner/Diagnostics/Locales/"
+      ],
+      "scope": "14 matcher locales,13 lazy exact gzip catalogs; English nil owner",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/ast/diagnostic.go",
+      "sourceSha256": "4acb7edf1a43cb99fa5c87a6e25bd796274944a4bafba307b59cf48792736ff4",
+      "destinations": [
+        "src/TypeScript.Scanner/Ast/Diagnostic.cs"
+      ],
+      "scope": "only genuine Localize(locale) owner/consumer join; existing display API retained",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed"
+    },
+    {
+      "source": "upstream/TypeScript/tsc/internal/diagnosticwriter/diagnosticwriter.go",
+      "sourceSha256": "6db890694b7034a0de80829fcbf95357af81d161e386df500bb49639a7f187d7",
+      "destinations": [
+        "src/TypeScript.Scanner/DiagnosticWriter/DiagnosticWriter.cs"
+      ],
+      "scope": "only AST localize and summary raw locale consumer joins; no other formatter re-audit",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed"
+    },
+    {
+      "module": "golang.org/x/text@v0.42.0",
+      "source": "internal/language/match.go",
+      "sourceSha256": "711e9c548516929762f0636a69788ba6eed6ed10bfb47634f3b5d5a1f26a1547",
+      "destinations": [
+        "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Maximize.cs"
+      ],
+      "scope": "complete likely/maximize/minimize owner",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed"
+    },
+    {
+      "module": "golang.org/x/text@v0.42.0",
+      "source": "internal/language/compose.go",
+      "sourceSha256": "7657b95eac8448d5d2273c048d316dde3ac0e49ac058487a69b2b990ebc7f8ef",
+      "destinations": [
+        "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Compose.cs"
+      ],
+      "scope": "complete Builder/length/token/sort counterpart",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed"
+    },
+    {
+      "module": "golang.org/x/text@v0.42.0",
+      "source": "internal/language/language.go",
+      "sourceSha256": "19a0ccf7635fd3dbad3766d953996df5d1c24a367e44c49200ab6ec3023fc871",
+      "destinations": [
+        "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Maximize.cs",
+        "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Compose.cs",
+        "src/TypeScript.Scanner/Locale/XText/InternalLanguage/TagSettings.cs"
+      ],
+      "scope": "only demanded Tag copied-header,contains,variants/extensions/type-key workers; existing helpers retained",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed"
+    },
+    {
+      "module": "golang.org/x/text@v0.42.0",
+      "source": "internal/language/coverage.go",
+      "sourceSha256": "8c8238012deb1b3c42820c755343db1bc326dc5cbddfcc24f97abbb7e0c6cee1",
+      "destinations": [
+        "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Coverage.cs"
+      ],
+      "scope": "complete BaseLanguages owner required by original canonicalization idempotence assertions",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed"
+    },
+    {
+      "module": "golang.org/x/text@v0.42.0",
+      "source": "internal/language/tables.go",
+      "sourceSha256": "876a73fb8b8fffd239efa592ffdf903c25757b4d17b715fc80d7aee8db2b985e",
+      "destinations": [
+        "src/TypeScript.Scanner/Locale/XText/InternalLanguage/MatcherTables.Generated.cs"
+      ],
+      "scope": "complete matching/likely/suppress/region table owners; accepted parse registry retained",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed"
+    },
+    {
+      "module": "golang.org/x/text@v0.42.0",
+      "source": "language/match.go",
+      "sourceSha256": "b8a6b973391cba46899d079173cf0b1d3064f28bb79a11c3fdc65c089cbe23d3",
+      "destinations": [
+        "src/TypeScript.Scanner/Locale/XText/Language/Matcher.cs",
+        "src/TypeScript.Scanner/Locale/XText/Language/BestMatch.cs"
+      ],
+      "scope": "required matcher/index/ranking/options/init closure; MatchStrings and Comprehends not called by diagnostics",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed"
+    },
+    {
+      "module": "golang.org/x/text@v0.42.0",
+      "source": "language/language.go",
+      "sourceSha256": "3f2032f0367d83fb14772384d47119d27c2c427b277aa0a02913db59abe32bb0",
+      "destinations": [
+        "src/TypeScript.Scanner/Locale/XText/Language/Canonicalize.cs",
+        "src/TypeScript.Scanner/Locale/XText/InternalLanguage/TagSettings.cs"
+      ],
+      "scope": "only full canonicalize worker and matching-consumed Script inference; unused public language APIs not expanded",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed"
+    },
+    {
+      "module": "golang.org/x/text@v0.42.0",
+      "source": "language/tables.go",
+      "sourceSha256": "cb3c6aa474902c2728c47bcdebd5fcac0c6aa0f7e29934e984d46434c98ce716",
+      "destinations": [
+        "src/TypeScript.Scanner/Locale/XText/InternalLanguage/MatcherTables.Generated.cs"
+      ],
+      "scope": "complete matching distance/paradigm/groups table owners",
+      "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed"
+    }
+  ],
+  "sourceHashes": {
+    "docs/progress/lsp-localization-catalogs.json": "5528270653a6f2349799c896ee492f2ab028d51f3a3fad821ad4bfe07f16ef3e",
+    "docs/progress/lsp-localization-test-provenance.json": "d4b0525673514be71bcf917d4f7bfcdc02ec646220ac1e561ef9a4f9f4a799e2",
+    "src/TypeScript.Scanner/Ast/Diagnostic.cs": "7ef9434103e0941c0ddcb53e808742b92bccc0b91387492bf645715b6f545249",
+    "src/TypeScript.Scanner/DiagnosticWriter/DiagnosticWriter.cs": "6b7463a00b7c4d0ca536806d66e4ffb4227846ec4ecdcb8ef85d8bc887601b84",
+    "src/TypeScript.Scanner/Diagnostics/Diagnostics.cs": "3be78a70d6ae09cd75b842e53ffe976b82bc183e97678aa3b0df9743b5b485af",
+    "src/TypeScript.Scanner/Diagnostics/Locales/cs-CZ.json.gz": "fbb1f059abc46773635c20142b508924b7bfb57570c0a6fac38864f9412236ae",
+    "src/TypeScript.Scanner/Diagnostics/Locales/de-DE.json.gz": "c3384a2c07022af5959f55c1e7ca5db4bee8959d35d986da0146b775eaf603ca",
+    "src/TypeScript.Scanner/Diagnostics/Locales/es-ES.json.gz": "c3bc4d34b29d63a1999f39c5949b0215a5e2e5c165a65341396c0a19e6fd4151",
+    "src/TypeScript.Scanner/Diagnostics/Locales/fr-FR.json.gz": "24f194abb5c1122548027c6e9634fc77d4ee178daca456781d824231e2e312fe",
+    "src/TypeScript.Scanner/Diagnostics/Locales/it-IT.json.gz": "9bbf5ae8f87bf03248e043ffc643529cc3a4afaa4879a406756a38a73b35299c",
+    "src/TypeScript.Scanner/Diagnostics/Locales/ja-JP.json.gz": "5dc9accf9de45921269523f40aa1e282fd7611e69c04125e4ea153b8b093fabd",
+    "src/TypeScript.Scanner/Diagnostics/Locales/ko-KR.json.gz": "f46452d9267a47e1391f1856a699744d2f3cf97054ee5c6027c09874cc882da9",
+    "src/TypeScript.Scanner/Diagnostics/Locales/pl-PL.json.gz": "57eecc4c1bfe01858ee172b61752c65bca5f6068a85442634d36a58b86c1d0cd",
+    "src/TypeScript.Scanner/Diagnostics/Locales/pt-BR.json.gz": "16b991089fe09ce4c74198d881c7ac8fbc4e73b85b7f2300ef00ce25c728ae48",
+    "src/TypeScript.Scanner/Diagnostics/Locales/ru-RU.json.gz": "1da7bf512b3652deec856049619c4c682a5de8ff4deb6e23ab03852f7c5d0758",
+    "src/TypeScript.Scanner/Diagnostics/Locales/tr-TR.json.gz": "0e01f37bc574ccae966233157b3e9ef6f5fed84fbb6fc061fc3872b84a0f2290",
+    "src/TypeScript.Scanner/Diagnostics/Locales/zh-CN.json.gz": "a915b2eb1a7c2718839ddc26195d2e62710b8228cd6a497cc13e8b4f9710956a",
+    "src/TypeScript.Scanner/Diagnostics/Locales/zh-TW.json.gz": "ad7a4eaa4b97abd42a7edf8f88a5cd13883d1da0cef03ca036fbf993b3f28ea7",
+    "src/TypeScript.Scanner/Diagnostics/Localization.cs": "762fcde1d119d94df6e1370d870b5458ca2a8864515bd1ff07b7feca9deb22c3",
+    "src/TypeScript.Scanner/Diagnostics/Message.Localization.cs": "c4e23860b024b06fe97eee437e61a9fb272703104ad86f5de0e6aedb935e9849",
+    "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Compose.cs": "483db3be722f26d306cfb26093e60f40d62d5b515f60acc46d2fb1558382fe8d",
+    "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Coverage.cs": "37fdb13d71d789b2edcd10b5d732c1fafca57ca207ca68922498c51fc3be5361",
+    "src/TypeScript.Scanner/Locale/XText/InternalLanguage/MatcherTables.Generated.cs": "804b8783fbb3fbaf823219bcc5d82405ee74264ed9ea08b846cc6ead46682424",
+    "src/TypeScript.Scanner/Locale/XText/InternalLanguage/Maximize.cs": "02a7a7b3d93e05b7a9671a9e252e486c686fad7cdc972f675407e6fe521f9540",
+    "src/TypeScript.Scanner/Locale/XText/InternalLanguage/TagSettings.cs": "5c418181f61585ace30ba00b89022dce3205532b58543d8832ddd9f2766e5b08",
+    "src/TypeScript.Scanner/Locale/XText/Language/BestMatch.cs": "02f742b53b1b8c5cb18804d3a8be75380f0d6fb40b4e435cd97c1ec73d25e9db",
+    "src/TypeScript.Scanner/Locale/XText/Language/Canonicalize.cs": "9dbe46d57cb9618d15125d6030ab7a7e587c5b587a5d4148d7bf1546a56527e1",
+    "src/TypeScript.Scanner/Locale/XText/Language/Matcher.cs": "cf4cb4e93aa12f29142f5ccc2eccabc8830dcae47c7e0032f40c9c28728557ca",
+    "src/TypeScript.Scanner/TypeScript.Scanner.csproj": "199f18ff8518764ff3ce53afb046a6834864a338e9881e865687b97675853e25",
+    "tests/LanguageServices.Tests/DiagnosticLocaleTests.cs": "0d43492ace134d22dc2337b61bd2668754815d29f47dc0f2b7cba9738ab04ae1",
+    "tests/LanguageServices.Tests/LocaleMatcherTests.cs": "8ebe92af75825208a3151eda45f6af88a9dbad2bb34837ef8e7c4705ca2a15cf",
+    "tools/configuration-copy-localization-catalogs.py": "748e682fa54e328c0236fd60d2393da026bd464d4998d728384b3ac06cc5b10d",
+    "tools/configuration-generate-locale-match-tables.py": "041daf69d6ad41701558501cf5247bf840dabd3442381ead6c3fe34aee16b126",
+    "tools/configuration-generate-locale-matcher-tests.py": "59120d35bb8dfb48ab90d61f7b19619a0e70dc97db84d98ac724fc7c5b8fe7b4",
+    "validation/LanguageServices.Checks/DiagnosticLocaleChecks.cs": "a1499cee19f1e272dfdd72ed2075bb4ab2ea806502411a7e771e28f4eba3dc53",
+    "validation/LanguageServices.Checks/LocaleMatcherChecks.Generated.cs": "dfc037288f83029dab2f794d3dab90922bf845bb0e2d78a83bcb1e679d0d79be",
+    "validation/LanguageServices.Checks/LocaleMatcherChecks.cs": "605e4bdbfb11cb67daac329d97c9d4461b48e8add1854cabb333420a42ef0ca5",
+    "src/TypeScript.Scanner/Locale/XText/Compact/Language.cs": "b4a8e7e44df7beec0f01052f1da69c16f06870079cb257081dc2760f416ce211"
+  },
+  "adaptations": [
+    "Existing parsed Tag is reference-mapped; value-taking workers explicitly copy its complete header to retain Go value semantics.",
+    "Standard List/Dictionary/Span and lazy owners retain source order/copies/cache/null distinctions; matcher init is lazy on its real diagnostic locale consumer.",
+    "Exact pinned gzip resources are embedded with deterministic names; actual Linux x64 AOT resource admission passed in dependency33.",
+    "Existing display-English APIs remain compatible; typed locale and writer consumers carry raw UTF8 strings without re-encoding.",
+    "Typed locale catalog decoding reuses the accepted JSON/v2 ProtocolDecoder: one typed dictionary owner, strict UTF8/duplicate-name semantics."
+  ],
+  "tests": {
+    "TypeScriptOriginalFunctions": [
+      "TestLocalize",
+      "TestLocalize_ByKey",
+      "TestLocaleFiles",
+      "TestLocaleFilesIgnoreStaleDiagnostics"
+    ],
+    "TypeScriptOriginalSubtests": 28,
+    "XTextOriginalFunctions": [
+      "TestAddLikelySubtags",
+      "TestMinimize",
+      "TestBuilder",
+      "TestSetTag",
+      "TestCompliance",
+      "TestRegionGroups",
+      "TestIsParadigmLocale",
+      "TestCanonicalize",
+      "TestSetTypeForKey",
+      "TestContains",
+      "TestScript"
+    ],
+    "pending": "No remaining candidate execution for the listed direct assertions; complete Session/server consumers pending.",
+    "dispositions": {
+      "TestGenerateLocalizations": "original Go-source generator/tooling test retained as reference disposition; no runtime/build dependency requires C# Go-source generator",
+      "TestMatchStrings": "unused Accept-Language convenience API outside demanded closure",
+      "TestIssue43834": "original uses unused ParseAcceptLanguage; single en-ZZ matcher regression can be separately labeled adapted if added",
+      "TestBestMatchAlloc": "Go runtime allocation-counter assertion remains reference-only; no CLR/Go counter parity claim"
+    },
+    "pendingApplicableWorkerAssertions": [],
+    "additionalApplicableWorkerAssertions": [
+      "internal/language.TestSetTypeForKey (36 rows plus original unset-string secondary assertions)",
+      "language.TestScript (12 rows, script and confidence)",
+      "internal/language.TestContains (12 rows)"
+    ],
+    "externalOriginalFunctionCount": 11,
+    "XTextOriginalComplianceOmittedRows": 8,
+    "complianceDisposition": "Original callback returns for8 skip-map data rows before t.Run;275 assertion rows retained;not skipped Go tests."
+  },
+  "referenceEvidence": "artifacts/language-services/integration-2/autoimport-diagnostics-original-go.jsonl",
+  "matcherReferenceEvidence": "artifacts/language-services/integration-2/locale-match-original-go.jsonl",
+  "executionEvidence": "validation/results/language-services-dependencies-33.json"
+}

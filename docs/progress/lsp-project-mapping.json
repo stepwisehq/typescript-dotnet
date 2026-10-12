@@ -403,7 +403,7 @@
       "ports": [
         {
           "port": "src/TypeScript.Scanner/ProjectSystem/ProjectCompilerHost.cs",
-          "portSha256": "1e8c6900a4ddcc07d93efe7f316129af9e91ade54eff43bc265a3f88666bc58b"
+          "portSha256": "a16065ac77e8c171e5325611e282a1c085cf3fa88251aad3cdd95ab7317a28fd"
         }
       ]
     },

@@ -1,0 +1,68 @@
+{
+  "module": "golang.org/x/text",
+  "version": "v0.42.0",
+  "sources": {
+    "internal/language/language_test.go": "ca38744abde1df93ad464b19eefc88bc6ef61eb3505a61d324a2dc5c1f33efbb",
+    "internal/language/match_test.go": "22a3f52ea0c0fb82a283a950dc5c016fffe7c6b40edff68f4c7dbd7876e98d35",
+    "internal/language/parse_test.go": "d2fca623be3e8cb5984412c05b98282b7722f844fcff5a717f6b8608d4dba51f",
+    "internal/language/compose_test.go": "b2fbaab61d78d6479dd17c665d853798c3bf9a92e85a809c9e6d58792ff66e61",
+    "language/language_test.go": "4b748d2126425142620c01c6f93536894743bad4db274ab1792e4b2e77b11ce2",
+    "language/match_test.go": "4492a9bd16fba1c4cd51574025b427e4c3efb9f9e38096d386d20394ac2c93eb",
+    "language/testdata/CLDRLocaleMatcherTest.txt": "1b4eac8462bcae4eacb59d9bbc74890039df61af3eaeca3c836eed84aef748b9",
+    "language/testdata/GoLocaleMatcherTest.txt": "70fa23666b686ec92e2b478ed43764cbb95802aaa4859b40a4fb6a0b7a037171"
+  },
+  "generatedSha256": "dfc037288f83029dab2f794d3dab90922bf845bb0e2d78a83bcb1e679d0d79be",
+  "counts": {
+    "likelyRows": 53,
+    "builderRowsPerFunction": 100,
+    "canonicalizeRows": 38,
+    "complianceRows": 275,
+    "setTypeRows": 36,
+    "containsRows": 12,
+    "scriptRows": 12,
+    "externalOriginalFunctions": 11
+  },
+  "originalComplianceOmittedRows": [
+    {
+      "file": "language/testdata/CLDRLocaleMatcherTest.txt",
+      "line": 248,
+      "name": "mul,af/nl"
+    },
+    {
+      "file": "language/testdata/CLDRLocaleMatcherTest.txt",
+      "line": 332,
+      "name": "und,fr/fr-BE-fonipa"
+    },
+    {
+      "file": "language/testdata/CLDRLocaleMatcherTest.txt",
+      "line": 333,
+      "name": "und,fr-CA/fr-BE-fonipa"
+    },
+    {
+      "file": "language/testdata/CLDRLocaleMatcherTest.txt",
+      "line": 334,
+      "name": "und,fr-fonupa/fr-BE-fonipa"
+    },
+    {
+      "file": "language/testdata/CLDRLocaleMatcherTest.txt",
+      "line": 335,
+      "name": "und,no/nn-BE-fonipa"
+    },
+    {
+      "file": "language/testdata/CLDRLocaleMatcherTest.txt",
+      "line": 336,
+      "name": "und,en-GB-u-sd-gbsct/en-fonipa-u-nu-Arab-ca-buddhist-t-m0-iso-i0-pinyin"
+    },
+    {
+      "file": "language/testdata/CLDRLocaleMatcherTest.txt",
+      "line": 376,
+      "name": "50,und,fr-CA-fonupa/fr-BE-fonipa"
+    },
+    {
+      "file": "language/testdata/CLDRLocaleMatcherTest.txt",
+      "line": 377,
+      "name": "50,und,fr-Cyrl-CA-fonupa/fr-BE-fonipa"
+    }
+  ],
+  "complianceDisposition": "Eight source skip-map rows return before t.Run;275 admitted subtests,zero test skips."
+}

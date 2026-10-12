@@ -1,0 +1,69 @@
+{
+  "status": "source-reviewed-compiled-scoped-managed-and-Native33-assertions-passed",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "entries": [
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ipc/conn.go",
+      "destination": "src/TypeScript.Scanner/Ipc/Conn.cs",
+      "originalFunctions": 1,
+      "upstreamSha256": "795e88d0e171b683e6a35bc318a10e223d826aa29ea2cce77672720cd5c5433e",
+      "destinationSha256": "035b6581a65883ed373fee721c66cfbe4edc6da958337ac0f855f936bbbaf855"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ipc/conn_async.go",
+      "destination": "src/TypeScript.Scanner/Ipc/AsyncConn.cs",
+      "originalFunctions": 13,
+      "upstreamSha256": "6c6bf2a14c7dd847d208ebca0d075421ebe015bcef1606544dc77cd7cb030498",
+      "destinationSha256": "543598bae80341cd7dc7904747a5ff7bdc6d1c2e1d8a2872e52ee14e7aa38a17"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ipc/protocol.go",
+      "destination": "src/TypeScript.Scanner/Ipc/Protocol.cs",
+      "originalFunctions": 0,
+      "upstreamSha256": "36e829cce0ceacaa611d50c6d892c0dd2dcf3509ab13d53fbe3dbb2bd07ebbb0",
+      "destinationSha256": "80e653415146b253be4f758022fa770ff3f0253842dd97059308b5523be049ba"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ipc/protocol_jsonrpc.go",
+      "destination": "src/TypeScript.Scanner/Ipc/JSONRPCProtocol.cs",
+      "originalFunctions": 6,
+      "upstreamSha256": "052a8f8d1a2b90db66284fd7731c3803a73aa0bbf94152e20a53adcd8cfec0b6",
+      "destinationSha256": "139502e4550fb56df1d044f1811fe4e301877c90799b478e4a20da044fff0452"
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ipc/timing.go",
+      "destination": "src/TypeScript.Scanner/Ipc/Timing.cs",
+      "originalFunctions": 7,
+      "upstreamSha256": "50a214b617bea782d8d62676b03ff53c74ee08b2bae1d1623ef04667b7931a4b",
+      "destinationSha256": "c0ade9783043928b65dba0944044e725782c926963163066c967f6965ab98ca1"
+    }
+  ],
+  "originalFunctions": 27,
+  "originalTestFunctions": 11,
+  "originalAssertions": {
+    "async": "validation/LanguageServices.Checks/IpcAsyncChecks.cs",
+    "timing": "validation/LanguageServices.Checks/IpcTimingChecks.cs",
+    "wrapper": "tests/LanguageServices.Tests/IpcTests.cs",
+    "duplexFixtureAdaptation": "validation/LanguageServices.Checks/IpcTestPipe.cs"
+  },
+  "authoredControls": [
+    "IpcAsyncChecks.RunFatalNotificationControl: isolated child only; do not count in RunAll or treat arbitrary nonzero exit as sufficient; verify actual fatal marker and runtime boundary."
+  ],
+  "support": [
+    "src/TypeScript.Scanner/JsonRpc/ID.MapKey.cs",
+    "src/TypeScript.Scanner/JsonRpc/IDKey.cs",
+    "src/TypeScript.Scanner/JsonRpc/GenericMessageCodecs.cs"
+  ],
+  "adaptations": [
+    "CancellationToken/Channel buffered1 and void UnsafeQueueUserWorkItem with live-count/Monitor represent Go context/channels/WaitGroup.Go; unhandled notification panic remains fatal, request panic recovers at original boundary.",
+    "Copied readonly ID text+number key retains Go value map semantics; normal decode resets both ID fields.",
+    "errors.Join retains newline message plus both causes; timing durations retain signed64 nanoseconds, required ring snapshot copied to exact Slice capacity.",
+    "Actual CLR request panic stack is runtime-specific, not fabricated Go frames.",
+    "Closed descriptors preserve request/response Go value roots and generic message pointer root; unknown dynamic types never use reflection.",
+    "Ordinary .NET Stream ObjectDisposedException is admitted with IOException at actual read/write/ignored close boundaries; unrelated handler exceptions retain original panic policy."
+  ],
+  "boundaries": [
+    "SyncConn and named/embedding endpoint transports not required by contentmapper AsyncConn host and remain outside this closure."
+  ],
+  "executionEvidence": "validation/results/language-services-dependencies-33.json"
+}

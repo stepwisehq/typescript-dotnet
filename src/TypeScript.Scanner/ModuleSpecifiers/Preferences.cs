@@ -339,4 +339,99 @@ internal static partial class ModuleSpecifiers
             getAllowedEndingsInPreferredOrder = getAllowedEndingsInPreferredOrder
         };
     }
+
+private static ModuleSpecifierEnding getPreferredEnding(UserPreferences prefs, IModuleSpecifierGenerationHost host, CompilerOptions compilerOptions, SourceFile importingSourceFile, ByteStringValue oldImportSpecifier, ResolutionMode resolutionMode)
+    {
+        if ((GoRuntime.Len(oldImportSpecifier) > 0))
+        {
+            if (TsPath.HasJSFileExtension(oldImportSpecifier))
+            {
+                return ModuleSpecifierEnding.JsExtension;
+            }
+
+            if (oldImportSpecifier.EndsWith("/index"u8))
+            {
+                return ModuleSpecifierEnding.Index;
+            }
+        }
+
+        if ((resolutionMode == ResolutionMode.None))
+        {
+            resolutionMode = host.GetDefaultResolutionModeForFile(importingSourceFile);
+        }
+
+        return getModuleSpecifierEndingPreference(prefs.ImportModuleSpecifierEnding, resolutionMode, compilerOptions, importingSourceFile);
+    }
+
+    internal static Slice<ModuleSpecifierEnding> GetAllowedEndingsInPreferredOrderValue(UserPreferences prefs, IModuleSpecifierGenerationHost host, CompilerOptions compilerOptions, SourceFile importingSourceFile, ByteStringValue oldImportSpecifier, ResolutionMode syntaxImpliedNodeFormat)
+    {
+        var preferredEnding = getPreferredEnding(prefs, host, compilerOptions, importingSourceFile, oldImportSpecifier, ResolutionMode.None);
+        var resolutionMode = host.GetDefaultResolutionModeForFile(importingSourceFile);
+        if ((resolutionMode != syntaxImpliedNodeFormat))
+        {
+            preferredEnding = getPreferredEnding(prefs, host, compilerOptions, importingSourceFile, oldImportSpecifier, syntaxImpliedNodeFormat);
+        }
+
+        var moduleResolution = compilerOptions.GetModuleResolutionKind();
+        var moduleResolutionIsNodeNext = ((ModuleResolutionKind.Node16 <= moduleResolution) && (moduleResolution <= ModuleResolutionKind.NodeNext));
+        var allowImportingTsExtension = shouldAllowImportingTsExtension(compilerOptions, RootedFilePath.FromValue(importingSourceFile.FileNameGoValue()));
+        var effectiveSyntaxMode = syntaxImpliedNodeFormat;
+        if ((effectiveSyntaxMode == ResolutionMode.None))
+        {
+            effectiveSyntaxMode = resolutionMode;
+        }
+
+        if (((effectiveSyntaxMode == ResolutionMode.ESNext) && moduleResolutionIsNodeNext))
+        {
+            if (allowImportingTsExtension)
+            {
+                return Slice<ModuleSpecifierEnding>.FromArray([ModuleSpecifierEnding.TsExtension, ModuleSpecifierEnding.JsExtension]);
+            }
+
+            return Slice<ModuleSpecifierEnding>.FromArray([ModuleSpecifierEnding.JsExtension]);
+        }
+
+        switch (preferredEnding)
+        {
+            case ModuleSpecifierEnding.JsExtension:
+            {
+                if (allowImportingTsExtension)
+                {
+                    return Slice<ModuleSpecifierEnding>.FromArray([ModuleSpecifierEnding.JsExtension, ModuleSpecifierEnding.TsExtension, ModuleSpecifierEnding.Minimal, ModuleSpecifierEnding.Index]);
+                }
+
+                return Slice<ModuleSpecifierEnding>.FromArray([ModuleSpecifierEnding.JsExtension, ModuleSpecifierEnding.Minimal, ModuleSpecifierEnding.Index]);
+            }
+
+            case ModuleSpecifierEnding.TsExtension:
+            {
+                return Slice<ModuleSpecifierEnding>.FromArray([ModuleSpecifierEnding.TsExtension, ModuleSpecifierEnding.Minimal, ModuleSpecifierEnding.JsExtension, ModuleSpecifierEnding.Index]);
+            }
+
+            case ModuleSpecifierEnding.Index:
+            {
+                if (allowImportingTsExtension)
+                {
+                    return Slice<ModuleSpecifierEnding>.FromArray([ModuleSpecifierEnding.Index, ModuleSpecifierEnding.Minimal, ModuleSpecifierEnding.TsExtension, ModuleSpecifierEnding.JsExtension]);
+                }
+
+                return Slice<ModuleSpecifierEnding>.FromArray([ModuleSpecifierEnding.Index, ModuleSpecifierEnding.Minimal, ModuleSpecifierEnding.JsExtension]);
+            }
+
+            case ModuleSpecifierEnding.Minimal:
+            {
+                if (allowImportingTsExtension)
+                {
+                    return Slice<ModuleSpecifierEnding>.FromArray([ModuleSpecifierEnding.Minimal, ModuleSpecifierEnding.Index, ModuleSpecifierEnding.TsExtension, ModuleSpecifierEnding.JsExtension]);
+                }
+
+                return Slice<ModuleSpecifierEnding>.FromArray([ModuleSpecifierEnding.Minimal, ModuleSpecifierEnding.Index, ModuleSpecifierEnding.JsExtension]);
+            }
+
+            default:
+            {
+                throw new InvalidOperationException("Unexpected module specifier ending: " + preferredEnding);
+            }
+        }
+    }
 }

@@ -1,6 +1,6 @@
 // Copyright 2010 The Go Authors. All rights reserved.
 // BSD-style license: licenses/Go-LICENSE.txt.
-// Go1.27.1 regexp/regexp.go: selected Compile/MatchString closure and real engine selection.
+// Go1.27.1 regexp/regexp.go: Compile/MatchString and required sanitizer replacement/capture closure; real engine selection.
 using System.Collections.Concurrent;
 using TypeScript.Scanner;
 using TypeScript.RegularExpressions.Syntax;
@@ -180,6 +180,174 @@ internal sealed partial class GoRegexp
         destination = destination.Append(machine.matchcap);
         PutMachine(machine);
         return destination;
+    }
+// regexp.go:309. Real parse failure, preserving the original quote/error text.
+    internal static GoRegexp MustCompile(ByteStringValue expression)
+    {
+        var(regex, error) = Compile(expression);
+        if (error != null)
+            throw new InvalidOperationException("regexp: Compile(" + QuoteExpression(expression).Materialize() + "): " + error.Message);
+        return regex!;
+    }
+
+    // regexp.go:328
+    private static ByteStringValue QuoteExpression(ByteStringValue expression) => GoQuote.CanBackquote(expression) ? ByteStringValue.Concat(ByteStringValue.FromString("`"), expression, ByteStringValue.FromString("`")) : ByteStringValue.FromString(GoQuote.Quote(expression.Materialize()!));
+    // regexp.go:551. Explicit state is the managed equivalent of this single invocation's Go function value.
+    internal ByteStringValue ReplaceAllString(ByteStringValue source, ByteStringValue replacement)
+    {
+        var count = 2;
+        if (replacement.IndexOf("$"u8) >= 0)
+            count = 2 * (numSubexp + 1);
+        var bytes = ReplaceAll(default, source, count, (Regex: this, Replacement: replacement, Source: source), static (state, destination, match) => state.Regex.Expand(destination, state.Replacement, default, state.Source, match));
+        // Original string(b) requires a final independent immutable copy.
+        return ByteStringValue.FromView(ByteStringView.CopyFrom(bytes.AsSpan()));
+    }
+
+    // regexp.go:582. Retain both branches of the original private worker; no public byte API is invented.
+    private Slice<byte> ReplaceAll<TState>(Slice<byte> bytesSource, ByteStringValue source, int matchCount, TState state, Func<TState, Slice<byte>, Slice<int>, Slice<byte>> replace)
+    {
+        var lastMatchEnd = 0;
+        var searchPosition = 0;
+        Slice<byte> buffer = default;
+        var endPosition = !bytesSource.IsNil ? bytesSource.Count : source.Length;
+        if (matchCount > prog.NumCap)
+            matchCount = prog.NumCap;
+        // Original fixed capacity-two temporary is reused for every match in this call.
+        var destinationCapture = Slice<int>.FromArray(new int[2]).Slice2(0, 0);
+        var input = !bytesSource.IsNil ? ByteStringValue.FromView(ByteStringView.FromBuilderSlice(bytesSource)) : source;
+        while (searchPosition <= endPosition)
+        {
+            var match = Find(input, searchPosition, matchCount, destinationCapture);
+            if (match.Count == 0)
+                break;
+            buffer = !bytesSource.IsNil ? buffer.Append(bytesSource.Slice2(lastMatchEnd, match[0])) : AppendText(buffer, source.Slice(lastMatchEnd, match[0]));
+            // Do not replace an empty match immediately following another match.
+            if (match[1] > lastMatchEnd || match[0] == 0)
+                buffer = replace(state, buffer, match);
+            lastMatchEnd = match[1];
+            var width = RegexInputString.DecodeRune(input.Slice(searchPosition)).Width;
+            if (searchPosition + width > match[1])
+                searchPosition += width;
+            else if (searchPosition + 1 > match[1])
+                searchPosition++;
+            else
+                searchPosition = match[1];
+        }
+
+        return !bytesSource.IsNil ? buffer.Append(bytesSource.Slice2(lastMatchEnd)) : AppendText(buffer, source.Slice(lastMatchEnd));
+    }
+
+    // regexp.go:839
+    internal Slice<int> FindStringIndex(ByteStringValue source)
+    {
+        var match = Find(source, 0, 2, default);
+        return match.IsNil ? default : match.Slice2(0, 2);
+    }
+
+    // regexp.go:1177
+    private Slice<byte> Expand(Slice<byte> destination, ByteStringValue template, Slice<byte> bytesSource, ByteStringValue source, Slice<int> match)
+    {
+        while (template.Length > 0)
+        {
+            var dollar = template.IndexOf("$"u8);
+            if (dollar < 0)
+                break;
+            destination = AppendText(destination, template.Slice(0, dollar));
+            template = template.Slice(dollar + 1);
+            if (template.Length != 0 && template[0] == '$')
+            {
+                destination = destination.Append((byte)'$');
+                template = template.Slice(1);
+                continue;
+            }
+
+            var(name, number, remainder, ok) = Extract(template);
+            if (!ok)
+            {
+                destination = destination.Append((byte)'$');
+                continue;
+            }
+
+            template = remainder;
+            if (number >= 0)
+            {
+                if (2 * number + 1 < match.Count && match[2 * number] >= 0)
+                    destination = !bytesSource.IsNil ? destination.Append(bytesSource.Slice2(match[2 * number], match[2 * number + 1])) : AppendText(destination, source.Slice(match[2 * number], match[2 * number + 1]));
+            }
+            else
+            {
+                for (var i = 0; i < subexpNames.Count; i++)
+                {
+                    if (name.EqualsValue(subexpNames[i]) && 2 * i + 1 < match.Count && match[2 * i] >= 0)
+                    {
+                        destination = !bytesSource.IsNil ? destination.Append(bytesSource.Slice2(match[2 * i], match[2 * i + 1])) : AppendText(destination, source.Slice(match[2 * i], match[2 * i + 1]));
+                        break;
+                    }
+                }
+            }
+        }
+
+        return AppendText(destination, template);
+    }
+
+    // regexp.go:1226
+    private static (ByteStringValue Name, int Number, ByteStringValue Remainder, bool Ok) Extract(ByteStringValue value)
+    {
+        if (value.Length == 0)
+            return default;
+        var brace = false;
+        if (value[0] == '{')
+        {
+            brace = true;
+            value = value.Slice(1);
+        }
+
+        var index = 0;
+        while (index < value.Length)
+        {
+            var(rune, size) = RegexInputString.DecodeRune(value.Slice(index));
+            if (!GoUnicode.IsLetter(rune) && !GoUnicode.IsDigit(rune) && rune != '_')
+                break;
+            index += size;
+        }
+
+        if (index == 0)
+            return default;
+        var name = value.Slice(0, index);
+        if (brace)
+        {
+            if (index >= value.Length || value[index] != '}')
+                return default;
+            index++;
+        }
+
+        var number = 0;
+        for (var i = 0; i < name.Length; i++)
+        {
+            if (name[i] < '0' || name[i] > '9' || number >= 100000000)
+            {
+                number = -1;
+                break;
+            }
+
+            number = number * 10 + name[i] - '0';
+        }
+
+        if (name[0] == '0' && name.Length > 1)
+            number = -1;
+        return (name, number, value.Slice(index), true);
+    }
+
+    // Go append(dst, string...) copies bytes into the same required mutable slice owner.
+    private static Slice<byte> AppendText(Slice<byte> destination, ByteStringValue text)
+    {
+        if (text.IsBytes)
+            return destination.Append(text.ByteSpan);
+        var length = destination.Count;
+        var result = destination.Grow(text.Length).Slice2(0, length + text.Length);
+        for (var i = 0; i < text.Length; i++)
+            result[length + i] = (byte)text[i];
+        return result;
     }
 }
 

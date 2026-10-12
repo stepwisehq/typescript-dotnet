@@ -178,11 +178,8 @@ public sealed partial class Checker
     }
 
     // Upstream upstream/TypeScript/tsc/internal/checker/exports.go:119:1.
-    internal Symbol TryFindAmbientModule(string moduleName)
-    {
-        return this.tryFindAmbientModule(ByteStringValue.FromString(moduleName), true);
-    }
-
+    internal Symbol TryFindAmbientModule(string moduleName) => TryFindAmbientModule(ByteStringValue.FromString(moduleName));
+    internal Symbol TryFindAmbientModule(ByteStringValue moduleName) => this.tryFindAmbientModule(moduleName, true);
     // Upstream upstream/TypeScript/tsc/internal/checker/exports.go:135:1.
     internal Symbol ResolveExternalModuleName(Node moduleSpecifier, Type importAttributesType)
     {

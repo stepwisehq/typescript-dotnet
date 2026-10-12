@@ -12,7 +12,21 @@ internal sealed partial class RawJsonValue
 {
     private readonly byte[] bytes;
     internal RawJsonValue(ReadOnlySpan<byte> value) => bytes = value.ToArray();
+    // Go json.Value assignment copies a slice header. This separate factory is
+    // for already-owned buffers retained by outgoing DTOs; decoding still uses
+    // the copying constructor above. Both owners must treat the buffer as immutable.
+    internal static RawJsonValue FromRetainedBytes(byte[] value) => new(value, retained: true);
+    private RawJsonValue(byte[] value, bool retained)
+    {
+        ArgumentNullException.ThrowIfNull(value);
+        bytes = value;
+        IsNil = false;
+    }
     internal ReadOnlySpan<byte> Bytes => bytes;
+    // Required content-mapper json.Value join: read-only consumers borrow the
+    // retained immutable owner rather than cloning before FormatRawValue.
+    // Callers must not mutate this array or expose it as a writable public buffer.
+    internal byte[] BorrowOwnedBytes() => bytes;
 
     internal byte Kind
     {

@@ -22,9 +22,13 @@ internal sealed class ParallelWorkGroup : IWorkGroup
 {
     private readonly object gate = new();
     private readonly ConcurrentQueue<Action> ready = new();
+    private readonly bool reusable;
     private bool done;
     private int pending;
     private ExceptionDispatchInfo? failure;
+
+    // Reuse only after a successful quiescent registry phase; failures remain terminal.
+    internal ParallelWorkGroup(bool reusable = false) => this.reusable = reusable;
 
     public void Queue(Action action)
     {
@@ -90,7 +94,7 @@ internal sealed class ParallelWorkGroup : IWorkGroup
                 {
                     if (pending == 0)
                     {
-                        done = true;
+                        done = !reusable || failure != null;
                         failure?.Throw();
                         return;
                     }
@@ -105,7 +109,7 @@ internal sealed class ParallelWorkGroup : IWorkGroup
         finally
         {
             lock (gate)
-                done = true;
+                done = !reusable || failure != null;
         }
     }
 

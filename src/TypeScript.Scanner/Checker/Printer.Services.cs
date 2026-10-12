@@ -101,4 +101,12 @@ public sealed partial class Checker
             releaseNodeBuilderNodes();
         }
     }
+
+// printer.go:288. A fresh builder retains the caller's exact identifier-symbol map;
+    // its returned nodes keep their real factory ownership, matching getNodeBuilderEx.
+    internal Node TypeToTypeNode(Type type, Node enclosingDeclaration, NodeBuilderFlags flags, Dictionary<Node, Symbol> idToSymbol)
+    {
+        var builder = getNodeBuilderEx(idToSymbol);
+        return builder.TypeToTypeNode(type, enclosingDeclaration, flags, InternalFlags.None, null);
+    }
 }
