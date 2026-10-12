@@ -46,13 +46,13 @@ One initial production build and two compile-only test attempts resolved API joi
 the third test invocation was the first behavior run and passed. No behavior
 expectations were weakened. Retained regression and Native publication passed first try.
 
-**Complete ES family accepted in the checkpoint containing this entry.**
+**Complete ES family accepted at `13d29ca3`.**
 All 17 pinned files/407 functions plus OrderedSet8 and narrow OrderedMap enumeration
 are independently reviewed. First managed behavior run passed287 emit; retained
 832checker+84type-system+101selectednoemit passed (1,304 total, none failed/skipped).
 Actual Linux x64 Native AOT publish15.651s/run4.106s passed151originalfunctions and
 168authoredcontrols. All processes finished; source/build metadata remain frozen
-until root commit. Bound evidence: validation/results/emit-es-transforms-verified.json.
+until root commit (now finished; clean checkpoint). Bound evidence: validation/results/emit-es-transforms-verified.json.
 Final independent ACK: artifacts/emit/es-transforms/acceptance-independent-review.json.
 
 The80 authored comparisons cover runtime45/classfields21/decorators14 through
@@ -68,19 +68,42 @@ clone ownership during initial translation of future families. NamedEvaluation h
 20 actual functions already implemented/reviewed; earlier19 was metadata-only error.
 No source change or test rerun for that count correction.
 
-**Next: complete JSX, module transforms and const-enum inlining.** After ES commit,
-release and activate the already coordinated GPT-6.1 Sol lanes:
-- emit_print_maps: JSX48 (1,209 Go lines) + ConstEnum3.
-- emit_foundation: CommonJS83 (2,166 Go lines).
-- emit_inventory: remaining module metadata/ES/implied/utilities plus shared harness.
-No next-family production edits yet. Shared APIs coordinated read-only. OrderedSet,
-MultiMap, genuine resolver and printer dependencies are ready. Preserve module
-Utilities' existing upstream nil/empty TODO behavior, explicitly labeled as upstream
-limitations; do not invent new behavior or silently call those features complete.
-Actual chain is TS→conditionalJSX→ES→UseStrict→Module→conditionalConstEnum last.
-Root owns coordinated builds/map/evidence/commits. Independent review rotates by
-source ownership, adjusts when it avoids a harness bottleneck, never duplicates audits.
-Then complete declarations/support/Program output and whole-emit acceptance.
+**JSX, module transforms and const-enum family accepted in the current checkpoint.**
+All seven mapped files/175 functions implemented and independently reviewed: JSX48,
+ConstEnum3, CommonJS83, shared modules41. Program HasFileName format lookup and
+OrderedMap borrowed entry enumeration are the required narrow adaptations.
+Managed test3 passed362 emit; retained832 checker+84type-system+101selectednoemit
+passed:1,379 total, no failures/skips. Actual Linux x64 Native AOT publish15.785s,
+run6.574s exit0,151originalfunctions+243authoredcontrols. Gate27878 finished.
+Final proof: validation/results/emit-script-transforms-verified.json. Independent execution
+ACK: artifacts/emit/script-transforms/acceptance-independent-review.json. All gates finished.
+Four comment-only trailing spaces in JSX are preserved with the frozen source; no behavior impact.
+
+The75 new authored full-chain cases compare exact output and five complete public
+pre-emit diagnostic channels against genuine pinned Go Program environments.
+Existing upstream module-utility nil/empty TODOs remain explicitly identified.
+Test1 failed75 new fixtures before transforms because the harness parsed absent Go
+options as enum text; an ingress edit crossed the initial freeze, so that run is
+not accepted frozen evidence. Test2 exposed two actual ConstEnum failures: retained
+ByteStringValue constants were missing from the consumer switch. Existing borrowed
+literal factory now handles them; owned-string/numeric/bigint branches unchanged.
+Independent review approved the fix; test3/retained/Native passed unchanged references.
+Two production builds and three Emit test attempts are retained in artifacts/emit/script-transforms.
+
+**Next: complete declarations and genuine output dependencies, then Program emission.**
+GPT-6.1 Sol lanes (implementation released immediately after current checkpoint):
+- emit_foundation: declarations Transform110/Util15.
+- emit_print_maps: Diagnostics32/Tracker21/Supplemental3 and shared declaration contracts.
+- emit_inventory: EmitHost26/Emitter23, Program output/noEmit/declaration diagnostics,
+  required VFS write paths and shared full-output harness.
+Contracts/tracker precede transform consumers; genuine write/host dependencies precede
+emitter/Program consumers. No placeholder joins. Namespace TypeScript.Transformers.Declarations;
+IDeclarationEmitHost/IDeclarationOutputPaths reflect actual upstream interfaces.
+Demanded HasFileName generalization includes usage mode/module lookup/default mode.
+OS writes preserve raw Go-byte output, write→create parents→retry and bounded32
+write concurrency. Bundled/cached/test hosts must propagate actual output/errors.
+Accepted checker/resolver/foundation work remains established input unless a concrete
+required dependency or defect is exposed. Root owns integration builds/map/commits.
 Continue automatically through checkpoints; no renewed assignment needed.
 
 Retain source and execution reviews from `34ade775`; no broad repeat. Its review

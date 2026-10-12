@@ -82,6 +82,22 @@ test is Go-runtime-only evidence, separate from authored CLR hinted behavior.
 [Verification](EMIT-VERIFY.md) and [proof](../validation/results/emit-es-transforms-verified.json)
 distinguish this subsystem from pending JSX/module/declaration/Program output.
 
+## Complete JSX, module and const-enum family
+
+All seven pinned files/175 functions are implemented and independently reviewed:
+JSX48, ConstEnum3, CommonJS83 and shared module files41. Required adaptations are
+borrowed entry enumeration and genuine Program format lookup for HasFileName owners.
+The original module utility TODO nil/empty leaves remain pinned upstream limitations;
+they are not new fallback implementations. The 253 JSX entity records are preserved.
+
+The 75 new authored comparisons use genuine Program/library environments, exact
+TS→JSX→ES→UseStrict→Module→ConstEnum output and five complete public pre-emit
+diagnostic channels. Managed acceptance totals1,379 passes. Actual Linux x64 Native
+AOT executed151 original functions plus243 authored controls successfully. A real
+const-enum borrowed-string consumer omission was fixed without altering expectations.
+[Proof](../validation/results/emit-script-transforms-verified.json) separates this
+family from pending declaration transforms and full Program/compiler-corpus output.
+
 ## Package responsibilities
 
 | Upstream file | Lines / functions | Baseline and active disposition |

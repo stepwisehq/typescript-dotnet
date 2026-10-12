@@ -3503,7 +3503,10 @@
       "languageCampaignEvidence": "validation/results/checker-noemit-verified.json",
       "ownedUtf8Adaptation": "Shared immutable owned-byte source and local ReadOnlySpan<byte> replace char-per-byte source storage/temporary source copies. Public raw-string/Unicode boundaries remain explicit; actual upstream algorithms/order retained. Required source consumers preserve byte positions. JSDoc text-only scratch collections use Go-like Slice headers with detached persistent snapshots. Verification and individual exceptions (including rune-based arrow line-break correction) are recorded in docs/VSCODE-CHECK-STATUS.md; core implementation snapshot artifacts/vscode-byte-source/build/snapshot-1/snapshot.json.",
       "nodeListSliceAdaptation": "Node child headers and consumers preserve Go shared storage, independent lengths and explicit Clip/Clone boundaries; parser arenas publish clipped regions with standard span CopyTo. Public List input adapters copy explicitly. Qualified061c evidence and limitations: docs/VSCODE-CHECK-STATUS.md; artifacts/vscode-node-list-slices/qualification.json. Adjacent parser/type storage work is separate.",
-      "allocationRolloutAdaptation": "Implemented through accepted integration16: Source-file, include, trace and diagnostic storage/merge paths retain Slice headers and actual source Clip/Clone/Concat/sorting; unresolved/package name sets retain byte keys. Combined integration16 behavioral/Native AOT acceptance passed; source-reviewed snapshots and adaptations in docs/STATE.md."
+      "allocationRolloutAdaptation": "Implemented through accepted integration16: Source-file, include, trace and diagnostic storage/merge paths retain Slice headers and actual source Clip/Clone/Concat/sorting; unresolved/package name sets retain byte keys. Combined integration16 behavioral/Native AOT acceptance passed; source-reviewed snapshots and adaptations in docs/STATE.md.",
+      "emitScriptCampaignAdaptation": "Genuine HasFileName GetEmitModuleFormatOfFile overload uses original options/metadata paths, preserves SourceFile borrowed-name fast path; broader Program emit remains pending.",
+      "emitScriptCampaignReview": "artifacts/emit/source-review/module-shared.json",
+      "emitScriptCampaignEvidence": "validation/results/emit-script-transforms-verified.json"
     },
     {
       "upstream": null,
@@ -4191,7 +4194,10 @@
       "configurationCampaignEvidence": "validation/results/configuration-verified.json",
       "emitEsCampaignAdaptation": "Focused live-owner value key enumerator for OrderedSet.Values preserves upstream ordering/count behavior without iterator allocation; no broader OrderedMap reimplementation.",
       "emitEsCampaignReview": "artifacts/emit/source-review/es-runtime.json",
-      "emitEsCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+      "emitEsCampaignEvidence": "validation/results/emit-es-transforms-verified.json",
+      "emitScriptCampaignAdaptation": "Live-owner EntryValues struct enumerator for JSX retains ordered key/value capture at each upstream yield step; existing methods preserved.",
+      "emitScriptCampaignReview": "artifacts/emit/source-review/jsx-inliner.json",
+      "emitScriptCampaignEvidence": "validation/results/emit-script-transforms-verified.json"
     },
     {
       "upstream": "tsc/internal/core/projectreference.go",
@@ -7141,25 +7147,91 @@
       "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
       "emitCampaignState": "Original public assertions passed managed and actual Native AOT. Go-specific allocation test passed only in Go; authored CLR hinted behavior remains separate.",
       "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/moduletransforms/commonjsmodule.go",
+      "destination": "src/TypeScript.Scanner/Transformers/ModuleTransforms/CommonJSModule.cs",
+      "status": "ported",
+      "scope": "Complete pinned 83-function CommonJS transform; 23 authored genuine Program full-chain cases compare exact Go output and full public diagnostics in managed and Native AOT. Whole compiler corpus remains final integration.",
+      "upstreamSha256": "39d7ed63ce5720f7793515ddfb685c6acff81eaad3d58b7ac8a04120671b5480",
+      "emitFunctionCount": 83,
+      "excludedSymbols": [],
+      "emitCampaignReview": "artifacts/emit/source-review/commonjs.json",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; 1379 managed and actual Linux x64 Native AOT gates passed.",
+      "adaptations": "Borrowed byte export-name keys, identity declaration binding sets and ordered value enumerators; four visitor callbacks/destructuring export callback cached. Four synchronous local closures use explicit-ref value state preserving interleaved flush order; both upstream prologue clones and required AST clones retained. No explicit upstream make capacity sites.",
+      "emitCampaignEvidence": "validation/results/emit-script-transforms-verified.json",
+      "sourceSha256": "cf0ead366d6865237182654cce4c8f09781c62c08156919a323836e6c89fea4a"
+    },
+    {
+      "upstream": "tsc/internal/transformers/jsxtransforms/jsx.go",
+      "status": "ported",
+      "destination": "src/TypeScript.Scanner/Transformers/JsxTransforms/JSX.cs",
+      "emitFunctionCount": 48,
+      "sourceSha256": "b4eb0a3c8bfe9e9b6d777b948918dbbfa7fa5ce3b1a6a0050c042f78a07cbf0e",
+      "upstreamSha256": "00cc7def93d0cd81786971a78e146e265dba2603610e00f488f74aad3f45f847",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; 1379 managed and actual Linux x64 Native AOT gates passed.",
+      "emitCampaignEvidence": "validation/results/emit-script-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/inliners/constenum.go",
+      "status": "ported",
+      "destination": "src/TypeScript.Scanner/Transformers/Inliners/ConstEnum.cs",
+      "emitFunctionCount": 3,
+      "sourceSha256": "fc99e2b3d1b3c79e952107cd3806c39ebc92149c86657840ae196a901f37f934",
+      "upstreamSha256": "12af23462ed9ede5001ce7d7ca49b1be3274a8124e22e0e0163c3fbfb7986030",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; 1379 managed and actual Linux x64 Native AOT gates passed.",
+      "emitCampaignEvidence": "validation/results/emit-script-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/moduletransforms/externalmoduleinfo.go",
+      "destination": "src/TypeScript.Scanner/Transformers/ModuleTransforms/ExternalModuleInfo.cs",
+      "status": "ported",
+      "scope": "Complete pinned source preserving original algorithms, Slice copies, cached worker/collection owners and borrowed byte names.",
+      "upstreamSha256": "85547f0b737759bc87f2626877b6518f188b2950913565fa0b382905ae45fd8a",
+      "emitFunctionCount": 17,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; 1379 managed and actual Linux x64 Native AOT gates passed.",
+      "emitCampaignReview": "artifacts/emit/source-review/module-shared.json",
+      "emitCampaignEvidence": "validation/results/emit-script-transforms-verified.json",
+      "sourceSha256": "ae02b2352dd64217d3643c5ade3bc2faa8b0845a7387775d494d783df6734153"
+    },
+    {
+      "upstream": "tsc/internal/transformers/moduletransforms/esmodule.go",
+      "destination": "src/TypeScript.Scanner/Transformers/ModuleTransforms/ESModule.cs",
+      "status": "ported",
+      "scope": "Complete pinned source preserving original algorithms, Slice copies, cached worker/collection owners and borrowed byte names.",
+      "upstreamSha256": "859ede42e178a608bb9bfafba23ce5703979ff940eae0d6dbc3044602a8e7fbc",
+      "emitFunctionCount": 11,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; 1379 managed and actual Linux x64 Native AOT gates passed.",
+      "emitCampaignReview": "artifacts/emit/source-review/module-shared.json",
+      "emitCampaignEvidence": "validation/results/emit-script-transforms-verified.json",
+      "sourceSha256": "3f0aed38c2fa8ca60c3c30ed5ba713bd0100b1a2e1be2e7816fca132c510f39e"
+    },
+    {
+      "upstream": "tsc/internal/transformers/moduletransforms/impliedmodule.go",
+      "destination": "src/TypeScript.Scanner/Transformers/ModuleTransforms/ImpliedModule.cs",
+      "status": "ported",
+      "scope": "Complete pinned source preserving original algorithms, Slice copies, cached worker/collection owners and borrowed byte names.",
+      "upstreamSha256": "bc4e0e873626532c2eaf3d63d3dd3f8d479778fc94b8a4a5744bfec6c1a4884d",
+      "emitFunctionCount": 3,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; 1379 managed and actual Linux x64 Native AOT gates passed.",
+      "emitCampaignReview": "artifacts/emit/source-review/module-shared.json",
+      "emitCampaignEvidence": "validation/results/emit-script-transforms-verified.json",
+      "sourceSha256": "591260e4c8ec2b3312baae8d4a80b06299962aae81318cd81c751a15ad5833f2"
+    },
+    {
+      "upstream": "tsc/internal/transformers/moduletransforms/utilities.go",
+      "destination": "src/TypeScript.Scanner/Transformers/ModuleTransforms/Utilities.cs",
+      "status": "ported",
+      "scope": "Complete pinned source preserving original algorithms/copies/borrowed name owners. Existing nil/empty !!! module-naming leaves retained as upstream limitations.",
+      "upstreamSha256": "3a599c65920b9eb85d5563c66e5ac841ca0591f7bfa76748e9bdfb44965b5364",
+      "emitFunctionCount": 10,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; 1379 managed and actual Linux x64 Native AOT gates passed.",
+      "emitCampaignReview": "artifacts/emit/source-review/module-shared.json",
+      "emitCampaignEvidence": "validation/results/emit-script-transforms-verified.json",
+      "sourceSha256": "8593e21c67732bb1dabc89efaebaa96dddf3812df0904dc8f3c00c3c6df98f4f"
     }
   ],
-  "activePhase": {
-    "name": "whole-emit-dependency-completion",
-    "baselineCommit": "e3131a5b",
-    "status": "Complete ES family accepted with1304managed passes and actualLinuxx64Native151original/168controls; nextJSX/modules/inliner. Whole-emit contract remains active.",
-    "contract": "docs/EMIT-CONTRACT.md",
-    "state": "docs/STATE.md",
-    "testInventory": "docs/EMIT-TEST-INVENTORY.md",
-    "boundaries": "Complete pinned upstream synthesis, maps, printing, transformations, JS/declaration output and required Program/checker support. Language services and unrelated build/watch orchestration excluded.",
-    "verificationTiming": "Targeted development checks, coordinated integration builds, comprehensive subsystem/final upstream-output and Linux x64 Native AOT gates. External-project evaluations deferred until emit acceptance.",
-    "prerequisiteEvidence": "validation/results/emit-foundation-verified.json",
-    "prerequisiteCheckpoint": "3e78aede",
-    "printerResolverEvidence": "validation/results/emit-printer-resolver-verified.json",
-    "printerResolverCheckpoint": "34ade775",
-    "tsTransformsEvidence": "validation/results/emit-ts-transforms-verified.json",
-    "tsTransformsCheckpoint": "b0cf6af4",
-    "esTransformsEvidence": "validation/results/emit-es-transforms-verified.json"
-  },
+  "activePhase": "Whole emit: TS, ES, JSX/module/const-enum families accepted; complete declarations and genuine Program output dependencies next.",
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",
     "sourceTreeSha256": "3649d542b4bf031beb995de72c02fe9852e205dd4233b94ea7426250d38a30fd"

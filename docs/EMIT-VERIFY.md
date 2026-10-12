@@ -134,3 +134,24 @@ restored explicit upstream capacities and cached callbacks. Retained and Native 
 passed on their first attempts. No source edits followed the managed run. Complete
 compiler-output/no-emit corpus, JS runtime execution and Program output remain final
 integration obligations; no external-project or performance measurement was made.
+
+## Complete JSX, module and const-enum family
+
+Use the same commands with output path `artifacts/emit/script-transforms/native`.
+Final managed run:362 emit cases; retained832 checker,84 type-system,101 selected
+no-emit:1,379 passed, no failures/skips. Actual Linux x64 Native AOT published in
+15.785s and executed151 original functions plus243 authored controls in6.574s, exit0.
+
+[Proof](../validation/results/emit-script-transforms-verified.json) records full
+commands, TRX, source/assertion reviews, Go observations, actual ILC dependencies
+and executable. The75 added authored cases are21 shared modules,23 CommonJS and
+31 JSX/inliner cases. Exact output and five full public diagnostic channels are
+compared under equivalent genuine Program options/files/packages/libraries. Original
+compiler-corpus expected outputs and declaration-emit diagnostics remain later gates.
+
+Two central production builds resolved ordinary API/type joins. First test attempt
+failed at absent-option fixture defaults and overlapped an ingress edit; it is not
+accepted frozen evidence. Second attempt exposed two const-enum borrowed-string
+consumer failures. The reviewed fix uses the existing borrowed literal factory;
+reference outputs and diagnostics were unchanged. Third attempt and subsequent
+retained/Native gates passed. No external-project/performance run occurred.

@@ -217,6 +217,15 @@ public sealed partial class Program : ICheckerProgramHost, TypeScript.OutputPath
     internal ResolutionMode getModeForTypeReferenceDirectiveInFile(FileReference reference, SourceFile file) => reference.ResolutionMode != ResolutionMode.None ? reference.ResolutionMode : GetDefaultResolutionModeForFile(file);
     public Dictionary<ByteStringKey, ModeAwareCache<ResolvedTypeReferenceDirective?>> GetResolvedTypeReferenceDirectives() => typeResolutionsInFile;
     public ModuleKind GetEmitModuleFormatOfFile(SourceFile file) => Ast.GetEmitModuleFormatOfFileWorker(RootedFilePath.FromValue(file.FileNameGoValue()), projectReferenceFileMapper.GetCompilerOptionsForFile(file), GetSourceFileMetaData(PathKey.FromValue(file.PathKeyValue())));
+    // program.go:1767. Go's structural HasFileName contract also accepts synthetic file owners.
+    // Real SourceFile owners retain their borrowed path/name fast path.
+    public ModuleKind GetEmitModuleFormatOfFile(HasFileName file)
+    {
+        if (file is SourceFile sourceFile) return GetEmitModuleFormatOfFile(sourceFile);
+        var fileName = RootedFilePath.FromValue(ByteStringValue.FromString(file.FileName()));
+        var path = PathKey.FromValue(ByteStringValue.FromString(file.PathKey()));
+        return Ast.GetEmitModuleFormatOfFileWorker(fileName, projectReferenceFileMapper.GetCompilerOptionsForFile(fileName, path), GetSourceFileMetaData(path));
+    }
     public ResolutionMode GetEmitSyntaxForUsageLocation(SourceFile file, Node usage) => FileLoader.GetEmitSyntaxForUsageLocationWorker(RootedFilePath.FromValue(file.FileNameGoValue()), GetSourceFileMetaData(PathKey.FromValue(file.PathKeyValue())), usage, projectReferenceFileMapper.GetCompilerOptionsForFile(file));
     public ResolutionMode GetImpliedNodeFormatForEmit(SourceFile file) => Ast.GetImpliedNodeFormatForEmitWorker(RootedFilePath.FromValue(file.FileNameGoValue()), projectReferenceFileMapper.GetCompilerOptionsForFile(file).GetEmitModuleKind(), GetSourceFileMetaData(PathKey.FromValue(file.PathKeyValue())));
     public ResolutionMode GetModeForUsageLocation(SourceFile file, Node usage) => FileLoader.GetModeForUsageLocation(RootedFilePath.FromValue(file.FileNameGoValue()), GetSourceFileMetaData(PathKey.FromValue(file.PathKeyValue())), usage, projectReferenceFileMapper.GetCompilerOptionsForFile(file));

@@ -86,6 +86,28 @@ public sealed class OrderedMap<K, V>
             yield return mp![keys![i]];
     }
 
+    // Same live ordered traversal as ordered_map.go Entries. The value enumerator
+    // retains the key/value captured by each original yield step.
+    internal EntrySequence EntryValues() => new(this);
+    internal readonly struct EntrySequence(OrderedMap<K, V> owner)
+    {
+        public EntryEnumerator GetEnumerator() => new(owner);
+    }
+    internal struct EntryEnumerator(OrderedMap<K, V> owner)
+    {
+        private int index = -1;
+        private (K Key, V Value) current;
+        public readonly (K Key, V Value) Current => current;
+        public bool MoveNext()
+        {
+            if (++index >= (owner.keys?.Count ?? 0))
+                return false;
+            var key = owner.keys![index];
+            current = (key, owner.mp![key]);
+            return true;
+        }
+    }
+
     public IEnumerable<(K Key, V Value)> Entries()
     {
         for (int i = 0; i < (keys?.Count ?? 0); i++)

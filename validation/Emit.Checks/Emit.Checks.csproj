@@ -5,4 +5,5 @@
     <IsAotCompatible>true</IsAotCompatible><TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup><ProjectReference Include="../../src/TypeScript.Scanner/TypeScript.Scanner.csproj" /></ItemGroup>
+  <ItemGroup><Compile Include="../Program.Checks/CompilerBaselineFileSystem.cs" Link="CompilerBaselineFileSystem.cs" /></ItemGroup>
 </Project>

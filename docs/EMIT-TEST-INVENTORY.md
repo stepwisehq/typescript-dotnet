@@ -135,3 +135,24 @@ Current complete TypeScript-transform dependency gate passed205 Emit xUnit recor
 Complete ES dependency gate passed287 Emit xUnit records plus832 checker,84 type-system and101 selected no-emit (1,304 managed total), zero failures/skips. Actual Linux x64 Native AOT executed151 original functions and168 authored logical controls. All17 pinned ES source files/407 functions are covered (NamedEvaluation actual20, correcting an earlier19 estimate). Eight OrderedSet support functions and the narrow OrderedMap live-key enumerator join are reviewed. Original TestOrderedSet public assertions add one portable function; original TestOrderedSetWithSizeHint passed unchanged in Go but its allocation assertion remains Go-runtime-only. The separate CLR hinted1024 behavior is authored. Implemented original reference leaves now884; Go-only allocation reference function remains separately counted.
 
 The new80 authored cases (runtime45/class-fields21/decorators14) compare actual target-selected TS→ES→UseStrict bytes plus complete public diagnostics, retaining diagnosed inputs and all observed fields/channels. The ES package has no direct original tests; these controls are stage differential evidence and do not replace original compiler output corpus acceptance. [Bound proof](../validation/results/emit-es-transforms-verified.json) preserves four compile-only attempts, independent reviews and actual ILC inputs/ELF. JSX/module/inliner/declaration and Program output remain subsequent work.
+
+The complete script-transform family now passes362 Emit xUnit records plus832 checker,
+84 type-system and101 selected no-emit regressions (1379 total, zero failures/skips).
+Actual Linuxx64 Native AOT executes151 original functions and243 authored controls.
+This family adds75 authored exact-Go full-chain output/full public diagnostic cases:
+shared modules21, CommonJS23, JSX/inliner31. No original direct tests exist for these
+transform packages. Existing original assertions/function counts remain unchanged.
+Genuine virtual filenames (.mts/.cts/.js/.tsx), package.json and auxiliary module/JSON
+inputs use the existing baseline filesystem; raw byte ingress is explicit. Chain
+order: TS, conditional JSX, target-selected ES, UseStrict, module selection, conditional
+const-enum inlining last. Full public diagnostic contract remains unchanged.
+
+Development evidence is retained separately: production build1 API joins, successful
+build2; Go observer compile-only field casing correction before75 successful captures;
+managed test1 prior287 passed/new75 failed before transforms on optional empty enums
+(with a crossed sourcefreeze/ingress fix, so no frozen acceptance claim); test2 had360
+pass/two genuine borrowed-string inliner failures; independently reviewed fix then
+all362 passed test3. References and expected outputs/diagnostics never changed.
+Final evidence: validation/results/emit-script-transforms-verified.json. Declaration,
+compiler Program output, original whole corpus/runtime/declaration recompile and
+output/map assertions remain outstanding. This is subsystem acceptance only.
