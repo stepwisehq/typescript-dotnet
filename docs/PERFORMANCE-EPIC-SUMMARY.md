@@ -34,7 +34,9 @@ These are milestones, **not one controlled before/after experiment**: hardware c
 
 - **Use .NET’s optimized facilities.** Span operations, standard hashing and collections, Server GC, and Native AOT speed settings replaced unnecessary compatibility overhead without introducing a different checker algorithm.
 
-The matched Server-GC allocation-profile series fell from approximately **35.17 GiB to 10.08 GiB of sampled allocation traffic—a 71% reduction**. Later public runtime counters measured approximately **10.59 GB Native versus 8.99 GB Go**, much closer than the early profiles suggested. Those counters predate the final checkpoint and measure cumulative heap allocation, not peak memory. [Allocation evidence](./VSCODE-CHECK-STATUS.md#integration20-callbacksetup-completion-and-native-throughput-policy-accepted)
+The earliest retained allocation profile did show **over 50 GB of allocation traffic**: **52,015,179,472 sampled bytes**, or **52.02 GB / 48.44 GiB**. That was the corrected baseline running under Release **CoreCLR**, used because Native AOT tracing lacked named allocation types and stacks. It estimates allocation traffic across the run—not simultaneous live memory, RSS, or an exact Native AOT allocation census. [Original profile and limitations](./VSCODE-CHECK-STATUS.md#measured-profiling-follow-up-2026-10-10) · [Retained sampled total](../artifacts/vscode-profiling/managed-baseline/folded-summary.json)
+
+The later matched Server-GC allocation-profile series fell from approximately **35.17 GiB to 10.08 GiB of sampled allocation traffic—a 71% reduction**. This is its own comparable series, not a direct percentage comparison with that first profile. Later public runtime counters measured approximately **10.59 GB Native versus 8.99 GB Go**, much closer than the early profiles suggested. Those counters predate the final checkpoint and measure cumulative heap allocation, not peak memory. [Allocation evidence](./VSCODE-CHECK-STATUS.md#integration20-callbacksetup-completion-and-native-throughput-policy-accepted)
 
 **Why the last stretch improved so quickly**
 
