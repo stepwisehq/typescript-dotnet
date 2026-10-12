@@ -470,22 +470,17 @@ public static partial class ProjectSupportChecks
     }
 
     // specifiers_test.go:407. Preserve both original rooted-probe assertions.
-    // The source same-package helper is private in the immutable C# library;
-    // preserve only its named metadata for this authored test-access adapter.
-    [System.Diagnostics.CodeAnalysis.DynamicDependency("processEnding", typeof(TypeScript.ModuleSpecifiers.ModuleSpecifiers))]
+    // The complete same-package helper is internal and available through the
+    // existing Projects.Checks friend assembly; use its retained Slice input.
     private static void ProcessEndingChecksRootedFilePath()
     {
         var host = new EndingProbeHost();
-        var method = typeof(TypeScript.ModuleSpecifiers.ModuleSpecifiers).GetMethod("processEnding",
-            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic,
-            binder: null,
-            types: [typeof(ModuleSpecifier), typeof(RootedFilePath), typeof(List<TypeScript.ModuleSpecifiers.ModuleSpecifierEnding>), typeof(CompilerOptions), typeof(TypeScript.ModuleSpecifiers.IModuleSpecifierGenerationHost)],
-            modifiers: null) ?? throw new InvalidOperationException("Exact original processEnding helper is unavailable.");
-        if (method.ReturnType != typeof(ModuleSpecifier))
-            throw new InvalidOperationException("Exact original processEnding return type differs.");
-        var value = method.Invoke(null, [ModuleSpecifier.FromGoString("./lib/index.ts"), RootedFilePath.FromGoString("/project/src/lib/index.ts"), new List<TypeScript.ModuleSpecifiers.ModuleSpecifierEnding> { TypeScript.ModuleSpecifiers.ModuleSpecifierEnding.Minimal }, new CompilerOptions(), host]);
-        if (value is not ModuleSpecifier result)
-            throw new InvalidOperationException("Exact original processEnding result is unavailable.");
+        var result = TypeScript.ModuleSpecifiers.ModuleSpecifiers.processEnding(
+            ModuleSpecifier.FromGoString("./lib/index.ts"),
+            RootedFilePath.FromGoString("/project/src/lib/index.ts"),
+            Slice<TypeScript.ModuleSpecifiers.ModuleSpecifierEnding>.FromArray(
+                [TypeScript.ModuleSpecifiers.ModuleSpecifierEnding.Minimal]),
+            new CompilerOptions(), host);
         Equal(result.AsString(), "./lib/index");
         Require(host.FileExistsCalls.Contains("/project/src/lib.ts"), "Original FileExists rooted candidate was not probed.");
     }

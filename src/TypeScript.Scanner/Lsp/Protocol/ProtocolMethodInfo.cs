@@ -46,9 +46,12 @@ internal readonly struct NotificationInfo<TParams>(Method method, ProtocolType<T
     };
 }
 
-internal sealed class ProtocolErrorException(ErrorCode code, string message, Exception? cause = null) : Exception(GoString.ToString(code.String().Materialize() ?? "") + ": " + message, cause)
+internal sealed class ProtocolErrorException : Exception
 {
-    internal readonly ErrorCode Code = code;
+    internal readonly ErrorCode Code;
+    // lsp.go ErrorCode.Error is the code spelling without a wrapped-message suffix.
+    internal ProtocolErrorException(ErrorCode code) : base(GoString.ToString(code.String().Materialize() ?? "")) => Code = code;
+    internal ProtocolErrorException(ErrorCode code, string message, Exception? cause = null) : base(GoString.ToString(code.String().Materialize() ?? "") + ": " + message, cause) => Code = code;
 }
 
 internal sealed partial class RequestMessage

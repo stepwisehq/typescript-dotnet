@@ -1,0 +1,657 @@
+[
+  {
+    "name": "local module should not be picked up",
+    "line": 22,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        "const c = require('./config');"
+      ],
+      [
+        "/user/username/projects/project/config.js",
+        "export let x = 1"
+      ],
+      [
+        "/user/username/projects/project/jsconfig.json",
+        "{\n\t\t\t\t\t\"compilerOptions\": { \"moduleResolution\": \"commonjs\" },\n\t\t\t\t\t\"typeAcquisition\": { \"enable\": true }\n\t\t\t}"
+      ]
+    ],
+    "registry": [
+      "config"
+    ],
+    "packages": [],
+    "skip": null
+  },
+  {
+    "name": "configured projects",
+    "line": 58,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/tsconfig.json",
+        "{\n\t\t\t\t\"compilerOptions\": { \"allowJs\": true },\n\t\t\t\t\"typeAcquisition\": { \"enable\": true },\n\t\t\t}"
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\n\t\t\t\t\"name\": \"test\",\n\t\t\t\t\"dependencies\": {\n\t\t\t\t\t\"jquery\": \"^3.1.0\"\n\t\t\t\t}\n\t\t\t}"
+      ]
+    ],
+    "registry": [],
+    "packages": [
+      [
+        "jquery",
+        "declare const $: { x: number }"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "inferred projects",
+    "line": 92,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\n\t\t\t\t\"name\": \"test\",\n\t\t\t\t\"dependencies\": {\n\t\t\t\t\t\"jquery\": \"^3.1.0\"\n\t\t\t\t}\n\t\t\t}"
+      ]
+    ],
+    "registry": [],
+    "packages": [
+      [
+        "jquery",
+        "declare const $: { x: number }"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "type acquisition with disableFilenameBasedTypeAcquisition:true",
+    "line": 129,
+    "files": [
+      [
+        "/user/username/projects/project/jquery.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/tsconfig.json",
+        "{\n\t\t\t\t\"compilerOptions\": { \"allowJs\": true },\n\t\t\t\t\"typeAcquisition\": { \"enable\": true, \"disableFilenameBasedTypeAcquisition\": true }\n\t\t\t}"
+      ]
+    ],
+    "registry": [
+      "jquery"
+    ],
+    "packages": [],
+    "skip": null
+  },
+  {
+    "name": "discover from node_modules",
+    "line": 155,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\n\t\t\t    \"dependencies\": {\n\t\t\t\t\t\"jquery\": \"1.0.0\"\n\t\t\t\t}\n\t\t\t}"
+      ],
+      [
+        "/user/username/projects/project/jsconfig.json",
+        "{}"
+      ],
+      [
+        "/user/username/projects/project/node_modules/commander/index.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/node_modules/commander/package.json",
+        "{ \"name\": \"commander\" }"
+      ],
+      [
+        "/user/username/projects/project/node_modules/jquery/index.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/node_modules/jquery/package.json",
+        "{ \"name\": \"jquery\" }"
+      ],
+      [
+        "/user/username/projects/project/node_modules/jquery/nested/package.json",
+        "{ \"name\": \"nested\" }"
+      ]
+    ],
+    "registry": [
+      "nested",
+      "commander"
+    ],
+    "packages": [
+      [
+        "jquery",
+        "declare const jquery: { x: number }"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "discover from node_modules empty types",
+    "line": 192,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\"dependencies\": {\"jquery\": \"1.0.0\"}}"
+      ],
+      [
+        "/user/username/projects/project/jsconfig.json",
+        "{\"compilerOptions\": {\"types\": []}}"
+      ],
+      [
+        "/user/username/projects/project/node_modules/commander/index.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/node_modules/commander/package.json",
+        "{ \"name\": \"commander\" }"
+      ],
+      [
+        "/user/username/projects/project/node_modules/jquery/index.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/node_modules/jquery/package.json",
+        "{ \"name\": \"jquery\" }"
+      ],
+      [
+        "/user/username/projects/project/node_modules/jquery/nested/package.json",
+        "{ \"name\": \"nested\" }"
+      ]
+    ],
+    "registry": [
+      "nested",
+      "commander"
+    ],
+    "packages": [
+      [
+        "jquery",
+        "declare const jquery: { x: number }"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "discover from node_modules explicit types",
+    "line": 222,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\"dependencies\": {\"jquery\": \"1.0.0\"}}"
+      ],
+      [
+        "/user/username/projects/project/jsconfig.json",
+        "{\"compilerOptions\": {\"types\": [\"jquery\"]}}"
+      ],
+      [
+        "/user/username/projects/project/node_modules/commander/index.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/node_modules/commander/package.json",
+        "{ \"name\": \"commander\" }"
+      ],
+      [
+        "/user/username/projects/project/node_modules/jquery/index.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/node_modules/jquery/package.json",
+        "{ \"name\": \"jquery\" }"
+      ],
+      [
+        "/user/username/projects/project/node_modules/jquery/nested/package.json",
+        "{ \"name\": \"nested\" }"
+      ]
+    ],
+    "registry": [
+      "nested",
+      "commander"
+    ],
+    "packages": [
+      [
+        "jquery",
+        "declare const jquery: { x: number }"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "discover from node_modules empty types has import",
+    "line": 252,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        "import \"jquery\";"
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\"dependencies\": {\"jquery\": \"1.0.0\"}}"
+      ],
+      [
+        "/user/username/projects/project/jsconfig.json",
+        "{\"compilerOptions\": {\"types\": []}}"
+      ],
+      [
+        "/user/username/projects/project/node_modules/commander/index.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/node_modules/commander/package.json",
+        "{ \"name\": \"commander\" }"
+      ],
+      [
+        "/user/username/projects/project/node_modules/jquery/index.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/node_modules/jquery/package.json",
+        "{ \"name\": \"jquery\" }"
+      ],
+      [
+        "/user/username/projects/project/node_modules/jquery/nested/package.json",
+        "{ \"name\": \"nested\" }"
+      ]
+    ],
+    "registry": [
+      "nested",
+      "commander"
+    ],
+    "packages": [
+      [
+        "jquery",
+        "declare const jquery: { x: number }"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "discover from bower_components",
+    "line": 283,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/jsconfig.json",
+        "{}"
+      ],
+      [
+        "/user/username/projects/project/bower_components/jquery/index.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/bower_components/jquery/bower.json",
+        "{ \"name\": \"jquery\" }"
+      ]
+    ],
+    "registry": [],
+    "packages": [
+      [
+        "jquery",
+        "declare const jquery: { x: number }"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "discover from bower.json",
+    "line": 317,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/jsconfig.json",
+        "{}"
+      ],
+      [
+        "/user/username/projects/project/bower.json",
+        "{\n\t\t\t\t\"dependencies\": {\n                    \"jquery\": \"^3.1.0\"\n                }\n\t\t\t}"
+      ]
+    ],
+    "registry": [],
+    "packages": [
+      [
+        "jquery",
+        "declare const jquery: { x: number }"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "Malformed package.json should be watched",
+    "line": 354,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\"dependencies\": { \"co } }"
+      ]
+    ],
+    "registry": [],
+    "packages": [
+      [
+        "commander",
+        "export let x: number"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "should redo resolution that resolved to '.js' file after typings are installed",
+    "line": 401,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        "\\n                import * as commander from \"commander\";\\n            "
+      ],
+      [
+        "/user/username/projects/node_modules/commander/index.js",
+        "module.exports = 0"
+      ]
+    ],
+    "registry": [],
+    "packages": [
+      [
+        "commander",
+        "export let commander: number"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "expired cache entry (inferred project, should install typings)",
+    "line": 432,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\"name\":\"test\",\"dependencies\":{\"jquery\":\"^3.1.0\"}}"
+      ],
+      [
+        "/home/src/Library/Caches/typescript/node_modules/@types/jquery/index.d.ts",
+        "export const x = 10;"
+      ],
+      [
+        "/home/src/Library/Caches/typescript/package.json",
+        "{\"dependencies\":{\"types-registry\":\"^0.1.317\"},\"devDependencies\":{\"@types/jquery\":\"^1.0.0\"}}"
+      ],
+      [
+        "/home/src/Library/Caches/typescript/package-lock.json",
+        "{\"dependencies\":{\"@types/jquery\":{\"version\":\"1.0.0\"}}}"
+      ]
+    ],
+    "registry": [],
+    "packages": [
+      [
+        "jquery",
+        "export const y = 10"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "non-expired cache entry (inferred project, should not install typings)",
+    "line": 460,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\"name\":\"test\",\"dependencies\":{\"jquery\":\"^3.1.0\"}}"
+      ],
+      [
+        "/home/src/Library/Caches/typescript/node_modules/@types/jquery/index.d.ts",
+        "export const x = 10;"
+      ],
+      [
+        "/home/src/Library/Caches/typescript/package.json",
+        "{\"dependencies\":{\"types-registry\":\"^0.1.317\"},\"devDependencies\":{\"@types/jquery\":\"^1.3.0\"}}"
+      ],
+      [
+        "/home/src/Library/Caches/typescript/package-lock.json",
+        "{\"dependencies\":{\"@types/jquery\":{\"version\":\"1.3.0\"}}}"
+      ]
+    ],
+    "registry": [
+      "jquery"
+    ],
+    "packages": [],
+    "skip": null
+  },
+  {
+    "name": "deduplicate from local @types packages",
+    "line": 486,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/node_modules/@types/node/index.d.ts",
+        "declare var node;"
+      ],
+      [
+        "/user/username/projects/project/jsconfig.json",
+        "{\n\t\t\t\t\"typeAcquisition\": { \"include\": [\"node\"] }\n\t\t\t}"
+      ]
+    ],
+    "registry": [
+      "node"
+    ],
+    "packages": [],
+    "skip": "Todo - implement removing local @types from include list"
+  },
+  {
+    "name": "expired cache entry (inferred project, should install typings) lockfile3",
+    "line": 519,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\"name\":\"test\",\"dependencies\":{\"jquery\":\"^3.1.0\"}}"
+      ],
+      [
+        "/home/src/Library/Caches/typescript/node_modules/@types/jquery/index.d.ts",
+        "export const x = 10;"
+      ],
+      [
+        "/home/src/Library/Caches/typescript/package.json",
+        "{\"dependencies\":{\"types-registry\":\"^0.1.317\"},\"devDependencies\":{\"@types/jquery\":\"^1.0.0\"}}"
+      ],
+      [
+        "/home/src/Library/Caches/typescript/package-lock.json",
+        "{\"packages\":{\"node_modules/@types/jquery\":{\"version\":\"1.0.0\"}}}"
+      ]
+    ],
+    "registry": [],
+    "packages": [
+      [
+        "jquery",
+        "export const y = 10"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "non-expired cache entry (inferred project, should not install typings) lockfile3",
+    "line": 547,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\"name\":\"test\",\"dependencies\":{\"jquery\":\"^3.1.0\"}}"
+      ],
+      [
+        "/home/src/Library/Caches/typescript/node_modules/@types/jquery/index.d.ts",
+        "export const x = 10;"
+      ],
+      [
+        "/home/src/Library/Caches/typescript/package.json",
+        "{\"dependencies\":{\"types-registry\":\"^0.1.317\"},\"devDependencies\":{\"@types/jquery\":\"^1.3.0\"}}"
+      ],
+      [
+        "/home/src/Library/Caches/typescript/package-lock.json",
+        "{\"packages\":{\"node_modules/@types/jquery\":{\"version\":\"1.3.0\"}}}"
+      ]
+    ],
+    "registry": [
+      "jquery"
+    ],
+    "packages": [],
+    "skip": null
+  },
+  {
+    "name": "should install typings for unresolved imports",
+    "line": 573,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        "\n\t\t\t\timport * as fs from \"fs\";\n                import * as commander from \"commander\";\n                import * as component from \"@ember/component\";\n\t\t\t"
+      ]
+    ],
+    "registry": [],
+    "packages": [
+      [
+        "node",
+        "export let node: number"
+      ],
+      [
+        "commander",
+        "export let commander: number"
+      ],
+      [
+        "ember__component",
+        "export let ember__component: number"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "ATA with WatchEnabled false should not panic",
+    "line": 626,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\n\t\t\t\t\"name\": \"test\",\n\t\t\t\t\"dependencies\": {\n\t\t\t\t\t\"jquery\": \"^3.1.0\"\n\t\t\t\t}\n\t\t\t}"
+      ]
+    ],
+    "registry": [],
+    "packages": [
+      [
+        "jquery",
+        "declare const $: { x: number }"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "ATA disabled via unified setting",
+    "config": "unified",
+    "line": 694,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\n\t\t\t\t\t\"name\": \"test\",\n\t\t\t\t\t\"dependencies\": {\n\t\t\t\t\t\t\"jquery\": \"^3.1.0\"\n\t\t\t\t\t}\n\t\t\t\t}"
+      ]
+    ],
+    "registry": [],
+    "packages": [
+      [
+        "jquery",
+        "declare const $: { x: number }"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "ATA disabled via deprecated setting",
+    "config": "deprecated",
+    "line": 694,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\n\t\t\t\t\t\"name\": \"test\",\n\t\t\t\t\t\"dependencies\": {\n\t\t\t\t\t\t\"jquery\": \"^3.1.0\"\n\t\t\t\t\t}\n\t\t\t\t}"
+      ]
+    ],
+    "registry": [],
+    "packages": [
+      [
+        "jquery",
+        "declare const $: { x: number }"
+      ]
+    ],
+    "skip": null
+  },
+  {
+    "name": "ATA re-enabled after being disabled triggers diagnostics refresh",
+    "line": 722,
+    "files": [
+      [
+        "/user/username/projects/project/app.js",
+        ""
+      ],
+      [
+        "/user/username/projects/project/package.json",
+        "{\n\t\t\t\t\"name\": \"test\",\n\t\t\t\t\"dependencies\": {\n\t\t\t\t\t\"jquery\": \"^3.1.0\"\n\t\t\t\t}\n\t\t\t}"
+      ]
+    ],
+    "registry": [],
+    "packages": [
+      [
+        "jquery",
+        "declare const $: { x: number }"
+      ]
+    ],
+    "skip": null
+  }
+]

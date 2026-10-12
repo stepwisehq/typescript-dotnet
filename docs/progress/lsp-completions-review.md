@@ -1,0 +1,9 @@
+# Complete Completions source review
+
+The full pinned main completion, string completion and JSDoc snippet family is source-reviewed clear: 196 + 61 + 31 upstream workers, required shared consumer joins, and the original directory-prefix assertion. The [promotion manifest](./lsp-completions-promotion.json) binds the thirteen reviewed destinations; all hashes matched when the review closed during gate74. The local raw report is `artifacts/language-services/source-review/completions.json`.
+
+The review compared request/resolve checker leases and projected auto-import admission, main selection/filtering and defaults, symbol/member/class/object/JSX ordering, import recovery and path/version conditions, cache cloning, JSDoc/snippet formatting, and the complete embedded writer forwarding path. Required mapped Slice copies and generated syntax nodes remain. The original case-folding test retains its actual UTF8 bytes and original expected result. Existing checker implementations were assessed only at the focused export/visibility joins, rather than broadly re-audited.
+
+Two earlier review claims were withdrawn after reading their complete owners. `Materialize` returns the raw Latin1 Go byte projection; it does not UTF8-decode text, and no Unicode correctness defect was established. Go's successful final `NewSetWithSizeHint` allocates even for an empty result; the actual sized HashSet producer was restored. The nullable named error-result owner remains. Neither correction carries a performance prediction.
+
+This is source review, not full editor feature acceptance. The one original directory-prefix function and the integrated dependency gates do not establish the still-pending original editor corpus, public stdio lifecycle, cancellation and repeated-request behavior. The coordinator owns execution and final evidence binding; the reviewer ran no build or workload.

@@ -1,14 +1,25 @@
 # Language-services verification
 
-The [completion contract](./LANGUAGE-SERVICES-CONTRACT.md) is still in progress.
-The current [dependency result](../validation/results/language-services-dependencies-74.json)
-records a passing managed and Linux x64 Native AOT dependency run, its source hashes,
-and its limitations. This does not establish an operational language server.
-Subsequent source changes require their own integration verification.
+The pinned upstream language-services/LSP contract is accepted on Linux x64 after
+independent review of all current runtime gates. Delivery commit and clean-worktree
+confirmation remain coordinator actions. See the [assessment](./LANGUAGE-SERVICES-ASSESSMENT.md),
+[contract](./LANGUAGE-SERVICES-CONTRACT.md), [source map](../source-map.json) and
+[per-function dispositions](./language-services-upstream-tests.json).
 
-## Shared dependency checks
+Native98 executes 406 whole original functions and 80 authored controls; the adapted
+watcher observation and external/partial channels are separate. The complete editor
+corpus retains 4,152 passes, 415 original skips and four same pinned-Go failures.
+Those failures receive no original-pass credit: three missing-golden outputs match
+fully as adapted evidence, while `importType_js` fails its original VerifyNoErrors
+precondition before its intended reference assertions. Independent
+[direct](../artifacts/language-services/source-review/native-direct-98-evidence.json)
+and [corpus](../artifacts/language-services/source-review/native-corpus-98-evidence.json)
+reviews bind actual source, ILC inputs and executed binaries.
 
-From the repository root, with the pinned .NET SDK and Node available:
+## Shared managed and actual Native checks
+
+Run from the repository root with the pinned .NET SDK and Node. The xUnit wrappers
+and Native runner invoke the same assertion bodies. Publishing alone is insufficient.
 
 ```sh
 dotnet test tests/LanguageServices.Tests/LanguageServices.Tests.csproj -c Release
@@ -16,77 +27,11 @@ dotnet publish validation/LanguageServices.Validation/LanguageServices.Validatio
   -c Release -r linux-x64 -p:PublishAot=true -p:StripSymbols=true \
   -o artifacts/language-services/native
 artifacts/language-services/native/LanguageServices.Validation
-```
-
-The xUnit wrappers and native executable call the same shared assertion bodies.
-Original test functions, table rows, partial comparison channels and authored controls
-retain separate inventory identities. The regexp executable labels its mixed output
-as assertion groups; do not count a selected channel as an entire original function. Original converter tests retain their Node reference process.
-Run from the repository so source fixtures and unchanged upstream baselines are found.
-Publishing alone is insufficient: execute the produced native binary.
-
-The current dependency74 packet passes **420 xUnit cases**, zero failures/skips,
-including eight retained decoder-depth probes. Actual Linux x64 Native AOT executes
-323 whole original TypeScript-repository functions, one separately adapted original
-watcher runtime observation and62 authored controls. External dependency and partial
-channels remain separately reported; see the
-[assessment](./progress/lsp-dependencies-74.md),
-[independent review](./progress/lsp-dependencies-74-review.json) and
-[execution record](../validation/results/language-services-dependencies-74.json).
-The retained parser suite additionally passes18,799 data-driven cases:
-
-```sh
-dotnet test tests/Parser.Tests/Parser.Tests.csproj -c Release
 artifacts/language-services/native/LanguageServices.Validation --selection-depth
 ```
 
-The second command runs the exact original12,000-parenthesis selection assertion
-separately. Production synchronous stack continuation is exercised under Native AOT;
-no test-only enlarged stack or reduced depth substitutes for the original input.
-
-The isolated `--ipc-fatal-notification` native control must run as a child with a
-bounded timeout and core dumps disabled. Success requires nonzero termination,
-the exact `authored fatal IPC notification` marker, and no timeout. Native74 returned
--6 with that marker. This verifies the original notification boundary, not actual
-server transport.
-
-All five Registry originals and full Session/Snapshot/refcount/pool assertions now
-pass. New complete semantic-service source counterparts are reviewed and compile;
-the original editor corpus and actual public stdio server are still pending. A
-Native dependency executable can trim uncalled services, so its passing run is not
-whole-server acceptance. Comprehensive retained compiler/emit gates remain final
-epic work. Earlier dependency records retain their exact historical scopes.
-
-The four authored diagnostics/Emit comparisons use the tracked Go witness with the
-same bundled library environment. To reproduce the reference without changing upstream:
-
-```sh
-python3 - <<'PYREF'
-import json
-from pathlib import Path
-root = Path.cwd()
-out = root / 'artifacts/language-services/context-emit-overlay.json'
-out.parent.mkdir(parents=True, exist_ok=True)
-out.write_text(json.dumps({'Replace': {
-    str(root / 'upstream/TypeScript/tsc/internal/project/context_emit_control_test.go'):
-    str(root / 'tools/language-services-oracle/context_emit_test.go')
-}}))
-PYREF
-(cd upstream/TypeScript/tsc && ../../../tools/.cache/go/bin/go test \
-  -overlay ../../../artifacts/language-services/context-emit-overlay.json \
-  ./internal/project -run '^TestAuthoredSessionDiagnosticsEmitContext$' -count=1 -v)
-dotnet test tests/LanguageServices.Tests/LanguageServices.Tests.csproj -c Release \
-  --filter 'FullyQualifiedName~SessionDiagnosticsEmitTests'
-dotnet test tests/Emit.Tests/Emit.Tests.csproj -c Release \
-  --filter 'FullyQualifiedName~EmitModeTests|FullyQualifiedName~CheckerMutexTests|FullyQualifiedName~EmitWriteFailureTests'
-```
-
-The first command captures complete reference observations; it does not overwrite
-expected values. The shared native dependency runner includes all four candidate
-controls. These are authored comparisons, not original Go test functions.
-
-The newly added protocol depth probes have a separate native entrypoint so runtime
-stack admission can be tested without terminating the ordinary assertion packet:
+The last command preserves the original 12,000-parenthesis parse/range/serialization
+assertion. Run each authored decoder-depth probe in its own process:
 
 ```sh
 for depth in 16 256 2048 4998; do
@@ -97,64 +42,87 @@ for depth in 16 256 2048 10000; do
 done
 ```
 
-These probes are authored boundary observations, not original test functions. All eight passed
-as separate processes under Linux x64 Native AOT and in xUnit; pinned Go admits the
-same inputs. These exercise decoding, not encoder-depth or real server worker stacks.
-
-## Reference and scope
-
-Use revision `fed0bf24149fb1ed36039212648bafdafc1ea10e` in the
-[upstream checkout](../upstream/TypeScript/tsc/). The
-[TypeScript test inventory](./language-services-upstream-tests.json) and
-[external dependency inventory](./progress/lsp-standard-library-tests.json) distinguish
-original assertions, partial channels, unexecuted tests and later dependencies.
-
-The small authored normalization reference can be regenerated without changing
-upstream sources:
+Run the fatal notification control with core dumps disabled and a deadlock safety
+bound. It must terminate nonzero with the exact `authored fatal IPC notification`
+marker, without timing out; the current gate returned -6. For example:
 
 ```sh
-cd upstream/TypeScript/tsc
-../../../tools/.cache/go/bin/go run ../../../tools/language-services-oracle/nfd_public.go
+(ulimit -c 0; timeout 30s artifacts/language-services/native/LanguageServices.Validation \
+  --ipc-fatal-notification > artifacts/language-services/fatal.log 2>&1)
 ```
 
-Original reference suites can be reproduced from the same upstream directory:
+Check the exit status and marker; exit 124 is a failure. This isolated control is
+expected to terminate and is not an ordinary successful command.
+
+## Complete original editor corpus
+
+The tracked [candidate backend](../tools/language-services-oracle/fourslash-backend/)
+retains genuine Go test bodies, assertions, baselines and authoritative fixture FS.
+Only client construction and explicit non-wire state/process joins adapt to the
+actual C# Server; no shadow Go Session supplies candidate observations. The
+[verification design](./progress/lsp-verification-design.md) documents those joins.
 
 ```sh
-../../../tools/.cache/go/bin/go test ./internal/lsp/lsproto -count=1 -json
-../../../tools/.cache/go/bin/go test ./internal/format -count=1 -json
-../../../tools/.cache/go/bin/go test regexp regexp/syntax -count=1 -json
-../../../tools/.cache/go/bin/go test golang.org/x/text/unicode/norm -count=1 -json
+python3 tools/language-services-oracle/fourslash-backend/prepare-overlay.py
+export TSDOTNET_FOURSLASH_SERVER="$PWD/artifacts/language-services/native/LanguageServices.Validation"
+(cd upstream/TypeScript/tsc && ../../../tools/.cache/go/bin/go test \
+  -overlay ../../../artifacts/language-services/fourslash-backend-overlay/overlay.json \
+  ./internal/fourslash/tests -count=1 -json -timeout 30m) \
+  > artifacts/language-services/candidate-corpus.jsonl
+unset TSDOTNET_FOURSLASH_SERVER
 ```
 
-The recorded runs passed31 protocol test functions/122 subtests,7 formatting functions,44 regexp test
-functions/31 examples,12 syntax test functions, and26 norm test functions/2 examples/
-23,622 subtests. Three original norm functions skipped to avoid downloading Unicode
-data; these default runs do not establish their conformance assertions. C# selected
-NFD channels use the exact official Unicode17 fixture recorded in their provenance.
-Do not count example functions or source inventory entries as executed Test functions.
+The four pinned-reference failures mean a nonzero package result is expected;
+inspect every terminal identity against the recorded dispositions. Do not normalize
+arbitrary failures or drop array/message order. The overlay also admits the thirteen
+unchanged JS feature files excluded by Go's `_js_test.go` filename rule. For a genuine
+Go reference, prepare `--js-only` and use its generated overlay with the candidate
+variable absent. Original skips remain skips.
 
-The [verification design](./progress/lsp-verification-design.md) records the remaining
-workspace, original-harness and real-transport requirements. Public server launch and
-editor-connection instructions will be added when the actual server is implemented
-and verified; `tscheck --lsp --stdio` is currently only the planned command.
+## Public disk/stdio and lifecycle
 
-## New original and authored comparisons in dependency74
-
-The completion-prefix and deep-selection checks preserve the original Go assertions.
-Run the upstream controls with the bundled toolchain:
+The fresh public CLI passed full payload comparisons across changing documents,
+configuration/dependencies, 100 unchanged queries and 100 unsaved edits. Separate
+SIGINT, SIGTERM and both declared-parent watchdog roles also passed. The
+[stdio](../artifacts/language-services/source-review/public-stdio-final-evidence.json)
+and [lifecycle](../artifacts/language-services/source-review/public-lifecycle-final-evidence.json)
+reviews bind the current ELF and actual ILC inputs. Reproduce with tracked tools:
 
 ```sh
-(cd upstream/TypeScript/tsc && ../../../tools/.cache/go/bin/go test ./internal/ls \
-  -run '^(TestSelectionRangeDepthIsLimited|TestTryRemoveDirectoryPrefixCaseFoldingShrinksPrefix)$' -count=1)
-tools/.cache/go/bin/go test strings -run '^TestTrimFunc$' -count=1
-tools/.cache/go/bin/go test slices -run '^(TestIndexFunc|TestContainsFunc)$' -count=1
+dotnet publish src/TypeScript.Check/TypeScript.Check.csproj \
+  -c Release -r linux-x64 -p:PublishAot=true -p:StripSymbols=true \
+  -o artifacts/language-services/public-native
+(cd upstream/TypeScript/tsc && ../../../tools/.cache/go/bin/go build \
+  -o ../../../artifacts/language-services/pinned-tsgo ./cmd/tsc)
+python3 tools/language-services-oracle/compare-public-lsp.py \
+  --go-command '["artifacts/language-services/pinned-tsgo","--lsp","--stdio"]' \
+  --native-command '["artifacts/language-services/public-native/tscheck","--lsp","--stdio"]' \
+  --output artifacts/language-services/public-stdio-reproduction --repeats 100
+python3 tools/language-services-oracle/compare-public-lsp-lifecycle.py \
+  --go-command '["artifacts/language-services/pinned-tsgo","--lsp","--stdio"]' \
+  --native-command '["artifacts/language-services/public-native/tscheck","--lsp","--stdio"]' \
+  --output artifacts/language-services/public-lifecycle-reproduction
 ```
 
-The authored document-symbol witness is
-[document_symbols_alias_test.go](../tools/language-services-oracle/document_symbols_alias_test.go).
-Its historical name does not imply private-header alias parity. Overlay it at
-`internal/project/document_symbols_alias_control_test.go` using the same Go overlay
-pattern above, then run `TestAuthoredDocumentSymbolChildrenAliases`. Candidate
-`DocumentSymbolExpandoTests` compares both complete hierarchical/flat responses and
-is included in the shared Native runner. The retained capture log and exact overlay
-are linked from the dependency74 execution record.
+Use new output directories. [Editor connection instructions and measurements](./progress/lsp-public-launch-readiness.md)
+explain the actual pinned client settings and exact inherited shutdown outcomes.
+Public runs bypass one-shot no-GC. The candidate corpus's forced-cleanup ownership
+cannot substitute for public shutdown evidence. Short-run RSS growth does not prove
+steady-state memory, leak-freedom or universal performance.
+
+## Retained compiler, emit and performance protection
+
+Final retained checks pass 1,730 managed cases plus 496 Emit cases, full Parser 18,799,
+six Native publications/direct gates, the qualified 15,330-entry emit corpus and
+15,304 exact Native no-emit records. Follow the tracked comprehensive recipes in
+[EMIT-VERIFY](./EMIT-VERIFY.md); the [current assessment](./LANGUAGE-SERVICES-ASSESSMENT.md)
+links final evidence and distinguishes overlapping channels, preparation skips and
+six known external metadata differences. The independently reviewed [corrected performance cohort](../artifacts/language-services/source-review/retained-performance-cohort2-evidence.json)
+retains all 75 observations, with modest wall slowdowns on four workloads and faster
+ManyFiles. Emit timing and subprocess wall are separate; no new threshold or universal
+Native/Go/external-project claim is made.
+
+Historical [dependency74](./progress/lsp-dependencies-74.md) and
+[public91](./progress/lsp-public-stdio-driver-promotion.json) evidence remains valid
+for those exact snapshots. Their counts and pending-work wording are historical;
+they do not replace current-source acceptance or reproduce the final ELF identity.

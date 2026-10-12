@@ -1,0 +1,34 @@
+{
+  "status": "complete consumed logger owner source-written; independent source read clear, final binding and candidate execution pending",
+  "upstreamPin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "externalPin": "Go1.27.1",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/ProjectSystem/Logging/LogFormat.cs",
+      "sha256": "2265a10db8e1907dd5cbd4963aef3711f48b55abc31ebc61752d02fa3dec764a"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ConsumedLogFormatChecks.cs",
+      "sha256": "3c69ffb331f9c847f287a3e1a63152629111e64850ee8f93ff6ad049cada120a"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ConsumedLogFormatTests.cs",
+      "sha256": "220a40e5d3decf03d0f91da99e7dd8410e2fc7cea223f4479000080490e9ab0c"
+    },
+    {
+      "path": "tools/language-services-oracle/log_format_controls_test.go",
+      "sha256": "1efe6c31917ace612c9af9d6803595fd9da39652247a2f1b9ebdbd81b7ecac29"
+    },
+    {
+      "path": "docs/progress/lsp-consumed-logging.md",
+      "sha256": "97c9141779630ee1e4c2ae8056d6a944608a7d25dc28d4070e3b2b15b002d0c4"
+    }
+  ],
+  "originalFunctions": 0,
+  "authoredControls": 14,
+  "referenceObservations": 13,
+  "referenceLog": "artifacts/language-services/integration-7/log-format-reference.jsonl",
+  "nativeEntry": "LanguageServices.Checks.ConsumedLogFormatChecks.RunAll",
+  "sourceMapping": "Go fmt printArg/printValue + strconv shortest g formatting as authored closed AOT support for actual project/lsp logger call roles; no arbitrary fmt claim",
+  "scope": "All current consumed Server/Project/LS logger format literals and argument owners reconciled; editor corpus unverified."
+}

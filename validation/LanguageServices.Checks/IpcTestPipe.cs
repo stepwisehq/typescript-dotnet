@@ -1,6 +1,6 @@
 // Authored .NET duplex fixture adaptation for original ipc net.Pipe assertions.
 // Writes rendezvous with complete consumption, and either Close wakes both sides.
-using System.Threading.Channels;
+using System.Collections.Concurrent;
 
 namespace LanguageServices.Checks;
 internal sealed class IpcTestPipe : Stream
@@ -8,18 +8,24 @@ internal sealed class IpcTestPipe : Stream
     private sealed class WriteBlock(byte[] bytes)
     {
         internal readonly byte[] Bytes = bytes;
-        internal readonly TaskCompletionSource Consumed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal readonly TaskCompletionSource Consumed = new();
     }
 
     private sealed class Owner
     {
-        internal readonly Channel<WriteBlock>[] Directions = [Channel.CreateUnbounded<WriteBlock>(), Channel.CreateUnbounded<WriteBlock>()];
+        // Synchronous io/net.Pipe admission must not enqueue a ValueTask-to-Task
+        // read completion onto the same pool occupied by compiler callers.
+        // Default BlockingCollection storage is the retained FIFO queue.
+        internal readonly BlockingCollection<WriteBlock>[] Directions = [new(), new()];
         internal readonly CancellationTokenSource Closed = new();
         internal void Close()
         {
             Closed.Cancel();
             foreach (var direction in Directions)
-                direction.Writer.TryComplete();
+                direction.CompleteAdding();
+            // Do not Dispose queues still borrowed by peer Read/Write. No wait
+            // handles are exposed; these managed owners become collectible once
+            // both stream endpoints and any active operation release them.
         }
     }
 
@@ -48,13 +54,13 @@ internal sealed class IpcTestPipe : Stream
         {
             try
             {
-                current = owner.Directions[1 - side].Reader.ReadAsync(owner.Closed.Token).AsTask().GetAwaiter().GetResult();
+                current = owner.Directions[1 - side].Take(owner.Closed.Token);
             }
             catch (OperationCanceledException)
             {
                 return 0;
             }
-            catch (ChannelClosedException)
+            catch (InvalidOperationException) when (owner.Directions[1 - side].IsCompleted)
             {
                 return 0;
             }
@@ -79,18 +85,29 @@ internal sealed class IpcTestPipe : Stream
         if (buffer.Length == 0)
             return;
         var block = new WriteBlock(buffer.ToArray());
-        if (owner.Closed.IsCancellationRequested || !owner.Directions[side].Writer.TryWrite(block))
+        if (owner.Closed.IsCancellationRequested)
             throw new IOException("io: read/write on closed pipe");
         try
         {
-            block.Consumed.Task.WaitAsync(owner.Closed.Token).GetAwaiter().GetResult();
+            if (!owner.Directions[side].TryAdd(block))
+                throw new IOException("io: read/write on closed pipe");
+        }
+        catch (InvalidOperationException) when (owner.Directions[side].IsAddingCompleted)
+        {
+            throw new IOException("io: read/write on closed pipe");
+        }
+        try
+        {
+            // The sole consumer is this synchronous writer; Task.Wait's internal
+            // completion event wakes directly, without an asynchronous proxy.
+            block.Consumed.Task.Wait(owner.Closed.Token);
         }
         catch (OperationCanceledException)
         {
             // net/pipe.go:193–197 receives the read acknowledgement without a
-            // cancellation select after handing the write to the peer. WaitAsync
-            // can cancel its proxy before the asynchronous completion continuation
-            // runs, even though Read already acknowledged every byte.
+            // cancellation select after handing the write to the peer. Close may
+            // race the completed acknowledgement; retain success when every byte
+            // was already acknowledged by Read.
             if (!block.Consumed.Task.IsCompletedSuccessfully)
                 throw new IOException("io: read/write on closed pipe");
         }

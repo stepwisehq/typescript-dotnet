@@ -840,7 +840,7 @@ internal sealed partial class LanguageService
             Type? function = null;
             foreach (var part in effective.Types())
             {
-                if (checker.GetSignaturesOfType(part, SignatureKind.Call).Count == 0)
+                if (checker.GetSignaturesOfTypeSlice(part, SignatureKind.Call).Length == 0)
                     continue;
                 if (function != null)
                     return null;
@@ -852,7 +852,7 @@ internal sealed partial class LanguageService
             effective = function;
         }
 
-        if (checker.GetSignaturesOfType(effective, SignatureKind.Call).Count != 1)
+        if (checker.GetSignaturesOfTypeSlice(effective, SignatureKind.Call).Length != 1)
             return null;
         var flags = BuilderFlags.OmitThisParameter;
         if (LsUtil.GetQuotePreference(file, UserPreferences()) == QuotePreference.Single)

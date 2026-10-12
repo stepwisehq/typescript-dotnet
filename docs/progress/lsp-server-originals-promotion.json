@@ -1,0 +1,273 @@
+{
+  "status": "promoted-whole-source-reviewed-packet-access-delta-review-pending",
+  "originalFunctions": 25,
+  "defaultRunnableOriginalFunctions": 24,
+  "optionalReplaySourceSkip": 1,
+  "dispatch": "ServerOriginalChecks.RunAll / RunOriginal",
+  "files": [
+    {
+      "path": "validation/LanguageServices.Checks/ServerContentMapperIntegrationChecks.cs",
+      "sha256": "b876700c96fa4032a92e45a8c215eff362b9e9cd7a0a161f4829ccc2a99974d4"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ServerCompletionChecks.cs",
+      "sha256": "02cd61514a203b1d512170d02bdfebcef6262f2f8825fe5e52a356356d950835"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/LspTestClient.cs",
+      "sha256": "a77e9eb52eed5a71855a03b5c66ef838b4be806cef84212a68e399052167d423"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ServerInternalChecks.cs",
+      "sha256": "4458f2e6e45680f3fd2a1e4f4c5b8a28e9b1f8770df7204b2e70e3dbda862386"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ServerOriginalTests.cs",
+      "sha256": "4fcd93c013e4feb567af024a7f4cde7b275389271f98e9215d1d00f4c2bab4d5"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ServerProgressIntegrationChecks.cs",
+      "sha256": "1317725f8db5367cba0b83cc33625f084c5c92f0341df00b90de866b740e2be2"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ServerLifecycleChecks.cs",
+      "sha256": "2f8a41a333c9da72e2b4c41582fba3009192ce0358b51f29f92dd0550e6d141a"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ServerOriginalChecks.cs",
+      "sha256": "7b9df6d4b5e1f8de38da0b38d4ba17121049ba04b24136e817c21a6aa359b0bb"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ServerFlakyDiagnosticChecks.cs",
+      "sha256": "b01fe246940d478d2da804ad3402151d25ad83c36e68696c3e9ebc501060505e"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ServerProjectInfoChecks.cs",
+      "sha256": "ddc4de28ef302aca4f5bda090bc649e6ded32cd64a581b9189a268b2e841c4ea"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ServerReplayChecks.cs",
+      "sha256": "c975c5d2c2dae1a0f88c39a752fe0806f116778cac54437005216b9e185a49ff"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ServerSemanticTokensChecks.cs",
+      "sha256": "96af69999f061768b9c365645014c9df9287f8b8c561ed4aa9d112a63cf22a22"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ServerProjectReferenceChecks.cs",
+      "sha256": "fa4f17ba523f7e741caef5ce73289622095506481a7b15c88d96d5c87da3d830"
+    }
+  ],
+  "verification": "No corrected candidate execution or original pass credit. Full real Server/framed transport fixture; no shadow Session.",
+  "upstreamSources": [
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/server_progress_test.go",
+      "sha256": "15335bf150f523acfcf7bbda58fed4909d3dad6a3294a173c640078e69a35f7e",
+      "functions": [
+        {
+          "name": "TestProgressNotificationsEndToEnd",
+          "line": 18
+        }
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/server_test.go",
+      "sha256": "66124cf71b30b7325ff0bff0d263db33bb1281ade4e47a53699a66e4775daaa3",
+      "functions": [
+        {
+          "name": "TestServerShutdownNoDeadlock",
+          "line": 44
+        },
+        {
+          "name": "TestServerOutgoingQueueDoesNotBlockWithoutWriter",
+          "line": 112
+        },
+        {
+          "name": "TestWriteLoopRecoversFromUnserializableResponse",
+          "line": 151
+        }
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/server_contentmapper_test.go",
+      "sha256": "6133b6fe2eced7a362a4cffb71391c6b4d1066d826ef977f901d353a66a21d9b",
+      "functions": [
+        {
+          "name": "TestSetContentMapperContributionsBeforeDidOpen",
+          "line": 20
+        }
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/server_flakydiagnostics_test.go",
+      "sha256": "05841155562054b190fbf3f4149127e3df644b33c4b9455a51faf052271f34a3",
+      "functions": [
+        {
+          "name": "TestFlakyDiagnosticTrackingParallelEmit",
+          "line": 18
+        }
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/server_projectreference_updates_test.go",
+      "sha256": "752349fa6a47cf2f9a9bb8a290aeac9e4bbdd4024d3a70e4e31eb98b473bf5c5",
+      "functions": [
+        {
+          "name": "TestReferencesAfterAncestorProjectConfigDeletion1",
+          "line": 68
+        }
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/server_completion_test.go",
+      "sha256": "d76c22ffcb5c5968ef6c531fd0b9a1fc98283abf27abffd2d71969221428505f",
+      "functions": [
+        {
+          "name": "TestCompletionAfterFileClose",
+          "line": 87
+        },
+        {
+          "name": "TestCompletionWithConcurrentFileClose",
+          "line": 132
+        },
+        {
+          "name": "TestCompletionForUnopenedFile",
+          "line": 177
+        },
+        {
+          "name": "TestAutoImportCompletionForUnopenedFile",
+          "line": 201
+        },
+        {
+          "name": "TestCompletionSnapshotFreezing",
+          "line": 236
+        }
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/server_completion_internal_test.go",
+      "sha256": "eae6a369bd6d2c5445cdf0e7610f74f9fbf83ca0ac0b5f6ccacea53f5cca667e",
+      "functions": [
+        {
+          "name": "TestCompletionItemResolveRejectsRelativeFileName",
+          "line": 11
+        },
+        {
+          "name": "TestCompletionItemResolveRejectsMalformedDynamicFileName",
+          "line": 21
+        }
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/server_semantictokens_test.go",
+      "sha256": "46e26254b23379197d6ebb920f15bd13b914c5e97672c57085842d9aa443eb5e",
+      "functions": [
+        {
+          "name": "TestSemanticTokensCRLF",
+          "line": 24
+        },
+        {
+          "name": "TestSemanticTokensDefaultLibraryCaseInsensitive",
+          "line": 102
+        }
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/server_contentmapper_internal_test.go",
+      "sha256": "dd3478715f877d373f6e8cd171c81c9f5a3d61abdab67cca56664b3a327b25a9",
+      "functions": [
+        {
+          "name": "TestContentMapperLoggerRequiresTrace",
+          "line": 11
+        },
+        {
+          "name": "TestParseContentMapperContributions",
+          "line": 24
+        },
+        {
+          "name": "TestParseContentMapperContributionsRejectsConflictingInlineMappers",
+          "line": 59
+        },
+        {
+          "name": "TestParseContentMapperContributionsUsesCaseInsensitiveExtensions",
+          "line": 71
+        },
+        {
+          "name": "TestParseContentMapperContributionsDefaultsOptionsToObject",
+          "line": 89
+        }
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/server_projectinfo_test.go",
+      "sha256": "e0a4608233abc8733ebef89f206e2d1eb2475f7c9ce29d89cc3d8e1d611a87b1",
+      "functions": [
+        {
+          "name": "TestInitializeCodeActionKinds",
+          "line": 63
+        },
+        {
+          "name": "TestProjectInfoConfiguredProject",
+          "line": 81
+        },
+        {
+          "name": "TestProjectInfoInferredProject",
+          "line": 106
+        }
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/replay_test.go",
+      "sha256": "226f653b0f2b2d9ebedbb125908debbfb6de35d0cb9f0467316fd52ac68d0468",
+      "functions": [
+        {
+          "name": "TestReplay",
+          "line": 42
+        }
+      ]
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/testutil/lsptestutil/lspclient.go",
+      "sha256": "288643adcf487c2b181b69c9d661e9507e6960219516b189f9afbf95198b9947",
+      "functions": []
+    }
+  ],
+  "accessJoins": [
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Core.cs",
+      "sha256": "0190af22bbd2f957f53d89103e512dfd206d8973255727de0e4b0b8c47cdc2b1",
+      "adaptation": "Only original same-package access private to internal; body and ownership unchanged."
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Runtime.cs",
+      "sha256": "4623538cf35e88b20fc070e090e3cd328f296173c63e5dc980c3d8c9f4c18320",
+      "adaptation": "Only original same-package access private to internal; body and ownership unchanged."
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Messaging.cs",
+      "sha256": "17883c5cf7a4af5c56deb56bca5b43a0afedf7308ca26ec4eccd67a51d68d9fa",
+      "adaptation": "Only original same-package access private to internal; body and ownership unchanged."
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.QueryRequests.cs",
+      "sha256": "74a453692905a73410b725ebc402189df59c78acc1ae67a06ff6ba8d74821a92",
+      "adaptation": "Only original same-package access private to internal; body and ownership unchanged."
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.ContentMapperContributions.cs",
+      "sha256": "4f2e0437cb585e4c9edf9c3ec2ae94e12615f32a2a806ef901fb9c490345d9dc",
+      "adaptation": "Only original same-package access private to internal; body and ownership unchanged."
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.HostAdapters.cs",
+      "sha256": "b9007bd0633a2cc6c081361a1acb20389e04a32314131d5b75bfadde08dcca70",
+      "adaptation": "Only original same-package access private to internal; body and ownership unchanged."
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/LspCommand.cs",
+      "sha256": "c7ab781c9b0a7ec6b229b29ce2eb3f8121798946b3593450a44261caa3ef2672",
+      "adaptation": "Only original same-package access private to internal; body and ownership unchanged."
+    }
+  ],
+  "build88Joins": "Protocol coordinate field initializers preserve all numeric values; explicit JSONRPC ID alias/closed WriteID; actual protocol map Make+index assignment retains original nonnil map literal; actual encoder WriteProperty retained raw field names. Expected assertions unchanged."
+}

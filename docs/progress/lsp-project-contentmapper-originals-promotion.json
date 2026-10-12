@@ -1,0 +1,141 @@
+{
+  "status": "Complete17 original assertions and selected actual mapper fixture promoted; independent source review CLEAR; compilation/behavior pending",
+  "upstream": "upstream/TypeScript/tsc/internal/project/contentmapper_test.go",
+  "upstreamSha256": "3a7b5a0de7bbbf4eaeea17179a8449edb1643f78776528b969348946cefd4fb3",
+  "originalFunctions": [
+    "TestContentMapperProjectWithoutMappedFiles",
+    "TestContentMapperParallelFileLoading",
+    "TestContentMapperInProject",
+    "TestContentMapperPackageManifestChangeReloadsConfig",
+    "TestContentMapperSupplementalFileClonedOnEdit",
+    "TestContentMapperModuleExtensionClonedOnUnrelatedEdit",
+    "TestContentMapperLocaleChange",
+    "TestDynamicContentMapperInProject",
+    "TestDynamicContentMapperRefreshesForMixedWatchBatches",
+    "TestUnusedDynamicContentMapperIsNotOpened",
+    "TestContentMappersInParallelProjectReferences",
+    "TestContentMapperOpenFileExcludedByConfigChange",
+    "TestContentMapperRemovalWithOpenFile",
+    "TestContentMapperProcessSharedAcrossProjects",
+    "TestContentMapperInferredProjectUsesExtensionContributions",
+    "TestContentMapperInferredProjectSurvivesTypingsInstall",
+    "TestContentMapperCreatedFileAdoptedByConfiguredProject"
+  ],
+  "files": [
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperProjectFixture.Protocol.cs",
+      "sha256": "2e244e2cf437e6fd99768605e75183cda8e427d12b867c1e938e96c3dd7853ae"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperProjectFixture.Transform.cs",
+      "sha256": "3cad6b009adf90552c2b19ff6edaf1d84f90bc692d80b18035933ff1bdf9e4ec"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectContentMapperChecks.Basic.cs",
+      "sha256": "81ef89341edb8ca234b2d686b4de325542896eecadec311bf4cb90573ef3673c"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectContentMapperChecks.Cloning.cs",
+      "sha256": "73fb5ee7b6c5a8f4e84f1136a4d02e9a9f12e0a8bd41f874d390aea081f3f62b"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectContentMapperChecks.Created.cs",
+      "sha256": "94313fd3c10318e44a4c6581d26cbf2a55b3acfbec56564982b690e3bc55810d"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectContentMapperChecks.Dispatch.cs",
+      "sha256": "7dd3ab4e53aae3986ab475d02f71ea2ae54e3a74e6d8f9b48b059f6fbac8f568"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectContentMapperChecks.Dynamic.cs",
+      "sha256": "bf53daef52a18819f2c58c1e3f2a1d95df6a188531e47c01eb124bd64a281b9a"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectContentMapperChecks.Excluded.cs",
+      "sha256": "f330c0d6c477af1d9133d31c9f63d3091c45da4f53f438978acc21e283cdb710"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectContentMapperChecks.InProject.cs",
+      "sha256": "e03a684936bf6dda1379c2b1eb29912d58f73cab5888f871091dede3b7904c40"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectContentMapperChecks.Inferred.cs",
+      "sha256": "1518b0cdd092e46d89eccb73317f7ccf8da6ffd0487f4080cd53336a80cdb9e5"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectContentMapperChecks.LocaleReferences.cs",
+      "sha256": "ce3698272d23c9aefa9e4db2292c6f8038390c3357396507d7ebd236b9464f01"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectContentMapperChecks.Manifest.cs",
+      "sha256": "c9bc3cf226bd63648253d64e5d74b2a8ab48aebd1be5cd1f43b10629ac09ed4a"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectContentMapperChecks.Removal.cs",
+      "sha256": "9656043ca307e0adcb7eb0948aeb1008a2e4f07e8f5698c96ff2b92e21a6e478"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectContentMapperChecks.SharedProcess.cs",
+      "sha256": "6cefbdb42ba75c89c2d08ce2a2b6cd925359d992480f0e395dad9449ee03d4ed"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ProjectContentMapperTests.cs",
+      "sha256": "388c9ac5a64433f9e412bd028862d8019c274837e45a33a53041381ab1af5abe"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectSessionFixture.cs",
+      "sha256": "92f97deeab41bd740cce5d68fa8b5c55cd7e517deb7a49ab4cd840a726ff2910"
+    }
+  ],
+  "fixtureJoin": "Apply focused extension registration, locale read and optional background context observation/admission onto current accepted ProjectSessionFixture; never overwrite current accepted fixture from draft. Same genuine Session/fs/npm/spawner owners.",
+  "verification": "No compilation or candidate original-function pass credit. Parent controls gates after initial Server execution.",
+  "originalFixtureSources": [
+    {
+      "path": "upstream/TypeScript/tsc/internal/testutil/contentmappertest/protocol.go",
+      "sha256": "cb3e318db6b96df90efd81484b77b057b4550d02c6b2633e9c4936eb3855a88a"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/testutil/contentmappertest/manifest.go",
+      "sha256": "4096c8801c84aaaabc16e3463e43d487bdfefe3cbe2c42400283520f6752cc4a"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/testutil/contentmappertest/spawner.go",
+      "sha256": "7197f4626fcfe7688c6141554848d53d7ece6a9eded0e15ffe5e0bc3fc4854c8"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/testutil/contentmappertest/registry.go",
+      "sha256": "c8ef8e404c354bb4c104fe3e34280cd6161847deabd63a1f6040617dc82295de"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/testutil/contentmappertest/verbatim.go",
+      "sha256": "65d25912bef792774a6ee94c3c4a6009fae8acc55c504e700ce9ca1d5fd204a5"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/testutil/contentmappertest/dynamic_verbatim.go",
+      "sha256": "cad4efbe9ba7c39ca2b34a0ca33c5d8754810a93e3a56dd4cc5e32e107686a58"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/testutil/contentmappertest/supplemental.go",
+      "sha256": "6d7ef9fba1eddcad69c928a45a59b0d6577d88fc8a45190656877335702bad59"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/testutil/contentmappertest/transforming.go",
+      "sha256": "622c34ffffdb2a381b40b9b8498f9df68f82e76570cb032b5f73cf89afd92f99"
+    }
+  ],
+  "fixtureScope": "Selected genuine required five mapper arms from original registry; unrelated arms not claimed. Existing accepted Component fixture remains independent.",
+  "adaptations": [
+    "Original t.Parallel scheduling hints are serialized by shared dispatch; actual internal parallel loading/project reference branches and all original concurrency-sensitive ownership assertions retained.",
+    "Original typed config/manifest/mapper metadata enters existing C# List-backed boundary without redesigning accepted metadata storage. Fixture IPC messages use actual closed descriptors and retained raw buffers.",
+    "Sibling function/subtest dispatch aggregates independent failures; no original expectations weakened.",
+    "Existing Session fixture adds synchronized actual observer calls and optional explicit background context; default ordinary fixture semantics unchanged."
+  ],
+  "sourceReview": "artifacts/language-services/source-review/project-contentmapper-assertions.json",
+  "nativeDispatch": {
+    "call": "ProjectContentMapperChecks.RunAll()",
+    "originalFunctions": 17,
+    "authoredControls": 0
+  },
+  "parallelLoadingRuntimeDiagnosis": "Managed89 original failed unchanged full transformed text equality. Same assertion now reports actual filename/raw quoted output; no timer, scheduler, expected value, or production change. Cause pending actual output.",
+  "native94FailureObservation": "Native94 reproduced empty transformed file0.box despite dedicated reader adaptation. Cause pending. Failure-only assertion detail now includes retained Program mapper diagnostics and file diagnostics, with message chains; expected bytes unchanged. Named isolated dispatch retains all ordinary RunAll originals."
+}

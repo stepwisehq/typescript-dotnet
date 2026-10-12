@@ -3,6 +3,7 @@
 // Complete internal/ipc/conn_async.go; CLR channel and waitgroup owners are local adaptations.
 using System.Diagnostics;
 using System.Globalization;
+using System.Collections.Concurrent;
 using System.Threading.Channels;
 using TypeScript.JsonRpc;
 using TypeScript.Scanner;
@@ -15,7 +16,7 @@ internal sealed class AsyncConn : IConn
     private readonly IHandler handler;
     private TimingCollector? timing;
     private long sequence;
-    private readonly Dictionary<IDKey, Channel<GenericMessage>> pending = new();
+    private readonly Dictionary<IDKey, BlockingCollection<GenericMessage>> pending = new();
     private readonly object pendingMutex = new();
     private Exception? terminal;
     private bool hasCause;
@@ -89,28 +90,58 @@ internal sealed class AsyncConn : IConn
         return error;
     }
 
-    // WaitGroup.Go owns only a live worker count, not a retained list of all Tasks.
-    // An unrecovered notification exception escapes the void worker, as a Go
-    // goroutine panic does; only HandleRequest has an actual recovery boundary.
+    // WaitGroup.Go's handler goroutines remain schedulable while compiler workers
+    // synchronously wait for IPC or host locks. A dedicated background thread is
+    // the CLR blocking-runtime adaptation; queuing onto that same ThreadPool can
+    // delay even initialize beyond the source's unchanged five-second deadline.
+    // Retain only the live worker count, not completed thread owners. An uncaught
+    // notification exception still escapes; only HandleRequest recovers a panic.
     private void StartHandler(Action action)
     {
-        lock (handlersMutex)
-            handlers++;
-        ThreadPool.UnsafeQueueUserWorkItem(static state =>
+        var worker = new Thread(static value =>
         {
+            var state = ((AsyncConn Owner, Action Action))value!;
             try
             {
                 state.Action();
             }
             finally
             {
-                lock (state.Owner.handlersMutex)
-                {
-                    state.Owner.handlers--;
-                    Monitor.PulseAll(state.Owner.handlersMutex);
-                }
+                state.Owner.FinishHandler();
             }
-        }, (Owner: this, Action: action), preferLocal: false);
+        }) { IsBackground = true };
+        var state = (Owner: this, Action: action);
+        lock (handlersMutex)
+            handlers++;
+        try
+        {
+            // Preserve UnsafeQueueUserWorkItem's explicit-context admission.
+            // Request cancellation comes from Run's retained handlerContext;
+            // producer ExecutionContext is not part of the original handler.
+            if (ExecutionContext.IsFlowSuppressed())
+                worker.Start(state);
+            else
+            {
+                using var flow = ExecutionContext.SuppressFlow();
+                worker.Start(state);
+            }
+        }
+        catch
+        {
+            // A failed OS-thread admission must propagate without leaving Run's
+            // finally waiting forever for a handler that was never started.
+            FinishHandler();
+            throw;
+        }
+    }
+
+    private void FinishHandler()
+    {
+        lock (handlersMutex)
+        {
+            handlers--;
+            Monitor.PulseAll(handlersMutex);
+        }
     }
 
     private void ClosePendingCalls(Exception? runError)
@@ -159,13 +190,13 @@ internal sealed class AsyncConn : IConn
     private void ClosePendingCallsLocked()
     {
         foreach (var response in pending.Values)
-            response.Writer.TryComplete();
+            response.CompleteAdding();
         pending.Clear();
     }
 
     private void HandleResponse(GenericMessage message)
     {
-        Channel<GenericMessage>? response;
+        BlockingCollection<GenericMessage>? response;
         lock (pendingMutex)
         {
             var key = IDKey.FromID(message.ID!);
@@ -173,8 +204,15 @@ internal sealed class AsyncConn : IConn
                 return;
         }
 
-        response.Writer.TryWrite(message);
-        response.Writer.TryComplete();
+        try
+        {
+            response.TryAdd(message);
+        }
+        catch (InvalidOperationException) when (response.IsAddingCompleted)
+        {
+            // A completed channel rejects delivery; it does not fail the reader.
+        }
+        response.CompleteAdding();
     }
 
     private Exception? HandleRequest(CancellationToken context, GenericMessage message)
@@ -228,7 +266,13 @@ internal sealed class AsyncConn : IConn
     {
         var id = ID.NewIDString(ByteStringValue.FromString("api" + Interlocked.Increment(ref sequence).ToString(CultureInfo.InvariantCulture)));
         var key = IDKey.FromID(id);
-        var response = Channel.CreateBounded<GenericMessage>(1);
+        // The original capacity-one channel has only this synchronous receiver.
+        // BlockingCollection wakes it directly without an async-to-Task bridge
+        // queued behind compiler workers blocked on IPC/host locks. Do not Dispose:
+        // HandleResponse transfers the retained producer out of pendingMutex and
+        // may still deliver after caller cancellation. No wait handle is exposed;
+        // the collection and its managed synchronization owners become collectible.
+        var response = new BlockingCollection<GenericMessage>(1);
         lock (pendingMutex)
         {
             if (terminal is not null)
@@ -246,13 +290,13 @@ internal sealed class AsyncConn : IConn
             GenericMessage message;
             try
             {
-                message = response.Reader.ReadAsync(context).AsTask().GetAwaiter().GetResult();
+                message = response.Take(context);
             }
             catch (OperationCanceledException)
             {
                 return (null, CancellationError(context));
             }
-            catch (ChannelClosedException)
+            catch (InvalidOperationException) when (response.IsCompleted)
             {
                 lock (pendingMutex)
                     return (null, terminal);
@@ -266,7 +310,7 @@ internal sealed class AsyncConn : IConn
         {
             lock (pendingMutex)
                 if (pending.Remove(key, out var remaining))
-                    remaining.Writer.TryComplete();
+                    remaining.CompleteAdding();
         }
     }
 

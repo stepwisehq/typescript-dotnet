@@ -1,0 +1,28 @@
+{
+  "status": "Promoted complete whole original function; independent source review CLEAR, central compile/runtime pending",
+  "upstream": "upstream/TypeScript/tsc/internal/project/bulkcache_test.go",
+  "upstreamSha256": "5a58120c6fba7ee53fe4007ad182d767da26b1348ffd35483efc762a55b4c28b",
+  "originalFunctions": [
+    "TestBulkCacheInvalidation"
+  ],
+  "scope": "six outer groups, nine leaf scenarios",
+  "files": [
+    {
+      "path": "tests/LanguageServices.Tests/ProjectBulkCacheTests.cs",
+      "sha256": "2eed9b70589b6ee60411b855ce6cff7d1e8831a5ad6281e397e2895fc7e2b2f4"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectBulkCacheChecks.cs",
+      "sha256": "e209305f7b7590e52d70b7ced21ca4eecb2016105e193a0cc8bdef2ec300c313"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectBulkCacheChecks.Inputs.cs",
+      "sha256": "08641d9523a26be2273148435abcd8aa14bb26b9410d8c015863278778e55e24"
+    }
+  ],
+  "adaptations": [
+    "Actual shared Session fixture and retained snapshots/FS/watch owners; unchanged original expected values and raw input literals.",
+    "Named sibling action aggregation executes remaining original groups after assertion failure; serial original parallel scheduling hints."
+  ],
+  "verification": "Source-written only; no candidate pass credit or agent workloads."
+}

@@ -605,6 +605,7 @@ public sealed partial class SourceFile : CompositeNodeData, SourceFileLike, ISou
     }
     public string PathKey() => parseOptions.PathKey;
     public new string Text() => text;
+    internal new ByteStringValue TextValue() => ByteStringValue.FromView(TextView());
     public new byte[] TextBytes() => sourceText.ToArray();
     public new string DecodedText() => sourceText.DecodeUnicode();
     public Slice<Node> Imports() => imports;

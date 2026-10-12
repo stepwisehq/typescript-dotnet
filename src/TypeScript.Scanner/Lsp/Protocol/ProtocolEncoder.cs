@@ -147,8 +147,23 @@ internal sealed class ProtocolEncoder
         frames[index] = frame;
     }
 
+    // jsontext/state.go pushObject/pushArray: reject the next container at
+    // 10,000 open frames. WriteToken computes its prospective token position,
+    // but commits neither the implicit delimiter nor the failed token.
+    private void CheckContainerDepth()
+    {
+        if (frames.Count != 10000)
+            return;
+        var frame = frames[^1];
+        int delimiterLength = frame.Object ? 1 + (indentation.Multiline ? 1 : 0)
+            : (frame.Count == 0 ? 0 : 1) + indentation.Length(frames.Count + 1);
+        throw TypeScript.Json.Internal.JsonTextErrors.AsException(
+            TypeScript.Json.Internal.JsonTextErrors.SyntacticError("exceeded max depth", StackPointer().Materialize()!, output.Len() + delimiterLength));
+    }
+
     internal void BeginObject(bool checkNames = false)
     {
+        CheckContainerDepth();
         BeforeValue();
         output.WriteByte((byte)'{');
         frames.Add(new(true, checkNames));
@@ -156,6 +171,7 @@ internal sealed class ProtocolEncoder
 
     internal void BeginArray()
     {
+        CheckContainerDepth();
         BeforeValue();
         output.WriteByte((byte)'[');
         frames.Add(new(false));

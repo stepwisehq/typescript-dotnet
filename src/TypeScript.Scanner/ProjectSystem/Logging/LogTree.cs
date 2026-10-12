@@ -7,6 +7,26 @@ namespace TypeScript.ProjectSystem.Logging;
 internal sealed class LogTree : ILogCollector
 {
     private static long sequence;
+    // logtree.go:61–122. Go preserves a typed nil *LogTree inside Logger.
+    // CLR interface null cannot enter its nil-safe receiver methods.
+    internal static ILogger AsLogger(LogTree? tree) => tree is null ? NilReceiver.Instance : tree;
+    private sealed class NilReceiver : ILogger
+    {
+        internal static readonly NilReceiver Instance = new();
+        public void Log(params object?[] message) { }
+        public void Logf(string format, params object?[] args) { }
+        public void Error(params object?[] message) { }
+        public void Errorf(string format, params object?[] args) { }
+        public void Warn(params object?[] message) { }
+        public void Warnf(string format, params object?[] args) { }
+        public void Info(params object?[] message) { }
+        public void Infof(string format, params object?[] args) { }
+        public ILogger? Verbose() => null;
+        public void SetVerbose(bool verbose) { }
+        // The original IsVerbose receiver has no nil guard.
+        public bool IsVerbose() => throw new NullReferenceException();
+    }
+
     private sealed record Entry(ulong Sequence, DateTimeOffset Time, string Message, LogTree? Child);
     private string name = "";
     private readonly object gate = new();

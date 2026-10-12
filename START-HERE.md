@@ -1,28 +1,25 @@
-# Active epic: language services and LSP
+# Language services and LSP: final delivery
 
-The user authorized comprehensive, dependency-first language-services/LSP completion
-from accepted emit/performance checkpoint `9b8fa74a` (summary checkpoint `e003f22f`).
-Read the active top of [STATE.md](./docs/STATE.md). This mandate supersedes all
-historical "await the next mandate" instructions below. Continue autonomously across
-implementation, review, verification and committed subsystem checkpoints.
+The whole Linux x64 language-services/LSP contract is accepted after independent
+review. Committed delivery status is recorded in the active top of
+[STATE.md](./docs/STATE.md). Read that section before taking action. Do not restart
+accepted dependency or compiler work. The [assessment](./docs/LANGUAGE-SERVICES-ASSESSMENT.md),
+[verification instructions](./docs/LANGUAGE-SERVICES-VERIFY.md) and
+[acceptance evidence](./validation/results/language-services-verified.json) define the
+supported subsystem and explicit upstream/platform limitations.
 
-For routine re-entry, start with this active section, the active STATE section and
-your current owner note linked there. The remaining sections preserve historical
-mandates; read them when a concrete dependency calls for that history rather than
-reloading the whole history on every compaction.
+The public command is `tscheck --lsp --stdio`. Genuine project snapshots, unsaved
+updates, semantic services and server transport use the pinned upstream algorithms.
+Preserve accepted UTF8/slice ownership and .NET runtime adaptations; long-lived LSP
+bypasses the one-shot CLI no-GC policy. Original tests and actual Native AOT transport
+are distinct evidence channels. Do not turn upstream skips/failures or external
+platform boundaries into passing claims. Large external-project/editor evaluations
+were not part of this acceptance.
 
-Astra coordinates; GPT-6.1 Sol implements and independently reviews. Port pinned
-upstream document/project snapshots, invalidation, semantic services and LSP transport
-faithfully, building complete dependencies before consumers. No empty-success
-responses or repeated full compilation as substitutes for missing service/update
-algorithms. Preserve accepted UTF8/slice/ownership and runtime adaptations. Use
-upstream tests and differential service results, then actual Linux x64 Native AOT
-transport with changing documents, cancellation, diagnostics and repeated requests.
-Keep implementation gaps distinct from evidence limitations and advertised features
-accurate. Large external projects are not required; unrelated build/watch orchestration
-remains outside scope. Do not run the one-shot CLI no-GC policy in a long-lived server
-without a separately justified lifecycle. Share concise updates; stop only for a
-material blocker or decision, not an internal milestone or compaction.
+Astra coordinates; GPT-6.1 Sol implements and independently reviews. Continue any
+remaining delivery actions listed in STATE autonomously. Once committed and clean,
+this epic ends; later evaluation or subsystem work needs the user's next direction.
+Earlier mandates below are historical context, not unfinished active campaigns.
 
 # Resume this project
 

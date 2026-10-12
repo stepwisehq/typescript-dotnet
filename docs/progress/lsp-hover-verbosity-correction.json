@@ -1,0 +1,32 @@
+{
+  "status": "Missing original hover support branch restored; independent review/candidate integration pending",
+  "upstream": "upstream/TypeScript/tsc/internal/checker/nodecopy.go",
+  "upstreamSha256": "2c59724c3d8eaf7e96f19276274da04aefbe16670e47159e2368c1cffc2a3083",
+  "trigger": "Original TestQuickInfoObjectTypeMultiline level0 did not advertise named-type expansion although level1 structurally differs. Retained failing corpus84 unchanged.",
+  "change": "Restore reuseTypeNode successful-reuse hover probe plus full walkNodeForExpandability from source63\u201396. Default maxExpansionDepth<0 path remains disabled exactly source. Supporting depth/cycle/type-argument/truncation/output/cache propagation reviewed against pinned source; two stale comments corrected only in NodeBuilderImpl.",
+  "classification": "Previously omitted upstream supporting branch, not merely a CLR representation adaptation. Original source-reviewed LS owner coverage did not establish this transitive helper completeness.",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/Checker/NodeCopy.cs",
+      "sha256": "483c2eede846436d67f8cd7a14e543bc83829e44f8eecb02fde126f37452faab"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/NodeBuilderImpl.cs",
+      "sha256": "d012c657f4963c5ae3f93dd46f6db55b8e88abf5514edfc1ad40a2afdc55435c"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Checker/NodeBuilderHover.cs",
+      "sha256": "90e362161bd2b4797853dc1adcc15cc5b05ef86497a3a5e4c8c4ff487e571513"
+    }
+  ],
+  "verification": "Root owns integrated execution; existing original hover test/baseline retained, no invented outcome or expectation change.",
+  "additionalTrigger": "Original TestQuickinfoVerbosityInterface2 InternalError: expanded interface with no construct/call signatures traversed nullable legacy List APIs. Pinned nil signature slices range zero iterations.",
+  "additionalChange": "Both original expandInterfaceDecl signature consumers now use actual retained ConstructSignaturesSlice/CallSignaturesSlice. Whole NodeBuilderHover signature/member/heritage consumers inspected; other same-kind calls use genuine Slice owners. No allocating empty-list replacement or error suppression.",
+  "namespaceExportCorrection": {
+    "trigger": "TestQuickinfoVerbosityNamespace unchanged baseline export c/d/f missing",
+    "cause": "Go takes pointer to bodyStmts indexed slot; CLR local value copy discarded replaced exported node",
+    "correction": "Borrow ref from existing Slice.AsSpan arena slot, preserve original skip/strip order and all producers",
+    "verification": "Independent narrow source review requested; no candidate runtime claim",
+    "independentReview": "CLEAR by Protocol: ref local borrows retained Slice slot, no resize during lifetime; exact original Go &bodyStmts[i] write-through."
+  }
+}

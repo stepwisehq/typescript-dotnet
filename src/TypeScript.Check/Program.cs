@@ -6,7 +6,12 @@ using TypeScript.Checking;
 using TypeScript.Scanner;
 using TsScanner = TypeScript.Scanner.Scanner;
 
-const string usage = "Usage: tscheck --runtime-info | --inspect-program <tsconfig> | --inspect-project <tsconfig> | --inspect-config <tsconfig> | --config <tsconfig> [--json] [--noEmit] [--listFilesOnly] [--no-gc-region] | --project <tscheck.json> [--json]";
+// Upstream cmd/tsc/lsp.go: dispatch before ordinary compiler arguments and the
+// optional one-shot no-GC region; a long-lived server owns its own lifetime.
+if (args.Length != 0 && args[0] == "--lsp")
+    return TypeScript.Lsp.LspCommand.Run(args[1..]);
+
+const string usage = "Usage: tscheck --lsp --stdio | --runtime-info | --inspect-program <tsconfig> | --inspect-project <tsconfig> | --inspect-config <tsconfig> | --config <tsconfig> [--json] [--noEmit] [--listFilesOnly] [--no-gc-region] | --project <tscheck.json> [--json]";
 // Authored runtime probe; reports the executing runtime rather than build intent.
 if (args.Length == 1 && args[0] == "--runtime-info")
 {

@@ -1,15 +1,107 @@
-# Active: language-services and LSP epic (2026-10-12)
+# Language services and LSP: final delivery (2026-10-12)
 
-Continue autonomously through the [whole contract](./LANGUAGE-SERVICES-CONTRACT.md).
-No internal milestone/commit/compaction is a reason to stop. Public `tscheck --lsp --stdio`
-is unfinished/unadvertised; launch must bypass optional one-shot CLI no-GC policy.
-Large external projects and unrelated build/watch orchestration remain outside scope.
-Astra coordinates; GPT-6.1 Sol implements and independently reviews. Root alone runs
-builds/tests/publishes. Freeze all compiled sources and mapping manifests for gates;
-review findings must go through root before any correction during a gate. Next complete
-packets stay ignored/outside compilation. Preserve actual upstream algorithms, Program
-reuse, UTF8/Slice ownership and required copies. No permissive placeholders, background
-exception suppression, extra private-state census, debugger/heap/SVG/external work.
+The [whole contract](./LANGUAGE-SERVICES-CONTRACT.md) is accepted after independent
+implementation/evidence/claim review. Only the clean delivery commit remains.
+Root alone commits; no builds, tests or publications remain queued.
+Do not restart historical implementation or rerun accepted gates after compaction.
+Latest committed dependency checkpoint is e3908447; all subsequent task changes are
+saved and reviewed in the working tree. Final commit must include the implementation,
+tests, source map, provenance, assessment/reproduction and durable aggregate proof.
+
+Read [assessment](./LANGUAGE-SERVICES-ASSESSMENT.md),
+[verification](./LANGUAGE-SERVICES-VERIFY.md),
+[aggregate evidence](../validation/results/language-services-verified.json) and
+[final independent review](./progress/lsp-final-contract-review.json).
+Astra coordinates; GPT-6.1 Sol implements/reviews. No material blocker or user decision.
+Current owners: Foundation final metadata binding; Inventory proof/source-map;
+Protocol assessment/contract/reproduction/public evidence. Use followup_task for idle
+agents. No concurrent builds or commits during dependent publication.
+
+## Completed acceptance
+
+- Pinned upstream fed0bf24149fb1ed36039212648bafdafc1ea10e, Linux x64,
+  .NET10.0.401/runtime10.0.12 and Go1.27.1. No other platform acceptance claim.
+- Managed language services508pass/1optional originalReplay skip; actual Native98
+  all11 gates pass:406 whole original TypeScript functions and80 authored controls,
+  separately adapted watcher/external/partial assertions. Original selection depth
+  12000, eight decoder probes and fatal notification -6/exactmarker are included.
+- Complete original editor corpus4571:4152pass/415originalskip/4samepinnedGo failures.
+  Three missing-golden full outputs match as adapted evidence, not original passes.
+  Fourth importType_js fails original VerifyNoErrors with the same two diagnostics;
+  its subsequent intended reference assertions remain unexecuted in both compilers.
+- Full inventory5006:4558whole original passes,416original skips (includingReplay),
+  four reference failures,26platform exclusions, one Go-source generator, one adapted
+  runtime test. Test functions, xUnit cases and partial channels are not interchangeable.
+- Retained managed1730+496 allpass; full Parser18799 allpass. Fresh six Native
+  publications/direct checks pass, including3153 foundation cases,87 shared controls,
+  utilities20 and Emit152original/254authored.
+- Full emitted-output registry15330:15285exactpublic outputs,13571originalassertions,
+  39originalpreparation skips and six unchanged external incremental-metadata
+  differences. No new differences. CLI6disk/3guard/3runtime controls pass.
+- Full Native noemit15304 complete records exact, all120chunks success.
+- Fresh actual public stdio and four-role signals/parent-watchdog comparisons pass.
+  Complete responses/diagnostics, seven config/dependency phases,100queries/100unsaved
+  edits, semantic tokens and source-admissible cancellation/stale results checked.
+  Exact inherited terminals preserved: shutdown+exit/stdinopen gives1/context canceled;
+  shutdown+EOF gives0/empty stderr. Long-lived server bypasses one-shot CLI NoGC.
+- Corrected retained performance cohort2:75fresh processes, five runs each across
+  five workloads and acceptedNative/currentNative/Go, matched actual runtime policy.
+  Best whole-process current/baseline ratios1.0326/1.0501/1.0298/.9773/1.0608.
+  Four modest2–6%slowdowns and one2.3%improvement remain explicit. Native allocation
+  totals lower in allfive; distinct Go B/op units. No universal20% or external-project
+  speed claim. Short public edit/request RSS increases are observations, not plateau
+  or leak-freedom evidence. External projects and actual editor UI were not exercised.
+
+## Evidence and resolved final findings
+
+Artifacts under artifacts/language-services:
+- integration-7: native-98/LanguageServices.Validation (SHA d16733b63b9fbb857ee75174fa654fb3fdae94db15fd743bab4e27e95ec16cbd),
+  source-98/managed-inputs-98/native-inputs-98 and direct/corpus records.968 source
+  hashes and179 actual ILC inputs bound. Actual editor run98.866s. Pinned Go CLI
+  pinned-tsgo SHAfb9f349bdbeaad767473a3ab2893271bd106e978ed58a1c0b5ffcd5502450528.
+- final-retained94 directory is staging name, actual current98 source. All7 phases
+  completed with explicit frozen source and six actual ILC bindings. Fresh public CLI
+  native/TypeScript.Check/tscheck SHAedd848db2d1595fd4cdb3173d291ed6212f67a1ae9bb550ea205ca4c4466aba9.
+- integration-7/public-stdio-final and public-lifecycle-final: actual fresh paired
+  public evidence. Tracked reproduction drivers in tools/language-services-oracle.
+- final-performance/cohort-2/result.json; cohort1 retained. Python timedwait exit
+  polling added up to50ms, creating shortworkload apparent1.780wall ratio. Runner-only
+  correction uses blockingwait with60s watchdog; oldsource/data retained in
+  wall-observer-transition. No production change/republication; correctedwall1.033.
+- source-review: independent direct98/corpus98, retained managed/native/corpus-command/
+  noemit/performance-cohort2 and public-final reviews CLEAR. Final aggregate review
+  tracked in docs/progress/lsp-final-contract-review.json.
+
+Final corrections preserved: genuine supporting-owner omissions (logging/Stringer/
+nil handling, hover NodeCopy, borrowed SourceFile text, ByteStringValue equality,
+writerdepth, named-number codec, lazy canonical source identity) were fixed and reviewed.
+Source inventories alone were never treated as correctness. Native mapper initialization
+failures exposed CLR pool-dependent IPC waits; complete blocking reader/handler/response/
+duplex paths now pass original32-file managed/Native mapper tests. Dedicated OS threads
+are a documented resource adaptation, not goroutine performance parity. Linux raw entry
+names and UTIME_OMIT fixed with real controls. WatchTimeout harness now drains genuine
+background work after unchanged2s sleeps, preserving Go synctest quiescence/assertions.
+
+Retained Checker firstattempt831pass/1fail exposed stale reflection processEnding(List)
+test binding. Direct call current Slice worker through existing friend access preserves
+both original assertions; only test helper changed. Rebuilt3test-consumer projects;
+reused passedEmit proof and reran832Checker+four remaining suites, all1730passed.
+Old Emit493/Native251 recipe counts predated three already-accepted authored mutex
+controls: actual496/254, original152 unchanged. Preserved allfailed attempts, oldfreeze/
+recipe and exact counter/test-only transition proofs; no production workaround.
+
+Efficiency lessons: complete source owners before broad acceptance, coordinate one
+frozen build/publication set, reuse unchanged evidence after narrow harness corrections,
+check actual test identity sets before trusting historical totals, and distinguish
+observer scheduling/timing defects from compiler defects. Root ran all workloads;
+Sol workers owned implementation and independent review. Measured durations/sample
+counts are recorded; model-token totals, monetary costs and complete human-effort
+measurements are unavailable. No additional process framework or private-state census.
+
+Acceptance status is final. Commit all task changes after final metadata bindings and
+confirm a clean working tree. Report the committed result with limitations.
+Stop then: this fulfills the language-services/LSP mandate; external project/editor
+or further performance evaluation needs a subsequent user direction.
 
 ## Latest accepted checkpoint: dependency74
 
@@ -17,8 +109,8 @@ exception suppression, extra private-state census, debugger/heap/SVG/external wo
 [assessment](./progress/lsp-dependencies-74.md), [reproduction](./LANGUAGE-SERVICES-VERIFY.md)
 and [independent evidence review](./progress/lsp-dependencies-74-review.json) are clear.
 Managed420/420, retained Parser18799/18799, Native323whole originals+1adapted+62authored;
-79changed source paths/179actual ILC inputs bound without drift. Delivery commit pending
-in this entry. Freeze remains until root commit; then promote reviewed API/constants,
+79changed source paths/179actual ILC inputs bound without drift. Committed at **e3908447**;
+clean working tree confirmed. Freeze released; promote reviewed API/constants,
 complete Server/CLI and candidate original-editor backend and continue autonomous
 integration. No whole-server or service corpus acceptance claim.
 
@@ -81,8 +173,8 @@ TypeScript functions +1adapted runtime observation +62authored, separate externa
 TrimFunc1/SlicePredicate2 plus inherited channels. Exact original selection-depth
 passes separately; fatal IPC child-6/exactmarker/no timeout. ELF95116c200af392092865ed4ee0effd4dc08a4b7b6776663d77aff26c22b1f9a2.
 79changed source paths/179actual ILC inputs bound with no drift. Full Completion
-independent source review CLEAR; other current owners reviewed. Sources/manifests
-remain frozen until evidence review/commit; no active workload.
+independent source review CLEAR; other current owners reviewed. Committed e3908447 with clean tree; source freeze released for next integrated packet.
+No active workload.
 Result/assessment74 and source-map saved; Inventory evidence review CLEAR. Foundation
 independently reviews whole ignored fourslash backend. Protocol finishes actual
 Server/entrypoint/handler closure and direct originals ignored. After74 commit release

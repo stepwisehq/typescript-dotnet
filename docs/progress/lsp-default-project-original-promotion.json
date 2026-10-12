@@ -1,0 +1,23 @@
+{
+  "status": "Promoted whole original function; independent source review CLEAR, central compilation/runtime pending",
+  "upstream": "upstream/TypeScript/tsc/internal/project/projectcollectiondefaultproject_test.go",
+  "upstreamSha256": "bf27053e2409ffb520e0f7a2edf6fe63f3eff6789b5481e94751501fb7fcb299",
+  "originalFunctions": [
+    "TestProjectCollectionDefaultProject"
+  ],
+  "files": [
+    {
+      "path": "validation/LanguageServices.Checks/ProjectDefaultProjectChecks.cs",
+      "sha256": "44585dfe22784ad11e9debd66afdb0fb0f2fbe0aa6e85b9459cbae1a8d7742fe"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ProjectDefaultProjectTests.cs",
+      "sha256": "4b15877b109d061f934dc0091590f1d4feb9508d1b06dad512dfdd1bccd20dc3"
+    }
+  ],
+  "adaptations": [
+    "Exact nine original raw fixture literals retained. Genuine default Session setup and ordered four file opens retained. Original no-crash observation has no added assertions.",
+    "Original embedded-resource conditional is satisfied by delivered embedded libraries; t.Parallel scheduling hint serial."
+  ],
+  "verification": "No candidate build or function pass credit."
+}

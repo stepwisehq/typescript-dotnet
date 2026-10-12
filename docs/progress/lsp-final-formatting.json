@@ -1,0 +1,27 @@
+{
+  "classification": "Final staged whitespace-only cleanup; no semantic change",
+  "path": "src/TypeScript.Scanner/Lsp/Server.ContentMapperRegistrations.cs",
+  "oldSha256": "940b5d0797052442afe97cff6160b6b5ac3a1f64de9013439529c68ef7b9a140",
+  "newSha256": "80f1badd65a13399a9e205ccaffe6a511daa8af1df9588b887246f3d216f0c69",
+  "changedBlankLines": [
+    {
+      "line": 123,
+      "removedSpaces": 16
+    },
+    {
+      "line": 143,
+      "removedSpaces": 16
+    },
+    {
+      "line": 157,
+      "removedSpaces": 16
+    },
+    {
+      "line": 454,
+      "removedSpaces": 12
+    }
+  ],
+  "newlineCount": 463,
+  "proof": "Exactly four whitespace-only blank lines changed; all non-whitespace bytes and line/newline counts identical. All other bytes retained. No tests or rebuild needed.",
+  "provenance": "Runtime evidence retains the actual pre-format source hash; this formatting does not relabel executed byte hashes or alter frozen runtime provenance."
+}

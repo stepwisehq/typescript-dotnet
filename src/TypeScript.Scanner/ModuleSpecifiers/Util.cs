@@ -272,7 +272,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/util.go:214:1.
-    private static bool isPathRelativeToParent(RelativePath path)
+    internal static bool isPathRelativeToParent(RelativePath path)
     {
         return path.IsParentRelative();
     }

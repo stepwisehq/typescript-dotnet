@@ -1,0 +1,66 @@
+{
+  "status": "source-reviewed-clear-public-differential-execution-pending",
+  "path": "tools/language-services-oracle/compare-public-lsp.py",
+  "sha256": "195f3004818e68bc362d0d25715125c61737ffdafedaaec6a5d67905c46ee4ee",
+  "originalFunctions": 0,
+  "scope": "Paired pinned Go/public actual Linux Native CLI framed stdio over identical-reset real workspace. Full init/report/token payload comparison, changing unsaved/document/config/dependency, source-admissible cancellation/stale responses, repeated diagnostics/proc observations, graceful shutdown/exit/process status.",
+  "verification": "Actual publicNative91 published. Go91c passed fullphase responses,100unchangedqueries and100unsavededits, then failed authored exit0 assumption on genuine upstream context cancellation. Preserve failed evidence. Lifecycle source assessed independently; corrected two-role paired execution pending.",
+  "defaults": {
+    "repeatedDiagnosticRequestsEach": 100,
+    "unboundedSourceJoinDeadlockSafetySeconds": 30,
+    "repeatedUnsavedEditsEach": 100
+  },
+  "artifacts": [
+    "raw base64+sha full frames",
+    "full results",
+    "raw stderr",
+    "binary hashes/exit/time/proc RSS/HWM/Threads",
+    "comparison.json"
+  ],
+  "phaseDiagnostics": {
+    "valid": [],
+    "unsaved-invalid": [
+      [
+        2322,
+        1
+      ]
+    ],
+    "latest-before-config": [
+      [
+        7006,
+        1
+      ]
+    ],
+    "after-config": [
+      [
+        7044,
+        4
+      ]
+    ],
+    "dependency-valid": [],
+    "dependency-changed": [
+      [
+        2322,
+        1
+      ]
+    ],
+    "dependency-restored": []
+  },
+  "sourceAnchors": [
+    "internal/ls/diagnostics.go:getAllDiagnostics includes syntactic/semantic/suggestion/declaration channels",
+    "internal/checker/checker.go:18678-18763 reportImplicitAny selects error vs suggestion",
+    "internal/ls/lsconv/converters.go:604-605 CategorySuggestion -> Hint",
+    "internal/lsp/lsproto/lsp_generated.go:11443,11698 ShutdownInfo/ExitInfo NoParams; lsp.go:320-340 absent raw params admission",
+    "internal/lsp/server.go:895-916 errgroup first error/EOF filtering",
+    "internal/lsp/server.go:1005-1033 dispatch WithCancelCause nil after exit EOF",
+    "internal/lsp/server.go:1836-1837 HandleExit EOF; dynamic_queue.go:50-54 canceled Get",
+    "cmd/tsc/lsp.go:71-75 error stderr/exit1 versus nil exit0"
+  ],
+  "preservedFailure": "artifacts/language-services/integration-7/public-stdio-91.log",
+  "referenceCapture": "artifacts/language-services/integration-7/public-stdio-91/go/frames.jsonl",
+  "messageRoleCorrection": "Shutdown request and exit notification use actual NoParams role: omit params member through explicit NO_PARAMS sentinel. All other structured params preserved; explicit null nested values and callback null results unchanged. No broad null normalization.",
+  "preservedNoParamsFailure": "artifacts/language-services/integration-7/public-stdio-91b.log",
+  "repeatedEditWorkload": "Increasing didChange versions5+i, alternate explicit number/string annotation of imported numeric dependency; each exact ordered complete report retained and compared Go-vsNative. Expected [] / [(2322,1)] respectively. Unchanged queries remain a distinct channel. Wall timings grouped cold-process-through-initialize, unchanged-query versus edit+diagnostic in process artifact, RSS/HWM/Threads separately sampled during both; no threshold/performance claim.",
+  "terminationObservation": "Two explicit source roles: successful shutdown null + sent exit waits child with stdin OPEN and requires exact exit1/stderr context canceled newline (upstream dispatch cancellation quirk). Distinct small initialize/initialized/shutdown then stdinEOF requires exit0/empty stderr. No arbitrary nonzero acceptance; full termination observations compared and process/stderr/raw frames retained. Production unchanged.",
+  "preservedLifecycleFailure": "artifacts/language-services/integration-7/public-stdio-91c.log"
+}

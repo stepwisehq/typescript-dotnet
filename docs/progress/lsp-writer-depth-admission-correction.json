@@ -1,0 +1,32 @@
+{
+  "status": "independent-source-review-clear-managed90-original-pass-native-pending",
+  "original": "TestWriteLoopRecoversFromUnserializableResponse",
+  "finding": "Actual original20k SelectionRange writer reached assertion failure: no InternalError because closed ProtocolEncoder omitted object/array max-depth admission. No stack crash evidenced.",
+  "scope": "Both actual container begin paths now preserve upstream10k JSON nesting bound and failed-token rollback, existing Server serialization error/recovery/code flow unchanged.",
+  "sourceAnchors": [
+    "Go1.27.1 encoding/json/jsontext/state.go:pushObject/pushArray maxNestingDepth10000",
+    "Go1.27.1 encoding/json/jsontext/encode.go:347-427 WriteToken local buffer commit",
+    "internal/lsp/server.go:1065-1085,1144-1162",
+    "internal/lsp/server_test.go:151-218"
+  ],
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Protocol/ProtocolEncoder.cs",
+      "sha256": "62179fff8cbefe4bb785524e1a2229775a886e10d9253eddde38c9898b88b32a"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Runtime.cs",
+      "sha256": "4623538cf35e88b20fc070e090e3cd328f296173c63e5dc980c3d8c9f4c18320"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Messaging.cs",
+      "sha256": "17883c5cf7a4af5c56deb56bca5b43a0afedf7308ca26ec4eccd67a51d68d9fa"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ServerLifecycleChecks.cs",
+      "sha256": "2f8a41a333c9da72e2b4c41582fba3009192ce0358b51f29f92dd0550e6d141a"
+    }
+  ],
+  "verification": "Isolated immutable89 original assertion failure retained in writer-recovery-89.log (not a stack crash). Root managed90 actual original20k writer recovery passed; complete server/mapper family41 runnable originals passed with optional Replay skip, and whole managed90 gate493 passed/one originalReplay skip. Original20k graph/full recovery assertions unchanged. Actual NativeAOT execution remains pending; no public transport acceptance from these managed results.",
+  "independentReview": "artifacts/language-services/source-review/protocol-encoder-depth.json"
+}

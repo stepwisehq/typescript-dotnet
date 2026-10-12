@@ -254,13 +254,13 @@ internal static partial class ModuleSpecifiers
     // containsIgnoredPath checks if a path contains patterns that should be ignored.
     // This is a local helper that duplicates tspath.ContainsIgnoredPath for performance.
     // Upstream tsc/internal/modulespecifiers/specifiers.go:250:1.
-    private static bool containsIgnoredPath(RootedFilePath fileName)
+    internal static bool containsIgnoredPath(RootedFilePath fileName)
     {
         return ((fileName.AsValue().Contains("/node_modules/."u8) || fileName.AsValue().Contains("/.git"u8)) || fileName.AsValue().Contains(".#"u8));
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:256:1.
-    private static bool moduleSpecifierContainsNodeModules(ModuleSpecifier specifier)
+    internal static bool moduleSpecifierContainsNodeModules(ModuleSpecifier specifier)
     {
         return specifier.Contains("/node_modules/");
     }
@@ -664,7 +664,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:639:1.
-    private static ModuleSpecifier processEnding(ModuleSpecifier specifier, RootedFilePath sourceFileName, Slice<ModuleSpecifierEnding> allowedEndings, CompilerOptions options, IModuleSpecifierGenerationHost host)
+    internal static ModuleSpecifier processEnding(ModuleSpecifier specifier, RootedFilePath sourceFileName, Slice<ModuleSpecifierEnding> allowedEndings, CompilerOptions options, IModuleSpecifierGenerationHost host)
     {
         var fileName = specifier.AsValue();
         if (TsPath.FileExtensionIsOneOf(fileName, new List<string> { TsPath.ExtensionJson, TsPath.ExtensionMjs, TsPath.ExtensionCjs }))
@@ -1061,7 +1061,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:982:1.
-    private static bool isPackageMainFile(RootedFilePath moduleFileName, RootedDirectoryPath packageRootDirectory, string mainFileRelative, string packageType, CaseSensitivity caseSensitivity)
+    internal static bool isPackageMainFile(RootedFilePath moduleFileName, RootedDirectoryPath packageRootDirectory, string mainFileRelative, string packageType, CaseSensitivity caseSensitivity)
     {
         var mainIsDirectory = TsPath.HasTrailingDirectorySeparator(mainFileRelative);
         var mainExportFile = packageRootDirectory.ResolveFile(mainFileRelative);
@@ -1275,7 +1275,7 @@ internal static partial class ModuleSpecifiers
     }
 
     // Upstream tsc/internal/modulespecifiers/specifiers.go:1230:1.
-    private static ByteStringValue tryGetModuleNameFromExportsOrImports(CompilerOptions options, IModuleSpecifierGenerationHost host, RootedFilePath targetFileName, RootedDirectoryPath packageDirectory, ByteStringValue packageName, ExportsOrImports exports, Slice<string> conditions, MatchingMode mode, bool isImports, bool preferTsExtension)
+    internal static ByteStringValue tryGetModuleNameFromExportsOrImports(CompilerOptions options, IModuleSpecifierGenerationHost host, RootedFilePath targetFileName, RootedDirectoryPath packageDirectory, ByteStringValue packageName, ExportsOrImports exports, Slice<string> conditions, MatchingMode mode, bool isImports, bool preferTsExtension)
     {
         var packageSpecifier = TsPath.ToModuleSpecifier(packageName);
         switch (exports.Type)

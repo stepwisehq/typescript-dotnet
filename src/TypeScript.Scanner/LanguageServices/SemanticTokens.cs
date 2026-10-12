@@ -418,9 +418,9 @@ internal sealed partial class LanguageService
                     return (valueType.Flags() & TypeFlags.Union) != 0 && GoSlices.ContainsFunc(valueType.AsUnionType().Types(), condition);
                 }
 
-                if (type != TokenType.Parameter && Test(t => checker.GetSignaturesOfType(t, SignatureKind.Construct).Count > 0))
+                if (type != TokenType.Parameter && Test(t => checker.GetSignaturesOfTypeSlice(t, SignatureKind.Construct).Length > 0))
                     return TokenType.Class;
-                bool hasCall = Test(t => checker.GetSignaturesOfType(t, SignatureKind.Call).Count > 0);
+                bool hasCall = Test(t => checker.GetSignaturesOfTypeSlice(t, SignatureKind.Call).Length > 0);
                 if (hasCall)
                 {
                     bool noProperties = !Test(t =>

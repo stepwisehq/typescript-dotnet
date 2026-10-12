@@ -9,7 +9,7 @@ namespace TypeScript.Scanner;
 // One heap-compatible header over either owned raw byte-character text or borrowed
 // immutable source bytes. No conversion back to byte[] is needed for owned text.
 // Default means empty; a supplied null string remains distinguishable from empty.
-public struct ByteStringValue
+public struct ByteStringValue : IEquatable<ByteStringValue>
 {
     private object? owner;
     private int offset;
@@ -347,6 +347,12 @@ public struct ByteStringValue
         return true;
     }
     public readonly bool EqualsString(string? text) => EqualsValue(FromString(text));
+    // A Go string value compares bytes, not the managed owner/offset header.
+    // Generic slice and collection consumers observe the same semantics as
+    // explicit EqualsValue calls; the null adapter sentinel remains distinct.
+    public readonly bool Equals(ByteStringValue other) => EqualsValue(other);
+    public override readonly bool Equals(object? obj) => obj is ByteStringValue other && EqualsValue(other);
+    public override readonly int GetHashCode() => IsNull ? 0 : ByteStringKey.ContentHash(this);
     public readonly bool EqualsValue(ByteStringValue text)
     {
         if (IsNull || text.IsNull) return IsNull && text.IsNull;

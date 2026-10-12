@@ -283,7 +283,7 @@ internal sealed partial class LanguageService
     }
 
     // rename.go:348. A root-level index does not name a removable directory.
-    private static RootedPath tryRemoveIndexFileName(RootedFilePath fileName)
+    internal static RootedPath tryRemoveIndexFileName(RootedFilePath fileName)
     {
         if (TsPath.RemoveFileExtension(fileName.BaseNameValue()).EqualsValue(ByteStringValue.FromString("index")))
         {

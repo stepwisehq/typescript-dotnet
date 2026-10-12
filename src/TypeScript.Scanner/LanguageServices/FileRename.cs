@@ -19,7 +19,7 @@ using Debug = TypeScript.Scanner.Debug;
 namespace TypeScript.LanguageServices;
 internal sealed partial class LanguageService
 {
-    private delegate (RootedFilePath Path, bool Updated) PathUpdater(RootedFilePath path);
+    internal delegate (RootedFilePath Path, bool Updated) PathUpdater(RootedFilePath path);
     private sealed class ToImport
     {
         internal RootedFilePath newFileName;
@@ -70,7 +70,7 @@ internal sealed partial class LanguageService
         return documentChanges;
     }
 
-    private PathUpdater createPathUpdater(RootedPath oldPath, RootedPath newPath)
+    internal PathUpdater createPathUpdater(RootedPath oldPath, RootedPath newPath)
     {
         var sensitivity = CaseSensitivity();
         return path =>

@@ -5,7 +5,7 @@
   "files": [
     {
       "path": "src/TypeScript.Scanner/LanguageServices/SemanticTokens.cs",
-      "sha256": "8b1b706eed809ec909478a3e5e02c9843c3693d2c0e71fac15a3d780b040562b"
+      "sha256": "15701638d945640ece3dd14c8e035b55564b8002e9b3fd3f95192df2c75d0ff7"
     },
     {
       "path": "src/TypeScript.Scanner/LanguageServices/InlayHints.cs",
@@ -102,5 +102,6 @@
     "serviceOriginalFunctions": 0,
     "reason": "These four source files have no direct original ls unit functions; unchanged original fourslash/editor response assertions remain required. No service pass or full Server acceptance claimed.",
     "newExternalTrimFunc": "Whole Go1.27.1 strings TestTrimFunc promoted: one original external function, nine rows/27 unchanged comparisons; candidate/reference execution pending."
-  }
+  },
+  "runtimeCorrection84": "Construct/call signature nil-list consumers now use existing borrowed Slice.Length; Go len(nil) admission restored. Corrected source execution pending; immutable84 failures retained."
 }

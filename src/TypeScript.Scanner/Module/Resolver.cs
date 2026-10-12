@@ -113,11 +113,14 @@ public sealed partial class DefaultResolver : IResolver, ITextResolver
     private static bool shouldContinueSearching(ResolvedData? value) => value is null;
     private static ResolvedData? continueSearching() => null;
     private static ResolvedData unresolved() => new();
-    internal readonly record struct resolutionCandidate(RootedPath path, RootedDirectoryPath directoryPath = default, bool directoryOnly = false)
+    internal readonly record struct resolutionCandidate(RootedPath path, RootedDirectoryPath directoryPath = default, bool directoryOnly = false) : TypeScript.ProjectSystem.Logging.IGoLogStringer
     {
         internal ByteStringValue AsValue() => directoryOnly ? TsPath.EnsureTrailingDirectorySeparator(path.AsValue()) : path.AsValue();
         internal string AsString() => AsValue().Materialize()!;
         public override string ToString() => AsString();
+        // resolver.go:161. Diagnostic fmt arguments consume the actual Stringer,
+        // retaining the directory-only trailing separator as well as raw bytes.
+        public string GoLogString() => AsString();
         internal RootedDirectoryPath AsDirectoryPath() => directoryPath != default ? directoryPath : TsPath.RootedDirectoryPathFromPath(path);
         internal RootedDirectoryPath Directory() => path.Directory();
         internal bool HasTrailingDirectorySeparator() => directoryOnly;

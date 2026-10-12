@@ -73,13 +73,16 @@ public sealed partial class Checker
             throw new ArgumentException("Type belongs to a different checker", nameof(t));
     }
 
-    // Authored ownership boundary: binder declarations may belong to any actual
-    // source in this checker's fixed environment; node queries still use the user AST.
+    // Authored ownership boundary: the autoimport AliasResolver also binds source
+    // files lazily after checker construction (aliasresolver.go:57–66). Its root-file
+    // index is therefore not the whole host environment. Admit only the exact source
+    // owner returned by that retained host; a different AST at the same path is alien.
     private void validateOwnedDeclaration(Node declaration)
     {
         var root = Ast.GetSourceFileOfNode(declaration);
-        if (root == null || !fileIndexMap.ContainsKey(root))
-            throw new ArgumentException("Declaration belongs to a different checker environment", nameof(declaration));
+        if (root != null && (fileIndexMap.ContainsKey(root) || ReferenceEquals(program?.GetSourceFile(RootedFilePath.FromValue(root.FileNameGoValue())), root)))
+            return;
+        throw new ArgumentException("Declaration belongs to a different checker environment", nameof(declaration));
     }
 }
 

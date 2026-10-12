@@ -1,0 +1,18 @@
+{
+  "status": "source-written-independent-review-pending",
+  "cause": "actual resolutionCandidate implements fmt.Stringer upstream but managed owner exposed only CLR ToString; diagnostic localization uses closed Go formatter and rejected genuine compiler trace args.",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/Module/Resolver.cs",
+      "sha256": "2681cdd0892f49568a239d01b7d03a58e76a4037b1f0dcb042c5a3c35e485cba"
+    }
+  ],
+  "scope": "All Resolver tracer/write argument producers, PackageJson version trace producers, compiler FilesParser trace array bridge, typed ProjectCompilerHost default locale localization, and LS/progress diagnostic localization argument roles read. Missing role is actual resolutionCandidate Go Stringer; other values are raw text/rooted paths/bool or explicitly projected enum/package/version strings. AST diagnostics use pre-stringified message args.",
+  "adaptation": "Implement explicit existing IGoLogStringer using exact existing AsString; directory-only trailing separator preserved. No generic CLR ToString/reflection admission.",
+  "sourceAnchors": [
+    "internal/module/resolver.go:154-163",
+    "internal/compiler/filesparser.go trace publication",
+    "internal/project/compilerhost.go Trace"
+  ],
+  "verification": "Immutable87 failures retained; source correction not compiled/executed."
+}

@@ -1,0 +1,65 @@
+{
+  "status": "Accepted evidence/source claims independently CLEAR for Linuxx64 contract; deliverycommit and cleanworktree separately coordinator-owned",
+  "contract": "docs/LANGUAGE-SERVICES-CONTRACT.md",
+  "reviewScope": "Existing contract/source reconciliation and evidence only; no repeated source audit, new framework or runtime workload",
+  "sourceCompleteness": "Existing reconciliation accounts for39 LS root counterparts/1038 workers and actual Server/dependencies. Prior partial supplemental mappings and historical investigation statements are not current missing owners. Concrete helper omissions found by integration were corrected/reviewed; function presence is not behavioral proof. No additional missing production owner identified by this evidence review.",
+  "requirements": [
+    {
+      "requirement": "Final current-source direct/shared assertions under managed and actual Linux x64 Native AOT",
+      "state": "Current98 managed508pass/1originalReplay skip; Native406whole originals/80authored plus separate channels and11isolated/default gates independently CLEAR",
+      "check": "Bind compiled input/source hashes; execute produced artifact, including all9 final Project originals and4 complete ASTNav originals; count originals/adapted/partial/authored rows separately and preserve original skips.",
+      "evidence": "artifacts/language-services/source-review/native-direct-98-evidence.json"
+    },
+    {
+      "requirement": "Complete original editor corpus against one final actual Native candidate",
+      "state": "Current Native98 complete4571 outcome map independently CLEAR:4152pass415source skips4same pinnedGo failures",
+      "check": "All4571 identities plus actual13 neutral JS-filename admissions; compare full original assertions/baselines/state. Keep original reference skips/failures, interrupted and candidate-only failures distinct; previous multi-version development results do not substitute.",
+      "evidence": "artifacts/language-services/source-review/native-corpus-98-evidence.json"
+    },
+    {
+      "requirement": "Public real-disk Linux Native stdio changes/cancellation/lifecycle",
+      "state": "Fresh current public CLI paired stdio evidence independently CLEAR",
+      "evidence": "artifacts/language-services/source-review/public-stdio-final-evidence.json",
+      "check": "Full7 diagnostic phases, semantic tokens,100 warm queries/100 edits, source-admissible cancel/stale responses, registration callbacks, null/absence roles, exact exit-notification vs inputEOF outcomes, binary identity."
+    },
+    {
+      "requirement": "Public signal and parent-process lifecycle",
+      "state": "Fresh current public CLI four signal/declared-parent-watchdog roles independently CLEAR",
+      "check": "Exact signal cancellation and declared parent-PID lifecycle observations; preserve full paired payloads/raw stderr and source5s watchdog, separate EOF lifecycle.",
+      "evidence": "artifacts/language-services/source-review/public-lifecycle-final-evidence.json"
+    },
+    {
+      "requirement": "Repeated request/edit latency and retained memory with snapshot lifetime accounting",
+      "state": "Fresh final100queries/100edits/short-resource observations and genuine final Session/Snapshot release originals CLEAR; no memory plateau/leak freedom/universal performance claim",
+      "check": "Retain actual cold/warm timings and RSS/thread growth. Short paired100edit observation does not prove steady-state memory plateau/leak freedom/universal performance; release assertions belong to genuine final Session/Snapshot originals."
+    },
+    {
+      "requirement": "Retained compiler/emit/parser/performance protection",
+      "state": "All current retained compiler correctness gates and corrected75-run same-workload performance evidence independently CLEAR; modest bestwall slowdowns up6.1percent explicit, no numericalthreshold",
+      "check": "Use applicable accepted gate commands/expectations, preserve scoped historical emit/performance evidence; production parser continuation must execute exact12000 input and retained parser corpus on final runtime.",
+      "evidence": [
+        "artifacts/language-services/source-review/retained-managed-resume-evidence.json",
+        "artifacts/language-services/source-review/retained-native-evidence.json",
+        "artifacts/language-services/source-review/retained-corpus-command-evidence.json",
+        "artifacts/language-services/source-review/retained-noemit-evidence.json",
+        "artifacts/language-services/source-review/retained-performance-cohort2-evidence.json"
+      ]
+    },
+    {
+      "requirement": "Accurate final dispositions and documentation",
+      "state": "Final5006Test+6lifecycle inventory/sourcehashes,aggregatebindings and finalaccepted claimmetadata independently verified/rebound; no remainingruntime/metadatareviewpending. Deliverycommit/cleanworktree coordinator-owned.",
+      "check": "Recount inventory5006 identities and lifecycle separately; qualify Replay/source fixture and Linux exclusions, selected external standard-library channels and whole-function credits. Refresh stale pending metadata only for actual final evidence; publish launch/editor connection/repro commands, upstream lifecycle quirks, resource/platform limits and reviewed clean commit."
+    }
+  ],
+  "evidenceNotCompletion": [
+    "Development corpus84/87/89 passes span multiple immutable binaries, not final Native acceptance.",
+    "Managed90 passes493 plus originalReplay skip1, but excludes subsequent complete ASTNav4/finalProject9 assertions.",
+    "Public91d is real public Native evidence; shared assertion runner can trim uncalled services and cannot replace whole public/editor execution.",
+    "Initial missing TypeScriptJS environment and authored phase/NoParams/lifecycle failures remain retained historical evidence, never converted into passes."
+  ],
+  "publicLifecycleSourceReview": "artifacts/language-services/source-review/public-lifecycle-driver.json",
+  "currentRetainedTransition": "artifacts/language-services/final-retained94/resume-managed-test-binding.py",
+  "finalAssessment": "Existing contracted LS/Server/dependency owners implemented and source-reviewed; current managed/Native direct, full original editor outcome parity, real publicstdio/lifecycle, retainedcompiler and boundedperformance observations satisfy runtime verification requirements with explicit preserved source skips/reference failures/platform and resource limits. Source counts are not universal correctness; three absentgolden and fourth precondition failure retain0originalpass credit. No concrete remaining runtime acceptance omission identified; final document/proof binding/commit still required.",
+  "finalClaimProof": "artifacts/language-services/source-review/final-contract-claims.json",
+  "finalFormattingDelta": "Independently CLEAR exact four whitespace-only blank-line removals; source98 runtime oldhash retained, currentaggregate/mapexplicitlyrecord equivalent newhash. No newruntimeclaim/workload."
+}

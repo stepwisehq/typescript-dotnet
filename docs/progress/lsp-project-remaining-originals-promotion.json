@@ -1,0 +1,156 @@
+{
+  "status": "Complete original Project9 source promoted; independent source review CLEAR; compilation/managed/Native execution pending",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "originalFunctions": [
+    "TestProjectProgramUpdateKind",
+    "TestProject",
+    "TestPushDiagnostics",
+    "TestDisplayName",
+    "TestProgressNotifications",
+    "TestProjectCollectionBuilder",
+    "TestProjectReferencesProgram",
+    "TestAutoImportBuilderFS",
+    "TestUpdateWatchTimeoutAndRollback"
+  ],
+  "dispatch": {
+    "owner": "ProjectRemainingChecks",
+    "method": "RunAll",
+    "originalFunctions": 9,
+    "authoredControls": 0
+  },
+  "files": [
+    {
+      "path": "validation/LanguageServices.Checks/ProjectRemainingChecks.Collection.cs",
+      "sha256": "a79234c3c61bda5a60eada85a10146be568b2697b10722c328bd9964b8ea9fd2",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingChecks.Collection.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectRemainingChecks.CollectionInputs.cs",
+      "sha256": "d9a52798180039e49059594e8f96bc10d3519bbde8a9a7b425625913d300c1b6",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingChecks.CollectionInputs.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectRemainingChecks.DroppedInputs.cs",
+      "sha256": "f006007c34cb058f7ed167b21199f53ea597e6e03dbaa81effa35d0d86b68ead",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingChecks.DroppedInputs.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectRemainingChecks.Program.cs",
+      "sha256": "8c43ff8dffd7b9ece947ae9efb8cfd8a5bf4edc723d63bb721bb3dfa5a133389",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingChecks.Program.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectRemainingChecks.ProgramInputs.cs",
+      "sha256": "08d0180ca42e3a30cf480f63251548750dbf64725f9fb54fafcf075a6cb052fa",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingChecks.ProgramInputs.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectRemainingChecks.Progress.cs",
+      "sha256": "ba1e91aaa49f6c2027dab16530ac90bcccf682c6d55491a8a3d1029c10fdc7e9",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingChecks.Progress.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectRemainingChecks.Project.cs",
+      "sha256": "5511c96b9a2ce272b7e8c2a530c9d968b0a2d802c5cc587067484e47b1944545",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingChecks.Project.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectRemainingChecks.Push.cs",
+      "sha256": "5d1d059460ef37448f8eae93c58f7a94751038c83d04d1e39d528c28ad8bcac5",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingChecks.Push.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectRemainingChecks.ReferenceHelpers.cs",
+      "sha256": "ce1beeb29b7a345cd6a32c535bd23ab3cc9c5ba6385420e3fd34712a863dae16",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingChecks.ReferenceHelpers.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectRemainingChecks.ReferenceInputs.cs",
+      "sha256": "0c09adc8468a8136fa2e9ef22c1c60f01782e03fe60b26c6fb51a5b954879a4a",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingChecks.ReferenceInputs.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectRemainingChecks.References.cs",
+      "sha256": "5b73938ca90fa267087ba43f8c4dfa230af143f546f3e7315a00654612d97603",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingChecks.References.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectRemainingChecks.WatchTimeout.cs",
+      "sha256": "ec45ebf6873ecc160982012ad17e0a0dcba1f560f6bc823deb4dfe235ef9b1e9",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingChecks.WatchTimeout.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectRemainingChecks.cs",
+      "sha256": "f957ed7d40917380a9641f40d3b87517067037bc53948a206c5a8e662a2bd83d",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingChecks.cs"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ProjectRemainingTests.cs",
+      "sha256": "5ff18071a716dbde5043c012564d66d2f7b055f13c66cf1032dd7ff20f1ae963",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectRemainingTests.cs"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectSessionFixture.cs",
+      "sha256": "92f97deeab41bd740cce5d68fa8b5c55cd7e517deb7a49ab4cd840a726ff2910",
+      "draft": "artifacts/language-services/drafts/project-originals/ProjectSessionFixture.cs"
+    }
+  ],
+  "upstreamSources": [
+    {
+      "path": "upstream/TypeScript/tsc/internal/project/project_test.go",
+      "sha256": "285c03b242b26c015ee0e2a4e97d80180a90c8408b33fdbfbdbd27c7351941b3"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/project/projectcollectionbuilder_test.go",
+      "sha256": "a14f0861e1ab0a344a28a9e0394d8773f95fd9668225705b9e2d0ffe1d4b991f"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/project/projectreferencesprogram_test.go",
+      "sha256": "fe8550ef2bd80856ac4ead6958a0026df815a5cfb189bbe5a32b26b1e64b56e7"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/project/snapshotfs_test.go",
+      "sha256": "93c4a9ea209838fab985f95aa20d1cda66d2f66e2888238c67e0044421ab805a"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/project/watchtimeout_test.go",
+      "sha256": "b66f337497aa8a61ad117228a6857c2aa6d091054463becd43cb6847f6a50ffd"
+    }
+  ],
+  "baselines": [
+    {
+      "path": "upstream/TypeScript/tsc/testdata/baselines/reference/project/query-globals-after-semantic-checking.jsonc",
+      "sha256": "8bd2b9bc788d9b80334ecc2fa1aa64108a63e99287f74d351d951df45f08d8ca"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/testdata/baselines/reference/project/query-globals-before-semantic-checking.jsonc",
+      "sha256": "8a97018b0ebf358771ad0fc9c5d524832aac6c58c9472cb0af5d4318de2fd604"
+    }
+  ],
+  "adaptations": [
+    "Original t.Parallel hints serialized; independent sibling aggregation retains continuation. Actual original concurrency/timer assertions remain required.",
+    "Reuses actual ProjectSessionFixture, embedded libraries, Session/Program/FS/spawner/npm owners. Only original progress-call fixture observations added in ignored fixture copy; no production event/output injections.",
+    "Exact ProgramUpdate six literal maps extracted from original function; no expected-value changes.",
+    "Watch-timeout source requires real1s cancellation scheduling and original2s clock advances; standard TimeProvider proposal saved by Foundation, not promoted.",
+    "PushDiagnostics includes actual typed JSON baseline channels before/after checking and two repeated hover/global queries; no substituted assertion or fake output.",
+    "WatchTimeout retains production one-second CTS timeout and two real two-second sleeps with an observed callback-entry barrier; elapsed time is unasserted. No production TimeProvider seam."
+  ],
+  "fixtureDelta": [
+    "Actual test client progress argument snapshots under its retained lock",
+    "Actual publish-diagnostics snapshot under retained lock",
+    "Optional WatchFilesFunc forwarding after retained original call record; production Session unchanged"
+  ],
+  "sourceReview": "artifacts/language-services/source-review/project-remaining-originals.json",
+  "productionChanges": [],
+  "bindingCorrections": [
+    "Build92: References Project return owner explicitly aliases TypeScript.ProjectSystem.Project; no algorithm/assertion changes. Whole packet imports checked for same Compiler.Project collision.",
+    "Build93: successful actual MarshalIndent output at baseline CLR text boundary proven non-null; annotation suppression only, no copy/fallback/assertion change."
+  ],
+  "watchTimeoutQuiescenceCorrection97": {
+    "classification": "harness scheduling adaptation only; original whole-function assertions unchanged",
+    "failureEvidence": "artifacts/language-services/integration-7/managed-97.log",
+    "cause": "Initial callback-entry barrier plus real sleeps did not reproduce original synctest quiescence: callback return and pending-watch rollback publication can still be running before the next snapshot background task checks pending registrations.",
+    "adaptation": "After each unchanged real two-second sleep, call genuine Session.WaitForBackgroundTasks (retained Queue.Wait) before phase observation. No new timer, clock, polling, success predicate, production algorithm or expected value. Existing one-second request cancellation remains actual production behavior.",
+    "qualification": "Earlier source review explicitly qualified real-time adaptation; managed94/96 pass did not establish quiescence equivalence. Managed97 failure remains retained; corrected current managed/Native execution pending."
+  }
+}

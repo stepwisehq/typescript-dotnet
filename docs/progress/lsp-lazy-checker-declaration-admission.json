@@ -1,0 +1,26 @@
+{
+  "status": "source-correction-independently-reviewed-candidate-execution-pending",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "finding": "autoimport AliasResolver.SourceFiles returns only initial rootFiles while GetSourceFile lazily retrieves and binds referenced files; authored declaration validation used only the initial checker fileIndexMap and rejected legitimate host declarations.",
+  "adaptation": "Retain initial-root identity admission; additionally require ReferenceEquals of declaration SourceFile and the retained checker program.GetSourceFile at the raw rooted name. Historical null-host environments remain map-only. No name-only admission, map mutation, worker bypass or checker substitution.",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/Checker/Exports.cs",
+      "sha256": "f149b01c20d7d5bccc513e6061139db98a9356763de1b26497e5b27754981e98"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Compiler/CheckerHost.cs",
+      "sha256": "d028dc9a1844e75e54921ff830934bf3bf46e60f5d3a823f16ec7611981fc3e7"
+    }
+  ],
+  "sourceAnchors": [
+    "internal/ls/autoimport/aliasresolver.go:54\u201366",
+    "internal/ls/autoimport/extract.go:266\u2013321",
+    "internal/checker/exports.go:131\u2013133"
+  ],
+  "primaryOriginal": "TestAutoImportReExportFromAmbientModule",
+  "retainedAuthoredRejection": "validation/Projects.Checks/ProjectControls.cs Api.SharedAndForeignOwnership",
+  "execution": "Immutable84 original failing evidence retained; corrected candidate not built/run.",
+  "independentReview": "emit_print_maps: rootFiles fixed versus retained host lazy GetSourceFile verified; exact canonical identity, null-host and foreign same-path rejection clear.",
+  "hostAdmission": "Optional ICheckerProgramHost canonical lookup defaults nil for legacy fixed-file hosts; existing genuine Program and AliasResolver methods provide actual retained canonical lookup."
+}

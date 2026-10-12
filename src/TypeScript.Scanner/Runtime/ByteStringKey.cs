@@ -62,7 +62,7 @@ public readonly struct ByteStringKey : IEquatable<ByteStringKey>, IComparable<By
     // it. Non-byte public strings cannot equal byte owners and retain ordinal
     // string hashing instead of replacement/truncation. Hash collisions are
     // still checked with exact content equality by Dictionary.
-    private static int ContentHash(ByteStringValue key)
+    internal static int ContentHash(ByteStringValue key)
     {
         if (key.IsNull) throw new ArgumentNullException(nameof(key));
         if (key.IsBytes) return unchecked((int)XxHash3.HashToUInt64(key.ByteSpan));

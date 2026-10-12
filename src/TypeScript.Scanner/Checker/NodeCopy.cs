@@ -49,9 +49,37 @@ internal sealed partial class NodeBuilderImpl
             return node;
         var result = reuseNode(node);
         if (result != null)
-            return result; // Expandability walk is disabled by fixed maxExpansionDepth=-1.
+        {
+            // nodecopy.go:63. Reused syntax bypasses type serialization, so hover
+            // still probes its named references for the next expansion level.
+            if (ctx.maxExpansionDepth >= 0 && !ctx.canIncreaseExpansionDepth)
+                walkNodeForExpandability(node);
+            return result;
+        }
         ctx.tracker.ReportInferenceFallback(node);
         return typeToTypeNode(getTypeFromTypeNode(node, false));
+    }
+
+    // nodecopy.go:78. Retain the original preorder and first-expandable short circuit.
+    private void walkNodeForExpandability(Node node)
+    {
+        if (ctx.canIncreaseExpansionDepth || node == null)
+            return;
+        if (Ast.IsTypeReferenceNode(node) || Ast.IsExpressionWithTypeArguments(node) || Ast.IsTypePredicateNode(node) || Ast.IsImportTypeNode(node))
+        {
+            var type = getTypeFromTypeNode(node, false);
+            if (type != null)
+            {
+                checkTypeExpandability(type);
+                if (ctx.canIncreaseExpansionDepth)
+                    return;
+            }
+        }
+        node.ForEachChild(child =>
+        {
+            walkNodeForExpandability(child);
+            return ctx.canIncreaseExpansionDepth;
+        });
     }
 
     // nodecopy.go:100/184/192. Restore the actual recovery tracker and

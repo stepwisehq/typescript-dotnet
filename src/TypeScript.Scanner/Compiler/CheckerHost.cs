@@ -9,6 +9,10 @@ internal interface ICheckerProgramHost : TypeScript.ModuleSpecifiers.IModuleSpec
 {
     Slice<SourceFile> SourceFiles { get; }
 
+    // Canonical lazy file lookup is optional for legacy fixed-file checker hosts.
+    // Program and AliasResolver provide their existing retained-host lookup.
+    SourceFile? GetSourceFile(RootedFilePath fileName) => null;
+
     CompilerOptions Options { get; }
     void BindSourceFiles();
     Dictionary<ByteStringKey, ModeAwareCache<ResolvedModule?>> GetResolvedModules();

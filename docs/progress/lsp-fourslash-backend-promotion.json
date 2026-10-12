@@ -1,0 +1,236 @@
+{
+  "status": "complete reviewed backend promoted; genuine Server integration, central compilation and original candidate execution pending",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "scope": "Additive original Go fourslash harness using actual C# Server, authoritative Go filesystem/spawner and candidate-owned original state-diff projection. No shadow Go Server/Session.",
+  "files": [
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/CandidateHost.cs",
+      "sha256": "a9f11f9f2d588097306619f6edfde4e778c28f8ffbbeda228eb962a9d0d72d2e"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/ControlConnection.cs",
+      "sha256": "f448a75199a372c8dc3a4fa16cfb52a109070b5300671d3cfa095051b5302037"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/ControlMessage.cs",
+      "sha256": "701629df822dc7e058a7c12e33a954f80946d3f52eaf60d1e3d795fae6b55dbd"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/README.md",
+      "sha256": "32d58045f4de35f7e4d8c212d429014b42d0e4aa8c30693aef06c9c06ab6223f"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/RawTransport.cs",
+      "sha256": "045a41ca1d7598c195bb869bebf790ea401f698c0469623e2f7c5a997336998c"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/RemoteFileSystem.cs",
+      "sha256": "ed4be27a0fcf3ed17b10b95bae511527dcc9ad12e923616babfa2ed2f5be8d30"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/RemoteHostException.cs",
+      "sha256": "7d3bf76bd08a1319faef5155256d795d9da4efeb1fd86ee2785404bf1e53de64"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/RemoteProcessStream.cs",
+      "sha256": "2531a2af15b838c4d1bac5f636614f3ea98ebccbc378d7243ea6c7ceaffc43b5"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/StateDiffTable.cs",
+      "sha256": "ef4cbb023e69dde994ed7b6ca0204b8e4d931ea1f13749a208c6eed8b085ddb5"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/StateProjection.Configs.cs",
+      "sha256": "809b1a0530635fd692065e500b953df90a2172c96b9a5bb985aab5cdc538e850"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/StateProjection.OpenFiles.cs",
+      "sha256": "85a54b4fa807c22ef120c821799010a8ebdf15b5b26795120cf046a6669390a3"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/StateProjection.Projects.cs",
+      "sha256": "3e552b7343bdafe573850253c92d5fdb49886159347fc83121c680383b3a49c6"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/StateProjection.cs",
+      "sha256": "17776a8466e6b22e946af438c54b4ecf1f4a33492df75d4aab93789b0a57125c"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/client.go",
+      "sha256": "7a56306c0255adb676184e1e7d1f25207e55468e985ef9c15021d93c4ad010b3"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/control.go",
+      "sha256": "8ee2eb584f36fc1f6748ccb6601559ac2fa373ae9b541488e9df2bed38d2a730"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/filesystem.go",
+      "sha256": "dd18536fe4b8260ad634f061e4665933ff0c43206df7ac5dba171c3b0ad0ec7d"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/prepare-overlay.py",
+      "sha256": "3907cc5330345f8ae53992eb67b34aea47dc1e79c0a7fe43e44ac418e4117a04"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/process.go",
+      "sha256": "d395799ea23af816d1b1209a31e6814217cbc001b4d0f5ef92e3310ce97220b4"
+    },
+    {
+      "path": "artifacts/language-services/drafts/fourslash-backend/FourslashCandidateBackend.cs",
+      "sha256": "544d5c76b7d579777685b1e80d1eb38c87061b00c3233897da62d016e371911e"
+    }
+  ],
+  "originalAdmissions": [
+    "lsptestutil.NewLSPClient constructor only when explicit candidate executable env is present; otherwise original construction unchanged",
+    "Original inferred compiler-options setter routes finalized option snapshot to actual Server before initialize",
+    "Original InitComplete wait routes to actual candidate Task",
+    "Original printStateDiff routes all project/open/config channels to actual candidate Session; original fsDiffer remains over the same authoritative Go FS"
+  ],
+  "assertionDisposition": "Original test bodies, assertions, expected baselines and ordinary skip/failure policy are unchanged. Adapted backend evidence pending; zero candidate function/assertion pass credit.",
+  "dependencies": [
+    "Complete genuine production Server promoted; centralized compilation and public launch gate remain pending",
+    "Validation project and entry dispatch plumbing belongs to the backend lane; draft integration follows production Server promotion",
+    "Independent source review and integrated managed/Native actual original assertion runs required"
+  ],
+  "qualification": [
+    "Fourslash source uses shared DisableDeletion parse cache; candidate host retains DisableDeletion=true within owned process. No cross-case object identity assertion or cache-performance equivalence claim.",
+    "DateTimeOffset retains existing C# filesystem 100ns timestamp representation; wire carries original Go seconds/nanoseconds. No FileInfo.Sys caller in selected compiler/project closure; opaque Sys fails explicitly.",
+    "JSON control protocol is validation-only, separate from actual framed LSP; raw Go strings use base64 and no reflective serialization.",
+    "Optional npm/parent callbacks are not installed by the original Fourslash ServerOptions. Request-level npm cancellation needs review before extending this backend to non-fourslash injected options."
+  ],
+  "stateProjectionSource": {
+    "path": "upstream/TypeScript/tsc/internal/fourslash/statebaseline.go",
+    "sha256": "9aab8197f9544118155536e933c7849fc04ea5df3c012794b20e440850ccb956",
+    "scope": "printStateDiff/project/open/config, shared diff table formatting; filesystem diff and original baseline comparison remain in Go"
+  },
+  "originalAdmissionSources": [
+    {
+      "path": "upstream/TypeScript/tsc/internal/testutil/lsptestutil/lspclient.go",
+      "sha256": "288643adcf487c2b181b69c9d661e9507e6960219516b189f9afbf95198b9947"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/fourslash/fourslash.go",
+      "sha256": "aaa24e9b0f83296b67559da970eda5ffdb20c17af2b318dbdf3da82e7cd8ed25"
+    }
+  ],
+  "promotedFiles": [
+    {
+      "path": "validation/LanguageServices.Checks/Fourslash/RemoteFileSystem.cs",
+      "sha256": "ed4be27a0fcf3ed17b10b95bae511527dcc9ad12e923616babfa2ed2f5be8d30"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/Fourslash/CandidateHost.cs",
+      "sha256": "703a08b0aa5ddd31ea10afe482653309bd789d3ae08f1c21df4162ee683d9652"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/Fourslash/StateDiffTable.cs",
+      "sha256": "ef4cbb023e69dde994ed7b6ca0204b8e4d931ea1f13749a208c6eed8b085ddb5"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/Fourslash/RemoteProcessStream.cs",
+      "sha256": "2531a2af15b838c4d1bac5f636614f3ea98ebccbc378d7243ea6c7ceaffc43b5"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/Fourslash/RawTransport.cs",
+      "sha256": "db06c1ed85ccf086ba31b2d44fb25a8673c85061f077a2e06672d771be928ea7"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/Fourslash/StateProjection.OpenFiles.cs",
+      "sha256": "85a54b4fa807c22ef120c821799010a8ebdf15b5b26795120cf046a6669390a3"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/Fourslash/RemoteHostException.cs",
+      "sha256": "7d3bf76bd08a1319faef5155256d795d9da4efeb1fd86ee2785404bf1e53de64"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/Fourslash/StateProjection.cs",
+      "sha256": "17776a8466e6b22e946af438c54b4ecf1f4a33492df75d4aab93789b0a57125c"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/Fourslash/FourslashCandidateBackend.cs",
+      "sha256": "442f8945c5a4512ce09730511165cca12ef486478d5e66fc9e6b51b948fe586d"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/Fourslash/StateProjection.Projects.cs",
+      "sha256": "54e4f0a3bc305919bb5e785ba9dcc1d5271f9a09f5b4540b53bd351de0582387"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/Fourslash/ControlConnection.cs",
+      "sha256": "ba76713af53984fb9984cddc9b30aa565c989e4a68a4458c557777dff694d73b"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/Fourslash/ControlMessage.cs",
+      "sha256": "701629df822dc7e058a7c12e33a954f80946d3f52eaf60d1e3d795fae6b55dbd"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/Fourslash/StateProjection.Configs.cs",
+      "sha256": "809b1a0530635fd692065e500b953df90a2172c96b9a5bb985aab5cdc538e850"
+    },
+    {
+      "path": "tools/language-services-oracle/fourslash-backend/control.go",
+      "sha256": "ae5794c58aa903cfb1b50aa68eb40dfd2030c393cd39c1c302f32fb782342e16"
+    },
+    {
+      "path": "tools/language-services-oracle/fourslash-backend/filesystem.go",
+      "sha256": "dd18536fe4b8260ad634f061e4665933ff0c43206df7ac5dba171c3b0ad0ec7d"
+    },
+    {
+      "path": "tools/language-services-oracle/fourslash-backend/process.go",
+      "sha256": "d395799ea23af816d1b1209a31e6814217cbc001b4d0f5ef92e3310ce97220b4"
+    },
+    {
+      "path": "tools/language-services-oracle/fourslash-backend/client.go",
+      "sha256": "fcd943d7521ebb20bd566fc7f51d462fd05aa22bb590d8baf1401174071c493f"
+    },
+    {
+      "path": "tools/language-services-oracle/fourslash-backend/README.md",
+      "sha256": "bfcbee71e0ae564217b5f534932cc9d0f9a643cce6ba13ef7b3458db38e618fa"
+    },
+    {
+      "path": "tools/language-services-oracle/fourslash-backend/prepare-overlay.py",
+      "sha256": "38a0c9ee2a4e24b47eafa66a2e0d48fe0a3751668cd44a58911c04651c11fa7b"
+    },
+    {
+      "path": "validation/LanguageServices.Validation/Program.cs",
+      "sha256": "f483c9f20b2e7666d50a61636c45255ea69827aacdd47db6e0b45300b994f164"
+    }
+  ],
+  "filenameBuildFilterAdaptation": {
+    "originalSuffix": "_js_test.go",
+    "admittedSuffix": "_js_case_test.go",
+    "count": 13,
+    "referenceMode": "prepare-overlay.py --js-only",
+    "scope": "Unchanged original JavaScript-language assertions admitted on Linux; no candidate host rewrites in reference mode."
+  },
+  "goCompileEvidence": {
+    "log": "artifacts/language-services/integration-7/fourslash-backend-build-1.log",
+    "scope": "Original package compiled through actual additive overlay with -run ^$; no tests executed and no candidate runtime credit."
+  },
+  "bindingCorrection79": "CandidateHost uses actual promoted LspTransport.ToReader/ToWriter stream wrappers; no lifecycle or transport algorithm change.",
+  "bindingCorrections80": [
+    "SourceFile borrowed PathKeyValue feeds actual PathKey.FromValue/GetSourceFileByPath without materialization.",
+    "JsonArray receives explicitly typed JsonNode values, choosing non-generic AOT-safe overload with unchanged primitive string JSON."
+  ],
+  "firstRuntimeFailure81": {
+    "status": "Initialize request/response succeeds; editor fixture setup fails after Initialized at WaitInitComplete with control EOF. No whole editor assertion pass.",
+    "evidence": "artifacts/language-services/integration-7/candidate-first-81.jsonl",
+    "adapterCorrection": "Validation-only first64KiB raw child stderr prints to parent stderr before terminal process result, including zero-exit evidence; actual non-canceled MessageRouter error is logged before unchanged errgroup return/cancellation. Framed stdout and original assertions unchanged.",
+    "resolvedDiagnosis82": "Immediate constructor cleanup retained actual post-initialize FormatException from shared LogFormat %+ verb, called by RequestConfiguration/HandleInitialized. Protocol owns complete consumed formatting closure; no backend semantic change indicated."
+  },
+  "responsibilityReconciliation81": {
+    "implementedSourceClosure": "Complete selected host-control, filesystem/mutation, process/spawner, actual Server launch and original project/open/config state projection. Whole production stdio Server100 workers source-reviewed with queue/progress/logger/sanitizer; no known omitted worker in selected closure.",
+    "excludedProduction": "External API/embedding sessions6 and Go profiling4 workers, non-Linux launch. These are explicit contract exclusions, not selected missing behavior.",
+    "unverified": "First actual original initializes then fails WaitInitComplete control EOF; no candidate editor assertion pass. Remaining25 direct LSP originals, complete candidate corpus, actual Native long-lived transport/cancellation and retained regressions remain pending.",
+    "qualification": "Whole Server worker coverage is source-level; actual post-initialize logging exposed incomplete transitive fmt helper. Integrated runtime correctness and transitive helper completeness are not established by this review."
+  },
+  "startupLifecycleEvidenceBatch82": "Bounded actual Server.Run and control terminal outcomes at C# validation boundary, and actual command.Wait/router/control outcomes at Go validation boundary including success/clean EOF; stderr only, unchanged returned errors/cancellation/protocol/assertions.",
+  "startupObservationErrorAdmission": "Only stderr IOException/ObjectDisposedException ignored at validation observation boundary; actual Server.Run/control outcome remains returned/completed unchanged.",
+  "startupCleanupCorrection82": "Launched child cancellation/reaping registered immediately with testing.T, before Accept and beforeInitialize; full control/process/router cleanup registered before returning client, sync.Once shared with original returned closeClient. Pre-start failures release listener/context/pipes. Stable errgroup context created before CommandContext, eliminating reassigned-context capture and matching original server/router shared context.",
+  "initialEditorExecution84": {
+    "status": "first-whole-original-assertion-pass-not-corpus-acceptance",
+    "test": "TestCompletionListInEmptyFile",
+    "reportedElapsedSeconds": 0.64,
+    "scope": "Actual Initialize/Initialized handshake and original completion assertion over genuine candidate framed stdio; root executed. Broader editor results and Native stdio remain pending.",
+    "history": "Three81 setup EOF attempts and82 post-Initialized FormatException preserved. Early child cleanup made complete error evidence durable; full consumed formatter corrected rather than fixture workaround."
+  }
+}

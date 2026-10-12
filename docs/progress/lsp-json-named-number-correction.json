@@ -1,0 +1,10 @@
+{
+  "status": "source-reviewed-clear-corrected-runtime-pending",
+  "upstream": "upstream/TypeScript/tsc/internal/jsnum/jsnum.go:20 named float64; encoding/json/v2 float kind admission",
+  "path": "src/TypeScript.Scanner/Json/JsonCodec.cs",
+  "sha256": "1d14d0583154dc72c98630b5a520447208728ff852264584dadbdb0cb78a4695",
+  "cause": "completionNameForLiteral passes actual JsNum.Number to Core.StringifyJson; generic writer omitted named float scalar and ignored source error yielded empty label.",
+  "adaptation": "Unwrap before nonfinite guard, preserve jsnum.Number semantic error target and pointer before delimiter emission; finite values reuse same double worker including negative zero.",
+  "independentReview": "artifacts/language-services/source-review/json-named-number.json",
+  "verification": "Source/syntax only; original numeric literal completion must execute through coordinated corpus gate."
+}

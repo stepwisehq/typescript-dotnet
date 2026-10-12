@@ -1,0 +1,26 @@
+{
+  "status": "source-correction-independently-reviewed-candidate-execution-pending",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "reviewer": "emit_print_maps",
+  "cause": "Four Go constants previously read generated readonly base fields across partial-file initializers; unspecified C# initialization ordering admitted empty base headers. Full independent literals retain exact Go constant values.",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Protocol/CodeActionKind.cs",
+      "sha256": "880336b5b93645b72aaf6237e7c4a8da12f74779a78835c0565ce525191bc4bd"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/CodeActionKindChecks.cs",
+      "sha256": "47faae4e2229bcfd9a4a3271a1102d83bfa56bbc05336dc93052be4eba0e3059"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/CodeActionKindTests.cs",
+      "sha256": "34b7c7b969a9268777c03233b5023c1559446818ecdd068e08168f032fd342c9"
+    }
+  ],
+  "authoredControls": 1,
+  "originalFunctions": 0,
+  "dispatch": "CodeActionKindChecks.RunAll()",
+  "corpusEvidence": "artifacts/language-services/integration-7/candidate-corpus-84.jsonl",
+  "scope": "Contains algorithm unchanged. Existing source.fixAll and organize-imports original assertions remain intact and will revalidate whole response/edit behavior in coordinated root gate.",
+  "independentReview": "emit_print_maps: four full constant raw values and grouped parent Contains/wire value authored admission source-clear; no source control-flow change."
+}

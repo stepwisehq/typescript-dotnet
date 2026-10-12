@@ -1,0 +1,109 @@
+{
+  "status": "complete promoted/source-reviewed original packet; central compilation/managed/Native pending",
+  "originalFunctions": 4,
+  "functions": [
+    {
+      "name": "TestGetTokenAtPosition",
+      "sourceLine": 26
+    },
+    {
+      "name": "TestGetTouchingPropertyName",
+      "sourceLine": 113
+    },
+    {
+      "name": "TestFindPrecedingToken",
+      "sourceLine": 458
+    },
+    {
+      "name": "TestFindNextToken",
+      "sourceLine": 485
+    }
+  ],
+  "source": "upstream/TypeScript/tsc/internal/astnav/tokens_test.go",
+  "sourceSha256": "0017c391c25fc995b46178bb141b8fa52ad0a4fc63facd820453607d5a14ab4d",
+  "files": [
+    {
+      "path": "validation/LanguageServices.Checks/AstNavOriginalChecks.cs",
+      "sha256": "9c29e5aba7730e3136bb65e8d98e07dc32a84738955051fe1b1472c7bfdce1c5"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AstNavOriginalChecks.Scripts.cs",
+      "sha256": "038ac44d24122ed37d43a290ea93e5ddc6248a94666dd5b932e85f1111e3d5d5"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/AstNavOriginalTests.cs",
+      "sha256": "5f2c3f7cabf4f46a56acf06516c17e1ce74adb9abe4c49b22fc5a69a890d93e2"
+    },
+    {
+      "path": "tools/generate-astnav-original-js-helpers.py",
+      "sha256": "fcfa3f485252063dd48ea10013ad280b766a3435cbcc68be801193c5d9e816e2"
+    },
+    {
+      "path": "tools/prepare-astnav-js-environment.py",
+      "sha256": "ee072ae7cbe2d9ba0506741e2f739eb99a11d0300f7e070cb35fe5f6ba483afd"
+    }
+  ],
+  "dispatch": "AstNavOriginalChecks.RunAll()->4; existing AstNavChecks.RunAll() unit1 and accepted4JSON/3token-subtest dispatches retained unchanged, no duplicated whole-function credit",
+  "channels": "Three genuine locked TypeScript JavaScript differential baselines +four existing original GoJSON channels; GetTokenAtPosition full3JSDoc/pointer siblings independently aggregated. FindNextToken source has only GoJSON baseline; no invented JS channel.",
+  "adaptations": [
+    "Sequential T.Parallel scheduling hints; complete original sibling continuation/named errors.",
+    "Exact original JavaScript helper literals in generated C# constants. Real Node process/framed JSON oracle, original byte positions and full TS parser parent/JSDoc setup. No alternate TypeScript/token algorithm.",
+    "Required original temp-file writes use raw source bytes, positions JSON. Node stdout/stderr drain concurrently, no imposed original untimed wait threshold.",
+    "writeRangeDiff exact original markers/order/truncation/line-byte offsets, writes original source bytes separately from UTF8 markers; compare unchanged baseline bytes. No expected normalization.",
+    "Source Node.js absence skip is explicitly logged, exact runtime dependency required when Node is present. Runtime prepared from existing verified locked6.0.3 cache, no npm dependency install.",
+    "Existing accepted AstNav helpers/wrappers untouched; whole-function admission separate.",
+    "Exact runtime JS SHA256 checked at actual Node dependency boundary; incompatible runtime is a prerequisite error, no substitute successful assertion."
+  ],
+  "environment": "artifacts/language-services/integration-7/astnav-js-environment.json",
+  "originalReference": "artifacts/language-services/integration-7/astnav-reference-complete.jsonl",
+  "testSetup": "tools/prepare-astnav-js-environment.py [--check]; uses exact archive/integrity from existing tools/prepare-checker-api-environment.py",
+  "expectedBaselines": [
+    {
+      "path": "upstream/TypeScript/tsc/testdata/baselines/reference/astnav/FindNextToken.mapCode.ts.baseline.json",
+      "sha256": "8ea833ec32eeedad646fde2b187fad38d29746370dc2392082026439b2376c28"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/testdata/baselines/reference/astnav/FindPrecedingToken.mapCode.ts.baseline.json",
+      "sha256": "840585233c52973fc811478b1952ece80f81d3131d0a669fe773f76f00fa87ed"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/testdata/baselines/reference/astnav/FindPrecedingToken.mapCode.ts.baseline.txt",
+      "sha256": "0bf46e4e68b20a79a5829c4704aff118e8bc0a1bb132b4aed832d43501b157f2"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/testdata/baselines/reference/astnav/GetTokenAtPosition.mapCode.ts.baseline.json",
+      "sha256": "0c3eb35f774e2c9251089790ae1d50396fa5be6efb6c3fddc9fd79431f3c938f"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/testdata/baselines/reference/astnav/GetTokenAtPosition.mapCode.ts.baseline.txt",
+      "sha256": "e47434cf806490787332d73e5ace1bbcd674b953d7643e41135b509d0e4abfee"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/testdata/baselines/reference/astnav/GetTouchingPropertyName.mapCode.ts.baseline.json",
+      "sha256": "8580376e2261382c87cc700231b63d76e0d5e35b398f750fc2f72b8aece45eac"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/testdata/baselines/reference/astnav/GetTouchingPropertyName.mapCode.ts.baseline.txt",
+      "sha256": "9f992280a2945803e89ae1e96ca6588125da2d397f52c089127b8697d4461c16"
+    }
+  ],
+  "review": "artifacts/language-services/source-review/astnav-originals.json",
+  "retainedAcceptedDependencies": [
+    {
+      "path": "validation/LanguageServices.Checks/AstNavChecks.cs",
+      "sha256": "ea0586fa54806fa62e5b64307a0bc1b23a605054e753556c4aa2d5fbe1c6e6b0"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/AstNavBaselineChecks.cs",
+      "sha256": "41719085e94a6b4528774702f3a9149e471f85904af9deaeb1e530b8800f1faf"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/AstNavTests.cs",
+      "sha256": "ba21aabbdd06bddeb54391cc70e9b4f5f279a8ecfaa01fd67860f1e372ec624c"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/AstNavBaselineTests.cs",
+      "sha256": "f236a6a5540d66a5f397c2812f15f928d44ae9a1fea5a3af9c428d17b6721997"
+    }
+  ]
+}

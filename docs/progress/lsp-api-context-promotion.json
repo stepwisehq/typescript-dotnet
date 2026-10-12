@@ -1,0 +1,22 @@
+{
+  "status": "complete source promoted; independent source review clear; next central integration execution pending",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceMappings": [
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/api.go",
+      "upstreamSha256": "9a5b7e39e1cd18366649d34cc26f805a9fcff0c187445bc2a34c947a37a0391a",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Api.cs",
+      "destinationSha256": "f45c82ba0c13d2f8427257b62768710e3959a76e8d645f891ed201742f004387",
+      "functions": 3
+    },
+    {
+      "upstream": "upstream/TypeScript/tsc/internal/ls/constants.go",
+      "upstreamSha256": "75b867ed672679b8bfdb7d8d733e9536739d5fd97e08a5ed6dd97ce6f9173be5",
+      "destination": "src/TypeScript.Scanner/LanguageServices/Constants.cs",
+      "destinationSha256": "1c9ff37df66089d4afbcefe369f0db3889d7e532908ee0199dcbcf400bb46a37",
+      "functions": 0
+    }
+  ],
+  "adaptation": "Existing CancellationToken APIs remain wrappers deriving Default request context only at legacy boundary; actual context entrypoints preserve request ID, checker lifetime, locale, cancellation and capabilities. Constants exact100/1000. No external embedding transport.",
+  "verification": "No source-function behavior pass credit added; actual connected Server/query acceptance pending."
+}

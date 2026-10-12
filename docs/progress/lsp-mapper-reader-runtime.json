@@ -1,0 +1,53 @@
+{
+  "status": "Complete synchronous mapper/IPC/duplex delivery closure source-written; independent closure review and corrected managed/Native original execution pending.",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/ContentMapper/HostImpl.cs",
+      "sha256": "7199413e65eadabc7742aec165549ce511188b840893f9e2002531685e2a2df6"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ContentMapperProjectFixture.Protocol.cs",
+      "sha256": "2e244e2cf437e6fd99768605e75183cda8e427d12b867c1e938e96c3dd7853ae"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectContentMapperChecks.Basic.cs",
+      "sha256": "81ef89341edb8ca234b2d686b4de325542896eecadec311bf4cb90573ef3673c"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Ipc/AsyncConn.cs",
+      "sha256": "d44bc882bca06ed4c654bde488d9c6160924a421d1162e7a669805c935036f2d"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/IpcTestPipe.cs",
+      "sha256": "6a88d2f01ce974623528c82799160e1b0ce758a8108712cac41b78eeebaac3c0"
+    }
+  ],
+  "upstream": [
+    "upstream/TypeScript/tsc/internal/contentmapper/hostimpl.go retained connection.Run goroutine",
+    "upstream/TypeScript/tsc/internal/testutil/contentmappertest/spawner.go retained mapper Run goroutine"
+  ],
+  "runtimeBoundary": "One standard dedicated background Thread per retained connection/process synchronous read loop, both actual production and genuine in-process original mapper spawner. Does not occupy a ThreadPool worker while indefinitely blocked in stream read. Thread runs static callback/explicit immutable state; ExecutionContext suppression retains old UnsafeQueueUserWorkItem contract, including already-suppressed caller admission.",
+  "preserved": [
+    "Original Run return then production CloseProcess; no new swallowed error/exception recovery or synthetic join.",
+    "Actual process/pipe lifetime remains owned by existing host/stream close/cancel path. Thread is background like existing service loop adaptation; no retained thread list.",
+    "The earlier retained-reader-only delta left transient handlers unchanged and did not fix Native94. The newer Native95-grounded handler delta changes only request/notification scheduling through the shared StartHandler owner; actual worker bodies, errors and fatal notification behavior remain unchanged.",
+    "Five-second original initialize timeout unchanged; original parallel file input/output/order unchanged; global ThreadPool configuration unchanged."
+  ],
+  "limits": "OS thread/stack resource per live retained mapper read loop; not Go goroutine topology/resource parity or performance claim. Handler scheduling now additionally owns one OS thread/default stack per live IPC request or notification, rather than cheap Go goroutines. Resource exhaustion can fail thread admission and propagates; no custom scheduler, global ThreadPool minimum, concurrency cap, timeout extension or fixture-only scheduling override. Actual performance/resource behavior remains unmeasured.",
+  "evidence": "Managed89 original parallel text equality failed without actual output. Managed90 mapper/server family41pass1originalReplay skip and whole-suite493pass1originalReplay skip with only failure diagnostic change. Managed89 cause remains unproven load/schedule risk; no production fix existed in90. Dedicated-reader adaptation correctness rationale is source-grounded and separate from causal/runtime acceptance, nextbinary pending. Native94 actual full direct runner aborted exit134 at file0.box with empty transformed text, while full managed94 passed506 and skipped only optional Replay. Observer95 adds actual retained mapper/file diagnostic chains on failure and named original isolation; no production correction or expectation change.",
+  "dispatchChanges": "Added named --contentmapper-original NAME over the existing original action table for process-isolated observation; ordinary RunAll/indexed xUnit originals unchanged. Failure-only detail prints actual mapper/file diagnostics and message chains without new observations on successful paths.",
+  "handlerRuntimeBoundary": "Both actual AsyncConn request and notification producers use one standard dedicated background Thread per live handler, static callback/explicit owner/action state, and suppressed ExecutionContext matching the prior UnsafeQueueUserWorkItem boundary. Run retains its live handler count, cancels handlerContext and waits for completion before disposal. Original request panic recovery, response write mutex, first terminal error, pending-call close and fatal notification exception remain unchanged. Thread admission failure decrements the unstarted handler count then propagates.",
+  "native95Observation": "integration-7/native-mapper-observer-95.log: exact original32-file assertion reproduced empty file0.box, with diagnostic18099 mapper could not initialize and18102 initialize did not respond within5seconds; no other retained mapper error. Five-second admission remains unchanged.",
+  "managed96Observation": "Managed96 after dedicated handlers still failed original parallel mapper with18099/18102 initialization5s,507pass+1optionalReplay skip+1fail509total. The handler-only correction did not close completion delivery.",
+  "synchronousDeliveryBoundary": {
+    "production": "Private pending response values now standard BlockingCollection<GenericMessage>(1), sole synchronous Call.Take(token). Capacity1 retained; HandleResponse removes under pendingMutex then adds/completes outside. Run/error/finally close via CompleteAdding. Closed-empty receive maps actual terminal error; cancellation unchanged. No premature Dispose while transferred producer may still hold it, no exposed wait handles. requestErrors unchanged because only TryWrite/TryRead, no async bridge.",
+    "duplexFixture": "Actual original in-process spawner still runs production AsyncConn. Directions use unbounded default ConcurrentQueue-backed BlockingCollection<WriteBlock>; Read.Take(closeToken) blocks directly. Write.TryAdd preserves FIFO and closed-race IOException. Private acknowledgement TCS has no forced async continuations, sole writer uses synchronous Task.Wait(closeToken); completed-byte acknowledgement wins the existing close race. Owner.Close cancels/completes without disposing live peer queue owners. No original input, transformed text, timeout or handshake changes.",
+    "scope": "Complete synchronous initialize write -> reader admission -> independently scheduled request handler -> response write/ack -> client read -> pending response delivery -> Call return; same owners cover subsequent openProject/transform/close/error/notification paths."
+  },
+  "runtimeSourceReferences": [
+    "https://github.com/dotnet/runtime/blob/v10.0.12/src/libraries/System.Threading.Channels/src/System/Threading/Channels/AsyncOperation.cs#L329",
+    "https://github.com/dotnet/runtime/blob/v10.0.12/src/libraries/System.Private.CoreLib/src/System/Threading/Tasks/Task.cs#L2657",
+    "https://github.com/dotnet/runtime/blob/v10.0.12/src/libraries/System.Private.CoreLib/src/System/Threading/Tasks/Task.cs#L3290"
+  ],
+  "runtimeSourceAssessment": "Channel AsyncOperation always queues the completion-registration race even with AllowSynchronousContinuations; Task.WaitAsync cancellation proxy may queue when the source TCS forces asynchronous continuation. Thus an option-only response correction was superseded before97 by closed synchronous delivery owners, without a custom scheduler or global pool configuration."
+}

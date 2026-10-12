@@ -322,7 +322,7 @@ internal sealed partial class NodeBuilderImpl
         Slice<Node> members = default;
         members = members.Append(this.serializeIndexSignaturesOfType(interfaceType, baseType));
         {
-            foreach (var sig in resolved.ConstructSignatures())
+            foreach (var sig in resolved.ConstructSignaturesSlice())
             {
                 if (((sig.flags & SignatureFlags.Abstract) != 0))
                 {
@@ -334,7 +334,7 @@ internal sealed partial class NodeBuilderImpl
         }
 
         {
-            var range5Items = resolved.CallSignatures();
+            var range5Items = resolved.CallSignaturesSlice();
             for (int range5Index = 0; range5Index < range5Items.Count; range5Index++)
             {
                 var _2 = range5Index;
@@ -693,7 +693,7 @@ internal sealed partial class NodeBuilderImpl
             {
                 for (int i2 = 0; i2 < bodyStmts.Count; i2++)
                 {
-                    var s = bodyStmts[i2];
+                    ref var s = ref bodyStmts.AsSpan()[i2];
                     if ((s.isLocal || Ast.IsExportDeclaration(s.node)))
                     {
                         continue;

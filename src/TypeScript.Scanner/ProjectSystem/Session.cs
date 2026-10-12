@@ -1441,7 +1441,7 @@ internal sealed partial class Session
                         FileNames = fileNames,
                         ProjectRootPath = project.projectDirectory,
                         FS = fs,
-                        Logger = logs!
+                        Logger = LogTree.AsLogger(logs)
                     };
                     var display = project.DisplayName(options.CurrentDirectory);
                     client?.ProgressStart(Diagnostics.Installing_types_for_0, display);

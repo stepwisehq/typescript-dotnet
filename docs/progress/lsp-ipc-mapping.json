@@ -14,7 +14,7 @@
       "destination": "src/TypeScript.Scanner/Ipc/AsyncConn.cs",
       "originalFunctions": 13,
       "upstreamSha256": "6c6bf2a14c7dd847d208ebca0d075421ebe015bcef1606544dc77cd7cb030498",
-      "destinationSha256": "543598bae80341cd7dc7904747a5ff7bdc6d1c2e1d8a2872e52ee14e7aa38a17"
+      "destinationSha256": "d44bc882bca06ed4c654bde488d9c6160924a421d1162e7a669805c935036f2d"
     },
     {
       "upstream": "upstream/TypeScript/tsc/internal/ipc/protocol.go",
@@ -65,5 +65,6 @@
   "boundaries": [
     "SyncConn and named/embedding endpoint transports not required by contentmapper AsyncConn host and remain outside this closure."
   ],
-  "executionEvidence": "validation/results/language-services-dependencies-33.json"
+  "executionEvidence": "validation/results/language-services-dependencies-33.json",
+  "postAcceptanceRuntimeDelta": "Native95 and managed96 retain original initialize5s failure. Complete independent handler + synchronous response/duplex delivery owner adaptation recorded in lsp-mapper-reader-runtime.json; previous Native33 evidence historical, whole changed closure review/execution pending."
 }

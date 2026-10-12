@@ -18,11 +18,11 @@ internal sealed class ProjectSessionFixture : IDisposable
     internal readonly TestClient Client = new();
     internal readonly ILogCollector Logger = LogCollector.NewTestLogger();
     internal readonly NpmExecutor Npm;
-    internal ProjectSessionFixture(IEnumerable<BaselineFS.Input> files, SessionOptions? options = null, IEnumerable<string>? typesRegistry = null, Dictionary<string, string>? packages = null, TypeScript.ContentMapper.ISpawner? spawner = null)
+    internal ProjectSessionFixture(IEnumerable<BaselineFS.Input> files, SessionOptions? options = null, IEnumerable<string>? typesRegistry = null, Dictionary<string, string>? packages = null, TypeScript.ContentMapper.ISpawner? spawner = null, ProtocolRequestContext? backgroundContext = null)
     {
         MutableFS = new ProjectTestFileSystem(CaseSensitivity.CaseInsensitive, files.ToArray());
         Npm = new NpmExecutor(MutableFS, typesRegistry?.ToArray() ?? [], packages ?? new());
-        Session = Session.NewSession(new SessionInit { BackgroundContext = ProtocolRequestContext.Default, FS = TypeScript.Bundled.Bundled.WrapFS(MutableFS), Client = Client, NpmExecutor = Npm, Logger = Logger, Spawner = spawner, Options = options ?? new SessionOptions { CurrentDirectory = RootedDirectoryPath.FromGoString("/"), DefaultLibraryPath = TypeScript.Bundled.Bundled.LibPath(), TypingsLocation = RootedDirectoryPath.FromGoString("/home/src/Library/Caches/typescript"), PositionEncoding = PositionEncodingKind.UTF8, WatchEnabled = true, LoggingEnabled = true, PushDiagnosticsEnabled = true } });
+        Session = Session.NewSession(new SessionInit { BackgroundContext = backgroundContext ?? ProtocolRequestContext.Default, FS = TypeScript.Bundled.Bundled.WrapFS(MutableFS), Client = Client, NpmExecutor = Npm, Logger = Logger, Spawner = spawner, Options = options ?? new SessionOptions { CurrentDirectory = RootedDirectoryPath.FromGoString("/"), DefaultLibraryPath = TypeScript.Bundled.Bundled.LibPath(), TypingsLocation = RootedDirectoryPath.FromGoString("/home/src/Library/Caches/typescript"), PositionEncoding = PositionEncodingKind.UTF8, WatchEnabled = true, LoggingEnabled = true, PushDiagnosticsEnabled = true } });
     }
 
     internal bool WatchesFile(ByteStringValue filePath)
@@ -81,6 +81,7 @@ internal sealed class ProjectSessionFixture : IDisposable
         internal readonly List<(ProtocolRequestContext Context, WatcherID ID)> UnwatchCalls = new();
         internal readonly List<(ProtocolRequestContext Context, PublishDiagnosticsParams Parameters)> Diagnostics = new();
         internal readonly List<ProtocolRequestContext> DiagnosticsRefreshes = new(), InlayRefreshes = new(), CodeLensRefreshes = new();
+        internal Func<ProtocolRequestContext, WatcherID, Slice<Watcher>, Exception?>? WatchFilesFunc;
         internal Func<TypeScript.Locale.Locale>? GetLocaleFunc;
         internal Action<ByteStringValue>? SetLocaleFunc = null;
         internal Func<bool>? IsActiveFunc = null;
@@ -90,6 +91,18 @@ internal sealed class ProjectSessionFixture : IDisposable
         {
             lock (gate)
                 return WatchCalls.ToArray();
+        }
+
+        internal (ProtocolRequestContext Context, WatcherID ID)[] UnwatchFilesCalls()
+        {
+            lock (gate)
+                return UnwatchCalls.ToArray();
+        }
+
+        internal (ProtocolRequestContext Context, PublishDiagnosticsParams Parameters)[] PublishDiagnosticsCalls()
+        {
+            lock (gate)
+                return Diagnostics.ToArray();
         }
 
         internal int RefreshDiagnosticsCallCount()
@@ -120,7 +133,7 @@ internal sealed class ProjectSessionFixture : IDisposable
         {
             lock (gate)
                 WatchCalls.Add((context, id, watchers));
-            return null;
+            return WatchFilesFunc?.Invoke(context, id, watchers);
         }
 
         public Exception? UnwatchFiles(ProtocolRequestContext context, WatcherID id)
@@ -130,7 +143,25 @@ internal sealed class ProjectSessionFixture : IDisposable
             return null;
         }
 
-        public Exception? RegisterContentMapperExtensions(ProtocolRequestContext context, Slice<ByteStringValue> extensions) => null;
+        private readonly object mapperExtensionsGate = new();
+        private readonly List<ByteStringValue[]> mapperExtensionCalls = new();
+        internal ByteStringValue[][] RegisterContentMapperExtensionsCalls()
+        {
+            lock (mapperExtensionsGate)
+                return mapperExtensionCalls.ToArray();
+        }
+
+        public Exception? RegisterContentMapperExtensions(ProtocolRequestContext context, Slice<ByteStringValue> extensions)
+        {
+            var retained = new ByteStringValue[extensions.Length];
+            int index = 0;
+            foreach (var extension in extensions)
+                retained[index++] = extension;
+            lock (mapperExtensionsGate)
+                mapperExtensionCalls.Add(retained);
+            return null;
+        }
+
         public Exception? RefreshDiagnostics(ProtocolRequestContext context)
         {
             lock (gate)
@@ -159,12 +190,31 @@ internal sealed class ProjectSessionFixture : IDisposable
             return RefreshCodeLensFunc?.Invoke(context);
         }
 
+        internal readonly record struct ProgressCall(TypeScript.Scanner.Message Message, object? [] Arguments);
+        private readonly List<ProgressCall> progressStarts = new();
+        private readonly List<ProgressCall> progressFinishes = new();
+        internal ProgressCall[] ProgressStartCalls()
+        {
+            lock (gate)
+                return progressStarts.ToArray();
+        }
+
+        internal ProgressCall[] ProgressFinishCalls()
+        {
+            lock (gate)
+                return progressFinishes.ToArray();
+        }
+
         public void ProgressStart(TypeScript.Scanner.Message message, params object? [] arguments)
         {
+            lock (gate)
+                progressStarts.Add(new(message, arguments));
         }
 
         public void ProgressFinish(TypeScript.Scanner.Message message, params object? [] arguments)
         {
+            lock (gate)
+                progressFinishes.Add(new(message, arguments));
         }
 
         public Exception? SendTelemetry(ProtocolRequestContext context, Telemetry value) => null;
@@ -176,13 +226,40 @@ internal sealed class ProjectSessionFixture : IDisposable
             SetLocaleFunc?.Invoke(value);
         }
 
-        public TypeScript.Locale.Locale GetLocale() => GetLocaleFunc?.Invoke() ?? default;
+        private readonly List<TypeScript.Locale.Locale> localeReads = new();
+        internal TypeScript.Locale.Locale[] GetLocaleCalls()
+        {
+            lock (gate)
+                return localeReads.ToArray();
+        }
+
+        public TypeScript.Locale.Locale GetLocale()
+        {
+            var value = GetLocaleFunc?.Invoke() ?? default;
+            lock (gate)
+                localeReads.Add(value);
+            return value;
+        }
     }
 
     internal sealed class NpmExecutor(ProjectTestFileSystem fs, string[] registry, Dictionary<string, string> packages) : INpmExecutor
     {
+        internal readonly record struct InstallCall(RootedDirectoryPath Cwd, string[] Args);
+        private readonly object callsGate = new();
+        private readonly List<InstallCall> calls = new();
+        internal InstallCall[] NpmInstallCalls()
+        {
+            lock (callsGate)
+                return calls.ToArray();
+        }
+
         public (Slice<byte> Output, Exception? Error) NpmInstall(CancellationToken context, RootedDirectoryPath cwd, Slice<ByteStringValue> arguments)
         {
+            var recordedArguments = new string[arguments.Length];
+            for (int i = 0; i < arguments.Length; i++)
+                recordedArguments[i] = arguments[i].Materialize()!;
+            lock (callsGate)
+                calls.Add(new(cwd, recordedArguments));
             if (arguments.Length < 3)
                 return (default, new InvalidOperationException(LogFormat.Sprintf("unexpected npm install: %s %v", cwd, arguments)));
             if (arguments.Length == 3 && arguments[2].EqualsBytes("types-registry@latest"u8))

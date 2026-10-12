@@ -1,0 +1,307 @@
+{
+  "status": "complete Server/stdio owner promoted; syntax check passed; central compilation, independent review and behavior pending",
+  "upstreamPin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "upstream": [
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/server.go",
+      "sha256": "f8bf341327e3f2cfccdc17c74962618c1ab1322a5e7eb3280a6a6e145836af38"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/dynamic_queue.go",
+      "sha256": "557071cbe3b41340c722622f1717a8c78334e6198ac5af6ed5b44b2ed5685c51"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/progress.go",
+      "sha256": "89c3b0458c7bc9aeb10ec9ce0a0780f00029285be2cd777f33e29d4f692e322d"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/logger.go",
+      "sha256": "dc6a2fb58f424ee843c1c77d2c026462522ab96e47cc3b95f015b807ba143be3"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/stack_sanitizer.go",
+      "sha256": "654b7698a2070a1ec16478558612ed42346c923fb9dadef6d91928b13356393b"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/cmd/tsc/lsp.go",
+      "sha256": "7445753d885973bc38418a31e3c7384c535d8877633159cf93bda378df12c3c4"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/cmd/tsc/sys.go",
+      "sha256": "41e7c4d7905a465314f4a541a902de5b84bcfae86dfc24c877f26fcff08caa0b"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/cmd/tsc/isprocessalive_unix.go",
+      "sha256": "3c18eea4248720a942e8eb3cfb6c197e431dfa5f276b5c81ec4071e873c8e080"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/dynamic_queue_test.go",
+      "sha256": "ae25e38f08d928164f109792b188643ff9ee8428f62a5cfba78348b018fca075"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/progress_test.go",
+      "sha256": "a7fa0155d57c49d7f98536a2934d854003e67a14e0193831ba99ab2090566a4e"
+    },
+    {
+      "path": "upstream/TypeScript/tsc/internal/lsp/stack_sanitizer_test.go",
+      "sha256": "143e8abb1b8be495c741b023e11f997d413000b425b58694ed341e992ef6aa86"
+    }
+  ],
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/Lsp/DynamicQueue.cs",
+      "sha256": "51c3ea63b51e7f9901c42160692f90e858ef08f1a8ac049d35f99bde4d261677"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Logger.cs",
+      "sha256": "0e2ee30cf9d965474b76c40fb55bbcb4c4c717421f506d756c838013e6ffa04f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/LspCommand.cs",
+      "sha256": "6b317275bd60859a6a1f55a6d49f2b415606a0e7586e8baa4634ba2886c058d1"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Progress.cs",
+      "sha256": "3dc6859a2a333dd39c2d23295c52090eb8f6e16a0eb6745384562d6bae16b443"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Protocol.ServerDescriptors.cs",
+      "sha256": "4f7acd9a153f7a5679f4ac7ca8104f95a86b87987954432b58205137d2f9544c"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Capabilities.cs",
+      "sha256": "e6a501799afd70838fa8256ff0eeea9e1e4bad231cb13bb8db709d7557ae1a4c"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.ClientNotifications.cs",
+      "sha256": "79f2f20250939786f3705d8520ea4d9bb57979efabfcab987142f7347ce9f57f"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Configuration.cs",
+      "sha256": "c4091654873295dc4af2ab4b7300d9be62c432654ae2a59505725c73f65c64a2"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.ContentMapperCapabilities.cs",
+      "sha256": "85ed0f549dcba0ead7e61d349baca21250c332e311a4cdb98b186f1fe714fb64"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.ContentMapperContributions.cs",
+      "sha256": "37dd29e8805466f1a472e21a2e3f300dd9c219bb20237863631a408e46ae051a"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.ContentMapperRegistrations.cs",
+      "sha256": "940b5d0797052442afe97cff6160b6b5ac3a1f64de9013439529c68ef7b9a140"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Core.cs",
+      "sha256": "14bde88b9d689ff384f8b56d75e8afc05f54ea9776151da6299e394b42f992ee"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.CrossProject.cs",
+      "sha256": "fde23e448eadb98357da508e85e2ecf7304184f6da3346b711889a73ea783f17"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Diagnostics.cs",
+      "sha256": "050a56bb90ffe3fd2c1171a608b4fbf763967cf5dd5d4ba4269e77f64cad8fdc"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Dispatch.cs",
+      "sha256": "85d178f3a438a94fc067aefc97c3b43547a019c7ddb38bab8dd836c6910a745d"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.DocumentLifecycle.cs",
+      "sha256": "bb1fb203567002b3c69c84e2e009d1b22fdaaf31d0c1b330da12e57ee422f980"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.FileRenameRequests.cs",
+      "sha256": "21633b6fc18afaa4ed732052b774dc49772ce7f0818988952f1640a55916fcbb"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.FileWatching.cs",
+      "sha256": "ef39faa8922181712fe6102520f42eadb0123b71fdb1d7fd56c8bc17e0f6b5de"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.HandlerMap.cs",
+      "sha256": "230ba943ed42bf679855a6d5380fdf4ecd8f985f681089a715de8aac3493eea5"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.HandlerRegistry.cs",
+      "sha256": "5c7abe1ff5ac36b27d0095b02b6ef7920dae7525334848748c4ff40586b8f3b6"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.HostAdapters.cs",
+      "sha256": "67c43d4799631917841eebae6a2e146eb59387ebceaf90b6d0614848d4208ca5"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Initialize.cs",
+      "sha256": "cb10543ae5e79da9628a1f6ecc171a5ff7dce9af0d2d73057b21006e7eb84cf5"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Initialized.cs",
+      "sha256": "c95eb40c336a5c7be1f3c4abed86f74d3236f7183dee80f9089faa1152af69b8"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Messaging.cs",
+      "sha256": "d3df9e9d02f47bca63b9b7f3cc6a4e5e716c84f3059533d8d5a08acb47b9536d"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Options.cs",
+      "sha256": "751e6f276a1a2d7063f2f125a377e21bc496c44d2cc1bcdbe4992fe6a1e4d3e9"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.ProjectClient.cs",
+      "sha256": "7160dbe6010ce2db67c8db0e06d88a034c684597583dfa06e811225795f06689"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.QueryRequests.cs",
+      "sha256": "fdba2ebe4a29088fab28eea8fec6930ee28f59fbcd70b5f11bd150ec6242c588"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Recovery.cs",
+      "sha256": "f38fc980e91842acb19d8e1ba6858a9c89d4aa7b27eb891379999d8ce296b57b"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.ReferenceRequests.cs",
+      "sha256": "bda05640a87ca046463bbfbfceba721774af6c5bfe99cbc643882edd8b73434b"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.RequestExecution.cs",
+      "sha256": "612f6184f062b058a0b95f13d0f99cb7fa4a273e25215751d0331cecbe4b3f38"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Runtime.cs",
+      "sha256": "ed00250c6b660a5010ffa086071e547498cd0469f244f433ff6fca743b17febe"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.RuntimeRequests.cs",
+      "sha256": "cbd3c480457bcd48aff04d45f72cfc6fed9dcf438df10992d6278741e48997a9"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.SemanticRequests.cs",
+      "sha256": "bf505127a1e09e82504d4fda461de95ec24aa75e8717dc8afc183d98e3918994"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Server.Shutdown.cs",
+      "sha256": "276d8869c2a9c8e1936dcbc47d02bf9a62c022186addb88ffdcb089551bc5ac6"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/StackSanitizer.cs",
+      "sha256": "5a301f5183f7eb8c94be754d7743e82739aba466e8025059ea42ddc3649f1c35"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Transport.cs",
+      "sha256": "57dbf9a840de579f0da59ab0abfc5171603206bc080c56526553da8ed32a5f1f"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/DynamicQueueChecks.cs",
+      "sha256": "ffb24d2e1ed6b374d01b3c67d32baffdc551b8b631532d8e2529473a9459bb46"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProgressChecks.cs",
+      "sha256": "820daec8c0521eb9ecb00aaaae0e0b4eb681461ca2080c7ad7fa55972d016a5c"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/StackSanitizerChecks.cs",
+      "sha256": "be4e26d5744e939cfd911ae106c0b22d8e81062debe2ab1ca3cd5983226cf428"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/DynamicQueueTests.cs",
+      "sha256": "4d2de12850bc3b71300aa9e49f8a84a2cff17b37bd875e62685939756f94331a"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ProgressTests.cs",
+      "sha256": "28492eef9c3dd1f8c9f5167e098e88bc59f9a669524df8cb72e5d1ddf703dfa8"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/StackSanitizerTests.cs",
+      "sha256": "81d82d13ac70bba40eb8e99d4bc1f7cca14b1a1cb39a8569fb0269f925917793"
+    },
+    {
+      "path": "src/TypeScript.Check/Program.cs",
+      "sha256": "c3f7e077c4b70ee7866cc9a4da16bca4dae24c757d4d25c131f1a5a99ad7c826"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/Protocol/ProtocolMethodInfo.cs",
+      "sha256": "0f92af8639bedd4e9ee28d54e1bb431b98ae37e196b9f610670cd320e896c011"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/LspCommand.Flags.cs",
+      "sha256": "65413e0c102e3dbacff66135d53e667eb108ce0e5a5479f28a430a337aef4c5a"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Lsp/LspCommand.Output.cs",
+      "sha256": "b6dad4b5af9758bdb82d13baa996e59f6303212ea4b494910a82efa03f7ab482"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProgressQuiescence.cs",
+      "sha256": "ea436bf836260ddc8e8e0528af2dd74a9618f930b088b02cc8b17ff4d95597b0"
+    }
+  ],
+  "sourceMapping": {
+    "internal/lsp/server.go": "Lsp/Server.*.cs, Transport.cs and Protocol.ServerDescriptors.cs; 100 contracted workers; nullable valueOrZero expressed at actual owners",
+    "internal/lsp/dynamic_queue.go": "Lsp/DynamicQueue.cs",
+    "internal/lsp/progress.go": "Lsp/Progress.cs",
+    "internal/lsp/logger.go": "Lsp/Logger.cs",
+    "internal/lsp/stack_sanitizer.go": "Lsp/StackSanitizer.cs",
+    "cmd/tsc/lsp.go + sys.go process + isprocessalive_unix.go": "Lsp/LspCommand.cs; TypeScript.Check/Program.cs early public dispatch"
+  },
+  "externalBoundaries": [
+    "initializeAPISession/attachConnection/stop/generateAPIPipePath/removeAPISession/closeAPISessions are external embedding subsystem",
+    "four Go heap/allocation/CPU profiling request handlers and pprofDir tooling excluded",
+    "Linux x64 stdio/native process probe implementation; no Windows/macOS launch claim"
+  ],
+  "adaptations": [
+    "Bounded dedicated read/dispatch/write/group loops preserve startup independent of worker-minimum tuning; actual read is deliberately not joined like Go stdin goroutine.",
+    "Copied immutable accepted IDKey retains complete Go key equality/lifetime; no mutable pointer keys.",
+    "Closed lazily built pointer-root capabilities and value-root options-map descriptors reuse generated workers; no reflection or eager ordinary CLI registry.",
+    "Standard .NET child duplex stream kills/reaps on Dispose, exposes exit status only after wait, bounds inherited stderr wait to source WaitDelay; Linux kill(0) admits EPERM.",
+    "BCL OS paths encode once; process inputs decode raw UTF8 once at real OS boundary. Existing metadata List/raw-string representation uses explicit one-copy boundaries, not new intermediate mapped Slices.",
+    "Dynamic queue Monitor/channel state preserves cancellation and slot clearing; progress owns one pending read across timer wins and one monotonic deadline with bounded CLR long-duration waits.",
+    "Manual TimeProvider original fixture reuses accepted shared LanguageServicesTestClock; optional quiescence callback absent by default.",
+    "Public --lsp --stdio dispatch precedes ordinary CLI parsing and one-shot NoGC policy."
+  ],
+  "originalAssertions": {
+    "functions": 7,
+    "groups": {
+      "queue": 3,
+      "progress": 1,
+      "sanitizer": 3
+    },
+    "progressSubtests": 11,
+    "remainingLspOriginals": "25 functions remain to port after actual Server/API integration; full editor corpus pending"
+  },
+  "verification": "No agent build/run. Source-only syntax/formatter clean. Actual central compilation/review/runtime transport remain pending.",
+  "reviewDeltas75": "Explicit CompletionItem/IntegerOrString aliases; pre-canceled npm refused before Start, cancellation result awaited and retained ExitError stderr; bool stdio equals admission; actual raw error text converts once to display; original progress untimed shutdown gets30s safety only. Integer base0 and full process-state/prefix-suffix metadata fidelity remain queued independent-review concerns, not acceptance claims.",
+  "reviewDeltas76": {
+    "state": "source corrected and syntax checked; central compile and peer narrow review pending",
+    "changes": [
+      "Nullable source pointer annotations preserve actual dereference/unused initialized pointer admission.",
+      "Slice literals own exact arrays; nullable header annotations suppressed only, no mapped copies.",
+      "Pure ErrorCode errors retain bare code spelling; wrapped error constructor unchanged.",
+      "Actual Method, raw ID, UnicodeCase, Slice2 and localized raw string producers reused.",
+      "Giant contentmapper registration initializer expanded preserving field/order structure."
+    ],
+    "requiredRemaining": []
+  },
+  "osBoundary78": {
+    "state": "source-written; independent delta review and actual execution pending",
+    "mapping": [
+      "flag.Int.Set\u2192internal/strconv/atoi.go ParseInt/ParseUint/underscoreOK, actual base0 Linux64 admission only",
+      "os/exec/exec.go:1138\u20131207 prefixSuffixSaver Write/fill/Bytes\u2192LspCommand.Output.cs",
+      "Go int64 process IDs retained through parsed flag, initialization callback and watchdog; only kill syscall narrows to C int."
+    ],
+    "processDiagnosticAdaptation": "Standard .NET Process retains cancellation/failure and stream results. Signal termination diagnostic text and encoded ExitCode use the BCL representation; no inference from137 to signal9. Actual npm\u2192ATA consumers inspect only error presence and stdout logging, not ExitError fields. Actual public contentmapper LoggedProcess suppresses ExitCode as the upstream wrapper does. No raw wait-status parity or cross-platform process claim.",
+    "reviewSource": "Inventory actual consumer assessment; root scoped adaptation approved before78."
+  },
+  "reviewDeltas78": [
+    "Missing original synctest adapter saved: only actual pending read/timer task state, completed tasks not idle, Monitor notification, 30s deadlock guard on untimed quiescence.",
+    "Private bounded stderr producer/error consumer retain Slice header exactly; owned skipped-message buffer boundary remains explicit.",
+    "Native cancellation callback failures return through original Wait error precedence instead of escaping token cancellation; already-exited native ESRCH ignored."
+  ],
+  "progressQuiescenceCorrection81": {
+    "classification": "original synctest scheduling adapter correction; production default unchanged",
+    "cause": "Channel source completion could precede its asynchronously queued AsTask bridge, falsely exposing the old incomplete Task as idle.",
+    "adaptation": "Only an explicitly installed quiescence observer enables standard Channel AllowSynchronousContinuations. Send therefore completes the pending read Task before the fixture observes idle; observer retains Tasks only, never ValueTask after AsTask. Existing timer/cancellation/assertions and 30-second untimed deadlock safety unchanged.",
+    "review": "Inventory narrow source/lifetime review clear; candidate execution pending."
+  }
+}

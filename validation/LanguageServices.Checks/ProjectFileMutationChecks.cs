@@ -1,12 +1,13 @@
 // Authored public-behavior controls for required editor text/VFS owners.
 // No original upstream test-function claim (core/textchange has no direct tests).
+using System.Runtime.InteropServices;
 using TypeScript.Scanner;
 using TypeScript.Vfs;
 
 namespace LanguageServices.Checks;
 public static class ProjectFileMutationChecks
 {
-    public static readonly string[] Names = ["OrderedByteEdits", "AppendRemoveAndTimestamp"];
+    public static readonly string[] Names = ["OrderedByteEdits", "AppendRemoveAndTimestamp", "RawNativeDescendantRemoval", "ZeroTimestampOmission"];
     public static int RunAll()
     {
         foreach (var name in Names)
@@ -35,6 +36,12 @@ public static class ProjectFileMutationChecks
             changed.Reload(ByteStringValue.FromString("new\nsecond\nthird"));
             if (cached.LSPLineMap().LineStarts.Length != 2 || cached.ECMALineInfo().LineCount() != 2 || changed.LSPLineMap().LineStarts.Length != 3 || changed.ECMALineInfo().LineCount() != 3 || !ReferenceEquals(cached.LSPLineMap(), oldLsp) || !ReferenceEquals(cached.ECMALineInfo(), oldEcma))
                 throw new InvalidOperationException("Reload reused stale line information or changed the old snapshot");
+            return;
+        }
+
+        if (name == Names[2] || name == Names[3])
+        {
+            RunLinuxMutation(name);
             return;
         }
 
@@ -70,6 +77,63 @@ public static class ProjectFileMutationChecks
         finally
         {
             Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    // Authored Linux x64 public mutation witnesses; no original-function credit.
+    // Byte-array P/Invoke creates a real malformed-UTF8 descendant without passing
+    // through the CLR Unicode filesystem API that cannot represent that filename.
+    [DllImport("libc", EntryPoint = "open", SetLastError = true)]
+    private static extern int OpenRaw([In] byte[] path, int flags, uint mode);
+    [DllImport("libc", EntryPoint = "close", SetLastError = true)]
+    private static extern int CloseRaw(int descriptor);
+    private static void RunLinuxMutation(string name)
+    {
+        if (!OperatingSystem.IsLinux() || IntPtr.Size != 8)
+            throw new PlatformNotSupportedException("Linux64 mutation control");
+        string directory = Path.Combine(Path.GetTempPath(), "ls-native-mutations-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        var fs = TypeScript.Vfs.OsVfs.OsVfs.FS();
+        try
+        {
+            if (name == Names[2])
+            {
+                string nested = Path.Combine(directory, "nested");
+                Directory.CreateDirectory(nested);
+                byte[] prefix = System.Text.Encoding.UTF8.GetBytes(nested + "/");
+                var raw = new byte[prefix.Length + 3];
+                prefix.CopyTo(raw, 0);
+                raw[prefix.Length] = 0xFF;
+                raw[prefix.Length + 1] = (byte)'x';
+                int descriptor = OpenRaw(raw, 1 | 64 | 0x80000 /* WRONLY|CREAT|CLOEXEC */, 0x180 /* 0600 */);
+                if (descriptor < 0)
+                    throw new IOException("Raw descendant creation errno " + Marshal.GetLastPInvokeError());
+                if (CloseRaw(descriptor) != 0)
+                    throw new IOException("Raw descendant close errno " + Marshal.GetLastPInvokeError());
+                Error(FileSystemMutations.Remove(fs, RootedDirectoryPath.FromUnicode(directory).AsPath()));
+                if (Directory.Exists(directory))
+                    throw new InvalidOperationException("Remove retained a directory containing a raw-byte descendant");
+                return;
+            }
+
+            string path = Path.Combine(directory, "times.ts");
+            File.WriteAllText(path, "timestamp witness");
+            var file = RootedFilePath.FromUnicode(path).AsPath();
+            var access = DateTimeOffset.FromUnixTimeSeconds(1700000000);
+            var modification = DateTimeOffset.FromUnixTimeSeconds(1700000010);
+            Error(FileSystemMutations.Chtimes(fs, file, access, modification));
+            DateTime originalAccess = File.GetLastAccessTimeUtc(path);
+            Error(FileSystemMutations.Chtimes(fs, file, default, modification.AddSeconds(20)));
+            if (File.GetLastAccessTimeUtc(path) != originalAccess || File.GetLastWriteTimeUtc(path) != modification.AddSeconds(20).UtcDateTime)
+                throw new InvalidOperationException("Zero access timestamp did not preserve the prior value");
+            DateTime originalModification = File.GetLastWriteTimeUtc(path);
+            Error(FileSystemMutations.Chtimes(fs, file, access.AddSeconds(30), default));
+            if (File.GetLastAccessTimeUtc(path) != access.AddSeconds(30).UtcDateTime || File.GetLastWriteTimeUtc(path) != originalModification)
+                throw new InvalidOperationException("Zero modification timestamp did not preserve the prior value");
+        }
+        finally
+        {
+            Error(FileSystemMutations.Remove(fs, RootedDirectoryPath.FromUnicode(directory).AsPath()));
         }
     }
 

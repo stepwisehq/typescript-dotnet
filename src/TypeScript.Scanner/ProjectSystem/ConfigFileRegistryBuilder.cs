@@ -197,7 +197,7 @@ internal sealed class ConfigFileRegistryBuilder : IExtendedConfigCache
         var configDirectory = name.Directory();
         var workspace = sessionOptions.CurrentDirectory;
         var sensitivity = fs.CaseSensitivity();
-        if (entry.CommandLine!.WildcardDirectories()is { } wildcards)
+        if (entry.CommandLine?.WildcardDirectories()is { } wildcards)
             foreach (var directory in wildcards.Keys)
             {
                 if (sensitivity.ContainsPath(workspace, directory.AsPath()))
@@ -208,7 +208,7 @@ internal sealed class ConfigFileRegistryBuilder : IExtendedConfigCache
                     external = external.Append(directory);
             }
 
-        if (entry.CommandLine.LiteralFileNames()is { } literals)
+        if (entry.CommandLine?.LiteralFileNames()is { } literals)
             foreach (var file in literals)
             {
                 if (sensitivity.ContainsFilePath(workspace, file))
@@ -223,7 +223,7 @@ internal sealed class ConfigFileRegistryBuilder : IExtendedConfigCache
             globs = globs.Append(ProjectWatches.GetRecursiveGlobPattern(workspace));
         if (includeConfig)
             globs = globs.Append(ProjectWatches.GetRecursiveGlobPattern(configDirectory));
-        if (entry.CommandLine.ExtendedSourceFiles()is { } extended)
+        if (entry.CommandLine?.ExtendedSourceFiles()is { } extended)
             foreach (var file in extended)
             {
                 if (includeWorkspace && sensitivity.ContainsFilePath(workspace, file))

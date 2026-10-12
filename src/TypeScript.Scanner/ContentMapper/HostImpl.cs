@@ -744,11 +744,28 @@ internal static class ProcessHosts
             if (options.Logger is not null)
                 protocol = new LoggingProtocol(protocol, ByteStringValue.FromString(diagnosticName), options.Logger);
             var connection = AsyncConn.NewAsyncConnWithProtocol(process, protocol, new RejectHandler());
-            ThreadPool.UnsafeQueueUserWorkItem(static state =>
+            // hostimpl.go's retained goroutine blocks in the process reader.
+            // A dedicated background thread prevents that lifetime from occupying
+            // a pooled worker needed by parsing or transient IPC handlers.
+            var reader = new Thread(static value =>
             {
+                var state = ((AsyncConn Connection, CloseOnceProcess Process, CancellationToken Token))value!;
                 _ = state.Connection.Run(state.Token);
                 _ = state.Process.CloseProcess();
-            }, (Connection: connection, Process: process, Token: token), preferLocal: false);
+            })
+            {
+                IsBackground = true
+            };
+            var readerState = (Connection: connection, Process: process, Token: token);
+            // Preserve the old UnsafeQueueUserWorkItem's explicit-context contract.
+            if (ExecutionContext.IsFlowSuppressed())
+                reader.Start(readerState);
+            else
+            {
+                using var flow = ExecutionContext.SuppressFlow();
+                reader.Start(readerState);
+            }
+
             using var initialize = CancellationTokenSource.CreateLinkedTokenSource(token);
             initialize.CancelAfter(TimeSpan.FromSeconds(5));
             long initializeStart = collector.StartRequest();

@@ -1,0 +1,16 @@
+{
+  "status": "Source correction independently reviewed CLEAR; integrated original editor/runtime execution pending",
+  "trigger": "TestDocCommentTemplateEmptyFile: Unhandled Node.Text kind SourceFile",
+  "sourceDistinction": "Go Node.Text is token-kind accessor; SourceFile.Text shadows it with full source text. Existing C# SourceFile.Text shadow now has corresponding borrowed TextValue shadow.",
+  "upstream": "upstream/TypeScript/tsc/internal/ast/ast.go:2540",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/Ast/Ast.cs",
+      "sha256": "05bf6fc034fc9df25da982b4f3546a8992e833fa32033b35e0b8d8e1ae9f832e"
+    }
+  ],
+  "consumerAudit": "Two statically typed SourceFile Format comment-end length consumers bind full source value. JSDoc, completion line and source scanning paths already borrow TextView. Remaining LanguageServices token/name TextValue consumers use actual identifier/literal/JSDoc/writer owners; Node-typed dispatch unchanged.",
+  "ownership": "FromView retains immutable source header; no copy, encoding or decoding.",
+  "reviewer": "emit_print_maps",
+  "verification": "No agent build/runtime; root integrated gate pending."
+}

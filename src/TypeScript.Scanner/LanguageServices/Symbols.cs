@@ -635,7 +635,7 @@ internal sealed partial class LanguageService
             var node = info.Declaration;
             var file = Ast.GetSourceFileOfNode(node);
             var container = getContainerNode(node);
-            ByteStringValue? containerName = container is null ? null : Ast.GetDeclarationNameValue(container);
+            ByteStringValue? containerName = container is null ? null : strPtrTo(Ast.GetDeclarationNameValue(container));
             var nameNode = Ast.GetNameOfDeclaration(node)!;
             int start = TypeScript.AstNavigation.AstNav.GetStartOfNode(nameNode, file, false);
             var(location, fidelity) = converters.ToLSPLocationForFeature(file, new TextRange(start, nameNode.End()), Feature.DocumentSymbols);

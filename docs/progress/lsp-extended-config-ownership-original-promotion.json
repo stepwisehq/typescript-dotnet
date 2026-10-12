@@ -1,0 +1,29 @@
+{
+  "status": "Promoted complete whole original function; independent source review CLEAR, central compile/runtime pending",
+  "upstream": "upstream/TypeScript/tsc/internal/project/extendedconfigcache_test.go",
+  "upstreamSha256": "07e35fb7024773d067f96603484363b600d932af02bd0603975330685cc27d08",
+  "originalFunctions": [
+    "TestExtendedConfigCacheOwnership"
+  ],
+  "files": [
+    {
+      "path": "tests/LanguageServices.Tests/ProjectExtendedConfigOwnershipTests.cs",
+      "sha256": "7f3e8feeb83f3e61748a7b93623fd591519333d2fa19371843ffe307fc499e79"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectExtendedConfigOwnershipChecks.Inputs.cs",
+      "sha256": "b03c203c7b5bde54f1a6d755d7ca25b8c2ee0e78f608d3bf0a0f8b07089ba15c"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectExtendedConfigOwnershipChecks.cs",
+      "sha256": "81ef558a06e5d76adb0224cb6e64af64c76effc8592f969d30c648f9e1ad67fe"
+    }
+  ],
+  "adaptations": [
+    "Actual original noop client and Session setup (nil npm, watch/logging disabled); existing faithful test filesystem.",
+    "Direct original same-package cache entries/owners observations through existing friend assembly; no new production accessors.",
+    "Exact four input maps with 5/2/3/7 entries; raw source whitespace retained.",
+    "Four sibling action groups continue after assertion failure; original t.Parallel hints serialized."
+  ],
+  "verification": "No compile or runtime credit; root owns workloads."
+}

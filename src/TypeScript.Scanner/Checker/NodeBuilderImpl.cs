@@ -3163,7 +3163,7 @@ internal sealed partial class NodeBuilderImpl
         return typeToTypeNode(t);
     }
 
-    // nodebuilderimpl.go:240. No public selected API enables expansion depth.
+    // nodebuilderimpl.go:240. Hover probes accumulate outputs even when reused syntax does not expand.
     private void checkTypeExpandability(Type t)
     {
         if (ctx.maxExpansionDepth < 0 || t is null || ctx.canIncreaseExpansionDepth)
@@ -3220,8 +3220,7 @@ internal sealed partial class NodeBuilderImpl
 
 internal sealed partial class NodeBuilderImpl
 {
-    // nodebuilderimpl.go:213. Configured hover expansion is not exposed by the
-    // default diagnostic APIs; retain the actual disabled early-return arm.
+    // nodebuilderimpl.go:213. Ordinary diagnostics disable expansion; configured hover retains depth/cycle admission.
     private bool shouldExpandType(Type t, bool isAlias)
     {
         if (ctx.maxExpansionDepth < 0 || !isExpandableType(t, isAlias) || isTypeOnStack(t))

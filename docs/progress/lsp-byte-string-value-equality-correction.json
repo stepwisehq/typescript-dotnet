@@ -1,0 +1,35 @@
+{
+  "status": "source-correction-independently-reviewed-candidate-execution-pending",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "files": [
+    {
+      "path": "src/TypeScript.Scanner/Runtime/ByteStringValue.cs",
+      "sha256": "462945eccf1cf747fcfefa6c6d4ec605ee0ab4017d7416176ae7d9c34061f37d"
+    },
+    {
+      "path": "src/TypeScript.Scanner/Runtime/ByteStringKey.cs",
+      "sha256": "e81b05f0f79fc3ef2044138f4dd8293840b9d93d2d4eb591bf84664f1c1bb19b"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/GoByteStringSliceChecks.cs",
+      "sha256": "c16ae4b4cd0c776d1f9a67b4f1321282b9e9e8b866f714481372cfe6564c23ef"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/GoByteStringSliceTests.cs",
+      "sha256": "0a9ea2d56f68a2b274431fde063d73099b77b964db30d53a42ecb236418fdccd"
+    }
+  ],
+  "cause": "Inherited ValueType equality compared ByteStringValue managed backing/offset headers. GoSlices generic Contains on newly computed equal .css extensions returned false, omitting companion file rename.",
+  "adaptation": "IEquatable and object Equals forward existing exact EqualsValue semantics; GetHashCode reuses existing ByteStringKey.ContentHash, with null sentinel hash0. No storage/copy/encoding change. Generic comparisons and nested value owners now observe Go string values instead of headers.",
+  "consumerScan": "No legitimate physical-header equality consumer or ByteStringValue map/set key role found; physical node/source identity stays ReferenceEquals and map key freezing remains ByteStringKey. Localized GoSlices overload removed, generic owner semantics cover all callers.",
+  "primaryOriginals": [
+    "TestGetEditsForFileRename_cssImport2",
+    "TestGetEditsForFileRename_cssImport3",
+    "TestGetEditsForFileRename_cssImport4"
+  ],
+  "authoredControls": 1,
+  "originalFunctions": 0,
+  "dispatch": "GoByteStringSliceChecks.RunAll()",
+  "verification": "Immutable84 failures retained; corrected source not built/run.",
+  "independentReview": "artifacts/language-services/source-review/byte-string-value-equality.json: emit_print_maps clear whole owner equality/hash and four-path control packet, existing exact byte/ordinal/null semantics retained."
+}

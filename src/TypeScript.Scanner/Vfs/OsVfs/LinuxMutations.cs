@@ -32,6 +32,13 @@ internal static partial class LinuxWritePaths
 
     private static Timespec Timestamp(DateTimeOffset value)
     {
+        // os/file_posix.go:193: zero time leaves this timestamp unchanged.
+        if (value == default)
+            return new()
+            {
+                Seconds = 0,
+                Nanoseconds = 1073741822 /* UTIME_OMIT */
+            };
         long seconds = value.ToUnixTimeSeconds();
         long ticks = value.UtcTicks - DateTimeOffset.FromUnixTimeSeconds(seconds).UtcTicks;
         return new()
@@ -41,12 +48,12 @@ internal static partial class LinuxWritePaths
         };
     }
 
-    [LibraryImport("libc", EntryPoint = "unlinkat", StringMarshalling = StringMarshalling.Utf8, SetLastError = true)]
-    private static partial int UnlinkAt(int directory, string name, int flags);
-    [LibraryImport("libc", EntryPoint = "openat", StringMarshalling = StringMarshalling.Utf8, SetLastError = true)]
-    private static partial int OpenAt(int directory, string name, int flags);
-    [LibraryImport("libc", EntryPoint = "readlinkat", StringMarshalling = StringMarshalling.Utf8, SetLastError = true)]
-    private static unsafe partial nint ReadLinkAt(int directory, string name, byte* buffer, nuint size);
+    [LibraryImport("libc", EntryPoint = "unlinkat", SetLastError = true)]
+    private static unsafe partial int UnlinkAt(int directory, byte* name, int flags);
+    [LibraryImport("libc", EntryPoint = "openat", SetLastError = true)]
+    private static unsafe partial int OpenAt(int directory, byte* name, int flags);
+    [LibraryImport("libc", EntryPoint = "readlinkat", SetLastError = true)]
+    private static unsafe partial nint ReadLinkAt(int directory, byte* name, byte* buffer, nuint size);
     [LibraryImport("libc", EntryPoint = "fdopendir", SetLastError = true)]
     private static partial nint FdOpenDir(int descriptor);
     [LibraryImport("libc", EntryPoint = "readdir", SetLastError = true)]
@@ -55,6 +62,11 @@ internal static partial class LinuxWritePaths
     private static partial int CloseDir(nint directory);
     private readonly record struct RemovalError(string Operation, string Path, int Error)
     {
+        internal RemovalError(string operation, byte[] path, int error) : this(operation, DisplayName(path), error)
+        {
+        }
+
+        internal RemovalError Prefix(byte[] parent) => Prefix(DisplayName(parent));
         internal RemovalError Prefix(string parent) => this with
         {
             Path = parent + "/" + Path
@@ -90,7 +102,7 @@ internal static partial class LinuxWritePaths
 
         try
         {
-            return RemoveAllFrom(descriptor, basename)?.Prefix(parent).Exception();
+            return RemoveAllFrom(descriptor, NativeName(basename))?.Prefix(parent).Exception();
         }
         finally
         {
@@ -140,12 +152,24 @@ internal static partial class LinuxWritePaths
         return (".", path);
     }
 
-    private static int RemoveAt(int descriptor, string name, bool directory)
+    // Only the existing public Unicode path boundary encodes. Native descendant
+    // names remain arbitrary Unix bytes; decoding is reserved for CLR error display.
+    private static byte[] NativeName(string name)
+    {
+        int length = System.Text.Encoding.UTF8.GetByteCount(name);
+        var bytes = new byte[length + 1];
+        System.Text.Encoding.UTF8.GetBytes(name.AsSpan(), bytes.AsSpan(0, length));
+        return bytes;
+    }
+
+    private static string DisplayName(byte[] name) => System.Text.Encoding.UTF8.GetString(name.AsSpan(0, name.Length - 1));
+    private static unsafe int RemoveAt(int descriptor, byte[] name, bool directory)
     {
         int result;
         do
         {
-            result = UnlinkAt(descriptor, name, directory ? 0x200 : 0);
+            fixed (byte* nativeName = name)
+                result = UnlinkAt(descriptor, nativeName, directory ? 0x200 : 0);
         }
         while (result < 0 && Marshal.GetLastPInvokeError() == 4);
         return result == 0 ? 0 : Marshal.GetLastPInvokeError();
@@ -153,7 +177,7 @@ internal static partial class LinuxWritePaths
 
     // removeall_at.go:71. Bounded reads/reopen prevent deletion reshuffling from
     // skipping children; first recursion error survives only if final removal fails.
-    private static unsafe RemovalError? RemoveAllFrom(int parent, string basename)
+    private static unsafe RemovalError? RemoveAllFrom(int parent, byte[] basename)
     {
         int unlinkError = RemoveAt(parent, basename, false);
         if (unlinkError is 0 or 2)
@@ -166,7 +190,8 @@ internal static partial class LinuxWritePaths
             int descriptor;
             do
             {
-                descriptor = OpenAt(parent, basename, 0x80000 | 0x10000 | 0x20000 /* CLOEXEC|DIRECTORY|NOFOLLOW */);
+                fixed (byte* nativeName = basename)
+                    descriptor = OpenAt(parent, nativeName, 0x80000 | 0x10000 | 0x20000 /* CLOEXEC|DIRECTORY|NOFOLLOW */);
             }
             while (descriptor < 0 && Marshal.GetLastPInvokeError() == 4);
             if (descriptor < 0)
@@ -198,7 +223,7 @@ internal static partial class LinuxWritePaths
             {
                 for (;;)
                 {
-                    var names = Slice<string>.Make(0, 1024);
+                    var names = Slice<byte[]>.Make(0, 1024);
                     while (names.Length < 1024)
                     {
                         Marshal.SetLastSystemError(0);
@@ -216,10 +241,12 @@ internal static partial class LinuxWritePaths
                         int length = 0;
                         while (nameBytes[length] != 0)
                             length++;
-                        var value = TypeScript.Scanner.ByteStringValue.FromView(TypeScript.Scanner.ByteStringView.FromOwnedBytes(new ReadOnlySpan<byte>(nameBytes, length).ToArray()));
-                        string name = TypeScript.Scanner.PathByteText.ToUnicode(value);
-                        if (name is "." or "..")
+                        if (length == 1 && nameBytes[0] == (byte)'.' || length == 2 && nameBytes[0] == (byte)'.' && nameBytes[1] == (byte)'.')
                             continue;
+                        // dir_unix.go: the name outlives readdir's native buffer. Copy raw
+                        // bytes once, retaining a terminator for descriptor-relative calls.
+                        var name = new byte[length + 1];
+                        new ReadOnlySpan<byte>(nameBytes, length).CopyTo(name);
                         names = names.Append(name);
                     }
 
@@ -251,17 +278,18 @@ internal static partial class LinuxWritePaths
 
     // os/root_unix.go:277 checkSymlink / :285 readlinkat. Only success is consumed here;
     // retain the complete growth/EINTR rules before projecting the errSymlink marker.
-    private static unsafe bool IsSymlinkAt(int parent, string name)
+    private static unsafe bool IsSymlinkAt(int parent, byte[] name)
     {
         for (int length = 128;; length = checked(length * 2))
         {
             var bytes = new byte[length];
             nint count;
             fixed (byte* buffer = bytes)
+            fixed (byte* nativeName = name)
             {
                 do
                 {
-                    count = ReadLinkAt(parent, name, buffer, (nuint)bytes.Length);
+                    count = ReadLinkAt(parent, nativeName, buffer, (nuint)bytes.Length);
                 }
                 while (count < 0 && Marshal.GetLastPInvokeError() == 4);
             }

@@ -1,0 +1,2923 @@
+{
+  "upstreamRevision": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "platform": "Linux x64",
+  "status": "accepted-linux-x64-language-services-lsp-contract-delivery-commit-pending",
+  "priorAcceptedEvidence": "validation/results/language-services-dependencies-74.json",
+  "managed": {
+    "counters": {
+      "total": "509",
+      "executed": "508",
+      "passed": "508",
+      "failed": "0",
+      "error": "0",
+      "timeout": "0",
+      "aborted": "0",
+      "inconclusive": "0",
+      "passedButRunAborted": "0",
+      "notRunnable": "0",
+      "notExecuted": "0",
+      "disconnected": "0",
+      "warning": "0",
+      "completed": "0",
+      "inProgress": "0",
+      "pending": "0"
+    },
+    "trx": "artifacts/language-services/integration-7/managed-98.trx",
+    "originalOptionalSkip": "Replay requires its optional original fixture; not an assertion pass.",
+    "total": 509,
+    "passed": 508,
+    "originalOptionalSkipped": 1,
+    "failed": 0
+  },
+  "retainedParser": {
+    "counters": {
+      "total": "18799",
+      "executed": "18799",
+      "passed": "18799",
+      "failed": "0",
+      "error": "0",
+      "timeout": "0",
+      "aborted": "0",
+      "inconclusive": "0",
+      "passedButRunAborted": "0",
+      "notRunnable": "0",
+      "notExecuted": "0",
+      "disconnected": "0",
+      "warning": "0",
+      "completed": "0",
+      "inProgress": "0",
+      "pending": "0"
+    },
+    "trx": "artifacts/language-services/final-parser98/parser-full.trx",
+    "log": "artifacts/language-services/integration-7/parser-full-98.log",
+    "total": 18799,
+    "passed": 18799,
+    "skipped": 0,
+    "failed": 0
+  },
+  "native": {
+    "executable": "artifacts/language-services/integration-7/native-98/LanguageServices.Validation",
+    "binarySha256": "d16733b63b9fbb857ee75174fa654fb3fdae94db15fd743bab4e27e95ec16cbd",
+    "originalFunctions": 406,
+    "adaptedOriginalFunctions": 1,
+    "authoredControls": 80,
+    "actualIlcInputCount": 179,
+    "gates": "artifacts/language-services/integration-7/native-gates-98.json",
+    "sourceSnapshot": "artifacts/language-services/integration-7/source-98.json",
+    "actualIlcInputs": "artifacts/language-services/integration-7/native-inputs-98.json",
+    "qualification": "External dependency assertion groups/rows and partial channels remain separately reported by the raw runner; they do not inflate original TypeScript function counts."
+  },
+  "originalInventory": {
+    "totalTestFunctions": 5006,
+    "testMainLifecycleEntries": 6,
+    "dispositions": {
+      "managed-and-native-assertions-passed": 406,
+      "original-optional-fixture-skipped": 1,
+      "native-original-editor-assertions-passed": 4152,
+      "original-editor-source-skipped": 415,
+      "known-pinned-reference-original-assertion-failed": 4,
+      "external-go-source-generator-not-runtime-closure": 1,
+      "excluded-platform-backend-outside-linux-contract": 26,
+      "adapted-original-managed-and-native-passed": 1
+    },
+    "direct": {
+      "originalFunctions": 406,
+      "managedEvidence": "artifacts/language-services/integration-7/managed-98.trx",
+      "nativeEvidence": "artifacts/language-services/integration-7/native-run-98.log",
+      "sourceSnapshot": "artifacts/language-services/integration-7/source-98.json",
+      "nativeInputs": "artifacts/language-services/integration-7/native-inputs-98.json",
+      "nativeGates": "artifacts/language-services/integration-7/native-gates-98.json",
+      "nativeOriginalInnerSkips": "Native log retains original TestATA Todo subtest skip. Watcher retry messages retain original retry wrapper and recorded retry outcomes; neither adds whole-function identities.",
+      "qualification": "xUnit cases, authored controls, external dependency functions/channels, table rows and six TestMain package lifecycle entries remain separate from5006 original TypeScript Test identities."
+    },
+    "editor": {
+      "originalFunctions": 4571,
+      "passed": 4152,
+      "originalSourceSkipped": 415,
+      "knownPinnedOriginalFailures": 4,
+      "raw": "artifacts/language-services/integration-7/native-corpus-98.jsonl",
+      "dispositions": "artifacts/language-services/integration-7/native-corpus-98-dispositions.json",
+      "observedMissingGoldenOutputs": "artifacts/language-services/integration-7/js-native-98-baselines/comparison.json",
+      "qualification": "All original assertions/baselines remain unchanged. Four original assertion failures stay explicit; three exact full-output differential observations are separate. Thirteen JS source files admitted with neutral filenames to undo Linux GOOS filename filtering without changing original bodies."
+    }
+  },
+  "completedIndependentReviews": [
+    "artifacts/language-services/source-review/native-direct-98-evidence.json",
+    "artifacts/language-services/source-review/native-corpus-98-evidence.json",
+    "artifacts/language-services/source-review/public-stdio-final-evidence.json",
+    "artifacts/language-services/source-review/public-lifecycle-final-evidence.json"
+  ],
+  "pendingFinalGates": {
+    "deliveryCommit": "accepted contract; reviewed delivery commit and clean-tree confirmation pending"
+  },
+  "limitations": [
+    "Four pinned original editor assertion failures remain failures: importType_js fails the same two-diagnostic precondition; three missing-golden cases retain original assertion failures despite exact full observed Go/Native output comparisons. No expected baselines changed.",
+    "415 original editor skips and one optional Replay skip are preserved, not pass credit. Thirteen JS files use neutral filename admission solely to undo Linux GOOS suffix filtering.",
+    "Actual ATA inner TODO skip and inherited watcher retry messages remain in raw logs; neither changes whole-function totals.",
+    "CLR dedicated-thread parser stack adaptation preserves selected original depth assertions; no universal unlimited-stack or arbitrary-depth promise.",
+    "Linux x64 contract excludes 26 platform-backend test identities and one external Go generator identity. Embedding/profile/non-Linux process interfaces remain outside recorded source contract.",
+    "No external-project, universal performance threshold, leak-freedom, editor UI, or invented allocation-cost claim. Authored controls and xUnit cases are distinct from original functions.",
+    "Failed earlier managed96/97 and Native94 mapper evidence remains retained; current success does not erase prior outcomes. Native96/97 were not published."
+  ],
+  "evidenceBindings": [
+    {
+      "path": "docs/language-services-upstream-tests.json",
+      "sha256": "7e16a045b61a9ca8f3bd2645c34fcc98e6f3ebde249ead42687eb6467e25ab44"
+    },
+    {
+      "path": "source-map.json",
+      "sha256": "ae31b291d5c62720d94e1e3bcf6a186405c0df524f814a10e0caddd35ad01b37"
+    },
+    {
+      "path": "artifacts/language-services/integration-7/source-98.json",
+      "sha256": "a41979fc671848d0bd99c84fc39ae4ff75885532388d401b7a611ea7b031b845"
+    },
+    {
+      "path": "artifacts/language-services/integration-7/managed-inputs-98.json",
+      "sha256": "601c425e57f4b348d915f1875c6c402df4a7e170e2bbe5df808eb7fe2487e83c"
+    },
+    {
+      "path": "artifacts/language-services/integration-7/managed-98.trx",
+      "sha256": "0c5c74e4de0f2404235d2f5a0fc4125fbdb919210e12781ee91a8248cd46e751"
+    },
+    {
+      "path": "artifacts/language-services/integration-7/native-inputs-98.json",
+      "sha256": "215ce1c1b96711dd734791fcf846b9fdcb350e4b9f1b2a824ec63fcc4fe943b4"
+    },
+    {
+      "path": "artifacts/language-services/integration-7/native-98.ilc.rsp",
+      "sha256": "f7fd17bbe4667b334d92f4a41adcad3a4f39fef0ec9d91c026c76131cfb567c0"
+    },
+    {
+      "path": "artifacts/language-services/integration-7/native-gates-98.json",
+      "sha256": "f43d730495b8290262ebd62cdb239d20f5703cbcf27447237b038a5e808e1971"
+    },
+    {
+      "path": "artifacts/language-services/integration-7/native-run-98.log",
+      "sha256": "18ffe6a51e9a5abff6bb8080e0e278e7741e15591133891740cd77cf5f6e71a1"
+    },
+    {
+      "path": "artifacts/language-services/integration-7/native-corpus-98-dispositions.json",
+      "sha256": "477729ac5f22735f91a6d40889347b5a0ebe3e846cd78e1988edb7e95aa2bbdf"
+    },
+    {
+      "path": "artifacts/language-services/integration-7/js-native-98-baselines/comparison.json",
+      "sha256": "34cea7eba2e25e59000cc1f2a560e0aa9b259b9de0cbbc982797a482b2fa3634"
+    },
+    {
+      "path": "artifacts/language-services/final-parser98/parser-full.trx",
+      "sha256": "dd55078d051b4f5826970c87d8cf0bc2ec9a22ad23d5b9585c879af9d5f0b984"
+    },
+    {
+      "path": "artifacts/language-services/integration-7/parser-full-98.log",
+      "sha256": "1ebb6f2695312979d9239b322b0a7f6a1bb166c34c670d5ecf70aa86efebd315"
+    },
+    {
+      "path": "artifacts/language-services/source-review/native-direct-98-evidence.json",
+      "sha256": "52d616a750cdcef4b186066f1038e1c180c60cf40049f2123535feb90d735785"
+    },
+    {
+      "path": "artifacts/language-services/source-review/native-corpus-98-evidence.json",
+      "sha256": "3c2970176ca717878721dda5279d5f611fcc6bff3b1a6da5eaf8247bf7940a63"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/managed-complete.json",
+      "sha256": "e44c480165dff016141f5a8968ca1724e60a4bfd9f3d855e57f9f6eff33fecef"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/test-binding-transition/transition.json",
+      "sha256": "0824a5f446bcc675d92a8d4dd725975b41e6c8f5bdb0f1942fe6199de33cfbf3"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/managed/attempt-2-test-binding/managed-counts.json",
+      "sha256": "f775ab8b54f568ab6fba83fc8fb2103b29fd4e1740c3ff47812999698eca62b0"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/managed/attempt-1/trx/emit.trx",
+      "sha256": "651bd1f0b7a68f9034a94e0276d672012d275fae1fc22526dcbd5cffa89d0431"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/managed/attempt-2-test-binding/Checker.Tests/trx/results.trx",
+      "sha256": "1bfac98f30793505e18458bdcc7be5dbd4ffa4c8a330085ea066a85ed81a4585"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/managed/attempt-2-test-binding/TypeSystem.Tests/trx/results.trx",
+      "sha256": "b8bfb2b35bc901cbbb73ed7229a236a3a079b3744702418e9224abba0895f599"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/managed/attempt-2-test-binding/Parser.Tests/trx/results.trx",
+      "sha256": "410368379232eec0a38f3ddc736ab3e1af7b3405d7a86665cd804d17f91f6ffd"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/managed/attempt-2-test-binding/Checker.NoEmit.Tests/trx/results.trx",
+      "sha256": "c138ad18db69efe45a8bc94f541425f993bb987ef61557b57639300f01c72698"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/managed/attempt-2-test-binding/Program.Tests/trx/results.trx",
+      "sha256": "193529661e74129b7e9d691e889a8664818a03ae30cf10c23552ca43dd3d74d9"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/publish-complete.json",
+      "sha256": "5cd58509d05036239786f72bc428601554c69924357f5e0ef932b1070b09106a"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native-complete.json",
+      "sha256": "35050e648b59b1c00b3dd0a2c788a7550155bde3e5bf6d43481b7b8f2fe7b072"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native-counter-transition/transition.json",
+      "sha256": "bedd9a2945e2422286b79a42cb141138f2f7987f2f8dba85e800730c8170a01c"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/Checker.NoEmit.Validation/actual-ilc-input.json",
+      "sha256": "9fca3de948273e1d4b71b6e2addcb2e538861ab5c84ef90e780a6c75eacf58d8"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/Checker.Validation/actual-ilc-input.json",
+      "sha256": "fcbc9f01adc54c6a75d08b75d61da131eb42713700798e4c0de4033b5ebeb9c9"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/Emit.Validation/actual-ilc-input.json",
+      "sha256": "c631d183a45641d6974df6dc24a65b15681e0faac98908a5f7ddac17c72ee741"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/Foundation.Validation/actual-ilc-input.json",
+      "sha256": "76ef2b71bd7524750c2e23f80508795c57c8ae3e64e8abd081334ab26a29b9be"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/Program.Validation/actual-ilc-input.json",
+      "sha256": "0262f89c4884f85440ec61ff9b3390cb9b6d67ac677cbeda809afd7c3f0aed80"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/TypeScript.Check/actual-ilc-input.json",
+      "sha256": "ff9070fece0bdd3f8acd967ddffe16874c24f402fb88cc524bdf0fa4c8c35c6f"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/Emit.Validation/result.json",
+      "sha256": "e4c106492f6ebc88618c7c4480ec9f1da1ea2ee57adbf8b5c56bab8f8d3f5325"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-ast-text-values/result.json",
+      "sha256": "216765a67c585aa76eb31d757a99817278600ed075dd84da971da44bc43af7b6"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-byte-comparisons/result.json",
+      "sha256": "e1a5a12be3efce7ab14b0e90e97740fba30af55e2f9bcdf371173111e3d22152"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-byte-source/result.json",
+      "sha256": "695f78118dd9545a338ed3374e716ddc1420773f52f75ba4ba3cadf281ebfefc"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-cache-key-hashes/result.json",
+      "sha256": "b432e7abc0215fb82be03020c3ac2d0d06a4ab40b6570bebc53beb48c39dae2e"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-jsdoc-fragments/result.json",
+      "sha256": "e3e7f8eabf1760f0ff0257bf5e000e553f49b2e380293296f58187888cc25053"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-list-appends/result.json",
+      "sha256": "873ef6a72ba292067541efa83d109551bf99c16145d5d31d4334e6cd827abca3"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-list-ranges/result.json",
+      "sha256": "77bb13ac28ee2784d08ae5514c136e6c13813cb39638519757d4036a62dbe1bc"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-list-value-ranges/result.json",
+      "sha256": "e0bddc6bc7e4977b3748c4913bff7f9529cd82a6552515bc1f25e3f59ff40058"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-original/result.json",
+      "sha256": "a359cebe44714c0764fdcf47b67380425e6d44d0832f9346b0ed2b6cb8b5729d"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-parser-list-scratch/result.json",
+      "sha256": "58e9f18784b47d6a8455571ad4a46e81cd8d22766e7850b3003f091a785a2c24"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-parser-pool/result.json",
+      "sha256": "6e3f84d68c0885528c6f1d922932c0bc7828efdb9534e60509eee4d19cfd5df3"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-text-view/result.json",
+      "sha256": "be24b99d0e19a5042bba728ddea569b7a401725e5113116f49bb5f87c0f701d0"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-token-projections/result.json",
+      "sha256": "e28acaf93b2b85e2e2c43c2fc4caa599d423cded3dddff48640d47a73b73ac6a"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-program-checker-pool-checks/result.json",
+      "sha256": "f209da5aec3f1d6dbb5e86f29b8a8cc364d3f218047bb40a5efa13cd65b44090"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-program-construction-boundary-checks/result.json",
+      "sha256": "88202f8e2fcc0b3b40405858cede6d8b31f069134372883013c80c1977146ac9"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-utilities/result.json",
+      "sha256": "a1ac991e7f0d1fc899bd5d43b03f1d307a51aef65a166dc5515f24ef65098213"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/Emit.Validation/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/Emit.Validation/stdout.log",
+      "sha256": "24d7338379340c27ec195cdf76f6ff3ffe7c522ef4ef31325caf08d3eeab7c83"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-ast-text-values/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-ast-text-values/stdout.log",
+      "sha256": "939c096c87b27d246bcd236c56da0d18cc7be25af0eba8dd04297dbdad225237"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-byte-comparisons/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-byte-comparisons/stdout.log",
+      "sha256": "1116c7e948e3b0c74a7b80a75507147d0bc74f14b3bd5c6027f15c25a179c41d"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-byte-source/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-byte-source/stdout.log",
+      "sha256": "dc321c7f80fdb5af71b9317c1dc7456423670433025b6f2d23bffbdf4efa6fb4"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-cache-key-hashes/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-cache-key-hashes/stdout.log",
+      "sha256": "112015d4899c02c352ad1160765087b4eea1a60f3e0c80869a54a88590a5575f"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-jsdoc-fragments/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-jsdoc-fragments/stdout.log",
+      "sha256": "b59a74c42da02ce540893d8c352eb89066e80857ed8f31db0c245381a954c50d"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-list-appends/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-list-appends/stdout.log",
+      "sha256": "8c605ca6c828d5256eb9275c65350c8ff5c1071b831d59f81e6b830102a06a71"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-list-ranges/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-list-ranges/stdout.log",
+      "sha256": "1e9e34d3b9f9e779dce18ea4b964408227919f0690e3e2250a53b39819895816"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-list-value-ranges/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-list-value-ranges/stdout.log",
+      "sha256": "6fbefacbbe6f3ecbbfa8116cf6802eb3ab90858896d2f11292024200509b64bf"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-original/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-original/stdout.log",
+      "sha256": "26e4c2f84c5ee8df374fd261d1c69eb2ff8d7f13981c438d7e922c042ca34d05"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-parser-list-scratch/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-parser-list-scratch/stdout.log",
+      "sha256": "9cff65458efada73d0e808495743bbd27fde86cacffdecd34d6b9e2e9933ba3b"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-parser-pool/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-parser-pool/stdout.log",
+      "sha256": "2a1360baeb2bab7f0a15ba5800ce5929cec819dc186ff63370ad2df95cdcef39"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-text-view/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-text-view/stdout.log",
+      "sha256": "cd30f6bf947bfa6bca7c0c08f452d1cb74ba92051028b4b864028c46ba512fe0"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-token-projections/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-foundation-token-projections/stdout.log",
+      "sha256": "ff1e74b18eb136b8cd2506064badda2d89e874f142f3e9131ff9637e1c158bbb"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-program-checker-pool-checks/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-program-checker-pool-checks/stdout.log",
+      "sha256": "10159baf262b43a92d95db59dae1f72c645127301661e0a3ce4e38b295a97c58"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-program-construction-boundary-checks/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-program-construction-boundary-checks/stdout.log",
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-utilities/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native/attempt-1/native-utilities/stdout.log",
+      "sha256": "c7d9b36a9abbb045af14edfadfb5aa09d3081fdc5444dbd13df9cff3e14faac3"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/corpus-complete.json",
+      "sha256": "d2d93f984b626ea0553f9ebf7cec28d61c85032f640f1696169bfc638838a410"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native-emit-corpus/result.json",
+      "sha256": "ddc8af312e6ff3adaf04321660237f23c3503244510cc1e58b3ff6412aeba945"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native-emit-corpus/comparison.json",
+      "sha256": "052d327b67be9be940c18bf24f71874e0f1e4c5133cbeb5867f36e494c0a0919"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/native-emit-corpus/actual.jsonl.gz",
+      "sha256": "c3faa857c47c994e4f02f0297d09191843cd23fc7ff8c17ad9d00eaf16da078d"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/command/attempt-1/command-controls/result.json",
+      "sha256": "0fbd5dcd52c2e752c5ef7ad058b3e0e639ac12fc09be7ecd6df02f5cd572b2aa"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/command/attempt-1/command-controls.json",
+      "sha256": "2a723bfeebad9479c5f727655c5bb516b1e9484b6b008384fe7b6fa697649168"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/command/attempt-1/command-guards/result.json",
+      "sha256": "f3c6d4b989582c408d5920a79b0ce719243cd4b72fff92a0ecd1fbb5d6b3da51"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/command/attempt-1/command-guards.json",
+      "sha256": "dce9621d5dfdd64f8612e39dc976e66483acf84f4e5bec3f3c33ff34fe517d7a"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/command/attempt-1/runtime-controls/result.json",
+      "sha256": "4916e0caa2cf67ff5e06447741ee8671cf9d71b5d5997159a8467312a75cd5d6"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/command/attempt-1/runtime-controls.json",
+      "sha256": "d1980c622eb2d0945636adb98eb3daf355130ad9582d4efb0f32f1e06927b19d"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/command-complete.json",
+      "sha256": "178dbf432b13cf238f5e957f455c6f1e71f67d3601edde9f7a9ac4bb03d77d47"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-0/result.json",
+      "sha256": "b7421bb2e676a0d8904e22b1bd8f3411245ab71c460aa1844c3771182a4f7858"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-1/result.json",
+      "sha256": "a38d1443960f581cb4d7c69423bfff6c5b96c5887ff2b42aa8ac0f22719586a0"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-10/result.json",
+      "sha256": "8b470de83f1847d4d660779c6895589a4d6e3db972342283dc29327392b29d51"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-100/result.json",
+      "sha256": "a91617929aa210e9c7b88ac9207d60166c3ac34796a27d033a4ada67d062603e"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-101/result.json",
+      "sha256": "c8add70d0779817ebca13e47afb9c1ec8e0e1b19dd1791fda58a8a3af8a171a0"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-102/result.json",
+      "sha256": "770a843b26536599dec87e7d9398a23b3196b24f51fde87c965c457cb9969a46"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-103/result.json",
+      "sha256": "1478d8df3f8ab2216fabdf8f1df9c88f887cfb5bab0c05e4f0e279fc84aa1dfc"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-104/result.json",
+      "sha256": "5d1d364e100657237ae2f5e43d078ea4ae9000cf78902c6a44bcb2f51ae1517d"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-105/result.json",
+      "sha256": "6d83d9ce5fb7806ba4b1904aaeea4ca19e313cb97eed4216d9d0dd2aac0914b8"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-106/result.json",
+      "sha256": "85ee537f662d721ed7626716b08c5b71dda75ecfd3a65f55c29c5a527fd3a5f5"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-107/result.json",
+      "sha256": "f568bb83e77e6b6ffd7c3bdd3253e05a9dc7ac03f284a5e1a35cab48bc8f0acc"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-108/result.json",
+      "sha256": "0f303a324269aa8cf71442967ddaeb3fdcd12f4e9efda2a772aa53bf69575c86"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-109/result.json",
+      "sha256": "a140b6ea9376c69e54e7addb42aec6c08b1fa0d08b0ae74075d84a748c029a2e"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-11/result.json",
+      "sha256": "0468b721e60a3c2f5604bc450834f745d52c75d9833d4a9aeb3c551f8a4fab96"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-110/result.json",
+      "sha256": "fabef80524c75bf45849dad8d31faf9c29e18e73478350fedc9a027f3c0e0906"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-111/result.json",
+      "sha256": "876c9dc25b154d4b376264f603d4938fa8da037cb264df2d376b6ceb26169a96"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-112/result.json",
+      "sha256": "88e252ee196833406fd8373972aec05a9ee0b6c350fa6c9c6711332eb69577c7"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-113/result.json",
+      "sha256": "795108bd38b2fe8eb622bd45dba2f1946a189643d597f350535e2846871546a3"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-114/result.json",
+      "sha256": "c742c3a7e9cf3111c66018c03944f553e06224035b4dbe393842ef2c0ee2adcf"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-115/result.json",
+      "sha256": "f196074c3410c9969879aedbc44c22fe915694171e465dce9b46bc889574695e"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-116/result.json",
+      "sha256": "6c5fa10f85e97d63cc727f17ffb9085ef9245928335edc44a24b1f4ad41b3cd6"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-117/result.json",
+      "sha256": "7c60819704c124604235b257b5e664f15cb4681c728288c44c7ac9e4aa37fca9"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-118/result.json",
+      "sha256": "f60c1aec4ee79e9e330a29fa81fb8f22d9aae9c75701a5d5b2d916c14c4ac5e0"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-119/result.json",
+      "sha256": "919b7b9c317ebf710eae79a4dcc0236e6e823db614a6eff6b20dfe0716647ac9"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-12/result.json",
+      "sha256": "12e7cde9682b28851d6831912254c26bd612af218c46aa808316daf53c257605"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-13/result.json",
+      "sha256": "edd7556c9fd4533992f0e458a5dab7b51384ff00c4930b6fda26cf08725c1801"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-14/result.json",
+      "sha256": "feb67d99590ec4ac61cefd0752367930bd026ed98361d3a0171540bfeb9f9c24"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-15/result.json",
+      "sha256": "284bfce1d2b8a6a2d7f4c8cde2fc85d760c9e94d597ff449281d23527ac93b8d"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-16/result.json",
+      "sha256": "3071838a4e2ad199c2eb18c4cf7be5fd3f2d53f86fe2094e7d91270d9cf1d70f"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-17/result.json",
+      "sha256": "06437a166f76b05a93bf577c88f1460829f0d1b579c7a429fd900bba4a1816e2"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-18/result.json",
+      "sha256": "35328066b74232f5b500a4f857f6e6413ea6ee768618b801044ff315a8701b5f"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-19/result.json",
+      "sha256": "b33a2240cb2a44174e07301312fa825375b688f60612825c0871e56d7eee363e"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-2/result.json",
+      "sha256": "dffaade6d8e71dcbea8fcc7ff125cd419fb9ae2df71594f2bbdd88bd254d706c"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-20/result.json",
+      "sha256": "2073d125c1c5be12962718f2ca8657ae30767c4675a652e5794630629bf8ad07"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-21/result.json",
+      "sha256": "a9262bf4f0beedabae213ef24146730d7ecd9b6bcdd8161d4d8bb03144b2a083"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-22/result.json",
+      "sha256": "6e788421ac836880e7223b6d4dbb12aaed6bf810f27f051d8365a032e5357367"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-23/result.json",
+      "sha256": "6ab1841bdba31fe5511ec8fa0c0d2ffaa3286f591f4562330b05cd3ab48dba8b"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-24/result.json",
+      "sha256": "bd4ca37a2767fc452128d733902c5bc065f9d62e1ec779462d138b5db88052c5"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-25/result.json",
+      "sha256": "117ab0527ce95a626167a20b5a51e31b3dd4642132537f35de2dca57f26b84c0"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-26/result.json",
+      "sha256": "04ea5878d3fffd761f7e8172123213105c84524a878b4c84bf42b8eff34cd47f"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-27/result.json",
+      "sha256": "8ade9101cc62f1e05d0432dbcee2e2ccaaf22215e50c7cebb6a01946c96059f8"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-28/result.json",
+      "sha256": "7369ed2feb7a9f6c1902d7b9b57fdb11f70efc2691d7c9eaf1234ae07c5f8bfd"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-29/result.json",
+      "sha256": "48982f8f50cfc3017d23462359ea39a71c69f6d5e9b2062825b98f3d73694eed"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-3/result.json",
+      "sha256": "8665402253e02cb23c0ebf032cb86915d8ed232f2e6c8fd529fd4735c06a76e0"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-30/result.json",
+      "sha256": "439aed0979a7fbfe64398aa30eb60fe994a0905b21ff0b22a2403e62115413e4"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-31/result.json",
+      "sha256": "698e4f31736db8a604aa82d20915532dbc1171475479d2cfa36ed971dd3e0f0d"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-32/result.json",
+      "sha256": "35ed75a9ccd4508cb64dfcb357db1069053730d8bd0dd0e613c83d2a5335bf7e"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-33/result.json",
+      "sha256": "6ec484087897b4b2cd421203af325642920f7433f971a557fc4dc8a4a97525b6"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-34/result.json",
+      "sha256": "fe1863b131d51b677765f2006d7f44a701378036053e50b1198a64c8d68a4111"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-35/result.json",
+      "sha256": "747f76f4060c5d582cd697a16142510e0d4e64463b9d6680878f6f99d8a7b094"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-36/result.json",
+      "sha256": "094dd88cc6d698929d6dbb0e42b1657544f8e097bb2b333d9a892cc5fadb0599"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-37/result.json",
+      "sha256": "7c9bbd5f9efab828ff72c2510b4cf35da5caac50bf0099422e178acf4415d4fc"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-38/result.json",
+      "sha256": "1b9fb558f3685d07a0a5a09086968a4f85270eacc9f482c393ed1206a057be25"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-39/result.json",
+      "sha256": "e1593ba84ac291f262fcb6e7b3df772d1610b06505d71118cbe15adf5381cf8d"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-4/result.json",
+      "sha256": "4697d0e604fb3c257f2f78b123ed83ac687b4ab70efdf388724872217aea217f"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-40/result.json",
+      "sha256": "e2d6b32953be73c334bc99e8c91d8ea13a80b8eeee4603f85f434bd258ce77d0"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-41/result.json",
+      "sha256": "3ad837f1abd9768ddba7693ed8620b2b699c5c1616743622d7be5f76a7963c74"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-42/result.json",
+      "sha256": "f2b01c6a70d47bf9972ecdc50ade7aaa5327c14e1b7a396b36dc53e7f89056a3"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-43/result.json",
+      "sha256": "12106ca147a851c92620e3c42a2f9815a5391ab76d81349fb65e334a76d94503"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-44/result.json",
+      "sha256": "0995c33061e5c728c7bd1ce15dbb8cca3b48b4025d8fbbe093ea0008e6ae38d4"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-45/result.json",
+      "sha256": "81662c48a2e2c235af717b5cef72ffb40b72079fb7576601f96a3c4089d357f5"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-46/result.json",
+      "sha256": "42e398378ce3a601b3b92b785dda181564bbda7027edc38e6d6aa24d65ab6444"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-47/result.json",
+      "sha256": "21ce782137ab9f340c8fc67448fd512650e6e60b083d60a754c39ab070381658"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-48/result.json",
+      "sha256": "6c6ca06ed844491a6c4864b5ace565ebd125612dea29a6c703415350ebbcd8ef"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-49/result.json",
+      "sha256": "bf491ce6edc2c265d1f3312771b2826f663d53f53e0cf29d960e73d499d33c5c"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-5/result.json",
+      "sha256": "5234ae6d3673f84571bd053d1c27461a864e26772a73a58f52f48ca58e367748"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-50/result.json",
+      "sha256": "c0ea49b9390973bdaa22f82fa7c5236b35199e11719e33f24441abb00dcecd4c"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-51/result.json",
+      "sha256": "c2e1ee842acd2e1b785e3a5a8f2dbd07a29808ad1abfcf61b2c416261fcb2bad"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-52/result.json",
+      "sha256": "1bcb3bf483ca610eb956605bc187d255a2fecea78c781fb02d04cb22b0623b80"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-53/result.json",
+      "sha256": "b7f9c711f7337fee240da97d10a6dd203e914cc188391de1a35b30b64f84229f"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-54/result.json",
+      "sha256": "c16f503a067ff33c8f90f244619a89e9123dddfd4194924430737b7435d8da58"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-55/result.json",
+      "sha256": "d7ccd18c09a9af623360555cc7b905bc45f123e024f3312bdf9de4424db9de15"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-56/result.json",
+      "sha256": "c3878553834c871898ba00f9a90b7c72000ab3005b6f88bc15e435083fc91240"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-57/result.json",
+      "sha256": "c54a4f5d9bbb75abfa9682c8d25a43a2645c18404fa2a2e6fa75df0f471b7ca0"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-58/result.json",
+      "sha256": "2e4eff883e4912f58dda774eaffebee0c7cc080ccef7a554030ac270a49ab307"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-59/result.json",
+      "sha256": "35a6fb363bb1fcd42548a56dac40c9524f822b37406b2f9a0c09ccab024282f3"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-6/result.json",
+      "sha256": "9eb0a276aa58d53bd20420f2e172c7e85c094be05d5a12197837526b471e9aac"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-60/result.json",
+      "sha256": "c83d0a0576b2dcf3a45492b03b6630ec41e8e45b7a2f042e3e918598b2b3e42d"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-61/result.json",
+      "sha256": "df13b8f8cb0ddda52d10bd8d0ce1bb58cb526915a4d8bb528bc4ce52aa9e2d24"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-62/result.json",
+      "sha256": "8862e51265a4f88623617a583404930faf212ede3717fc6d2abd33791f29a59d"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-63/result.json",
+      "sha256": "d2c704136320c6de06be06a4d362e7ffea1ac5215f18ff65ed021c2060582ab2"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-64/result.json",
+      "sha256": "c30dca9625ac58663d772b9a0f5bfb649f197322ffa9d9d11442165f254195f1"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-65/result.json",
+      "sha256": "fe0b483609a787ff5ddbd4546a9afea01d0b7b437be3590e320103c8af3217f5"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-66/result.json",
+      "sha256": "dfd96f08314a2ccbd1eee52cee56af85cce0a02b712ac2fa7563d9aa4f8c111d"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-67/result.json",
+      "sha256": "dc27fb739c3662829b05ddb725a072f470bd12fb14bdc5efa09ce8fec4592b8b"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-68/result.json",
+      "sha256": "bb877ea795fdc42aa00288e91974d6c9c5479ffa35fe9a31e2aa6a18b6974bf5"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-69/result.json",
+      "sha256": "c2f79e58eb3b2c853cec8c631be30f7892c98cc7bc5619fa58e00bc441471f83"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-7/result.json",
+      "sha256": "8dff952da8d230ac95e04be4b0f74bcbbab12bae09e72bd164872758add4e9a7"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-70/result.json",
+      "sha256": "ad475c3225052dafaf57a531976184ef3360a164e2617bf898711764898f7593"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-71/result.json",
+      "sha256": "40b0c8dadc8b6409305c4bb84e6fe32843cfae8c607e14f627148c721f6a8738"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-72/result.json",
+      "sha256": "db914980c38f482f9d5399fab6f37a71655c6f7819b21dfe370c86dd0f072e15"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-73/result.json",
+      "sha256": "d5edb0f3818c1774d260c6c6b2fa3a7bf5531b8f1157310c49d98750177b7eb4"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-74/result.json",
+      "sha256": "19e22a932f307b601f41732353c9a19d2717bb023e9c1e06de71b2ea84eca405"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-75/result.json",
+      "sha256": "c549aa273c9368ef66c34da608d37d3c2c5ae930895d3341a0f8413743164b57"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-76/result.json",
+      "sha256": "0034f0b2daa408594f3c87cba48a33027839e07bfed155b0a19db676b47ce667"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-77/result.json",
+      "sha256": "a9e15a20771d92fa829267c8b6d748e216f8f368b6e101abdfdfdb2fe4906142"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-78/result.json",
+      "sha256": "84cf3ff4031274fe7c14b97601439ce40dd72bf63c79970a9b374f43ad8a0e82"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-79/result.json",
+      "sha256": "696f20bf5bf72155d17c9fdc8302f37410be1eaf895ca67b95bc454c1914f646"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-8/result.json",
+      "sha256": "eab69011aa50dcb11bbc4350d7bb09c9fb687253ea96227012a0c334d4ba6e37"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-80/result.json",
+      "sha256": "196cc1882b38e9006f58a154bc27e4404e31f1fe7f750959dca51bf3214371c1"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-81/result.json",
+      "sha256": "a1bd33d071d8df4d51e0a806969655158d2667f61ddf76cb1619a455fc3dd410"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-82/result.json",
+      "sha256": "96a22d6e9a4eb359b682cab11a4dec6385889cbda3d56f3a0d361e1eb5a8e3d2"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-83/result.json",
+      "sha256": "a4ec7ebc742013197a86d85a591eb294cb7554817a1cb7b470c363336527666a"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-84/result.json",
+      "sha256": "895a5b064f7e978e0905bb222bc0d94fdbe25f44f21a79bb88da529ab4cb64c7"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-85/result.json",
+      "sha256": "97c379fc4ec49a99fc314bc874a0c34a10fe30951bb9be92aed33081925d6c76"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-86/result.json",
+      "sha256": "1bd61a3b7bfec8f907c8746ee867a73f3cf1c2dcd5a93789cf4e1bb56abd547a"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-87/result.json",
+      "sha256": "d8fe5e32d447f717e87cad22fdef8947f2782ab29d206174999c3db16f0ce0aa"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-88/result.json",
+      "sha256": "9447e9abf19f22f97b42ffd68141c4a6f5b3591545aeeedcb358558b7f2a523e"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-89/result.json",
+      "sha256": "222c94e6fe10eaad5400f8323783c716125115675fcabe916ed47f111cb03c5b"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-9/result.json",
+      "sha256": "e8a1274bcc682a8777f6dc681c064d7bc39ed7cd2c48b216db42126a012c8fa1"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-90/result.json",
+      "sha256": "4de5ea894ea52bf707557f950876e7c18fbf78f5cee559a42b96105f33c45cb1"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-91/result.json",
+      "sha256": "d3237e08af161f8e406e11f4a4b94e946c9b592848be21caffc81c9ebb9eb3dd"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-92/result.json",
+      "sha256": "46f8692d5860e41656d6d3693113948000c1568daba4cd6325f8ff0dcab5ce04"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-93/result.json",
+      "sha256": "ee1b748d9d6665cc1bb60a46fb4e9757ebe9d0ac1b7c07fab086601f77897913"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-94/result.json",
+      "sha256": "bca6013d5651ba4309232959bae6d5c23611a06336aa22e902817615998d36c1"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-95/result.json",
+      "sha256": "46e59b7947bd3ac264b0d0c2f6af36d58de54d773f430336664a52f24999c78b"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-96/result.json",
+      "sha256": "8079a99e996772e9e12de8e8586b02218bed40ea153d5b6d18264a25f482f2ca"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-97/result.json",
+      "sha256": "38515a92fe6476d78b0122ea707ac07cc78c78a48b0f2d03a38185721454537c"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-98/result.json",
+      "sha256": "c6ed7c7ae142d0f9068882f6599392c6387b92ca595fc65980a28763055d768a"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/chunk-99/result.json",
+      "sha256": "19e7dffea98be7e4d24df26edb241f2e57b4aab92886181c440a553263ce3199"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/comparison.json",
+      "sha256": "0b70355affac1e3b474a5b0941fde59f0c419dde919c565ad5c3d2cd166bc163"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit/attempt-1/progress.json",
+      "sha256": "23037581dc726809bb49463a35021340d87acb5437222abc0137f41969ea9154"
+    },
+    {
+      "path": "artifacts/language-services/final-retained94/noemit-complete.json",
+      "sha256": "0914eeb7add42c2d01280ecf26052a6a2f252012eb403956177c7a14a3d28543"
+    },
+    {
+      "path": "artifacts/language-services/integration-7/public-stdio-final/comparison.json",
+      "sha256": "1f410061188fbeff00b8f86310945395a28a082da2ab39090ef035df1c91c2e3"
+    },
+    {
+      "path": "artifacts/language-services/final-performance/cohort-1/result.json",
+      "sha256": "83878d99928d389a03c61016b1638b100308e39e305db434928573d1602fef1f"
+    },
+    {
+      "path": "artifacts/language-services/integration-7/public-lifecycle-final/comparison.json",
+      "sha256": "400e6e23f3bce10584369f635108bbe6e5c69fd99f2e08b063fa3b54f20d861e"
+    },
+    {
+      "path": "artifacts/language-services/final-performance/cohort-2/result.json",
+      "sha256": "81f3eb7a24b82806365ea84cada910018cb93565174bbe41912706c8d91df6bc"
+    },
+    {
+      "path": "artifacts/language-services/source-review/public-stdio-final-evidence.json",
+      "sha256": "f68b8b732a7e02e77315d0eb0c0a79ac1f5348a1976bae86fcfd8bffa26d572a"
+    },
+    {
+      "path": "artifacts/language-services/source-review/public-lifecycle-final-evidence.json",
+      "sha256": "9a297e89e702fea9f523906717885e53f18aa41c73485dd178f3c34cf6e70fc7"
+    },
+    {
+      "path": "artifacts/language-services/source-review/retained-performance-evidence.json",
+      "sha256": "55d7d41179e8504a09c98a311649a49e849a7488b632ff54ffd7032bd24777fd"
+    },
+    {
+      "path": "artifacts/language-services/source-review/retained-performance-runner.json",
+      "sha256": "f8ff9b363d942df28a116ef8f0e184850cc2ed2e499925ad7bfe0664c9d0d24a"
+    },
+    {
+      "path": "docs/progress/lsp-final-formatting.json",
+      "sha256": "55415aac8aa14478aa0a4fd9991fa642bac30592c0b178896693930711359162"
+    }
+  ],
+  "retainedManaged": {
+    "status": "passed-qualified-scope",
+    "retainedChecks": 1730,
+    "emitCases": 496,
+    "totalCases": 2226,
+    "completion": "artifacts/language-services/final-retained94/managed-complete.json",
+    "transition": "artifacts/language-services/final-retained94/test-binding-transition/transition.json",
+    "counts": "artifacts/language-services/final-retained94/managed/attempt-2-test-binding/managed-counts.json",
+    "qualification": "Emit attempt-1 exact TRX and 122 selected records reused explicitly; other five suites rerun after one retained test binding correction. No production change. Earlier failed Checker reflection binding and initial resume preflight count mismatch remain retained. Historical accepted Emit493 is not the current496 count."
+  },
+  "retainedNative": {
+    "status": "passed-qualified-scope",
+    "completion": "artifacts/language-services/final-retained94/native-complete.json",
+    "publicationCompletion": "artifacts/language-services/final-retained94/publish-complete.json",
+    "publications": [
+      {
+        "project": "Checker.NoEmit.Validation",
+        "metadata": "artifacts/language-services/final-retained94/native/Checker.NoEmit.Validation/actual-ilc-input.json",
+        "binary": "/home/greg/projects/typescript-dotnet/artifacts/language-services/final-retained94/native/Checker.NoEmit.Validation/Program.Checks",
+        "binarySha256": "a760f475dc9b710767bb0fe6b8eb9e8a77ba1c35291740ebab977ae7e3e7b83f",
+        "responseSha256": "a58f2c63cad26eefed80ec6fdee9c9eec01052ea019ae8e17db4b0ce5a926056",
+        "actualIlcInputCount": 178,
+        "runtimeOptions": [
+          "--runtimeknob:Microsoft.Extensions.DependencyInjection.VerifyOpenGenericServiceTrimmability=true",
+          "--runtimeknob:System.ComponentModel.DefaultValueAttribute.IsSupported=false",
+          "--runtimeknob:System.ComponentModel.Design.IDesignerHost.IsSupported=false",
+          "--runtimeknob:System.ComponentModel.TypeConverter.EnableUnsafeBinaryFormatterInDesigntimeLicenseContextSerialization=false",
+          "--runtimeknob:System.ComponentModel.TypeDescriptor.IsComObjectDescriptorSupported=false",
+          "--runtimeknob:System.Data.DataSet.XmlSerializationIsSupported=false",
+          "--runtimeknob:System.Diagnostics.Tracing.EventSource.IsSupported=false",
+          "--runtimeknob:System.Linq.Enumerable.IsSizeOptimized=false",
+          "--runtimeknob:System.Net.Security.UseManagedNtlm=false",
+          "--runtimeknob:System.Net.SocketsHttpHandler.Http3Support=false",
+          "--runtimeknob:System.Reflection.Metadata.MetadataUpdater.IsSupported=false",
+          "--runtimeknob:System.Resources.ResourceManager.AllowCustomResourceTypes=false",
+          "--runtimeknob:System.Resources.UseSystemResourceKeys=false",
+          "--runtimeknob:System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported=false",
+          "--runtimeknob:System.Runtime.InteropServices.BuiltInComInterop.IsSupported=false",
+          "--runtimeknob:System.Runtime.InteropServices.EnableConsumingManagedCodeFromNativeHosting=false",
+          "--runtimeknob:System.Runtime.InteropServices.EnableCppCLIHostActivation=false",
+          "--runtimeknob:System.Runtime.InteropServices.Marshalling.EnableGeneratedComInterfaceComImportInterop=false",
+          "--runtimeknob:System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization=false",
+          "--runtimeknob:System.StartupHookProvider.IsSupported=false",
+          "--runtimeknob:System.Text.Encoding.EnableUnsafeUTF7Encoding=false",
+          "--runtimeknob:System.Text.Json.JsonSerializer.IsReflectionEnabledByDefault=false",
+          "--runtimeknob:System.Threading.Thread.EnableAutoreleasePool=false",
+          "--runtimeknob:System.Linq.Expressions.CanEmitObjectArrayDelegate=false",
+          "--runtimeknob:RUNTIME_IDENTIFIER=linux-x64"
+        ]
+      },
+      {
+        "project": "Checker.Validation",
+        "metadata": "artifacts/language-services/final-retained94/native/Checker.Validation/actual-ilc-input.json",
+        "binary": "/home/greg/projects/typescript-dotnet/artifacts/language-services/final-retained94/native/Checker.Validation/Checker.Validation",
+        "binarySha256": "3fc7fdaea90e5a5b51f2ec41269456108a40e687aeea7162f6d3e5299bb5c6ab",
+        "responseSha256": "8ef10bbb0e13150f7b42f3a82163d73cc013cece8ce0573e6d401cae5c40bff1",
+        "actualIlcInputCount": 179,
+        "runtimeOptions": [
+          "--runtimeknob:Microsoft.Extensions.DependencyInjection.VerifyOpenGenericServiceTrimmability=true",
+          "--runtimeknob:System.ComponentModel.DefaultValueAttribute.IsSupported=false",
+          "--runtimeknob:System.ComponentModel.Design.IDesignerHost.IsSupported=false",
+          "--runtimeknob:System.ComponentModel.TypeConverter.EnableUnsafeBinaryFormatterInDesigntimeLicenseContextSerialization=false",
+          "--runtimeknob:System.ComponentModel.TypeDescriptor.IsComObjectDescriptorSupported=false",
+          "--runtimeknob:System.Data.DataSet.XmlSerializationIsSupported=false",
+          "--runtimeknob:System.Diagnostics.Tracing.EventSource.IsSupported=false",
+          "--runtimeknob:System.Linq.Enumerable.IsSizeOptimized=false",
+          "--runtimeknob:System.Net.Security.UseManagedNtlm=false",
+          "--runtimeknob:System.Net.SocketsHttpHandler.Http3Support=false",
+          "--runtimeknob:System.Reflection.Metadata.MetadataUpdater.IsSupported=false",
+          "--runtimeknob:System.Resources.ResourceManager.AllowCustomResourceTypes=false",
+          "--runtimeknob:System.Resources.UseSystemResourceKeys=false",
+          "--runtimeknob:System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported=false",
+          "--runtimeknob:System.Runtime.InteropServices.BuiltInComInterop.IsSupported=false",
+          "--runtimeknob:System.Runtime.InteropServices.EnableConsumingManagedCodeFromNativeHosting=false",
+          "--runtimeknob:System.Runtime.InteropServices.EnableCppCLIHostActivation=false",
+          "--runtimeknob:System.Runtime.InteropServices.Marshalling.EnableGeneratedComInterfaceComImportInterop=false",
+          "--runtimeknob:System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization=false",
+          "--runtimeknob:System.StartupHookProvider.IsSupported=false",
+          "--runtimeknob:System.Text.Encoding.EnableUnsafeUTF7Encoding=false",
+          "--runtimeknob:System.Text.Json.JsonSerializer.IsReflectionEnabledByDefault=false",
+          "--runtimeknob:System.Threading.Thread.EnableAutoreleasePool=false",
+          "--runtimeknob:System.Linq.Expressions.CanEmitObjectArrayDelegate=false",
+          "--runtimeknob:RUNTIME_IDENTIFIER=linux-x64"
+        ]
+      },
+      {
+        "project": "Emit.Validation",
+        "metadata": "artifacts/language-services/final-retained94/native/Emit.Validation/actual-ilc-input.json",
+        "binary": "/home/greg/projects/typescript-dotnet/artifacts/language-services/final-retained94/native/Emit.Validation/Emit.Validation",
+        "binarySha256": "d9083a6a37f2f0e8c7aaa859a31d223481b571322abd8f20acaa535e5d217585",
+        "responseSha256": "db7e625cece89f9a560c8a16492919adc7e2875435e0a1c8d99837285ca45ab2",
+        "actualIlcInputCount": 179,
+        "runtimeOptions": [
+          "--runtimeknob:Microsoft.Extensions.DependencyInjection.VerifyOpenGenericServiceTrimmability=true",
+          "--runtimeknob:System.ComponentModel.DefaultValueAttribute.IsSupported=false",
+          "--runtimeknob:System.ComponentModel.Design.IDesignerHost.IsSupported=false",
+          "--runtimeknob:System.ComponentModel.TypeConverter.EnableUnsafeBinaryFormatterInDesigntimeLicenseContextSerialization=false",
+          "--runtimeknob:System.ComponentModel.TypeDescriptor.IsComObjectDescriptorSupported=false",
+          "--runtimeknob:System.Data.DataSet.XmlSerializationIsSupported=false",
+          "--runtimeknob:System.Diagnostics.Tracing.EventSource.IsSupported=false",
+          "--runtimeknob:System.GC.Server=true",
+          "--runtimeknob:System.Linq.Enumerable.IsSizeOptimized=false",
+          "--runtimeknob:System.Net.Security.UseManagedNtlm=false",
+          "--runtimeknob:System.Net.SocketsHttpHandler.Http3Support=false",
+          "--runtimeknob:System.Reflection.Metadata.MetadataUpdater.IsSupported=false",
+          "--runtimeknob:System.Resources.ResourceManager.AllowCustomResourceTypes=false",
+          "--runtimeknob:System.Resources.UseSystemResourceKeys=false",
+          "--runtimeknob:System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported=false",
+          "--runtimeknob:System.Runtime.InteropServices.BuiltInComInterop.IsSupported=false",
+          "--runtimeknob:System.Runtime.InteropServices.EnableConsumingManagedCodeFromNativeHosting=false",
+          "--runtimeknob:System.Runtime.InteropServices.EnableCppCLIHostActivation=false",
+          "--runtimeknob:System.Runtime.InteropServices.Marshalling.EnableGeneratedComInterfaceComImportInterop=false",
+          "--runtimeknob:System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization=false",
+          "--runtimeknob:System.StartupHookProvider.IsSupported=false",
+          "--runtimeknob:System.Text.Encoding.EnableUnsafeUTF7Encoding=false",
+          "--runtimeknob:System.Text.Json.JsonSerializer.IsReflectionEnabledByDefault=false",
+          "--runtimeknob:System.Threading.Thread.EnableAutoreleasePool=false",
+          "--runtimeknob:System.Linq.Expressions.CanEmitObjectArrayDelegate=false",
+          "--runtimeknob:RUNTIME_IDENTIFIER=linux-x64",
+          "--runtimeopt:gcServer=1"
+        ]
+      },
+      {
+        "project": "Foundation.Validation",
+        "metadata": "artifacts/language-services/final-retained94/native/Foundation.Validation/actual-ilc-input.json",
+        "binary": "/home/greg/projects/typescript-dotnet/artifacts/language-services/final-retained94/native/Foundation.Validation/Foundation.Validation",
+        "binarySha256": "ccf57a5b8c6fe2216eeece0034e67a504d117b3eadf97f51222e798b331a118e",
+        "responseSha256": "255bb9af93692bd829d9cf36755446cede15e1141c3fcb36447f36ee3e7a2b81",
+        "actualIlcInputCount": 180,
+        "runtimeOptions": [
+          "--runtimeknob:Microsoft.Extensions.DependencyInjection.VerifyOpenGenericServiceTrimmability=true",
+          "--runtimeknob:System.ComponentModel.DefaultValueAttribute.IsSupported=false",
+          "--runtimeknob:System.ComponentModel.Design.IDesignerHost.IsSupported=false",
+          "--runtimeknob:System.ComponentModel.TypeConverter.EnableUnsafeBinaryFormatterInDesigntimeLicenseContextSerialization=false",
+          "--runtimeknob:System.ComponentModel.TypeDescriptor.IsComObjectDescriptorSupported=false",
+          "--runtimeknob:System.Data.DataSet.XmlSerializationIsSupported=false",
+          "--runtimeknob:System.Diagnostics.Tracing.EventSource.IsSupported=false",
+          "--runtimeknob:System.Linq.Enumerable.IsSizeOptimized=false",
+          "--runtimeknob:System.Net.Security.UseManagedNtlm=false",
+          "--runtimeknob:System.Net.SocketsHttpHandler.Http3Support=false",
+          "--runtimeknob:System.Reflection.Metadata.MetadataUpdater.IsSupported=false",
+          "--runtimeknob:System.Resources.ResourceManager.AllowCustomResourceTypes=false",
+          "--runtimeknob:System.Resources.UseSystemResourceKeys=false",
+          "--runtimeknob:System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported=false",
+          "--runtimeknob:System.Runtime.InteropServices.BuiltInComInterop.IsSupported=false",
+          "--runtimeknob:System.Runtime.InteropServices.EnableConsumingManagedCodeFromNativeHosting=false",
+          "--runtimeknob:System.Runtime.InteropServices.EnableCppCLIHostActivation=false",
+          "--runtimeknob:System.Runtime.InteropServices.Marshalling.EnableGeneratedComInterfaceComImportInterop=false",
+          "--runtimeknob:System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization=false",
+          "--runtimeknob:System.StartupHookProvider.IsSupported=false",
+          "--runtimeknob:System.Text.Encoding.EnableUnsafeUTF7Encoding=false",
+          "--runtimeknob:System.Text.Json.JsonSerializer.IsReflectionEnabledByDefault=false",
+          "--runtimeknob:System.Threading.Thread.EnableAutoreleasePool=false",
+          "--runtimeknob:System.Linq.Expressions.CanEmitObjectArrayDelegate=false",
+          "--runtimeknob:RUNTIME_IDENTIFIER=linux-x64"
+        ]
+      },
+      {
+        "project": "Program.Validation",
+        "metadata": "artifacts/language-services/final-retained94/native/Program.Validation/actual-ilc-input.json",
+        "binary": "/home/greg/projects/typescript-dotnet/artifacts/language-services/final-retained94/native/Program.Validation/Program.Validation",
+        "binarySha256": "136f88c13d4c8db33b4b5a28d3faad71fdb4344d7efaa5d6cf078d23bc7b81de",
+        "responseSha256": "d21fcb8ba1e88ceccfa330b7fe39c8f3d0bd84a5973ee97684ded1bffd2f9234",
+        "actualIlcInputCount": 179,
+        "runtimeOptions": [
+          "--runtimeknob:Microsoft.Extensions.DependencyInjection.VerifyOpenGenericServiceTrimmability=true",
+          "--runtimeknob:System.ComponentModel.DefaultValueAttribute.IsSupported=false",
+          "--runtimeknob:System.ComponentModel.Design.IDesignerHost.IsSupported=false",
+          "--runtimeknob:System.ComponentModel.TypeConverter.EnableUnsafeBinaryFormatterInDesigntimeLicenseContextSerialization=false",
+          "--runtimeknob:System.ComponentModel.TypeDescriptor.IsComObjectDescriptorSupported=false",
+          "--runtimeknob:System.Data.DataSet.XmlSerializationIsSupported=false",
+          "--runtimeknob:System.Diagnostics.Tracing.EventSource.IsSupported=false",
+          "--runtimeknob:System.Linq.Enumerable.IsSizeOptimized=false",
+          "--runtimeknob:System.Net.Security.UseManagedNtlm=false",
+          "--runtimeknob:System.Net.SocketsHttpHandler.Http3Support=false",
+          "--runtimeknob:System.Reflection.Metadata.MetadataUpdater.IsSupported=false",
+          "--runtimeknob:System.Resources.ResourceManager.AllowCustomResourceTypes=false",
+          "--runtimeknob:System.Resources.UseSystemResourceKeys=false",
+          "--runtimeknob:System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported=false",
+          "--runtimeknob:System.Runtime.InteropServices.BuiltInComInterop.IsSupported=false",
+          "--runtimeknob:System.Runtime.InteropServices.EnableConsumingManagedCodeFromNativeHosting=false",
+          "--runtimeknob:System.Runtime.InteropServices.EnableCppCLIHostActivation=false",
+          "--runtimeknob:System.Runtime.InteropServices.Marshalling.EnableGeneratedComInterfaceComImportInterop=false",
+          "--runtimeknob:System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization=false",
+          "--runtimeknob:System.StartupHookProvider.IsSupported=false",
+          "--runtimeknob:System.Text.Encoding.EnableUnsafeUTF7Encoding=false",
+          "--runtimeknob:System.Text.Json.JsonSerializer.IsReflectionEnabledByDefault=false",
+          "--runtimeknob:System.Threading.Thread.EnableAutoreleasePool=false",
+          "--runtimeknob:System.Linq.Expressions.CanEmitObjectArrayDelegate=false",
+          "--runtimeknob:RUNTIME_IDENTIFIER=linux-x64"
+        ]
+      },
+      {
+        "project": "TypeScript.Check",
+        "metadata": "artifacts/language-services/final-retained94/native/TypeScript.Check/actual-ilc-input.json",
+        "binary": "/home/greg/projects/typescript-dotnet/artifacts/language-services/final-retained94/native/TypeScript.Check/tscheck",
+        "binarySha256": "edd848db2d1595fd4cdb3173d291ed6212f67a1ae9bb550ea205ca4c4466aba9",
+        "responseSha256": "f16a660645c8ca14c5268a0fac94fc3765726a63e740cd258c9d8814c1016824",
+        "actualIlcInputCount": 178,
+        "runtimeOptions": [
+          "--runtimeknob:Microsoft.Extensions.DependencyInjection.VerifyOpenGenericServiceTrimmability=true",
+          "--runtimeknob:System.ComponentModel.DefaultValueAttribute.IsSupported=false",
+          "--runtimeknob:System.ComponentModel.Design.IDesignerHost.IsSupported=false",
+          "--runtimeknob:System.ComponentModel.TypeConverter.EnableUnsafeBinaryFormatterInDesigntimeLicenseContextSerialization=false",
+          "--runtimeknob:System.ComponentModel.TypeDescriptor.IsComObjectDescriptorSupported=false",
+          "--runtimeknob:System.Data.DataSet.XmlSerializationIsSupported=false",
+          "--runtimeknob:System.Diagnostics.Tracing.EventSource.IsSupported=false",
+          "--runtimeknob:System.GC.Server=true",
+          "--runtimeknob:System.Linq.Enumerable.IsSizeOptimized=false",
+          "--runtimeknob:System.Net.Security.UseManagedNtlm=false",
+          "--runtimeknob:System.Net.SocketsHttpHandler.Http3Support=false",
+          "--runtimeknob:System.Reflection.Metadata.MetadataUpdater.IsSupported=false",
+          "--runtimeknob:System.Resources.ResourceManager.AllowCustomResourceTypes=false",
+          "--runtimeknob:System.Resources.UseSystemResourceKeys=false",
+          "--runtimeknob:System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported=false",
+          "--runtimeknob:System.Runtime.InteropServices.BuiltInComInterop.IsSupported=false",
+          "--runtimeknob:System.Runtime.InteropServices.EnableConsumingManagedCodeFromNativeHosting=false",
+          "--runtimeknob:System.Runtime.InteropServices.EnableCppCLIHostActivation=false",
+          "--runtimeknob:System.Runtime.InteropServices.Marshalling.EnableGeneratedComInterfaceComImportInterop=false",
+          "--runtimeknob:System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization=false",
+          "--runtimeknob:System.StartupHookProvider.IsSupported=false",
+          "--runtimeknob:System.Text.Encoding.EnableUnsafeUTF7Encoding=false",
+          "--runtimeknob:System.Text.Json.JsonSerializer.IsReflectionEnabledByDefault=false",
+          "--runtimeknob:System.Threading.Thread.EnableAutoreleasePool=false",
+          "--runtimeknob:System.Linq.Expressions.CanEmitObjectArrayDelegate=false",
+          "--runtimeknob:RUNTIME_IDENTIFIER=linux-x64",
+          "--runtimeopt:gcServer=1"
+        ]
+      }
+    ],
+    "nativeEmitOriginalFunctions": 152,
+    "nativeEmitAuthoredControls": 254,
+    "counterTransition": "artifacts/language-services/final-retained94/native-counter-transition/transition.json",
+    "qualification": "Runner metadata-only expected authored count corrected from historical251 to actual254; original assertions and production executable unchanged. Actual152 original functions and254 authored controls remain distinct. Full emit/noemit corpus and command gates not inferred from native phase."
+  },
+  "retainedEmitCorpus": {
+    "status": "passed-qualified-scope",
+    "completion": "artifacts/language-services/final-retained94/corpus-complete.json",
+    "result": "artifacts/language-services/final-retained94/native-emit-corpus/result.json",
+    "comparison": "artifacts/language-services/final-retained94/native-emit-corpus/comparison.json",
+    "expected": 15330,
+    "observed": 15330,
+    "matchedPublicOutputs": 15285,
+    "matchedOriginalAssertions": 13571,
+    "originalPreparationSkips": 39,
+    "knownExternalIncrementalMetadataDifferences": 6,
+    "newDifferences": 0,
+    "qualification": "Comparison command exits1 for six retained execute/incremental.NewProgram-owned tsbuildinfo emitted-file metadata differences; all six remain visible, not exact-match credit. Existing original option/wrapper policies remain unchanged."
+  },
+  "retainedCommand": {
+    "status": "passed-qualified-scope",
+    "completion": "artifacts/language-services/final-retained94/command-complete.json",
+    "evidenceDirectory": "artifacts/language-services/final-retained94/command",
+    "qualification": "Retained CLI disk/guard/runtime assertions preserved; original source/count classifications remain separate from LSP originals."
+  },
+  "retainedNoEmit": {
+    "status": "passed",
+    "completion": "artifacts/language-services/final-retained94/noemit-complete.json",
+    "evidenceDirectory": "artifacts/language-services/final-retained94/noemit",
+    "completePublicRecords": 15304,
+    "exactMatches": 15304,
+    "qualification": "Complete retained public records exact, not only diagnostic code/count projection."
+  },
+  "publicStdio": {
+    "status": "passed",
+    "comparison": "artifacts/language-services/integration-7/public-stdio-final/comparison.json",
+    "repeatedUnchangedDiagnosticsEach": 100,
+    "repeatedUnsavedEditsEach": 100,
+    "qualification": "Authored real-disk current public CLI differential with complete payloads. Race outcomes retained; no original test pass credit, universal memory threshold, editor UI or leak-freedom claim. Independent Protocol evidence review CLEAR."
+  },
+  "publicLifecycle": {
+    "status": "passed",
+    "comparison": "artifacts/language-services/integration-7/public-lifecycle-final/comparison.json",
+    "roles": [
+      "sigint",
+      "sigterm",
+      "initialize.processId",
+      "clientProcessId"
+    ],
+    "qualification": "Complete actual Go/current Native payload/lifecycle comparison; upstream cancellation/exit quirks retained, no forced-success normalization. Independent Protocol evidence review CLEAR."
+  },
+  "performance": {
+    "status": "completed-observations-no-performance-threshold",
+    "acceptanceStatus": "completed scoped protection assessment; independently reviewed CLEAR",
+    "result": "artifacts/language-services/final-performance/cohort-2/result.json",
+    "freshProcesses": 75,
+    "workloads": 5,
+    "engines": 3,
+    "repeatsPerCell": 5,
+    "runtimePolicy": "Default actual binary GC settings; no no-GC overrides, profiling, external project or new benchmark design. Native whole-runtime allocatedBytes and Go B/op/allocs/op are distinct observations, not equal allocation units.",
+    "scope": "Original fixture/Program construction excluded, actual Emit included; iterations1. Measured timer differs from subprocess wall duration. ManyFiles is original200files\u00d7500properties; line controls1000/5000/10000 and10000 multiline.",
+    "reportPolicy": "Best-of-five primary per existing policy; median/range/all samples secondary. Report current/baseline Native ratio on identical workload and fresh Go companion ratios. No existing per-workload numerical regression threshold was authorized; do not import external VSCode1.2x target as this workload threshold.",
+    "summary": [
+      {
+        "variant": "LongLines1000",
+        "BaselineNative": {
+          "allMilliseconds": [
+            27.8473,
+            29.1013,
+            28.419,
+            29.3147,
+            29.1766
+          ],
+          "bestMilliseconds": 27.8473,
+          "medianMilliseconds": 29.1013,
+          "rangeMilliseconds": [
+            27.8473,
+            29.3147
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            9694560,
+            9697128,
+            9699784,
+            9696616,
+            9674928
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 9674928,
+            "median": 9696616,
+            "range": [
+              9674928,
+              9699784
+            ]
+          }
+        },
+        "CandidateNative": {
+          "allMilliseconds": [
+            29.5391,
+            31.5043,
+            30.9364,
+            39.2246,
+            39.0232
+          ],
+          "bestMilliseconds": 29.5391,
+          "medianMilliseconds": 31.5043,
+          "rangeMilliseconds": [
+            29.5391,
+            39.2246
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            9662264,
+            9642664,
+            9657728,
+            9666688,
+            9644072
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 9642664,
+            "median": 9657728,
+            "range": [
+              9642664,
+              9666688
+            ]
+          }
+        },
+        "Go": {
+          "allMilliseconds": [
+            21.128077,
+            18.800121,
+            19.623605,
+            18.002373,
+            18.623045
+          ],
+          "bestMilliseconds": 18.002373,
+          "medianMilliseconds": 18.800121,
+          "rangeMilliseconds": [
+            18.002373,
+            21.128077
+          ],
+          "goBytesPerOperation": [
+            8169656,
+            8174808,
+            8167792,
+            8145128,
+            8177424
+          ],
+          "allocationSummary": {
+            "units": "goBytesPerOperation",
+            "best": 8145128,
+            "median": 8169656,
+            "range": [
+              8145128,
+              8177424
+            ]
+          },
+          "allAllocationsPerOperation": [
+            25933,
+            25900,
+            25885,
+            25734,
+            25969
+          ]
+        },
+        "bestCandidateToBaselineNativeRatio": 1.0607527480222498,
+        "bestCandidateNativeToGoRatio": 1.6408447930725578
+      },
+      {
+        "variant": "LongLines5000",
+        "BaselineNative": {
+          "allMilliseconds": [
+            328.3515,
+            330.5571,
+            351.6118,
+            346.256,
+            326.0206
+          ],
+          "bestMilliseconds": 326.0206,
+          "medianMilliseconds": 330.5571,
+          "rangeMilliseconds": [
+            326.0206,
+            351.6118
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            12874096,
+            12882232,
+            12885560,
+            12887520,
+            12885384
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 12874096,
+            "median": 12885384,
+            "range": [
+              12874096,
+              12887520
+            ]
+          }
+        },
+        "CandidateNative": {
+          "allMilliseconds": [
+            365.8372,
+            373.2846,
+            344.2994,
+            354.5147,
+            363.1174
+          ],
+          "bestMilliseconds": 344.2994,
+          "medianMilliseconds": 363.1174,
+          "rangeMilliseconds": [
+            344.2994,
+            373.2846
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            12683120,
+            12664688,
+            12693256,
+            12677208,
+            12692664
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 12664688,
+            "median": 12683120,
+            "range": [
+              12664688,
+              12693256
+            ]
+          }
+        },
+        "Go": {
+          "allMilliseconds": [
+            243.767192,
+            246.428222,
+            234.34334,
+            234.504822,
+            236.694892
+          ],
+          "bestMilliseconds": 234.34334,
+          "medianMilliseconds": 236.694892,
+          "rangeMilliseconds": [
+            234.34334,
+            246.428222
+          ],
+          "goBytesPerOperation": [
+            10549512,
+            10522664,
+            10537104,
+            10527600,
+            10543512
+          ],
+          "allocationSummary": {
+            "units": "goBytesPerOperation",
+            "best": 10522664,
+            "median": 10537104,
+            "range": [
+              10522664,
+              10549512
+            ]
+          },
+          "allAllocationsPerOperation": [
+            30096,
+            29991,
+            30026,
+            30031,
+            30054
+          ]
+        },
+        "bestCandidateToBaselineNativeRatio": 1.056066395804437,
+        "bestCandidateNativeToGoRatio": 1.4692092380350983
+      },
+      {
+        "variant": "LongLines10000",
+        "BaselineNative": {
+          "allMilliseconds": [
+            1283.0115,
+            1332.7411,
+            1273.4297,
+            1281.8957,
+            1269.2275
+          ],
+          "bestMilliseconds": 1269.2275,
+          "medianMilliseconds": 1281.8957,
+          "rangeMilliseconds": [
+            1269.2275,
+            1332.7411
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            16911096,
+            16920184,
+            16903992,
+            16927024,
+            16915384
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 16903992,
+            "median": 16915384,
+            "range": [
+              16903992,
+              16927024
+            ]
+          }
+        },
+        "CandidateNative": {
+          "allMilliseconds": [
+            1347.9281,
+            1376.6216,
+            1311.8848,
+            1359.8912,
+            1339.6043
+          ],
+          "bestMilliseconds": 1311.8848,
+          "medianMilliseconds": 1347.9281,
+          "rangeMilliseconds": [
+            1311.8848,
+            1376.6216
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            16506664,
+            16507984,
+            16499512,
+            16507240,
+            16512312
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 16499512,
+            "median": 16507240,
+            "range": [
+              16499512,
+              16512312
+            ]
+          }
+        },
+        "Go": {
+          "allMilliseconds": [
+            931.883569,
+            937.736707,
+            947.565235,
+            926.525044,
+            939.588233
+          ],
+          "bestMilliseconds": 926.525044,
+          "medianMilliseconds": 937.736707,
+          "rangeMilliseconds": [
+            926.525044,
+            947.565235
+          ],
+          "goBytesPerOperation": [
+            13379520,
+            13351824,
+            13385280,
+            13367552,
+            13373496
+          ],
+          "allocationSummary": {
+            "units": "goBytesPerOperation",
+            "best": 13351824,
+            "median": 13373496,
+            "range": [
+              13351824,
+              13385280
+            ]
+          },
+          "allAllocationsPerOperation": [
+            35307,
+            35180,
+            35303,
+            35275,
+            35275
+          ]
+        },
+        "bestCandidateToBaselineNativeRatio": 1.0336088683864793,
+        "bestCandidateNativeToGoRatio": 1.4159194168528055
+      },
+      {
+        "variant": "ManyFiles",
+        "BaselineNative": {
+          "allMilliseconds": [
+            114.5619,
+            112.2374,
+            108.4759,
+            109.6402,
+            116.1626
+          ],
+          "bestMilliseconds": 108.4759,
+          "medianMilliseconds": 112.2374,
+          "rangeMilliseconds": [
+            108.4759,
+            116.1626
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            91480024,
+            91484528,
+            91473712,
+            91478608,
+            91473856
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 91473712,
+            "median": 91478608,
+            "range": [
+              91473712,
+              91484528
+            ]
+          }
+        },
+        "CandidateNative": {
+          "allMilliseconds": [
+            119.4551,
+            105.8911,
+            119.2055,
+            117.6235,
+            123.2245
+          ],
+          "bestMilliseconds": 105.8911,
+          "medianMilliseconds": 119.2055,
+          "rangeMilliseconds": [
+            105.8911,
+            123.2245
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            87486352,
+            87477416,
+            87483608,
+            87483608,
+            87477576
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 87477416,
+            "median": 87483608,
+            "range": [
+              87477416,
+              87486352
+            ]
+          }
+        },
+        "Go": {
+          "allMilliseconds": [
+            57.758299,
+            53.28795,
+            60.543223,
+            56.792189,
+            69.295499
+          ],
+          "bestMilliseconds": 53.28795,
+          "medianMilliseconds": 57.758299,
+          "rangeMilliseconds": [
+            53.28795,
+            69.295499
+          ],
+          "goBytesPerOperation": [
+            73287832,
+            73258648,
+            73300192,
+            73282032,
+            73314848
+          ],
+          "allocationSummary": {
+            "units": "goBytesPerOperation",
+            "best": 73258648,
+            "median": 73287832,
+            "range": [
+              73258648,
+              73314848
+            ]
+          },
+          "allAllocationsPerOperation": [
+            245194,
+            245019,
+            245235,
+            245123,
+            245414
+          ]
+        },
+        "bestCandidateToBaselineNativeRatio": 0.976171665780141,
+        "bestCandidateNativeToGoRatio": 1.9871490646572065
+      },
+      {
+        "variant": "LongLinesWithLineBreaks",
+        "BaselineNative": {
+          "allMilliseconds": [
+            40.3118,
+            36.1923,
+            41.0319,
+            51.5823,
+            35.4696
+          ],
+          "bestMilliseconds": 35.4696,
+          "medianMilliseconds": 40.3118,
+          "rangeMilliseconds": [
+            35.4696,
+            51.5823
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            17056944,
+            17083088,
+            17081776,
+            17083256,
+            17079488
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 17056944,
+            "median": 17081776,
+            "range": [
+              17056944,
+              17083256
+            ]
+          }
+        },
+        "CandidateNative": {
+          "allMilliseconds": [
+            35.398,
+            36.5218,
+            40.8193,
+            36.8578,
+            37.4241
+          ],
+          "bestMilliseconds": 35.398,
+          "medianMilliseconds": 36.8578,
+          "rangeMilliseconds": [
+            35.398,
+            40.8193
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            16678208,
+            16671712,
+            16664192,
+            16681392,
+            16668672
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 16664192,
+            "median": 16671712,
+            "range": [
+              16664192,
+              16681392
+            ]
+          }
+        },
+        "Go": {
+          "allMilliseconds": [
+            18.047339,
+            18.585152,
+            19.76418,
+            20.351921,
+            19.355798
+          ],
+          "bestMilliseconds": 18.047339,
+          "medianMilliseconds": 19.355798,
+          "rangeMilliseconds": [
+            18.047339,
+            20.351921
+          ],
+          "goBytesPerOperation": [
+            13667064,
+            13666568,
+            13683536,
+            13658968,
+            13657352
+          ],
+          "allocationSummary": {
+            "units": "goBytesPerOperation",
+            "best": 13657352,
+            "median": 13666568,
+            "range": [
+              13657352,
+              13683536
+            ]
+          },
+          "allAllocationsPerOperation": [
+            35283,
+            35283,
+            35317,
+            35178,
+            35275
+          ]
+        },
+        "bestCandidateToBaselineNativeRatio": 0.9979813699618829,
+        "bestCandidateNativeToGoRatio": 1.9613971899125962
+      }
+    ],
+    "processWallSummary": [
+      {
+        "variant": "LongLines1000",
+        "BaselineNative": {
+          "allSeconds": [
+            0.066673603,
+            0.067439377,
+            0.063165046,
+            0.063841568,
+            0.065012917
+          ],
+          "bestSeconds": 0.063165046,
+          "medianSeconds": 0.065012917,
+          "rangeSeconds": [
+            0.063165046,
+            0.067439377
+          ]
+        },
+        "CandidateNative": {
+          "allSeconds": [
+            0.065222622,
+            0.070744141,
+            0.069773893,
+            0.083176689,
+            0.079173823
+          ],
+          "bestSeconds": 0.065222622,
+          "medianSeconds": 0.070744141,
+          "rangeSeconds": [
+            0.065222622,
+            0.083176689
+          ]
+        },
+        "Go": {
+          "allSeconds": [
+            0.043158413,
+            0.041919047,
+            0.041384763,
+            0.041368096,
+            0.045131234
+          ],
+          "bestSeconds": 0.041368096,
+          "medianSeconds": 0.041919047,
+          "rangeSeconds": [
+            0.041368096,
+            0.045131234
+          ]
+        },
+        "bestCandidateToBaselineNativeWallRatio": 1.032574598299192
+      },
+      {
+        "variant": "LongLines5000",
+        "BaselineNative": {
+          "allSeconds": [
+            0.371086177,
+            0.379102988,
+            0.393529331,
+            0.395910512,
+            0.372499158
+          ],
+          "bestSeconds": 0.371086177,
+          "medianSeconds": 0.379102988,
+          "rangeSeconds": [
+            0.371086177,
+            0.395910512
+          ]
+        },
+        "CandidateNative": {
+          "allSeconds": [
+            0.405809662,
+            0.414492335,
+            0.38969338,
+            0.395270365,
+            0.404141881
+          ],
+          "bestSeconds": 0.38969338,
+          "medianSeconds": 0.404141881,
+          "rangeSeconds": [
+            0.38969338,
+            0.414492335
+          ]
+        },
+        "Go": {
+          "allSeconds": [
+            0.269731228,
+            0.274587609,
+            0.260695531,
+            0.261657348,
+            0.26208026
+          ],
+          "bestSeconds": 0.260695531,
+          "medianSeconds": 0.26208026,
+          "rangeSeconds": [
+            0.260695531,
+            0.274587609
+          ]
+        },
+        "bestCandidateToBaselineNativeWallRatio": 1.050142538723559
+      },
+      {
+        "variant": "LongLines10000",
+        "BaselineNative": {
+          "allSeconds": [
+            1.322468074,
+            1.378454747,
+            1.317956672,
+            1.323045177,
+            1.314637913
+          ],
+          "bestSeconds": 1.314637913,
+          "medianSeconds": 1.322468074,
+          "rangeSeconds": [
+            1.314637913,
+            1.378454747
+          ]
+        },
+        "CandidateNative": {
+          "allSeconds": [
+            1.390885587,
+            1.419875853,
+            1.353819795,
+            1.403665854,
+            1.38221309
+          ],
+          "bestSeconds": 1.353819795,
+          "medianSeconds": 1.390885587,
+          "rangeSeconds": [
+            1.353819795,
+            1.419875853
+          ]
+        },
+        "Go": {
+          "allSeconds": [
+            0.958313145,
+            0.965117178,
+            0.97572346,
+            0.956456955,
+            0.968536384
+          ],
+          "bestSeconds": 0.956456955,
+          "medianSeconds": 0.965117178,
+          "rangeSeconds": [
+            0.956456955,
+            0.97572346
+          ]
+        },
+        "bestCandidateToBaselineNativeWallRatio": 1.0298043146424911
+      },
+      {
+        "variant": "ManyFiles",
+        "BaselineNative": {
+          "allSeconds": [
+            0.183878103,
+            0.180849343,
+            0.17636084,
+            0.175223751,
+            0.186017462
+          ],
+          "bestSeconds": 0.175223751,
+          "medianSeconds": 0.180849343,
+          "rangeSeconds": [
+            0.175223751,
+            0.186017462
+          ]
+        },
+        "CandidateNative": {
+          "allSeconds": [
+            0.18842187,
+            0.17125208,
+            0.187840136,
+            0.191938231,
+            0.196382035
+          ],
+          "bestSeconds": 0.17125208,
+          "medianSeconds": 0.18842187,
+          "rangeSeconds": [
+            0.17125208,
+            0.196382035
+          ]
+        },
+        "Go": {
+          "allSeconds": [
+            0.112258253,
+            0.106394982,
+            0.125171864,
+            0.114217553,
+            0.128281552
+          ],
+          "bestSeconds": 0.106394982,
+          "medianSeconds": 0.114217553,
+          "rangeSeconds": [
+            0.106394982,
+            0.128281552
+          ]
+        },
+        "bestCandidateToBaselineNativeWallRatio": 0.9773337177332768
+      },
+      {
+        "variant": "LongLinesWithLineBreaks",
+        "BaselineNative": {
+          "allSeconds": [
+            0.082924508,
+            0.092015233,
+            0.0969805,
+            0.094933792,
+            0.073948242
+          ],
+          "bestSeconds": 0.073948242,
+          "medianSeconds": 0.092015233,
+          "rangeSeconds": [
+            0.073948242,
+            0.0969805
+          ]
+        },
+        "CandidateNative": {
+          "allSeconds": [
+            0.090399983,
+            0.080125852,
+            0.09603272,
+            0.080828678,
+            0.078446344
+          ],
+          "bestSeconds": 0.078446344,
+          "medianSeconds": 0.080828678,
+          "rangeSeconds": [
+            0.078446344,
+            0.09603272
+          ]
+        },
+        "Go": {
+          "allSeconds": [
+            0.043295316,
+            0.042210988,
+            0.043579933,
+            0.042917832,
+            0.043198122
+          ],
+          "bestSeconds": 0.042210988,
+          "medianSeconds": 0.043198122,
+          "rangeSeconds": [
+            0.042210988,
+            0.043579933
+          ]
+        },
+        "bestCandidateToBaselineNativeWallRatio": 1.0608277070332517
+      }
+    ],
+    "qualification": "Cohort2 corrects only runner timed-wait polling observation; cohort1 preserved. Best process-wall current/baseline ratios show approximately2\u20136% slowdowns on four controls and improvement on ManyFiles. Emit-phase timer remains separate from whole-process wall. No production changes, universal20% threshold, universal performance guarantee, external-project claim or equal Native/Go allocation-unit claim. All samples/median/range retained.",
+    "reviewRecords": [
+      "artifacts/language-services/source-review/retained-performance-evidence.json",
+      "artifacts/language-services/source-review/retained-performance-runner.json"
+    ]
+  },
+  "historicalPerformanceCohort1": {
+    "status": "completed-observations-no-performance-threshold",
+    "result": "artifacts/language-services/final-performance/cohort-1/result.json",
+    "freshProcesses": 75,
+    "workloads": 5,
+    "engines": 3,
+    "repeatsPerCell": 5,
+    "runtimePolicy": "Default actual binary GC settings; no no-GC overrides, profiling, external project or new benchmark design. Native whole-runtime allocatedBytes and Go B/op/allocs/op are distinct observations, not equal allocation units.",
+    "scope": "Original fixture/Program construction excluded, actual Emit included; iterations1. Measured timer differs from subprocess wall duration. ManyFiles is original200files\u00d7500properties; line controls1000/5000/10000 and10000 multiline.",
+    "reportPolicy": "Best-of-five primary per existing policy; median/range/all samples secondary. Report current/baseline Native ratio on identical workload and fresh Go companion ratios. No existing per-workload numerical regression threshold was authorized; do not import external VSCode1.2x target as this workload threshold.",
+    "summary": [
+      {
+        "variant": "LongLines1000",
+        "BaselineNative": {
+          "allMilliseconds": [
+            30.7445,
+            30.2079,
+            27.4148,
+            29.4716,
+            34.859
+          ],
+          "bestMilliseconds": 27.4148,
+          "medianMilliseconds": 30.2079,
+          "rangeMilliseconds": [
+            27.4148,
+            34.859
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            9682296,
+            9690944,
+            9692584,
+            9691752,
+            9696096
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 9682296,
+            "median": 9691752,
+            "range": [
+              9682296,
+              9696096
+            ]
+          }
+        },
+        "CandidateNative": {
+          "allMilliseconds": [
+            30.9156,
+            31.2846,
+            28.9025,
+            31.5182,
+            36.1506
+          ],
+          "bestMilliseconds": 28.9025,
+          "medianMilliseconds": 31.2846,
+          "rangeMilliseconds": [
+            28.9025,
+            36.1506
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            9629032,
+            9658360,
+            9658440,
+            9662016,
+            9669360
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 9629032,
+            "median": 9658440,
+            "range": [
+              9629032,
+              9669360
+            ]
+          }
+        },
+        "Go": {
+          "allMilliseconds": [
+            18.811972,
+            17.752617,
+            19.261136,
+            18.023578,
+            19.243036
+          ],
+          "bestMilliseconds": 17.752617,
+          "medianMilliseconds": 18.811972,
+          "rangeMilliseconds": [
+            17.752617,
+            19.261136
+          ],
+          "goBytesPerOperation": [
+            8177496,
+            8174208,
+            8165040,
+            8167560,
+            8166776
+          ],
+          "allocationSummary": {
+            "units": "goBytesPerOperation",
+            "best": 8165040,
+            "median": 8167560,
+            "range": [
+              8165040,
+              8177496
+            ]
+          },
+          "allAllocationsPerOperation": [
+            25931,
+            25923,
+            25878,
+            25913,
+            25834
+          ]
+        },
+        "bestCandidateToBaselineNativeRatio": 1.0542663087091644,
+        "bestCandidateNativeToGoRatio": 1.628069822043702
+      },
+      {
+        "variant": "LongLines5000",
+        "BaselineNative": {
+          "allMilliseconds": [
+            324.7297,
+            347.827,
+            341.2806,
+            352.7165,
+            360.1531
+          ],
+          "bestMilliseconds": 324.7297,
+          "medianMilliseconds": 347.827,
+          "rangeMilliseconds": [
+            324.7297,
+            360.1531
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            12885952,
+            12894296,
+            12883528,
+            12871048,
+            12867680
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 12867680,
+            "median": 12883528,
+            "range": [
+              12867680,
+              12894296
+            ]
+          }
+        },
+        "CandidateNative": {
+          "allMilliseconds": [
+            354.669,
+            350.5868,
+            338.2422,
+            337.6791,
+            364.9363
+          ],
+          "bestMilliseconds": 337.6791,
+          "medianMilliseconds": 350.5868,
+          "rangeMilliseconds": [
+            337.6791,
+            364.9363
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            12698288,
+            12687976,
+            12690192,
+            12678704,
+            12674904
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 12674904,
+            "median": 12687976,
+            "range": [
+              12674904,
+              12698288
+            ]
+          }
+        },
+        "Go": {
+          "allMilliseconds": [
+            237.567744,
+            247.806944,
+            249.775492,
+            261.362359,
+            271.265833
+          ],
+          "bestMilliseconds": 237.567744,
+          "medianMilliseconds": 249.775492,
+          "rangeMilliseconds": [
+            237.567744,
+            271.265833
+          ],
+          "goBytesPerOperation": [
+            10553896,
+            10546168,
+            10541128,
+            10548008,
+            10544208
+          ],
+          "allocationSummary": {
+            "units": "goBytesPerOperation",
+            "best": 10541128,
+            "median": 10546168,
+            "range": [
+              10541128,
+              10553896
+            ]
+          },
+          "allAllocationsPerOperation": [
+            30114,
+            30079,
+            30057,
+            30085,
+            30100
+          ]
+        },
+        "bestCandidateToBaselineNativeRatio": 1.0398774734802516,
+        "bestCandidateNativeToGoRatio": 1.4214012993279088
+      },
+      {
+        "variant": "LongLines10000",
+        "BaselineNative": {
+          "allMilliseconds": [
+            1302.9379,
+            1315.9973,
+            1281.1686,
+            1302.8086,
+            1259.6135
+          ],
+          "bestMilliseconds": 1259.6135,
+          "medianMilliseconds": 1302.8086,
+          "rangeMilliseconds": [
+            1259.6135,
+            1315.9973
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            16915568,
+            16921152,
+            16924112,
+            16889240,
+            16915016
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 16889240,
+            "median": 16915568,
+            "range": [
+              16889240,
+              16924112
+            ]
+          }
+        },
+        "CandidateNative": {
+          "allMilliseconds": [
+            1361.8921,
+            1338.1136,
+            1338.839,
+            1302.9165,
+            1361.9568
+          ],
+          "bestMilliseconds": 1302.9165,
+          "medianMilliseconds": 1338.839,
+          "rangeMilliseconds": [
+            1302.9165,
+            1361.9568
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            16501784,
+            16499096,
+            16516792,
+            16516296,
+            16492776
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 16492776,
+            "median": 16501784,
+            "range": [
+              16492776,
+              16516792
+            ]
+          }
+        },
+        "Go": {
+          "allMilliseconds": [
+            921.130913,
+            999.463427,
+            972.467342,
+            936.288691,
+            963.958847
+          ],
+          "bestMilliseconds": 921.130913,
+          "medianMilliseconds": 963.958847,
+          "rangeMilliseconds": [
+            921.130913,
+            999.463427
+          ],
+          "goBytesPerOperation": [
+            13361328,
+            13367000,
+            13369216,
+            13386504,
+            13367168
+          ],
+          "allocationSummary": {
+            "units": "goBytesPerOperation",
+            "best": 13361328,
+            "median": 13367168,
+            "range": [
+              13361328,
+              13386504
+            ]
+          },
+          "allAllocationsPerOperation": [
+            35229,
+            35252,
+            35283,
+            35309,
+            35276
+          ]
+        },
+        "bestCandidateToBaselineNativeRatio": 1.034378005634268,
+        "bestCandidateNativeToGoRatio": 1.414474839148081
+      },
+      {
+        "variant": "ManyFiles",
+        "BaselineNative": {
+          "allMilliseconds": [
+            112.4013,
+            123.532,
+            114.522,
+            110.2098,
+            112.2473
+          ],
+          "bestMilliseconds": 110.2098,
+          "medianMilliseconds": 112.4013,
+          "rangeMilliseconds": [
+            110.2098,
+            123.532
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            91480000,
+            91480048,
+            91477384,
+            91477480,
+            91480000
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 91477384,
+            "median": 91480000,
+            "range": [
+              91477384,
+              91480048
+            ]
+          }
+        },
+        "CandidateNative": {
+          "allMilliseconds": [
+            121.745,
+            112.8236,
+            107.7634,
+            118.0859,
+            109.0869
+          ],
+          "bestMilliseconds": 107.7634,
+          "medianMilliseconds": 112.8236,
+          "rangeMilliseconds": [
+            107.7634,
+            121.745
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            87486256,
+            87477480,
+            87479968,
+            87486376,
+            87477632
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 87477480,
+            "median": 87479968,
+            "range": [
+              87477480,
+              87486376
+            ]
+          }
+        },
+        "Go": {
+          "allMilliseconds": [
+            55.366881,
+            55.930831,
+            61.289024,
+            58.925282,
+            61.090028
+          ],
+          "bestMilliseconds": 55.366881,
+          "medianMilliseconds": 58.925282,
+          "rangeMilliseconds": [
+            55.366881,
+            61.289024
+          ],
+          "goBytesPerOperation": [
+            73303816,
+            73280264,
+            73199192,
+            73259896,
+            73148192
+          ],
+          "allocationSummary": {
+            "units": "goBytesPerOperation",
+            "best": 73148192,
+            "median": 73259896,
+            "range": [
+              73148192,
+              73303816
+            ]
+          },
+          "allAllocationsPerOperation": [
+            245182,
+            244982,
+            244532,
+            244942,
+            244070
+          ]
+        },
+        "bestCandidateToBaselineNativeRatio": 0.9778023369972544,
+        "bestCandidateNativeToGoRatio": 1.9463512853469207
+      },
+      {
+        "variant": "LongLinesWithLineBreaks",
+        "BaselineNative": {
+          "allMilliseconds": [
+            50.8411,
+            38.6842,
+            38.5153,
+            52.8386,
+            50.6138
+          ],
+          "bestMilliseconds": 38.5153,
+          "medianMilliseconds": 50.6138,
+          "rangeMilliseconds": [
+            38.5153,
+            52.8386
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            17080464,
+            17083432,
+            17085896,
+            17079688,
+            17069528
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 17069528,
+            "median": 17080464,
+            "range": [
+              17069528,
+              17085896
+            ]
+          }
+        },
+        "CandidateNative": {
+          "allMilliseconds": [
+            51.3192,
+            37.1385,
+            34.8995,
+            45.244,
+            51.0266
+          ],
+          "bestMilliseconds": 34.8995,
+          "medianMilliseconds": 45.244,
+          "rangeMilliseconds": [
+            34.8995,
+            51.3192
+          ],
+          "nativeWholeRuntimeAllocatedBytes": [
+            16688536,
+            16688184,
+            16664264,
+            16660680,
+            16688144
+          ],
+          "allocationSummary": {
+            "units": "nativeWholeRuntimeAllocatedBytes",
+            "best": 16660680,
+            "median": 16688144,
+            "range": [
+              16660680,
+              16688536
+            ]
+          }
+        },
+        "Go": {
+          "allMilliseconds": [
+            19.527834,
+            21.605368,
+            19.309887,
+            18.818243,
+            18.410568
+          ],
+          "bestMilliseconds": 18.410568,
+          "medianMilliseconds": 19.309887,
+          "rangeMilliseconds": [
+            18.410568,
+            21.605368
+          ],
+          "goBytesPerOperation": [
+            13660704,
+            13677776,
+            13654408,
+            13662608,
+            13660976
+          ],
+          "allocationSummary": {
+            "units": "goBytesPerOperation",
+            "best": 13654408,
+            "median": 13660976,
+            "range": [
+              13654408,
+              13677776
+            ]
+          },
+          "allAllocationsPerOperation": [
+            35266,
+            35325,
+            35209,
+            35278,
+            35279
+          ]
+        },
+        "bestCandidateToBaselineNativeRatio": 0.9061204248701166,
+        "bestCandidateNativeToGoRatio": 1.8956232094523102
+      }
+    ],
+    "qualification": "Original Emit timer excludes fixture/Program construction and differs from subprocess wall duration. Best/median/range/all samples retained; Native whole-runtime allocations and Go B/op/allocs/op are distinct units. Current/baseline best ratios are observations, no universal threshold or performance guarantee. Independent Foundation evidence review pending. Cohort1 short LongLines1000 best process-wall ratio is approximately1.780, unlike Emit-only1.054. Existing subprocess timed-wait polling may affect short wall measurements; no regression conclusion or acceptance before independent observer review. Cohort1 remains preserved.",
+    "processWallSummary": [
+      {
+        "variant": "LongLines1000",
+        "BaselineNative": {
+          "allSeconds": [
+            0.11442911,
+            0.114383417,
+            0.064211172,
+            0.114327757,
+            0.114423933
+          ],
+          "bestSeconds": 0.064211172,
+          "medianSeconds": 0.114383417,
+          "rangeSeconds": [
+            0.064211172,
+            0.11442911
+          ]
+        },
+        "CandidateNative": {
+          "allSeconds": [
+            0.114532584,
+            0.114302963,
+            0.114569248,
+            0.11435147,
+            0.114309075
+          ],
+          "bestSeconds": 0.114302963,
+          "medianSeconds": 0.11435147,
+          "rangeSeconds": [
+            0.114302963,
+            0.114569248
+          ]
+        },
+        "Go": {
+          "allSeconds": [
+            0.06415293,
+            0.064171972,
+            0.064205211,
+            0.064309753,
+            0.064169032
+          ],
+          "bestSeconds": 0.06415293,
+          "medianSeconds": 0.064171972,
+          "rangeSeconds": [
+            0.06415293,
+            0.064309753
+          ]
+        },
+        "bestCandidateToBaselineNativeWallRatio": 1.7801102119737044
+      },
+      {
+        "variant": "LongLines5000",
+        "BaselineNative": {
+          "allSeconds": [
+            0.414974259,
+            0.415227302,
+            0.415232822,
+            0.415185995,
+            0.415004444
+          ],
+          "bestSeconds": 0.414974259,
+          "medianSeconds": 0.415185995,
+          "rangeSeconds": [
+            0.414974259,
+            0.415232822
+          ]
+        },
+        "CandidateNative": {
+          "allSeconds": [
+            0.415161978,
+            0.415001865,
+            0.41496296,
+            0.414970081,
+            0.465048633
+          ],
+          "bestSeconds": 0.41496296,
+          "medianSeconds": 0.415001865,
+          "rangeSeconds": [
+            0.41496296,
+            0.465048633
+          ]
+        },
+        "Go": {
+          "allSeconds": [
+            0.264661257,
+            0.314798216,
+            0.314902225,
+            0.314884672,
+            0.31476544
+          ],
+          "bestSeconds": 0.264661257,
+          "medianSeconds": 0.314798216,
+          "rangeSeconds": [
+            0.264661257,
+            0.314902225
+          ]
+        },
+        "bestCandidateToBaselineNativeWallRatio": 0.999972771805106
+      },
+      {
+        "variant": "LongLines10000",
+        "BaselineNative": {
+          "allSeconds": [
+            1.367289225,
+            1.367290161,
+            1.367651149,
+            1.36743683,
+            1.317773878
+          ],
+          "bestSeconds": 1.317773878,
+          "medianSeconds": 1.367290161,
+          "rangeSeconds": [
+            1.317773878,
+            1.367651149
+          ]
+        },
+        "CandidateNative": {
+          "allSeconds": [
+            1.468194221,
+            1.417442642,
+            1.417430897,
+            1.367587008,
+            1.417509021
+          ],
+          "bestSeconds": 1.367587008,
+          "medianSeconds": 1.417442642,
+          "rangeSeconds": [
+            1.367587008,
+            1.468194221
+          ]
+        },
+        "Go": {
+          "allSeconds": [
+            0.966451137,
+            1.066786401,
+            1.016580779,
+            0.966522704,
+            1.016752633
+          ],
+          "bestSeconds": 0.966451137,
+          "medianSeconds": 1.016580779,
+          "rangeSeconds": [
+            0.966451137,
+            1.066786401
+          ]
+        },
+        "bestCandidateToBaselineNativeWallRatio": 1.037800969370862
+      },
+      {
+        "variant": "ManyFiles",
+        "BaselineNative": {
+          "allSeconds": [
+            0.214654772,
+            0.217547883,
+            0.217188164,
+            0.21800152,
+            0.215025507
+          ],
+          "bestSeconds": 0.214654772,
+          "medianSeconds": 0.217188164,
+          "rangeSeconds": [
+            0.214654772,
+            0.21800152
+          ]
+        },
+        "CandidateNative": {
+          "allSeconds": [
+            0.220093836,
+            0.219933642,
+            0.217464197,
+            0.215941579,
+            0.214938693
+          ],
+          "bestSeconds": 0.214938693,
+          "medianSeconds": 0.217464197,
+          "rangeSeconds": [
+            0.214938693,
+            0.220093836
+          ]
+        },
+        "Go": {
+          "allSeconds": [
+            0.164436271,
+            0.114312342,
+            0.164417731,
+            0.114332591,
+            0.115414093
+          ],
+          "bestSeconds": 0.114312342,
+          "medianSeconds": 0.115414093,
+          "rangeSeconds": [
+            0.114312342,
+            0.164436271
+          ]
+        },
+        "bestCandidateToBaselineNativeWallRatio": 1.0013226866440221
+      },
+      {
+        "variant": "LongLinesWithLineBreaks",
+        "BaselineNative": {
+          "allSeconds": [
+            0.114252982,
+            0.114254269,
+            0.114407272,
+            0.114355459,
+            0.114427167
+          ],
+          "bestSeconds": 0.114252982,
+          "medianSeconds": 0.114355459,
+          "rangeSeconds": [
+            0.114252982,
+            0.114427167
+          ]
+        },
+        "CandidateNative": {
+          "allSeconds": [
+            0.11429154,
+            0.114355414,
+            0.114438255,
+            0.11424798,
+            0.114374874
+          ],
+          "bestSeconds": 0.11424798,
+          "medianSeconds": 0.114355414,
+          "rangeSeconds": [
+            0.11424798,
+            0.114438255
+          ]
+        },
+        "Go": {
+          "allSeconds": [
+            0.064121821,
+            0.064166853,
+            0.064130374,
+            0.064186915,
+            0.064198112
+          ],
+          "bestSeconds": 0.064121821,
+          "medianSeconds": 0.064166853,
+          "rangeSeconds": [
+            0.064121821,
+            0.064198112
+          ]
+        },
+        "bestCandidateToBaselineNativeWallRatio": 0.9999562199610684
+      }
+    ],
+    "acceptanceStatus": "pending concrete short-workload process-wall measurement review"
+  },
+  "finalIndependentContractReview": {
+    "path": "docs/progress/lsp-final-contract-review.json",
+    "classification": "CLEAR; tracked review path retained without hashing review which binds this aggregate, avoiding cyclic self-hash"
+  },
+  "finalFormattingOnlyDelta": {
+    "record": "docs/progress/lsp-final-formatting.json",
+    "path": "src/TypeScript.Scanner/Lsp/Server.ContentMapperRegistrations.cs",
+    "testedSourceSha256": "940b5d0797052442afe97cff6160b6b5ac3a1f64de9013439529c68ef7b9a140",
+    "deliveredSourceSha256": "80f1badd65a13399a9e205ccaffe6a511daa8af1df9588b887246f3d216f0c69",
+    "classification": "Final staged whitespace-only cleanup; no semantic change",
+    "changedBlankLines": [
+      {
+        "line": 123,
+        "removedSpaces": 16
+      },
+      {
+        "line": 143,
+        "removedSpaces": 16
+      },
+      {
+        "line": 157,
+        "removedSpaces": 16
+      },
+      {
+        "line": 454,
+        "removedSpaces": 12
+      }
+    ],
+    "sourceEquivalence": "Exactly four whitespace-only blank lines changed; all non-whitespace bytes and line/newline counts identical. All other bytes retained. No tests or rebuild needed.",
+    "independentPeer": "Foundation narrow source-equivalence review; record final peer binding in tracked final contract review",
+    "runtimeQualification": "No rebuild/rerun. Every historical runtime freeze/source hash remains unchanged; delivered whitespace-only source differs explicitly from tested bytes."
+  }
+}

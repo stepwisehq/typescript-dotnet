@@ -1,0 +1,42 @@
+{
+  "status": "Promoted complete ten original functions; source review CLEAR, integrated compilation/execution pending",
+  "upstream": "upstream/TypeScript/tsc/internal/modulespecifiers/specifiers_test.go",
+  "upstreamSha256": "57a883bb76e85d7daca35c4f4900f40270a60d8030b403dd0d101e0d2bd85356",
+  "originalFunctions": [
+    "TestGetNodeModulePathParts",
+    "TestGetEachFileNameOfModule",
+    "TestGetEachFileNameOfModuleWithSymlinks",
+    "TestModuleSpecifierContainsNodeModules",
+    "TestIsPackageMainFilePreservesDirectoryIntent",
+    "TestContainsIgnoredPath",
+    "TestTryGetRealFileNameForNonJSDeclarationFileName",
+    "TestProcessEndingChecksRootedFilePath",
+    "TestIsPathRelativeToParent",
+    "TestTryGetModuleNameFromExportsOrImports"
+  ],
+  "files": [
+    {
+      "path": "validation/LanguageServices.Checks/ModuleSpecifierOriginalChecks.cs",
+      "sha256": "c39a09a3ca32673316c8b14c6e8dc13a37270cb0fe8c708bbcdfae9b323eceea"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ModuleSpecifierOriginalTests.cs",
+      "sha256": "7161d705aeedca961dbbbffa34303423f56949576f653f6cf4f172819756db58"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ModuleSpecifiers/Specifiers.cs",
+      "sha256": "0a4962f82a8204b710f734a5601b9cae33057f565bf1b316c13df53f541da1b8"
+    },
+    {
+      "path": "src/TypeScript.Scanner/ModuleSpecifiers/Util.cs",
+      "sha256": "a62f27df47e693014a92a791c6e42cb4391949fa89e26437b35e1d168f221d6d"
+    }
+  ],
+  "adaptations": [
+    "Serial original t.Parallel hints; original host nil states, file-existence call observations and all table outputs retained.",
+    "Ignored production copies contain only six original same-package worker private-to-internal admission changes. Apply focused declaration deltas to current owners at promotion, never overwrite accepted bodies.",
+    "No new public production interface or substitute worker. Existing shared friend assembly supplies original package-test access."
+  ],
+  "verification": "No compile, runtime or pass credit; root owns eventual combined gate.",
+  "reviewCorrections": "Exact rooted original paths, zero mock case-insensitive/nil symlink defaults with explicit source initialization, and independent sibling aggregation retained."
+}

@@ -1,0 +1,98 @@
+{
+  "status": "Seven whole original functions promoted after source reviews; candidate compilation/behavior pending",
+  "pin": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "originalFunctions": 7,
+  "dispatch": [
+    {
+      "call": "ProjectAtaChecks.RunAll()",
+      "originalFunctions": 1,
+      "sourceSkip": "One original Todo sibling skip; whole function retains22 siblings."
+    },
+    {
+      "call": "ProjectCustomConfigChecks.RunAll()",
+      "originalFunctions": 1
+    },
+    {
+      "call": "ProjectUntitledChecks.RunAll()",
+      "originalFunctions": 3
+    },
+    {
+      "call": "FileRenameChecks.RunAll()",
+      "originalFunctions": 2
+    }
+  ],
+  "files": [
+    {
+      "path": "validation/LanguageServices.Checks/ProjectAtaChecks.cs",
+      "sha256": "e7664ed32fcbc96a8ffc956093a7719dd18256e6012dbf0318a34830adbbf35d"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectAtaChecks.Inputs.cs",
+      "sha256": "44df08aee951c26b357438bd4cf474a46b137c98bf12c5abf3f3168765fc1ff9"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectCustomConfigChecks.cs",
+      "sha256": "0747d38ffb8084387c529528ef835499f993fd15e87d7df1519355eed72c6a1b"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectUntitledChecks.cs",
+      "sha256": "1687bc18b2a1ffa1688d720f0cb26aa31c2a055923bcdbd71c9c73cdb17df31c"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/FileRenameChecks.cs",
+      "sha256": "4fb9461f564f4d354154d76f3473f6ac42728096f80c8c02c11efe7105b14bfb"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ProjectAtaTests.cs",
+      "sha256": "85cc49b7bebdf1d3a42a354855aecaabafa8a8e76ffd5a659bcc7c2094903035"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ProjectCustomConfigTests.cs",
+      "sha256": "df4a7f2bc61e07f92943448b7be368866ec833b43121450294aba7fbce2d0193"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ProjectUntitledTests.cs",
+      "sha256": "ffb37624ea74d4206fa913f82ae3cba609ed56488e2bd458a28732815b78702f"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/FileRenameTests.cs",
+      "sha256": "e46c55289fc39d45e68629302febe0e31de7cb1a211ca77dee8a8cdb3fb2b4ec"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectSessionFixture.cs",
+      "sha256": "a9ea953e9efa8671da8cd3650d797b5aa0d6999f4de91dcb97e1636fc51bd35d"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/Rename.cs",
+      "sha256": "988c3472f94c0eabc4195ef9d971f3768cfbf0c69ba23ceb3a4fbb572d847b4c"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/FileRename.cs",
+      "sha256": "24dd0149a8f001e4db2e3d875260bd38f52a6ac250e090f747a4e4f7db983a72"
+    },
+    {
+      "path": "src/TypeScript.Scanner/LanguageServices/LanguageService.PathTestOwner.cs",
+      "sha256": "27378ab351451b9be3c7d79dab9be7ec6e3c8705b8275825f7b79d019cbffa34"
+    },
+    {
+      "path": "tools/generate-project-ata-check-inputs.py",
+      "sha256": "69e8fd6cef04efce61b64d619d18cfa96c436019c741670bfbd07e3977c3da61"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectAtaInputs.provenance.json",
+      "sha256": "293b5581a243c35d64e21bdaafd9f747e1f7ae8d6ad59967acace5e6aea3b9e2"
+    }
+  ],
+  "sourceReviews": [
+    "artifacts/language-services/source-review/ata-assertions.json",
+    "artifacts/language-services/source-review/custom-config-original.json",
+    "artifacts/language-services/source-review/untitled-originals.json",
+    "artifacts/language-services/source-review/file-rename-originals.json"
+  ],
+  "adaptations": [
+    "Same accepted Session fixture now retains real npm/locale/mapper callback observations and optional explicit background context; existing defaults unchanged.",
+    "Three same-body private-to-internal FileRename/Rename admissions; genuine original partial Host constructor.",
+    "Tracked literal generator writes actual tracked generated/provenance destinations; file-local Input alias supplies original fixture type."
+  ],
+  "verification": "Root-only central integration and Native; no pass credit at promotion."
+}

@@ -7,8 +7,10 @@ namespace TypeScript.Lsp.Protocol;
 internal readonly partial struct CodeActionKind
 {
     internal bool Contains(CodeActionKind other) => Equals(other) || Equals(Empty) || other.Value.StartsWith(ByteStringValue.Concat(Value, ByteStringValue.FromString(".")));
-    internal static readonly CodeActionKind SourceFixAllTs = new(ByteStringValue.Concat(SourceFixAll.Value, ByteStringValue.FromString(".ts")));
-    internal static readonly CodeActionKind SourceOrganizeImportsTs = new(ByteStringValue.Concat(SourceOrganizeImports.Value, ByteStringValue.FromString(".ts")));
-    internal static readonly CodeActionKind SourceRemoveUnusedImportsTs = new(ByteStringValue.Concat(Source.Value, ByteStringValue.FromString(".removeUnusedImports.ts")));
-    internal static readonly CodeActionKind SourceSortImportsTs = new(ByteStringValue.Concat(Source.Value, ByteStringValue.FromString(".sortImports.ts")));
+    // Go constants are initialized independently; partial C# field ordering must not
+    // read uninitialized generated base-kind headers.
+    internal static readonly CodeActionKind SourceFixAllTs = new(ByteStringValue.FromString("source.fixAll.ts"));
+    internal static readonly CodeActionKind SourceOrganizeImportsTs = new(ByteStringValue.FromString("source.organizeImports.ts"));
+    internal static readonly CodeActionKind SourceRemoveUnusedImportsTs = new(ByteStringValue.FromString("source.removeUnusedImports.ts"));
+    internal static readonly CodeActionKind SourceSortImportsTs = new(ByteStringValue.FromString("source.sortImports.ts"));
 }

@@ -86,6 +86,12 @@ internal static class LogFormat
                 continue;
             }
 
+            // fmt.printArg records '+' for the struct-field-label form of v;
+            // the consumed %+v values are decoded maps/slices/primitives, whose
+            // rendering is otherwise the ordinary v form.
+            bool plus = format[i] == '+';
+            if (plus)
+                i++;
             bool left = format[i] == '-';
             if (left)
                 i++;
@@ -101,6 +107,7 @@ internal static class LogFormat
                 's' => String(arg),
                 'q' => GoQuote.Quote(String(arg)),
                 'v' => Value(arg),
+                'T' => TypeName(arg),
                 't' => arg is bool flag ? flag ? "true" : "false" : throw new FormatException("non-bool log %t"),
                 'd' => Integer(arg, false),
                 'x' => Integer(arg, true),
@@ -129,6 +136,7 @@ internal static class LogFormat
         RootedPath path => path.AsString(),
         PathKey path => path.AsString(),
         IGoLogStringer stringer => stringer.GoLogString(),
+        Exception error => GoString.ToUtf8(error.Message),
         _ => throw new FormatException("non-string project log argument")};
     private static string Integer(object? value, bool hex)
     {
@@ -146,6 +154,66 @@ internal static class LogFormat
             _ => throw new FormatException("non-integer project log argument")};
     }
 
+    // The only %T consumer is decoded initialization preferences. These are
+    // exactly json/v2 nil-any concrete owners, not reflected CLR DTO identities.
+    private static string TypeName(object? value) => value switch
+    {
+        null => "<nil>",
+        string or ByteStringValue => "string",
+        bool => "bool",
+        double => "float64",
+        float => "float32",
+        Dictionary<string, object?> => "map[string]interface {}",
+        List<object?> or object? [] => "[]interface {}",
+        byte => "uint8",
+        sbyte => "int8",
+        short => "int16",
+        ushort => "uint16",
+        int => "int",
+        uint => "uint",
+        long => "int64",
+        ulong => "uint64",
+        _ => throw new FormatException("project log type requires an explicit Go projection")};
+    // strconv.AppendFloat('g', -1): standard shortest-roundtrip digits, with
+    // Go's precision=-1 exponent threshold and exponent spelling. This is a
+    // formatting boundary only; no JSON numeric conversion or display decoding.
+    private static string Float(double number, bool single = false)
+    {
+        if (double.IsNaN(number))
+            return "NaN";
+        if (double.IsPositiveInfinity(number))
+            return "+Inf";
+        if (double.IsNegativeInfinity(number))
+            return "-Inf";
+        bool negative = double.IsNegative(number);
+        string raw = single ? Math.Abs((float)number).ToString("R", CultureInfo.InvariantCulture) : Math.Abs(number).ToString("R", CultureInfo.InvariantCulture);
+        int exponentIndex = raw.IndexOfAny(['E', 'e']);
+        int exponent = exponentIndex < 0 ? 0 : int.Parse(raw.AsSpan(exponentIndex + 1), NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+        string mantissa = exponentIndex < 0 ? raw : raw[..exponentIndex];
+        int dot = mantissa.IndexOf('.');
+        int decimalPosition = (dot < 0 ? mantissa.Length : dot) + exponent;
+        string digits = dot < 0 ? mantissa : mantissa.Remove(dot, 1);
+        int first = 0;
+        while (first < digits.Length - 1 && digits[first] == '0')
+            first++;
+        digits = digits[first..];
+        decimalPosition -= first;
+        digits = digits.TrimEnd('0');
+        if (digits.Length == 0)
+            return negative ? "-0" : "0";
+        int scientificExponent = decimalPosition - 1;
+        string result;
+        if (scientificExponent < -4 || scientificExponent >= 6)
+            result = digits[..1] + (digits.Length > 1 ? "." + digits[1..] : "") + "e" + (scientificExponent < 0 ? "-" : "+") + Math.Abs(scientificExponent).ToString("D2", CultureInfo.InvariantCulture);
+        else if (decimalPosition <= 0)
+            result = "0." + new string ('0', -decimalPosition) + digits;
+        else if (decimalPosition >= digits.Length)
+            result = digits + new string ('0', decimalPosition - digits.Length);
+        else
+            result = digits.Insert(decimalPosition, ".");
+        return negative ? "-" + result : result;
+    }
+
     private static string Value(object? value)
     {
         switch (value)
@@ -160,6 +228,10 @@ internal static class LogFormat
                 return GoString.ToUtf8(error.Message);
             case TimeSpan duration:
                 return new GoLogDuration(checked(duration.Ticks * 100)).GoLogString();
+            case double number:
+                return Float(number);
+            case float number:
+                return Float(number, true);
             case byte or sbyte or short or ushort or int or uint or long or ulong:
                 return Integer(value, false);
             // Slice is a value header with a pattern enumerator, not IEnumerable.
@@ -187,49 +259,93 @@ internal static class LogFormat
                 return SliceValue(items);
             case Slice<TypeScript.ProjectSystem.ConfiguredProjectID> items:
                 return SliceValue(items);
-            case IDictionary dictionary:
-            {
-                // Go fmt sorts map keys. Actual logging maps have string/path keys;
-                // their raw byte ordinal order is retained without display decoding.
-                var entries = new List<(string Key, object? Value)>(dictionary.Count);
-                foreach (DictionaryEntry item in dictionary)
-                    entries.Add((Value(item.Key), item.Value));
-                entries.Sort(static (a, b) => string.CompareOrdinal(a.Key, b.Key));
-                var builder = new GoBuilder();
-                builder.WriteString("map[");
-                for (int i = 0; i < entries.Count; i++)
-                {
-                    if (i != 0)
-                        builder.WriteString(" ");
-                    builder.WriteString(entries[i].Key);
-                    builder.WriteString(":");
-                    builder.WriteString(Value(entries[i].Value));
-                }
-
-                builder.WriteString("]");
-                return builder.String();
-            }
-
-            case IEnumerable sequence:
-            {
-                var builder = new GoBuilder();
-                builder.WriteString("[");
-                bool first = true;
-                foreach (object? item in sequence)
-                {
-                    if (!first)
-                        builder.WriteString(" ");
-                    first = false;
-                    builder.WriteString(Value(item));
-                }
-
-                builder.WriteString("]");
-                return builder.String();
-            }
-
+            case IDictionary or IEnumerable:
+                return ContainerValue(value);
             default:
                 throw new FormatException("project log value requires an explicit Go projection");
         }
+    }
+
+    private readonly record struct ValueJob(object? Value, string? Literal = null, IEnumerator? Enumerator = null);
+    private static string ContainerValue(object? root)
+    {
+        var builder = new GoBuilder();
+        var jobs = new Stack<ValueJob>();
+        jobs.Push(new(root));
+        try
+        {
+            while (jobs.TryPop(out var job))
+            {
+                if (job.Literal is not null)
+                {
+                    builder.WriteString(job.Literal);
+                    continue;
+                }
+
+                if (job.Enumerator is { } iterator)
+                {
+                    if (iterator.MoveNext())
+                    {
+                        jobs.Push(job);
+                        jobs.Push(new(iterator.Current));
+                        builder.WriteByte(' ');
+                    }
+                    else
+                        (iterator as IDisposable)?.Dispose();
+                    continue;
+                }
+
+                switch (job.Value)
+                {
+                    case IDictionary map:
+                    {
+                        // fmt's sorted map snapshot is required; retain raw key
+                        // order and recursive element rendering without CLR recursion.
+                        var entries = new List<(string Key, object? Value)>(map.Count);
+                        foreach (DictionaryEntry item in map)
+                            entries.Add((Value(item.Key), item.Value));
+                        entries.Sort(static (a, b) => string.CompareOrdinal(a.Key, b.Key));
+                        builder.WriteString("map[");
+                        jobs.Push(new(null, "]"));
+                        for (int i = entries.Count - 1; i >= 0; i--)
+                        {
+                            jobs.Push(new(entries[i].Value));
+                            jobs.Push(new(null, (i == 0 ? "" : " ") + entries[i].Key + ":"));
+                        }
+
+                        break;
+                    }
+
+                    case IEnumerable sequence when job.Value is not string:
+                    {
+                        builder.WriteByte('[');
+                        jobs.Push(new(null, "]"));
+                        var sequenceIterator = sequence.GetEnumerator();
+                        if (sequenceIterator.MoveNext())
+                        {
+                            jobs.Push(new(null, Enumerator: sequenceIterator));
+                            jobs.Push(new(sequenceIterator.Current));
+                        }
+                        else
+                            (sequenceIterator as IDisposable)?.Dispose();
+                        break;
+                    }
+
+                    default:
+                        builder.WriteString(Value(job.Value));
+                        break;
+                }
+            }
+        }
+        finally
+        {
+            // Retained standard enumerators own their normal disposal even if
+            // an explicit unsupported structured owner rejects formatting.
+            foreach (var job in jobs)
+                (job.Enumerator as IDisposable)?.Dispose();
+        }
+
+        return builder.String();
     }
 
     private static string SliceValue<T>(Slice<T> items)

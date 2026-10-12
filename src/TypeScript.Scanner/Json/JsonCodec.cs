@@ -575,10 +575,19 @@ public static partial class JsonCodec
                 throw JsonTextErrors.AsException(JsonTextErrors.SemanticError("marshal", "", "", goType, job.Pointer, 0, "encountered a cycle"));
             }
 
+            // jsnum.Number is a named Go float64. Unwrap before admission so
+            // rejected values retain the named type and emit no next delimiter.
+            string numericGoType = "float64";
+            if (value is JsNum.Number namedNumber)
+            {
+                value = namedNumber.Value;
+                numericGoType = "jsnum.Number";
+            }
+
             if (value is double nonfinite && !double.IsFinite(nonfinite))
             {
                 string label = double.IsNaN(nonfinite) ? "NaN" : nonfinite > 0 ? "+Inf" : "-Inf";
-                throw JsonTextErrors.AsException(JsonTextErrors.SemanticError("marshal", "", "", "float64", job.Pointer, 0, "unsupported value: " + label));
+                throw JsonTextErrors.AsException(JsonTextErrors.SemanticError("marshal", "", "", numericGoType, job.Pointer, 0, "unsupported value: " + label));
             }
 
             bool prefixWritten = false;

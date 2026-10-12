@@ -1,0 +1,28 @@
+{
+  "status": "Promoted complete whole original function; independent source review CLEAR, central compile/runtime pending",
+  "upstream": "upstream/TypeScript/tsc/internal/project/configfilechanges_test.go",
+  "upstreamSha256": "1432d2473d27e97950783f89c9b9e78c1288f86f06d4a5de2bd006054bcd01e0",
+  "originalFunctions": [
+    "TestConfigFileChanges"
+  ],
+  "scope": "seven sibling scenarios",
+  "files": [
+    {
+      "path": "tests/LanguageServices.Tests/ProjectConfigChangeTests.cs",
+      "sha256": "8ce2303680f38fdc1411202741f47b44de5332edfee45ee3fe8f4e67bded14f0"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectConfigChangeChecks.Inputs.cs",
+      "sha256": "65a1b5c9d34a7f74f7bcec253790bc83259fe499d2b0ce644507a292df4c511e"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectConfigChangeChecks.cs",
+      "sha256": "8090a6cf4f286b9cd173e5084c136cc54b29cbe3015335dd360c158406215da0"
+    }
+  ],
+  "adaptations": [
+    "Actual shared Session fixture and retained snapshots/FS/watch owners; unchanged original expected values and raw input literals.",
+    "Named sibling action aggregation executes remaining original groups after assertion failure; serial original parallel scheduling hints."
+  ],
+  "verification": "Source-written only; no candidate pass credit or agent workloads."
+}

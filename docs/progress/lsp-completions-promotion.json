@@ -1182,7 +1182,7 @@
   "files": [
     {
       "path": "src/TypeScript.Scanner/LanguageServices/Completions.cs",
-      "sha256": "2e56a9c288a1909276a6d4a4bdc341a26587042bf82584a9ebb85465e5a54d0f"
+      "sha256": "f7f58bbcf588560572be428120effd1c8ac1bc6b9cabfa8e56352e734f185448"
     },
     {
       "path": "src/TypeScript.Scanner/LanguageServices/StringCompletions.cs",

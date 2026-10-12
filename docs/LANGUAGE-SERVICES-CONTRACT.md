@@ -5,7 +5,7 @@ performance `9b8fa74a`; its human-readable summary is preserved at `e003f22f`.
 Reference: `fed0bf24149fb1ed36039212648bafdafc1ea10e` in
 [pinned TypeScript](../upstream/TypeScript/tsc/). Completion means the implemented
 upstream editor subsystem described here, not every feature in the LSP schema or
-every historical JavaScript TypeScript service. The first shared-dependency execution gate has passed; complete subsystem and epic acceptance remain pending.
+every historical JavaScript TypeScript service. Current shared Native98 direct assertions and the complete original editor corpus are independently reviewed; fresh final public and retained regression gates passed; performance cohort and final claim review are complete; the Linux x64 contract is accepted, with delivery commit pending.
 
 ## Capability and ownership
 
@@ -32,9 +32,8 @@ Complete these upstream responsibilities, including their supporting algorithms:
    inlay hints; formatting/on-type; automatic insertion and JSDoc snippets; call
    hierarchy; code lenses/resolve; organize imports and the upstream registered
    code-action/fix-all families. Preserve both successful and failure behavior.
-5. **Actual server.** Planned public launch is `tscheck --lsp --stdio`, dispatched
-   before the existing one-shot compilation policy. This command is not implemented
-   yet. Initialization and accurate capability negotiation, ordered
+5. **Actual server.** Public launch is `tscheck --lsp --stdio`, dispatched
+   before the existing one-shot compilation policy. This command passed the bounded paired public91 disk/stdio and signal/watchdog workloads; final-current-source public execution now passed both paired drivers. Initialization and accurate capability negotiation, ordered
    document mutations, concurrent snapshot-backed requests, cancellation, correlated
    client requests, registration/progress/logging, stale-result rules, shutdown/EOF,
    signal and parent-process lifecycle, and real stdio transport. Editor-facing
@@ -166,8 +165,7 @@ A source scan separates actual `Test*` entries from `TestMain` package lifecycle
 
 The [per-file/function inventory](./language-services-upstream-tests.json) records
 4,442 source test files, their hashes and 4,820 test entrypoints. One concrete core
-BFS dependency was added afterward. The expanded inventory accounts for5,006 test functions:323 whole original TypeScript-repository functions plus one separately adapted original runtime observation pass at
-dependency74; remaining execution and detailed dispositions are still work.
+BFS dependency was added afterward. The expanded inventory accounts for5,006 test functions. Native98 passed406 whole original TypeScript-repository functions, with the adapted runtime observation and external/partial channels separately counted. The complete4,571-function editor corpus retains4,152 passes,415 original skips and4 same pinned-reference failures. Final detailed inventory/proof binding remains in progress.
 These are function identities, not table-row, assertion or pass counts. The original
 investigations also report raw `Test`-prefixed declaration counts; those include
 lifecycle functions and must not be used as executed-test totals. Dependency tests
@@ -178,11 +176,11 @@ identified. Per-test dispositions and original assertions remain acceptance work
 
 | Internal milestone | Complete owners before consumers | Status |
 | --- | --- | --- |
-| Shared foundations | Protocol/codecs/converters; checker queries/hover; AST navigation; project ownership utilities | In progress |
+| Shared foundations | Protocol/codecs/converters; checker queries/hover; AST navigation; project ownership utilities | Complete source counterparts reviewed and integrated; Native98 direct assertions passed |
 | Reusable project environment | Overlays, snapshots, caches, graph/pool, session lifecycle, preferences, hosts | Complete production counterparts promoted and source-reviewed through Session/Snapshot; complete original Session/pool assertions pass managed and Native; Snapshot/API/refcount originals pass managed/Native; all five Registry originals pass managed/Native74 |
-| Shared editing and indexing | Formatting, change tracking, autoimport, display/source maps | Formatting/change/autoimport dependencies scoped-verified at f5feaa6a; display/source-map/semantic consumers promoted, verification pending |
-| Semantic services | All listed upstream request algorithms and cross-project interactions | Full semantic counterpart families integrated and independently source-reviewed through completion, edit-producing and read-only requests; service-result corpus verification remains pending |
-| Server and full acceptance | Real dispatch/transport, direct/fourslash comparisons, Native AOT, review and regressions | Complete source-owner drafts in progress; no actual server acceptance yet |
+| Shared editing and indexing | Formatting, change tracking, autoimport, display/source maps | Complete source owners reviewed; integrated direct assertions and full applicable Native98 editor corpus passed with explicit dispositions |
+| Semantic services | All listed upstream request algorithms and cross-project interactions | All39 LS root production counterparts/1038 mapped workers accounted for, including full API context and constants; independently reviewed completion, edit-producing and read-only families integrated. Complete Native98 original editor corpus independently reviewed with explicit skip/reference-failure dispositions |
+| Server and full acceptance | Real dispatch/transport, direct/fourslash comparisons, Native AOT, review and regressions | Complete source owners independently reviewed; Native98 direct/full editor corpus passed applicable assertions, public91 paired transport/lifecycle passed. Fresh final public and retained regression gates passed; performance cohort and final claim review are complete; the Linux x64 contract is accepted, with delivery commit pending |
 
 Concrete implementation dependencies refine this sequence: formatting precedes
 change tracking, which precedes full autoimport support. Real autoimport and the

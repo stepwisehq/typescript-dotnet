@@ -1,0 +1,26 @@
+{
+  "status": "complete authored public lifecycle source written; independent review/reference/Native execution pending",
+  "path": "tools/language-services-oracle/compare-public-lsp-lifecycle.py",
+  "sha256": "41ea6071a79e3e53c9522cbfd74ac0ca8d97b3f9575497a0cf8006b01153dbfe",
+  "sharedClient": {
+    "path": "tools/language-services-oracle/compare-public-lsp.py",
+    "sha256": "195f3004818e68bc362d0d25715125c61737ffdafedaaec6a5d67905c46ee4ee"
+  },
+  "originalFunctions": 0,
+  "roles": [
+    "SIGINT",
+    "SIGTERM",
+    "initialize.processId parent liveness",
+    "--clientProcessId override parent liveness"
+  ],
+  "source": [
+    "cmd/tsc/lsp.go:50-51 signal.NotifyContext",
+    "cmd/tsc/lsp.go:71-75 returned cancellation stderr/exit1",
+    "cmd/tsc/lsp.go:78-122 parent override or initialize callback and5-second watchdog",
+    "cmd/tsc/isprocessalive_unix.go kill(pid,0) liveness",
+    "internal/lsp/server.go Run/dispatch context cancellation"
+  ],
+  "ownership": "Only direct signal to actual owned server PID, or terminate/reap isolated helper declared editor PID. Parent is a legitimate supplied liveness target, not assumed OS PPID. Actual5-second watchdog unchanged;30-second deadlock safety only. Stdin kept open through exit, no EOF race. Forced kill is failure cleanup only.",
+  "expectation": "All four roles require exactexit1. Signal stderr exactly context canceled newline. Parent stderr exact original Parent process <actualPID> has exited, shutting down. newline plus context canceled newline. Full raw PID-specific outputs retained; complete initialization/valid diagnostic payloads compared Go/Native; no broad normalization.",
+  "verification": "No execution by implementation agent; root executes immutable Native91 with pinned Go."
+}

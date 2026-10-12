@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Complete internal/ls/api.go at fed0bf24149fb1ed36039212648bafdafc1ea10e.
 using TypeScript.Scanner;
+using TypeScript.Lsp.Protocol;
 using AstNav = TypeScript.AstNavigation.AstNav;
 using CheckerType = TypeScript.Checking.Type;
 
@@ -14,7 +15,8 @@ internal sealed partial class LanguageService
     // Its feature workers are separate counterparts, not successful substitutes here.
     internal static readonly Exception ErrNeedsAutoImports = new InvalidOperationException("completion list needs auto imports");
     // api.go:20. The inner exception preserves the original wrapped error identity.
-    internal (Symbol? Symbol, Exception? Error) GetSymbolAtPosition(CancellationToken context, RootedFilePath fileName, int position)
+    internal (Symbol? Symbol, Exception? Error) GetSymbolAtPosition(CancellationToken context, RootedFilePath fileName, int position) => GetSymbolAtPosition(ProtocolRequestContext.Default.WithCancellationToken(context), fileName, position);
+    internal (Symbol? Symbol, Exception? Error) GetSymbolAtPosition(ProtocolRequestContext context, RootedFilePath fileName, int position)
     {
         var(currentProgram, file) = tryGetProgramAndFile(fileName);
         if (file == null)
@@ -33,7 +35,8 @@ internal sealed partial class LanguageService
         }
     }
 
-    internal Symbol? GetSymbolAtLocation(CancellationToken context, Node node)
+    internal Symbol? GetSymbolAtLocation(CancellationToken context, Node node) => GetSymbolAtLocation(ProtocolRequestContext.Default.WithCancellationToken(context), node);
+    internal Symbol? GetSymbolAtLocation(ProtocolRequestContext context, Node node)
     {
         var currentProgram = GetProgram();
         var(checker, done) = currentProgram.GetTypeCheckerForFile(context, Ast.GetSourceFileOfNode(node));
@@ -47,7 +50,8 @@ internal sealed partial class LanguageService
         }
     }
 
-    internal CheckerType GetTypeOfSymbol(CancellationToken context, Symbol symbol)
+    internal CheckerType GetTypeOfSymbol(CancellationToken context, Symbol symbol) => GetTypeOfSymbol(ProtocolRequestContext.Default.WithCancellationToken(context), symbol);
+    internal CheckerType GetTypeOfSymbol(ProtocolRequestContext context, Symbol symbol)
     {
         var(checker, done) = GetProgram().GetTypeChecker(context);
         try

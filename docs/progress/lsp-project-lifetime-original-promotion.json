@@ -1,0 +1,27 @@
+{
+  "status": "Promoted complete whole original function; independent source review CLEAR, central compile/runtime pending",
+  "upstream": "upstream/TypeScript/tsc/internal/project/projectlifetime_test.go",
+  "upstreamSha256": "e30da65c92c8f582e69335f94505c800ec183fb31015369fd62fc5cd3a124f0a",
+  "originalFunctions": [
+    "TestProjectLifetime"
+  ],
+  "files": [
+    {
+      "path": "validation/LanguageServices.Checks/ProjectLifetimeOriginalChecks.Inputs.cs",
+      "sha256": "553c7edc781a7a176beb1a599412a0df1c39180a632b477289a0aba9f71fa62d"
+    },
+    {
+      "path": "tests/LanguageServices.Tests/ProjectLifetimeOriginalTests.cs",
+      "sha256": "66fd75c6f35cb28d5073aba8fb141b5eb08bd6b093306735429dab47579891d1"
+    },
+    {
+      "path": "validation/LanguageServices.Checks/ProjectLifetimeOriginalChecks.cs",
+      "sha256": "994d4285bf03a63f3ee1eface61b803533be4a092ae75be17719d63571d8dc58"
+    }
+  ],
+  "adaptations": [
+    "Exact original raw file input maps, source-defined event ordering and state/cache/watch counts retained.",
+    "Genuine current shared Session/FS/client fixture; sibling action aggregation preserves continuation after failures; t.Parallel hints sequential."
+  ],
+  "verification": "No candidate compilation or execution credit."
+}
