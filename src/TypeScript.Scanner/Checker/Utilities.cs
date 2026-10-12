@@ -902,7 +902,7 @@ public sealed partial class Checker
 
 public sealed partial class Checker
 {
-    private static ModifierFlags getDeclarationModifierFlagsFromSymbol(Symbol symbol) => getDeclarationModifierFlagsFromSymbolEx(symbol, false);
+    internal static ModifierFlags getDeclarationModifierFlagsFromSymbol(Symbol symbol) => getDeclarationModifierFlagsFromSymbolEx(symbol, false);
     private static ModifierFlags getDeclarationModifierFlagsFromSymbolEx(Symbol symbol, bool isWrite)
     {
         if ((symbol.CheckFlags & CheckFlags.Synthetic) != 0)
@@ -1000,6 +1000,8 @@ public sealed partial class Checker
         left.IsNull ? (right.IsNull ? 0 : -1) : right.IsNull ? 1 :
         ByteStringKey.FromValue(left).CompareTo(ByteStringKey.FromValue(right));
 
+    // utilities.go:1022. Internal prefix contains a raw 0xFE byte.
+    internal static bool IsPrivateIdentifierSymbol(Symbol symbol) => symbol != null && symbol.NameValue.StartsWith([0xFE, (byte)'#']);
     private static bool IsKnownSymbol(Symbol symbol) => isLateBoundName(symbol.NameValue);
     internal static bool isLateBoundName(string name) => name.Length >= 2 && name[0] == '\u00FE' && name[1] == '@';
     // utilities.go:1029. Internal symbol names are raw bytes, including 0xFE.

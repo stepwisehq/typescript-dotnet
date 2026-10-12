@@ -638,7 +638,7 @@ public sealed partial class Checker
     }
 
     private bool isCanceled() => ctx?.IsCancellationRequested == true;
-    private void checkNotCanceled()
+    internal void checkNotCanceled()
     {
         if (wasCanceled)
             throw new InvalidOperationException("Checker was previously cancelled");
@@ -8086,6 +8086,14 @@ public sealed partial class Checker
     }
 
     private Symbol getResolvedSymbolOrNil(Node node) => symbolNodeLinks.Get(node).resolvedSymbol;
+    // checker.go:14178. Emit import references retain the actual resolved-symbol cache fallback.
+    private Symbol getReferencedValueOrAliasSymbol(Node reference)
+    {
+        var resolvedSymbol = symbolNodeLinks.Get(reference).resolvedSymbol;
+        if (resolvedSymbol != null && resolvedSymbol != unknownSymbol) return resolvedSymbol;
+        return resolveName(reference, reference.TextValue(), SymbolFlags.Value | SymbolFlags.ExportValue | SymbolFlags.Alias, null, false, false);
+    }
+
     internal Symbol resolveAliasWithDeprecationCheck(Symbol symbol, Node location)
     {
         if (((((symbol.Flags & SymbolFlags.Alias) == 0) || this.isDeprecatedSymbol(symbol)) || (this.getDeclarationOfAliasSymbol(symbol) == null)))
@@ -12843,13 +12851,18 @@ public sealed partial class Checker
         return n;
     }
 
-    // checker.go:28330. Source index syntax is excluded; synthetic base infos have no declaration.
-    internal static string getNameFromIndexInfo(IndexInfo info)
+    // checker.go:28330. Preserve the source declaration's borrowed byte header.
+    internal static ByteStringValue getNameFromIndexInfoValue(IndexInfo info)
     {
-        if (info.declaration != null)
-            return TypeScript.Scanner.Scanner.DeclarationNameToStringByteString(info.declaration.Parameters()[0].Name());
-        return "x";
+        if (info.declaration == null)
+            return ByteStringValue.FromString("x");
+        var name = info.declaration.Parameters()[0].Name();
+        return name == null || name.Pos() == name.End()
+            ? ByteStringValue.FromString("(Missing)")
+            : TypeScript.Scanner.Scanner.GetTextOfNodeValue(name);
     }
+
+    internal static string getNameFromIndexInfo(IndexInfo info) => getNameFromIndexInfoValue(info).Materialize()!;
 
     private readonly Dictionary<CacheHashKey, Slice<Type>> subtypeReductionCache = new();
     private Type unknownEmptyObjectType;

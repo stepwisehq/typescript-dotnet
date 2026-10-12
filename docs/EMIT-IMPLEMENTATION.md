@@ -23,6 +23,26 @@ Native AOT (78 original functions plus 30 authored controls) passed. See
 [durable evidence](../validation/results/emit-foundation-verified.json).
 This completes prerequisites, not the whole-emit contract or output comparison.
 
+## Full printer and semantic dependency packet
+
+The next packet completes all 378 printer functions and 51 utilities, the writer
+implementations, Binder ReferenceResolver 15 functions, the 44-method resolver
+contract and 55 checker EmitResolver functions. Non-hover NodeBuilder declaration
+serialization, tracker hooks, CopyOnWrite scopes and the transform chain now use
+genuine implementations. The three hover-only methods stay outside emit; the
+large checker files are reviewed for their demanded changes, not relabeled as
+new full-file ports. Shared transformer Utilities 22 and Destructuring 28 are complete,
+as is TypeEraser 5 with its direct original 69-row test table. Only the required dotted
+module leaf of RuntimeSyntax is present; its remaining 39 functions are next work.
+
+Independent source and original-assertion review is clear. The integrated managed
+gate passed 1,186 cases (169 emit,832 checker,84 type-system,101 selected no-emit), with
+no failures/skips. Actual Linux x64 Native AOT published and executed 149 original functions plus 46 authored
+controls successfully; independent evidence review confirms this prerequisite checkpoint. Whole transformation/output acceptance remains
+separate. See [printer progress](progress/emit-printer.md),
+[semantic progress](progress/emit-resolver.md), and
+[shared transform progress](progress/emit-transform-shared.md).
+
 ## Package responsibilities
 
 | Upstream file | Lines / functions | Baseline and active disposition |
@@ -101,6 +121,6 @@ This completes prerequisites, not the whole-emit contract or output comparison.
 - OutputPaths/options/VFS/configuration: accepted foundations retained; wire full write behavior and investigate only concrete omissions.
 - execute/tsc command integration: production disk invocation and observable output/error behavior required; language services and unrelated builder/watch orchestration excluded.
 
-Function counts are lexical upstream declarations, not coverage or test totals. No emit
-subsystem is accepted yet. Source-file mappings are updated when actual counterparts
+Function counts are lexical upstream declarations, not coverage or test totals. The
+accepted prerequisite checkpoint and live packet above supersede baseline statuses. Source-file mappings are updated when actual counterparts
 are implemented; missing files listed here are not silently marked ported.

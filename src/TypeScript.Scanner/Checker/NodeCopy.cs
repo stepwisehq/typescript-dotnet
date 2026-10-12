@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
-// Modified partial C# port of tsc/internal/checker/nodecopy.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Diagnostic-only finite data-property, scalar and non-generic callable context reuse; general emit excluded.
+// C# port of tsc/internal/checker/nodecopy.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
+// Declaration emit and retained diagnostics share the original syntax reuse/mapper path.
 #nullable disable
 using TypeScript.Scanner;
 using TypeScript.PseudoChecking;
@@ -11,7 +11,7 @@ internal sealed partial class NodeBuilderImpl
 {
     private Node reuseNode(Node node) => node == null ? null : tryReuseExistingNodeHelper(node);
     // nodecopy.go:20.
-    private Node tryJSTypeNodeToTypeNode(Node node) => reuseNode(node);
+    internal Node tryJSTypeNodeToTypeNode(Node node) => reuseNode(node);
     // nodecopy.go:280. Fake serialization scopes do not establish a unique-symbol owner.
     private Node getEnclosingDeclarationIgnoringFakeScope()
     {
@@ -26,7 +26,7 @@ internal sealed partial class NodeBuilderImpl
         var res = reuseNode(node);
         if (res == null)
             return res;
-        var(text, hasText) = Ast.TryGetTextOfPropertyName(res);
+        var(text, hasText) = Ast.TryGetTextValueOfPropertyName(res);
         if (!hasText)
             return res;
         var kind = classifyPropertyName(text, Ast.IsStringLiteral(res), isMethod);
@@ -36,7 +36,7 @@ internal sealed partial class NodeBuilderImpl
         if (kind == propertyNameNodeKind.Identifier)
             renamed = newIdentifier(text, null);
         else if (kind == propertyNameNodeKind.StringLiteral)
-            renamed = f.NewStringLiteral(text, TokenFlags.None);
+            renamed = f.NewStringLiteralWithTextValue(text, TokenFlags.None);
         else
             return res;
         e.SetOriginal(renamed, res);
@@ -51,7 +51,7 @@ internal sealed partial class NodeBuilderImpl
         if (result != null)
             return result; // Expandability walk is disabled by fixed maxExpansionDepth=-1.
         ctx.tracker.ReportInferenceFallback(node);
-        return typeToTypeNode(ch.getTypeFromTypeNode(node));
+        return typeToTypeNode(getTypeFromTypeNode(node, false));
     }
 
     // nodecopy.go:100/184/192. Restore the actual recovery tracker and
@@ -90,6 +90,10 @@ internal sealed partial class NodeBuilderImpl
             return false;
         }
 
+        public void PushErrorFallbackNode(Node node) => wrapped.PushErrorFallbackNode(node);
+        public void PopErrorFallbackNode() => wrapped.PopErrorFallbackNode();
+        public void ReportNonlocalAugmentation(SourceFile containingFile, Symbol parentSymbol, Symbol augmentingSymbol) => wrapped.ReportNonlocalAugmentation(containingFile, parentSymbol, augmentingSymbol);
+        public void ReportPrivateInBaseOfClassExpression(string propertyName) => bound.markError(() => wrapped.ReportPrivateInBaseOfClassExpression(propertyName));
         public void ReportNonSerializableProperty(string propertyName) => bound.markError(() => wrapped.ReportNonSerializableProperty(propertyName));
         public void ReportCyclicStructureError() => bound.markError(wrapped.ReportCyclicStructureError);
         public void ReportInaccessibleThisError() => bound.markError(wrapped.ReportInaccessibleThisError);
@@ -101,6 +105,7 @@ internal sealed partial class NodeBuilderImpl
 
     private recoveryBoundary createRecoveryBoundary()
     {
+        ch.checkNotCanceled();
         var bound = new recoveryBoundary
         {
             ctx = ctx,
@@ -209,7 +214,7 @@ internal sealed partial class NodeBuilderImpl
                             name = typeParameterToName(type);
                     }
 
-                    name ??= newIdentifier(current.Text(), symbol);
+                    name ??= newIdentifier(current.TextValue(), symbol);
                     name = setTextRange(name, current);
                     e.AddEmitFlags(name, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
                     return name;
@@ -542,9 +547,12 @@ internal sealed partial class NodeBuilderImpl
                 return res;
             }
 
-            if (node.Kind is Kind.StringLiteral or Kind.NoSubstitutionTemplateLiteral or Kind.TemplateHead or Kind.TemplateMiddle or Kind.TemplateTail)
+            if (Ast.IsStringLiteralLike(node))
             {
                 var clone = node.Clone(f);
+                // nodecopy.go:823. Reused literal types honor the requested quote style.
+                if (Ast.IsStringLiteral(node) && (ctx.flags & TypeScript.NodeBuilding.Flags.UseSingleQuotesForStringLiteralType) != 0 && (node.AsStringLiteral().TokenFlags & TokenFlags.SingleQuote) == 0)
+                    clone.AsStringLiteral().TokenFlags ^= TokenFlags.SingleQuote;
                 e.AddEmitFlags(clone, TypeScript.DiagnosticPrinting.EmitFlags.NoAsciiEscaping);
                 return clone;
             }

@@ -43,4 +43,7 @@ public partial class Scanner
     internal static IEnumerable<CommentRange> GetLeadingCommentRangesByteString(ByteStringView source, int pos) => iterateCommentRanges(null, source, pos, false);
     internal static IEnumerable<CommentRange> GetTrailingCommentRangesByteString(string source, int pos) => iterateCommentRanges(null, source, pos, true);
     internal static IEnumerable<CommentRange> GetTrailingCommentRangesByteString(ByteStringView source, int pos) => iterateCommentRanges(null, source, pos, true);
+    internal static IEnumerable<CommentRange> GetLeadingCommentRanges(NodeFactory factory, ByteStringView source, int pos) => iterateCommentRanges(factory, source, pos, false);
+    internal static IEnumerable<CommentRange> GetTrailingCommentRanges(NodeFactory factory, ByteStringView source, int pos) => iterateCommentRanges(factory, source, pos, true);
+    internal static ByteStringView GetShebangByteString(ByteStringView source) => getShebang(source);
 }

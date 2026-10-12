@@ -1,97 +1,142 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
-// Modified partial C# port of tsc/internal/checker/nodebuilder.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Diagnostic-only scalar, named and composite data-type serialization and selected source-context reuse; general emit excluded.
+// Port of tsc/internal/checker/nodebuilder.go, pinned fed0bf24149fb1ed36039212648bafdafc1ea10e.
+// Exclusively language-service hover expansion is outside the emit contract.
 #nullable disable
 using TypeScript.Scanner;
-
+using Flags = TypeScript.NodeBuilding.Flags;
+using InternalFlags = TypeScript.NodeBuilding.InternalFlags;
+using SymbolTracker = TypeScript.NodeBuilding.SymbolTracker;
+using EmitContext = TypeScript.DiagnosticPrinting.EmitContext;
 namespace TypeScript.Checking;
 internal sealed class NodeBuilder
 {
     private readonly NodeBuilderImpl impl;
-    private readonly Stack<NodeBuilderImpl.NodeBuilderContext> ctxStack = new();
-    internal TypeScript.DiagnosticPrinting.EmitContext EmitContext() => impl.e;
-    internal NodeBuilder(Checker checker) => impl = new(checker);
-    internal NodeBuilder(Checker checker, TypeScript.DiagnosticPrinting.EmitContext context) => impl = new(checker, context);
-    // nodebuilder.go:228–270. Exact source flag/context entrypoints.
-    internal Node TypeToTypeNode(Type type, Node enclosingDeclaration, TypeScript.NodeBuilding.Flags flags, TypeScript.NodeBuilding.InternalFlags internalFlags, TypeScript.NodeBuilding.SymbolTracker tracker)
+    private Slice<NodeBuilderImpl.NodeBuilderContext> ctxStack = Slice<NodeBuilderImpl.NodeBuilderContext>.Make(0, 1);
+    internal EmitContext EmitContext() => impl.e;
+    internal NodeBuilder(Checker checker, EmitContext context, Dictionary<Node, Symbol> symbols = null) => impl = new(checker, context, symbols);
+    internal NodeBuilder(Checker checker) : this(checker, new EmitContext()) { }
+    private void enterContext(Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
+    {
+        ctxStack = ctxStack.Append(impl.ctx);
+        impl.enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+    }
+    private void popContext()
+    {
+        int size = ctxStack.Count;
+        if (size == 0) impl.ctx = null;
+        else { impl.ctx = ctxStack[size - 1]; ctxStack = ctxStack.Slice2(0, size - 1); }
+    }
+    private void exitContextCheck()
+    {
+        if (impl.ctx.truncating && (impl.ctx.flags & Flags.NoTruncation) != 0)
+            impl.ctx.tracker.ReportTruncationError();
+    }
+    private Node exitContext(Node result)
+    {
+        exitContextCheck();
+        try { return impl.ctx.encounteredError ? null : result; }
+        finally { popContext(); }
+    }
+    private Slice<Node> exitContextSlice(Slice<Node> result)
+    {
+        exitContextCheck();
+        try { return impl.ctx.encounteredError ? default : result; }
+        finally { popContext(); }
+    }
+    internal Node IndexInfoToIndexSignatureDeclaration(IndexInfo info, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
     {
         enterContext(enclosingDeclaration, flags, internalFlags, tracker);
-        return exitContext(impl.typeToTypeNode(type));
+        return exitContext(impl.indexInfoToIndexSignatureDeclarationHelper(info, null));
     }
-
-    internal Node SymbolToEntityName(Symbol symbol, SymbolFlags meaning, Node enclosingDeclaration, TypeScript.NodeBuilding.Flags flags, TypeScript.NodeBuilding.InternalFlags internalFlags, TypeScript.NodeBuilding.SymbolTracker tracker)
+    internal Node SerializeTypeForDeclaration(Node declaration, Symbol symbol, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
+    {
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        return exitContext(impl.serializeTypeForDeclaration(declaration, null, symbol, true));
+    }
+    internal Node SerializeTypeForExpression(Node expr, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
+    {
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        return exitContext(impl.serializeTypeForExpression(expr));
+    }
+    internal Node SignatureToSignatureDeclaration(Signature signature, Kind kind, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
+    {
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        return exitContext(impl.signatureToSignatureDeclarationHelper(signature, kind, default));
+    }
+    internal Node SymbolToEntityName(Symbol symbol, SymbolFlags meaning, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
     {
         enterContext(enclosingDeclaration, flags, internalFlags, tracker);
         return exitContext(impl.symbolToName(symbol, meaning, false));
     }
-
-    internal Node SymbolToNode(Symbol symbol, SymbolFlags meaning, Node enclosingDeclaration, TypeScript.NodeBuilding.Flags flags, TypeScript.NodeBuilding.InternalFlags internalFlags, TypeScript.NodeBuilding.SymbolTracker tracker)
+    internal Node SymbolToExpression(Symbol symbol, SymbolFlags meaning, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
+    {
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        return exitContext(impl.symbolToExpression(symbol, meaning));
+    }
+    internal Node SymbolToNode(Symbol symbol, SymbolFlags meaning, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
     {
         enterContext(enclosingDeclaration, flags, internalFlags, tracker);
         return exitContext(impl.symbolToNode(symbol, meaning));
     }
-
-    private void enterContext(Node enclosingDeclaration, TypeScript.NodeBuilding.Flags flags, TypeScript.NodeBuilding.InternalFlags internalFlags, TypeScript.NodeBuilding.SymbolTracker tracker)
+    internal Node SymbolToParameterDeclaration(Symbol symbol, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
     {
-        ctxStack.Push(impl.ctx);
-        impl.enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        return exitContext(impl.symbolToParameterDeclaration(symbol, false));
     }
-
-    // TypeToTypeNode (267); selected enclosing declaration and fully-qualified flag; external trackers/verbosity excluded.
-    internal Node TypeToTypeNode(Type type, Node enclosingDeclaration = null, bool fullyQualified = false, bool noTypeReduction = false, TypeScript.NodeBuilding.Flags? flags = null)
+    internal Slice<Node> SymbolToTypeParameterDeclarations(Symbol symbol, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
     {
-        enterContext(enclosingDeclaration, fullyQualified, noTypeReduction);
-        if (flags != null)
-            impl.ctx.flags = flags.Value;
-        return exitContext(impl.typeToTypeNode(type));
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        return exitContextSlice(impl.symbolToTypeParameterDeclarations(symbol));
     }
-
-    // nodebuilder.go:238. Default IgnoreErrors; computed-property writing disabled.
-    internal Node SymbolToNode(Symbol symbol, SymbolFlags meaning, Node enclosingDeclaration = null, TypeScript.NodeBuilding.InternalFlags internalFlags = TypeScript.NodeBuilding.InternalFlags.None)
+    internal Node TypeParameterToDeclaration(Type parameter, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
     {
-        enterContext(enclosingDeclaration);
-        impl.ctx.flags = TypeScript.NodeBuilding.Flags.IgnoreErrors;
-        impl.ctx.internalFlags = internalFlags;
-        return exitContext(impl.symbolToNode(symbol, meaning));
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        return exitContext(impl.typeParameterToDeclaration(parameter));
     }
-
-    // nodebuilder.go: SignatureToSignatureDeclaration / TypePredicateToTypePredicateNode.
-    internal Node SignatureToSignatureDeclaration(Signature signature, Kind kind, Node enclosingDeclaration, TypeScript.NodeBuilding.Flags flags)
+    internal Node TypePredicateToTypePredicateNode(TypePredicate predicate, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
     {
-        enterContext(enclosingDeclaration);
-        impl.ctx.flags = flags;
-        return exitContext(impl.signatureToSignatureDeclarationHelper(signature, kind, new()));
-    }
-
-    internal Node TypePredicateToTypePredicateNode(TypePredicate predicate, Node enclosingDeclaration, TypeScript.NodeBuilding.Flags flags)
-    {
-        enterContext(enclosingDeclaration);
-        impl.ctx.flags = flags;
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
         return exitContext(impl.typePredicateToTypePredicateNode(predicate));
     }
-
-    private void enterContext(Node enclosingDeclaration = null, bool fullyQualified = false, bool noTypeReduction = false)
+    internal Node TypeToTypeNode(Type type, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
     {
-        ctxStack.Push(impl.ctx);
-        impl.enterContext(enclosingDeclaration, fullyQualified, noTypeReduction);
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        return exitContext(impl.typeToTypeNode(type));
     }
-
-    private Node exitContext(Node result)
+    internal Node TryJSTypeNodeToTypeNode(Node node, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
     {
-        if (impl.ctx.truncating && (impl.ctx.flags & TypeScript.NodeBuilding.Flags.NoTruncation) != 0)
-            impl.ctx.tracker.ReportTruncationError();
-        bool error = impl.ctx.encounteredError;
-        impl.ctx = ctxStack.Pop();
-        return error ? null : result;
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        return exitContext(impl.tryJSTypeNodeToTypeNode(node));
     }
+    internal Node SerializeReturnTypeForSignature(Node signatureDeclaration, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
+    {
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        var signature = impl.ch.getSignatureFromDeclaration(signatureDeclaration);
+        var (_, cleanup) = impl.enterSignatureScope(signature);
+        var result = impl.serializeReturnTypeForSignature(signature, true);
+        cleanup();
+        return exitContext(result);
+    }
+    internal Slice<Node> SerializeTypeParametersForSignature(Node signatureDeclaration, Node enclosingDeclaration, Flags flags, InternalFlags internalFlags, SymbolTracker tracker)
+    {
+        enterContext(enclosingDeclaration, flags, internalFlags, tracker);
+        var symbol = impl.ch.getSymbolOfDeclaration(signatureDeclaration);
+        var result = SymbolToTypeParameterDeclarations(symbol, enclosingDeclaration, flags, internalFlags, tracker);
+        return exitContextSlice(result);
+    }
+    // Retained diagnostic callers share the exact request/context core.
+    internal Node SignatureToSignatureDeclaration(Signature signature, Kind kind, Node enclosingDeclaration, Flags flags) => SignatureToSignatureDeclaration(signature, kind, enclosingDeclaration, flags, InternalFlags.None, null);
+    internal Node TypePredicateToTypePredicateNode(TypePredicate predicate, Node enclosingDeclaration, Flags flags) => TypePredicateToTypePredicateNode(predicate, enclosingDeclaration, flags, InternalFlags.None, null);
+    internal Node TypeToTypeNode(Type type, Node enclosingDeclaration = null, bool fullyQualified = false, bool noTypeReduction = false, Flags? flags = null) => TypeToTypeNode(type, enclosingDeclaration, flags ?? (Flags.IgnoreErrors | Flags.AllowUniqueESSymbolType | Flags.UseAliasDefinedOutsideCurrentScope | (fullyQualified ? Flags.UseFullyQualifiedType : 0) | (noTypeReduction ? Flags.NoTypeReduction : 0)), InternalFlags.None, null);
+    internal Node SymbolToNode(Symbol symbol, SymbolFlags meaning, Node enclosingDeclaration = null, InternalFlags internalFlags = InternalFlags.None) => SymbolToNode(symbol, meaning, enclosingDeclaration, Flags.IgnoreErrors, internalFlags, null);
 }
-
 public sealed partial class Checker
 {
     private NodeBuilder typeToStringNodebuilder;
-    // nodebuilder.go:279. Source shared printer context, managed arenas have no explicit release.
-    internal static NodeBuilder NewNodeBuilder(Checker checker, TypeScript.DiagnosticPrinting.EmitContext context) => new(checker, context);
-    // nodebuilder.go:289. Managed allocation replaces arena release; cache identity persists.
-    private NodeBuilder getNodeBuilder() => typeToStringNodebuilder ??= new NodeBuilder(this);
+    internal static NodeBuilder NewNodeBuilder(Checker checker, EmitContext context) => NewNodeBuilderEx(checker, context, null);
+    internal static NodeBuilder NewNodeBuilderEx(Checker checker, EmitContext context, Dictionary<Node, Symbol> symbols) => new(checker, context, symbols);
+    private NodeBuilder getNodeBuilder() => typeToStringNodebuilder ??= getNodeBuilderEx(null);
+    private NodeBuilder getNodeBuilderEx(Dictionary<Node, Symbol> symbols) => NewNodeBuilderEx(this, new EmitContext(), symbols);
+    private void releaseNodeBuilderNodes() => typeToStringNodebuilder.EmitContext().Factory.ReleaseArenas();
 }

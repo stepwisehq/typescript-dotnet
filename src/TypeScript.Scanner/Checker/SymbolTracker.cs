@@ -1,14 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified partial C# port of tsc/internal/checker/symboltracker.go, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Diagnostic-only finite data-property/scalar context reuse; general emit excluded.
+// Complete emit and diagnostic tracker forwarding.
 #nullable disable
 using TypeScript.Scanner;
 using TypeScript.PseudoChecking;
 
 namespace TypeScript.Checking;
-// Only the default diagnostic tracker and its selected inference-fallback callback
-// are required. No public tracker/late-painted statement interface is introduced.
+// Every tracker callback forwards through the actual emit-facing contract.
 internal sealed class SymbolTrackerImpl : TypeScript.NodeBuilding.SymbolTracker
 {
     private readonly TypeScript.NodeBuilding.SymbolTracker inner;
@@ -96,4 +95,16 @@ internal sealed class SymbolTrackerImpl : TypeScript.NodeBuilding.SymbolTracker
             return;
         inner.ReportInferenceFallback(node);
     }
+    public void ReportPrivateInBaseOfClassExpression(string propertyName)
+    {
+        onDiagnosticReported();
+        inner?.ReportPrivateInBaseOfClassExpression(propertyName);
+    }
+    public void ReportNonlocalAugmentation(SourceFile containingFile, Symbol parentSymbol, Symbol augmentingSymbol)
+    {
+        onDiagnosticReported();
+        inner?.ReportNonlocalAugmentation(containingFile, parentSymbol, augmentingSymbol);
+    }
+    public void PushErrorFallbackNode(Node node) => inner?.PushErrorFallbackNode(node);
+    public void PopErrorFallbackNode() => inner?.PopErrorFallbackNode();
 }

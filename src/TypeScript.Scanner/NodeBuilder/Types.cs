@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See licenses/TypeScript-LICENSE.txt.
 // Modified C# port, upstream fed0bf24149fb1ed36039212648bafdafc1ea10e.
-// Partial counterpart of tsc/internal/nodebuilder/types.go; generated enum slice.
+// Complete emit flags, options and symbol-tracker counterpart of tsc/internal/nodebuilder/types.go.
 using TypeScript.Scanner;
 
 namespace TypeScript.NodeBuilding;
@@ -54,8 +54,7 @@ public enum InternalFlags : int
 }
 
 // BEGIN MANUAL SYMBOL TRACKER INTERFACE
-// Selected diagnostic callbacks from types.go:9. The general emit interface's
-// module, private/class and nonserializable callbacks remain explicit exclusions.
+// Complete pinned types.go:9 tracker boundary.
 internal interface SymbolTracker
 {
     bool TrackSymbol(Symbol symbol, Node enclosingDeclaration, SymbolFlags meaning);
@@ -66,4 +65,8 @@ internal interface SymbolTracker
     void ReportInaccessibleThisError();
     void ReportInaccessibleUniqueSymbolError();
     void ReportInferenceFallback(Node node);
+    void ReportPrivateInBaseOfClassExpression(string propertyName);
+    void ReportNonlocalAugmentation(SourceFile containingFile, Symbol parentSymbol, Symbol augmentingSymbol);
+    void PushErrorFallbackNode(Node node);
+    void PopErrorFallbackNode();
 }

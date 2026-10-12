@@ -100,8 +100,9 @@ when integration authorizes compilation/execution. Original baseline failures re
 failures; generated contents and original local/reference origin are captured through
 the existing tracking facility, without replacing baseline assertions.
 
-Pinned `compiler/emit_test.go` supplies two in-repository benchmarks,
-`BenchmarkEmitLongLines` and `BenchmarkEmitManyFiles`, without direct Test functions.
+Pinned `compiler/emit_test.go` supplies three in-repository benchmarks,
+`BenchmarkEmitLongLines`, `BenchmarkEmitManyFiles` and
+`BenchmarkEmitLongLinesWithLineBreaks`, without direct Test functions.
 The `execute/tsc` emit tests include `TestContentMapperLoggerEnvironmentVariable`
 and `TestIncrementalDeclarationEmitTimeIsExcludedFromCheckTime`; the latter's builder
 timing dependency stays an explicit external disposition. These are inventories,
@@ -122,3 +123,9 @@ baseline records; [source-bound evidence](../artifacts/emit/reference-infrastruc
 verifies reference machinery. The registry preserves12,824 fixtures/15,330 configurations
 and seven original expansion failures with failure text. Full oracle export and
 managed/AOT compiler-output comparison remain pending the genuine emission pipeline.
+
+## Current printer and resolver gate
+
+Final coordinated managed gate passed169 emit cases,832 checker,84 type-system and101 selected no-emit cases (1,186 total), zero failures/skips. Actual Linux x64 Native AOT executed149 original functions and46 authored logical controls through shared assertions. Original families are42 source-map,36 name-generator,70 remaining printer/utility and1 TypeEraser; original Go references cover863 leaf outcomes for those families. Function counts, table leaves, authored controls and managed test records are distinct.
+
+[Source-bound proof](../validation/results/emit-printer-resolver-verified.json) retains earlier failures and compile-only attempts. Test4's sole authored comment expectation omitted one original indentation space; direct pinned Go and managed byte output matched before its fixture correction. All original assertions remain unchanged, zero originals pending/skipped. This subsystem gate does not establish whole JavaScript/declaration/Program output acceptance; full output corpus and remaining transform families remain pending.

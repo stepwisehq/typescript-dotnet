@@ -16,7 +16,7 @@ public sealed partial class Checker
     {
         if (!Ast.IsParseTreeNode(node) || node == null)
             return false;
-        var links = emitResolverLinks.Get(node);
+        ref var links = ref emitResolverLinks.Get(node);
         if (links.isVisible == Tristate.Unknown)
             links.isVisible = determineIfDeclarationIsVisible(node) ? Tristate.True : Tristate.False;
         return links.isVisible == Tristate.True;
@@ -195,11 +195,11 @@ public sealed partial class Checker
             return null;
         }
 
-        // Collect retains an allocated empty slice when no aliases were marked.
+        // Go slices.Collect returns nil when no aliases were marked.
         return new()
         {
             Accessibility = TypeScript.DiagnosticPrinting.SymbolAccessibility.Accessible,
-            AliasesToMakeVisible = aliasesToMakeVisible?.Values.ToList() ?? new()
+            AliasesToMakeVisible = aliasesToMakeVisible is null || aliasesToMakeVisible.Count == 0 ? default : Slice<Node>.FromArray(aliasesToMakeVisible.Values.ToArray())
         };
     }
 

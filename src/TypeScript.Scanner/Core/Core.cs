@@ -842,4 +842,47 @@ internal static partial class Core
                 return values[i];
         return typeof(T) == typeof(string) ? (T)(object)"" : default;
     }
+    // Value sequence for hot Go iter.Seq consumers; immutable text owner, no iterator box.
+    internal static ECMALineStartSequence ComputeECMALineStartsValue(ByteStringValue text) => new(text);
+    internal readonly struct ECMALineStartSequence(ByteStringValue text)
+    {
+        public ECMALineStartEnumerator GetEnumerator() => new(text);
+    }
+    internal struct ECMALineStartEnumerator(ByteStringValue text)
+    {
+        private readonly ByteStringValue text = text;
+        private int pos, lineStart;
+        private bool finished;
+        public int Current { get; private set; }
+        public bool MoveNext()
+        {
+            if (finished) return false;
+            while (pos < text.Length)
+            {
+                int b = text.IsBytes ? text.ByteSpan[pos] : text.CharSpan[pos];
+                if (b < Utf8.RuneSelf)
+                {
+                    pos++;
+                    if (b == '\r')
+                    {
+                        if (pos < text.Length && (text.IsBytes ? text.ByteSpan[pos] : text.CharSpan[pos]) == '\n') pos++;
+                    }
+                    else if (b != '\n') continue;
+                }
+                else
+                {
+                    var (ch, size) = text.IsBytes ? Utf8.DecodeRuneInString(text.ByteSpan[pos..]) : Utf8.DecodeRuneInString(text.CharSpan[pos..]);
+                    pos += size;
+                    if (!StringUtil.IsLineBreak(ch)) continue;
+                }
+                Current = lineStart;
+                lineStart = pos;
+                return true;
+            }
+            Current = lineStart;
+            finished = true;
+            return true;
+        }
+    }
+
 }

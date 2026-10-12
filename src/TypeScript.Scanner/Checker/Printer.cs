@@ -28,6 +28,8 @@ public sealed partial class Checker
             throw new ArgumentException("Type belongs to a different checker");
         var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
         var nodeBuilder = getNodeBuilder();
+        try
+        {
         serializationLevel++;
         var noTruncation = compilerOptions.NoErrorTruncation == Tristate.True ||
             (flags.GetValueOrDefault() & TypeScript.NodeBuilding.Flags.NoTruncation) != 0;
@@ -49,6 +51,9 @@ public sealed partial class Checker
         var maxLength = (noTruncation ? NodeBuilderImpl.noTruncationMaximumTruncationLength :
             NodeBuilderImpl.defaultMaximumTruncationLength) * 2;
         return result.Length >= maxLength ? result[..(maxLength - 3)] + "..." : result;
+
+        }
+        finally { releaseNodeBuilderNodes(); }
     }
 
     // printer.go:120–177. Public display returns scalar strings; producer arguments and output retain Go bytes.
@@ -71,11 +76,16 @@ public sealed partial class Checker
         if ((flags & SymbolFormatFlags.WriteComputedProps) != 0)
             internalNodeFlags |= TypeScript.NodeBuilding.InternalFlags.WriteComputedProps;
         var nodeBuilder = getNodeBuilder();
+        try
+        {
         var sourceFile = enclosingDeclaration == null ? null : Ast.GetSourceFileOfNode(enclosingDeclaration);
         var printer = new TypeScript.DiagnosticPrinting.Printer(nodeBuilder.EmitContext(), true, true, enclosingDeclaration != null && enclosingDeclaration.Kind == Kind.SourceFile);
         var entity = (flags & SymbolFormatFlags.AllowAnyNodeKind) != 0 ? nodeBuilder.SymbolToNode(symbol, meaning, enclosingDeclaration, nodeFlags, internalNodeFlags, null) : nodeBuilder.SymbolToEntityName(symbol, meaning, enclosingDeclaration, nodeFlags, internalNodeFlags, null);
         printer.Write(entity, writer, sourceFile);
         return writer.String();
+
+        }
+        finally { releaseNodeBuilderNodes(); }
     }
 
     // printer.go:180/224. Default signature and predicate diagnostic flags.
@@ -83,19 +93,29 @@ public sealed partial class Checker
     {
         bool isConstructor = (signature.flags & SignatureFlags.Construct) != 0;
         var builder = getNodeBuilder();
+        try
+        {
         var node = builder.SignatureToSignatureDeclaration(signature, isConstructor ? Kind.ConstructSignature : Kind.CallSignature, null, TypeScript.NodeBuilding.Flags.IgnoreErrors | TypeScript.NodeBuilding.Flags.WriteTypeParametersInQualifiedName);
         var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
         new TypeScript.DiagnosticPrinting.Printer(builder.EmitContext(), true, true, true).Write(node, writer, null);
         return writer.String();
+
+        }
+        finally { releaseNodeBuilderNodes(); }
     }
 
     private string typePredicateToString(TypePredicate predicate)
     {
         var builder = getNodeBuilder();
+        try
+        {
         var node = builder.TypePredicateToTypePredicateNode(predicate, null, TypeScript.NodeBuilding.Flags.UseAliasDefinedOutsideCurrentScope | TypeScript.NodeBuilding.Flags.IgnoreErrors | TypeScript.NodeBuilding.Flags.WriteTypeParametersInQualifiedName);
         var writer = TypeScript.DiagnosticPrinting.TextWriter.NewTextWriter("", 0);
         new TypeScript.DiagnosticPrinting.Printer(builder.EmitContext()).Write(node, writer, null);
         return writer.String();
+
+        }
+        finally { releaseNodeBuilderNodes(); }
     }
 
     // checker/printer.go:253. Boolean grouping and nullable suffix ordering.

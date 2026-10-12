@@ -25,33 +25,22 @@ internal sealed partial class NodeBuilderImpl
     }
 }
 
-// The retained maps represent upstream copy-on-write scope cells. Managed copying
-// occurs at scope entry rather than at first mutation; identity is private.
+// The retained maps preserve upstream lazy copy-on-write signature scope cells.
 internal sealed partial class NodeBuilderImpl
 {
     // nodebuilderscopes.go:9. Preserve all four per-signature name scopes.
     private static Action cloneNodeBuilderContext(NodeBuilderContext context)
     {
-        var names = context.typeParameterNames;
-        var namesByText = context.typeParameterNamesByText;
-        var nextCounts = context.typeParameterNamesByTextNextNameCount;
-        var symbolList = context.typeParameterSymbolList;
-        context.typeParameterNames = new(names);
-        context.typeParameterNamesByText = new(namesByText, StringComparer.Ordinal);
-        context.typeParameterNamesByTextNextNameCount = new(nextCounts, StringComparer.Ordinal);
-        context.typeParameterSymbolList = new(symbolList);
-        return () =>
-        {
-            context.typeParameterNames = names;
-            context.typeParameterNamesByText = namesByText;
-            context.typeParameterNamesByTextNextNameCount = nextCounts;
-            context.typeParameterSymbolList = symbolList;
-        };
+        var restoreNames = context.typeParameterNames.EnterScope();
+        var restoreNamesByText = context.typeParameterNamesByText.EnterScope();
+        var restoreNextCounts = context.typeParameterNamesByTextNextNameCount.EnterScope();
+        var restoreSymbolList = context.typeParameterSymbolList.EnterScope();
+        return () => { restoreNames(); restoreNamesByText(); restoreNextCounts(); restoreSymbolList(); };
     }
 
     // nodebuilderscopes.go:53. The ordinary nonrest expansion preserves the actual
     // signature parameter slice; tuple/rest expansion is outside admission.
-    private (Slice<Symbol>, Action) enterSignatureScope(Signature signature)
+    internal (Slice<Symbol>, Action) enterSignatureScope(Signature signature)
     {
         var expandedParams = ch.getExpandedParameters(signature, true)[0];
         return (expandedParams, enterNewScope(signature.declaration, expandedParams, signature.typeParameters, signature.parameters, signature.mapper));
@@ -70,27 +59,27 @@ internal sealed partial class NodeBuilderImpl
             ctx.mapper = mapper;
         if (ctx.enclosingDeclaration != null && declaration != null)
         {
-            Action pushFakeScope(string kind, Action<Action<string, Symbol>> addAll)
+            Action pushFakeScope(string kind, Action<Action<ByteStringValue, Symbol>> addAll)
             {
                 Debug.Assert(ctx.enclosingDeclaration != null);
                 Node existingFakeScope = null;
-                if (links.TryGetValue(ctx.enclosingDeclaration, out var ownLinks) && ownLinks.fakeScopeForSignatureDeclaration == kind)
+                if (links.Has(ctx.enclosingDeclaration) && links.Get(ctx.enclosingDeclaration).fakeScopeForSignatureDeclaration == kind)
                     existingFakeScope = ctx.enclosingDeclaration;
-                if (existingFakeScope == null && ctx.enclosingDeclaration.Parent != null && links.TryGetValue(ctx.enclosingDeclaration.Parent, out var parentLinks) && parentLinks.fakeScopeForSignatureDeclaration == kind)
+                if (existingFakeScope == null && ctx.enclosingDeclaration.Parent != null && links.Has(ctx.enclosingDeclaration.Parent) && links.Get(ctx.enclosingDeclaration.Parent).fakeScopeForSignatureDeclaration == kind)
                     existingFakeScope = ctx.enclosingDeclaration.Parent;
                 Debug.Assert(existingFakeScope == null || Ast.IsBlock(existingFakeScope));
                 var locals = existingFakeScope?.Locals() ?? new SymbolTable();
-                var newLocals = new List<string>();
-                var oldLocals = new List<(string name, Symbol symbol)>();
+                var newLocals = Slice<ByteStringValue>.Make(0);
+                var oldLocals = Slice<(ByteStringValue name, Symbol symbol)>.Make(0);
                 addAll((name, symbol) =>
                 {
                     if (existingFakeScope != null)
                     {
                         var oldSymbol = locals[name];
                         if (oldSymbol == null)
-                            newLocals.Add(name);
+                            newLocals = newLocals.Append(name);
                         else
-                            oldLocals.Add((name, oldSymbol));
+                            oldLocals = oldLocals.Append((name, oldSymbol));
                     }
 
                     locals[name] = symbol;
@@ -125,7 +114,7 @@ internal sealed partial class NodeBuilderImpl
                         if (!originalParameters.IsNil && original != parameter)
                         {
                             if (original != null)
-                                add(original.Name, original);
+                                add(original.NameValue, original);
                         }
                         else
                         {
@@ -158,7 +147,7 @@ internal sealed partial class NodeBuilderImpl
 
                                     var symbol = ch.getSymbolOfDeclaration(element);
                                     if (symbol != null)
-                                        add(symbol.Name, symbol);
+                                        add(symbol.NameValue, symbol);
                                 }
 
                                 if (Ast.IsParameterDeclaration(declaration) && declaration.Name() != null && Ast.IsBindingPattern(declaration.Name()))
@@ -171,7 +160,7 @@ internal sealed partial class NodeBuilderImpl
                             }
 
                             if (!Core.Some(parameter.Declarations, BindDeclaration))
-                                add(parameter.Name, parameter);
+                                add(parameter.NameValue, parameter);
                         }
                     }
                 });
@@ -182,7 +171,7 @@ internal sealed partial class NodeBuilderImpl
                 {
                     foreach (var typeParameter in typeParameters)
                         if (typeParameter != null)
-                            add(typeParameterToName(typeParameter).Text(), typeParameter.symbol);
+                            add(typeParameterToName(typeParameter).TextValue(), typeParameter.symbol);
                 });
         }
 

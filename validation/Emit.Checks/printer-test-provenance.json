@@ -1,0 +1,466 @@
+{
+  "classification": "managed-original-printer-pass-native-pending",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "sourceFiles": {
+    "upstream/TypeScript/tsc/internal/printer/printer_test.go": "9d2b83e2e197d4e40c645b5248ebd5b8181d8eac21bde1c20f234a38a9212b99",
+    "upstream/TypeScript/tsc/internal/printer/utilities_test.go": "87178cb8d4912b61eb8d7564aac464625cfaec4919f544ab8f6ccc8a9e0d1064"
+  },
+  "functions": [
+    {
+      "name": "TestEmit",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 16,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeDecorator",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 593,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeComputedPropertyName",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 625,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeArrayLiteral",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 662,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizePropertyAccess1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 692,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizePropertyAccess2",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 720,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizePropertyAccess3",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 747,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeElementAccess1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 773,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeElementAccess2",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 801,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeElementAccess3",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 828,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeCall1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 854,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeCall2",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 883,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeCall3",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 911,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeCall4",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 938,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeNew1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 968,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeNew2",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 995,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeNew3",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1022,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeTaggedTemplate1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1050,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeTaggedTemplate2",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1079,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeTypeAssertion1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1107,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeArrowFunction1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1136,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeArrowFunction2",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1164,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeDelete",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1197,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeVoid",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1222,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeTypeOf",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1247,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeAwait",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1272,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeBinary",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1373,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeConditional1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1423,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeConditional2",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1452,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeConditional3",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1481,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeConditional4",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1515,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeConditional5",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1538,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeConditional6",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1567,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeYield1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1596,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeSpreadElement1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1626,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeSpreadElement2",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1658,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeSpreadElement3",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1693,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeExpressionWithTypeArguments",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1726,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeAsExpression",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1759,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeSatisfiesExpression",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1788,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeNonNullExpression",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1817,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeExpressionStatement1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1843,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeExpressionStatement2",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1864,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeExpressionStatement3",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1894,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeExpressionDefault1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1918,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeExpressionDefault2",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1946,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeExpressionDefault3",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 1982,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeArrayType",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2008,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeOptionalType",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2037,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeUnionType1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2072,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeUnionType2",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2105,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeIntersectionType",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2140,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeReadonlyTypeOperator1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2174,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeReadonlyTypeOperator2",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2204,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeKeyofTypeOperator",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2230,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeIndexedAccessType",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2260,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeConditionalType1",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2290,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeConditionalType2",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2321,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeConditionalType3",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2351,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestParenthesizeConditionalType4",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2390,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestNameGeneration",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2434,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestNoTrailingCommaAfterTransform",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2467,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestTrailingCommaAfterTransform",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2488,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestPartiallyEmittedExpression",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2509,
+      "disposition": "managed-test4-passed-native-pending",
+      "dependency": "genuine complete TypeEraserTransformer implemented and managed original passed"
+    },
+    {
+      "name": "TestParenthesizeBinaryExpressionMixingNullishCoalescing",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2527,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestOmitTrailingSemicolon",
+      "source": "upstream/TypeScript/tsc/internal/printer/printer_test.go",
+      "line": 2595,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestEscapeString",
+      "source": "upstream/TypeScript/tsc/internal/printer/utilities_test.go",
+      "line": 12,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestEscapeNonAsciiString",
+      "source": "upstream/TypeScript/tsc/internal/printer/utilities_test.go",
+      "line": 39,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestEscapeJsxAttributeString",
+      "source": "upstream/TypeScript/tsc/internal/printer/utilities_test.go",
+      "line": 67,
+      "disposition": "managed-test4-passed-native-pending"
+    },
+    {
+      "name": "TestIsRecognizedTripleSlashComment",
+      "source": "upstream/TypeScript/tsc/internal/printer/utilities_test.go",
+      "line": 94,
+      "disposition": "managed-test4-passed-native-pending"
+    }
+  ],
+  "sourceReadyFunctions": 70,
+  "pendingFunctions": 0,
+  "leafRows": {
+    "TestEmit": 553,
+    "TestParenthesizeBinary": 15,
+    "TestParenthesizeBinaryExpressionMixingNullishCoalescing": 8,
+    "TestEscapeString": 10,
+    "TestEscapeNonAsciiString": 11,
+    "TestEscapeJsxAttributeString": 10,
+    "TestIsRecognizedTripleSlashComment": 39
+  },
+  "adaptations": [
+    "Original t.Parallel omitted; shared same bodies for managed/Native.",
+    "Original strings encoded only at raw Go byte output/utility boundaries; genuine parser adapter ingress and scanner WTF8 decode for reparse.",
+    "Required factory node arrays passed through established managed List bridge; AST slice ownership retained.",
+    "Original TypeEraser-dependent function invokes genuine complete transformer; obsolete pending body removed after independent exact-body review."
+  ],
+  "portedFiles": {
+    "validation/Emit.Checks/PrinterChecks.Helpers.cs": "39dbbaa5412b67744e08591c7b88a783d452d855d4ab250952a97d41dc23fefc",
+    "validation/Emit.Checks/PrinterChecks.Binary.cs": "09aa91ebc2dc496b0a1972fbfda993fab4d1b884a9171e553fb236c9d4e7ca3d",
+    "validation/Emit.Checks/PrinterChecks.Inputs.cs": "8ecbc10f88350a11ed57950792f3482e5e72e10bcbd1036c87b49ab1b16b4dbd",
+    "validation/Emit.Checks/PrinterChecks.Synthetic.cs": "50cef2e2bdc86af85957caf038c5adf690d305a785e351a756161a88fc7682a8",
+    "validation/Emit.Checks/PrinterUtilityChecks.cs": "67ce0073da375313aeec342dea5dcde7cbe38bd9919658287aa2bdb994a01fa3",
+    "tests/Emit.Tests/PrinterTests.cs": "b53d4d5dec6865f9b8e31eb2ab71d1763a37e7180a505950854a776a2eaa6524"
+  },
+  "managedEvidence": {
+    "trx": "artifacts/emit/printer-resolver/managed/emit-printer-resolver-4.trx",
+    "sha256": "15502497726704c0cbb8a9d8ccc1b15604166dff53fd4de33a8eabdd072e90e3",
+    "originalPrinterFunctionsPassed": 70,
+    "wholeOriginalFunctionsPassed": 149,
+    "totalXUnitCases": 169,
+    "passed": 168,
+    "authoredFailure": "PrinterTests.AuthoredCommentWhitespace",
+    "native": "pending"
+  }
+}

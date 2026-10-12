@@ -1,0 +1,244 @@
+{
+  "status": "passed-printer-resolver-typeeraser-checkpoint-not-whole-emit",
+  "baseline": "e3131a5b",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "scope": "Complete printer/writers/utilities, genuine binder/checker emit resolver and non-hover NodeBuilder/COW/Chain, shared Transformer Utilities/Destructuring and TypeEraser. Remaining JS/declaration transforms and Program output remain incomplete.",
+  "managed": [
+    {
+      "file": "artifacts/emit/printer-resolver/managed/test-5.trx",
+      "sha256": "991f950a6cb1e43886bc3f5b814276531405475df90af87014bbc680812f97a5",
+      "counters": {
+        "total": "169",
+        "executed": "169",
+        "passed": "169",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    {
+      "file": "artifacts/emit/printer-resolver/regressions/checker.trx",
+      "sha256": "0420897cf840407cee37102585c4f7da7fd06f23a51955c83047d29b2014f168",
+      "counters": {
+        "total": "832",
+        "executed": "832",
+        "passed": "832",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    {
+      "file": "artifacts/emit/printer-resolver/regressions/typesystem.trx",
+      "sha256": "745a7b5800fdab45e026ecfc5628f9305827f9223e042a875a0842654eb9e7d8",
+      "counters": {
+        "total": "84",
+        "executed": "84",
+        "passed": "84",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    },
+    {
+      "file": "artifacts/emit/printer-resolver/regressions/noemit-selected.trx",
+      "sha256": "8752f898533898031a0e38edbd0ebfac8e0e25813f5fe77a23fb8dc815ce81ee",
+      "counters": {
+        "total": "101",
+        "executed": "101",
+        "passed": "101",
+        "failed": "0",
+        "error": "0",
+        "timeout": "0",
+        "aborted": "0",
+        "inconclusive": "0",
+        "passedButRunAborted": "0",
+        "notRunnable": "0",
+        "notExecuted": "0",
+        "disconnected": "0",
+        "warning": "0",
+        "completed": "0",
+        "inProgress": "0",
+        "pending": "0"
+      }
+    }
+  ],
+  "managedTotal": 1186,
+  "testCounts": {
+    "originalFunctions": 149,
+    "originalFunctionFamilies": {
+      "sourceMap": 42,
+      "nameGenerator": 36,
+      "remainingPrinterIncludingUtilities": 70,
+      "typeEraser": 1
+    },
+    "originalGoLeafReferenceOutcomes": 863,
+    "authoredLogicalControls": 46,
+    "emitXunitCaseRecords": 169,
+    "qualification": "Functions, table leaf outcomes, authored logical controls and xUnit records are distinct. Go ImportElision20 reference rows are excluded from863 and not implemented in C#."
+  },
+  "native": {
+    "platform": "linux-x64",
+    "ilcResponse": {
+      "file": "validation/Emit.Validation/obj/Release/net10.0/linux-x64/native/Emit.Validation.ilc.rsp",
+      "sha256": "db7e625cece89f9a560c8a16492919adc7e2875435e0a1c8d99837285ca45ab2"
+    },
+    "actualCompilerInputs": {
+      "/home/greg/projects/typescript-dotnet/validation/Emit.Validation/obj/Release/net10.0/linux-x64/Emit.Validation.dll": "51a93c5b13b94c5c647ae2f606d4e0ed9247f859735d8a27b2f4fc54dfb36a8d",
+      "/home/greg/.nuget/packages/system.io.hashing/10.0.8/lib/net10.0/System.IO.Hashing.dll": "1285c15b4719f4e63993db2b5e8662be07645e829bb5fcc926831a2851a94a64",
+      "/home/greg/projects/typescript-dotnet/validation/Emit.Checks/bin/Release/net10.0/Emit.Checks.dll": "0fd5442b140ea076bfcb75d4114f029b30eb13c348e3f3cf8770d16755350a16",
+      "/home/greg/projects/typescript-dotnet/src/TypeScript.Scanner/bin/Release/net10.0/TypeScript.Scanner.dll": "42d1fbc131299e8195715c52b064055234ce0ed95d6d09d302316fe7432738f4"
+    },
+    "binary": {
+      "file": "artifacts/emit/printer-resolver/native/Emit.Validation",
+      "sha256": "b93dff2eb8f90d673db202f2219cce7fb3f72352a76b94e1addb70883e076bb6"
+    },
+    "exitCode": 0,
+    "stdout": "Original emit test functions executed: 149\nAuthored emit controls executed: 46\n",
+    "publishEvidence": {
+      "file": "artifacts/emit/printer-resolver/native-publish-result.json",
+      "sha256": "9369889af5d047453e805036c76702b47c659f7a4e11bdde679dc7cb7c6f11dd"
+    },
+    "runEvidence": {
+      "file": "artifacts/emit/printer-resolver/native-run-result.json",
+      "sha256": "4c2f2b5859127be55dc722e27b1136c85495d6d42c9acfc50000ac14621a60bb"
+    },
+    "publishLog": {
+      "file": "artifacts/emit/printer-resolver/native-publish.log",
+      "sha256": "76c7422eaefcd35c174fc7d587d972bffb66cac9150b7ecbbccdf8749430bf3b"
+    },
+    "runLog": {
+      "file": "artifacts/emit/printer-resolver/native-run.log",
+      "sha256": "bc9ae132d76cf301553496376ac46dbb857cefafa06d1fb8a0425309c1a37e75"
+    }
+  },
+  "sourceReviews": {
+    "artifacts/emit/source-review/printer.json": "2caeb98f2a8b5e1214ee02ff84ad350df9e8a49dda4e1073dec5b32856a890e4",
+    "artifacts/emit/source-review/printer-tests.json": "0358cc689a0264d9bd3b4472389fb234a4311437777ae88a762035be883bad1e",
+    "artifacts/emit/source-review/resolver.json": "4d5df16e1ff1084a9349ef9785f30e8f4a4e7acc1b59cd104ac1723b0a69d6c8",
+    "artifacts/emit/source-review/nodebuilder.json": "beacffeb0693d639671effdde552a855bcf1f7c7ba0cf6ff374df9ec2ab83175",
+    "artifacts/emit/source-review/typeeraser-independent-review.json": "6d797ad99b2d460d902ab447add7f18bb3c7bd6bc5c3ad1c7b930a690ef734b5",
+    "artifacts/emit/printer-resolver/shared-transform-independent-review.json": "b2cecc9f8f6124041492d6bbbfee8658cff460dd42f2c856cf87a0ae064804d5"
+  },
+  "referenceEvidence": [
+    {
+      "file": "artifacts/emit/reference-infrastructure/printer-original-result.json",
+      "sha256": "881c716c4018ff4957bc2d1af578b4b06984e32e0d07ca1efb7a9e89fd2d9747"
+    },
+    {
+      "file": "artifacts/emit/reference-infrastructure/tstransforms-original-result.json",
+      "sha256": "879cbdcbd64c513287431c3d0c265a2f46471cfa801f6a02e6529255d914f352"
+    },
+    {
+      "file": "artifacts/emit/printer-resolver/resolver-controls-go-result.json",
+      "sha256": "aa811a82453105bad0f6469f781160635f7063086080c1795e534e7e8053890c"
+    },
+    {
+      "file": "artifacts/emit/printer-resolver/comment-control-observation.json",
+      "sha256": "5525c35e7cffd860e80118d841919e05917164b7d03f173ae37c24385bc529ad"
+    },
+    {
+      "file": "artifacts/emit/printer-resolver/comment-control-go.log",
+      "sha256": "6e30a7df651b5d7b19fb875fbfaed03ebc03b4380ea04dfde0909782ea34b7e9"
+    }
+  ],
+  "observedEffort": {
+    "centralDiagnosticBuildAttempts": 3,
+    "centralEmitTestAttempts": 5,
+    "attempts": [
+      {
+        "name": "test1",
+        "disposition": "160pass,4fail,1explicitpending; three original utility failures exposed decimal-only FormatUint dependency; authored global-script fallback expectation corrected from genuine Go module/global witness; TypeEraser prerequisite subsequently implemented."
+      },
+      {
+        "name": "test2",
+        "disposition": "Compile-only: authored Program fixture config namespace join; no assertions executed."
+      },
+      {
+        "name": "test3",
+        "disposition": "Compile-only: TypeEraser enum mask and Tristate extension joins; no assertions executed."
+      },
+      {
+        "name": "test4",
+        "disposition": "168pass,1authoredfailure,0skip; all149originalfunctions passed. Authored comment expected text omitted Go indentation space; exact C# and Go bytes matched, fixture corrected with direct Go assertion."
+      },
+      {
+        "name": "test5",
+        "disposition": "169passed,0failed,0skipped."
+      }
+    ],
+    "logs": [
+      {
+        "file": "artifacts/emit/printer-resolver/build-1.log",
+        "sha256": "6665b0c2a0ee17e67f2773a57553d8bfd7cfcd45d433033d415b4c78bc767885"
+      },
+      {
+        "file": "artifacts/emit/printer-resolver/build-2.log",
+        "sha256": "d431c2b5ca370614f62355bc390ac26aada29543c2f13f553c85a88e5b5614d8"
+      },
+      {
+        "file": "artifacts/emit/printer-resolver/build-3.log",
+        "sha256": "f9f607d2ff093899f1575e9eaab538b99923de74976242f4df2030f4e376b07c"
+      },
+      {
+        "file": "artifacts/emit/printer-resolver/test-1.log",
+        "sha256": "44d63d05b890fac125f9d85d9cac2e8a9b05b01a4a5e817117f94ea411ad2f45"
+      },
+      {
+        "file": "artifacts/emit/printer-resolver/test-2.log",
+        "sha256": "0a3257ca38733b20f200db17fa05c4a235f487ee5039c3c26644dc069d61a4b0"
+      },
+      {
+        "file": "artifacts/emit/printer-resolver/test-3.log",
+        "sha256": "6833d633783213df679775010b790a2f8230e839a821d16907e694c04ec86e22"
+      },
+      {
+        "file": "artifacts/emit/printer-resolver/test-4.log",
+        "sha256": "7d642e0cff4f67343f748fd8638e280b3fb76c12af6280b5d465d63eec99daac"
+      },
+      {
+        "file": "artifacts/emit/printer-resolver/test-5.log",
+        "sha256": "876ce62e2640f9216e29742167625eae034d50c89a71cf4351bd49d57e9ded43"
+      }
+    ],
+    "nativePublishAttempts": 1
+  },
+  "limits": [
+    "Subsystem checkpoint does not establish whole JS/declaration/Program emission.",
+    "No full compiler-output corpus export/comparison or external-project/performance run.",
+    "Original remaining transformer families, including ImportElision, remain subsequent work.",
+    "Retained no-emit101 cases exclude the complete original corpus gate.",
+    "RuntimeSyntax currently implements only demanded dotted-module traversal leaf in TypeEraser; whole RuntimeSyntax remains subsequent work.",
+    "Configured language-service hover expansion methods/context are excluded; NodeBuilder acceptance covers genuine non-hover emit/diagnostic paths at maxExpansionDepth=-1."
+  ]
+}
