@@ -61,6 +61,27 @@ compiler-output parity. ES, JSX, module and declaration families, Program output
 the whole original corpus remain ahead. See [verification](EMIT-VERIFY.md) and
 [bound evidence](../validation/results/emit-ts-transforms-verified.json).
 
+## Complete ES transform family
+
+All 17 pinned files and 407 functions are implemented: full target-dependent
+lowering, async/iteration, resource management, class fields/private elements,
+decorators, named evaluation, operators, and shared utilities/chain definitions.
+OrderedSet's eight functions and its required OrderedMap key enumerator are present.
+Original clones, explicit capacities, byte-backed names and cached callbacks remain;
+source review corrected concrete capacity and callback-allocation omissions before
+acceptance. The initially estimated NamedEvaluation count was 19; all 20 actual
+functions were already implemented and reviewed (metadata correction only).
+
+The first behavioral run passed 287 emit cases; retained gates bring the total to
+1,304 managed passes. Actual Linux x64 Native AOT executed 151 original functions
+and 168 authored controls successfully. Eighty genuine Program cases compare exact
+TS→ES-selector→UseStrict outputs and full public diagnostics against pinned Go.
+The ES package has no original direct tests; original compiler-corpus acceptance
+remains later work. OrderedSet's original public test is ported; its allocation-count
+test is Go-runtime-only evidence, separate from authored CLR hinted behavior.
+[Verification](EMIT-VERIFY.md) and [proof](../validation/results/emit-es-transforms-verified.json)
+distinguish this subsystem from pending JSX/module/declaration/Program output.
+
 ## Package responsibilities
 
 | Upstream file | Lines / functions | Baseline and active disposition |

@@ -109,3 +109,28 @@ mandatory at final integration.
 Initial build and two test attempts failed compilation at API/interface joins; no
 assertions executed then. The third test attempt passed, followed by first-attempt
 retained gates and Native publication. No external-project/performance run occurred.
+
+## Complete ES transform family
+
+Use the same commands with output path `artifacts/emit/es-transforms/native`.
+First full managed behavior run: 287 emit cases passed; retained gates passed
+832 checker, 84 type-system and 101 selected no-emit cases (1,304 total, none
+failed/skipped). Actual Linux x64 Native AOT published in 15.651s and executed
+151 original functions plus 168 authored controls in 4.106s, exit0.
+
+[Bound proof](../validation/results/emit-es-transforms-verified.json) includes exact
+commands, reviews, raw TRX, current actual ILC inputs and executable. The 80 new
+comparisons (45 runtime, 21 class fields, 14 decorators) use genuine pinned libraries,
+Program/resolver and target-selected chains, exact output and five full public
+diagnostic channels. Successful Go observation capture is not an original baseline
+assertion; agreement is established by the managed and native comparisons.
+Original OrderedSet public assertions are shared by both runners. Its unchanged
+Go allocation-count test passed only in Go; a CLR hinted-size behavior control does
+not satisfy that allocation assertion.
+
+Four central production diagnostic builds resolved syntax and API/declaration joins;
+the full test invocation was the first behavior run and passed. Source review also
+restored explicit upstream capacities and cached callbacks. Retained and Native gates
+passed on their first attempts. No source edits followed the managed run. Complete
+compiler-output/no-emit corpus, JS runtime execution and Program output remain final
+integration obligations; no external-project or performance measurement was made.

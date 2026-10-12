@@ -4188,7 +4188,10 @@
       "upstreamSha256": "c085c2f9cbeb18ab54eb9f570155c0becbc33374a788de500274bb96fa336c68",
       "configurationCampaignContract": "docs/CONFIGURATION-CONTRACT.md",
       "configurationCampaignState": "accepted selected dependency or authored adapter; broader upstream scope remains external",
-      "configurationCampaignEvidence": "validation/results/configuration-verified.json"
+      "configurationCampaignEvidence": "validation/results/configuration-verified.json",
+      "emitEsCampaignAdaptation": "Focused live-owner value key enumerator for OrderedSet.Values preserves upstream ordering/count behavior without iterator allocation; no broader OrderedMap reimplementation.",
+      "emitEsCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitEsCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
     },
     {
       "upstream": "tsc/internal/core/projectreference.go",
@@ -6922,12 +6925,228 @@
       "upstreamSha256": "97402acb9a12f0f11a41da48edda387037429bb0f43555b045d28e6a1c3a1590",
       "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
       "emitCampaignEvidence": "validation/results/emit-ts-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/esdecorator.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/ESDecorator.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "0a51ade11402edaa1314630c93f98be96c83aef812f93d7299d69ca2e73e67f7",
+      "emitFunctionCount": 87,
+      "excludedSymbols": [],
+      "emitCampaignReview": "artifacts/emit/source-review/es-decorators-named.json",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "adaptations": "Borrowed ByteStringValue names and Slice headers preserve source/factory owners; required AST and slice copies retained. Mutable class/lexical frame identities remain pointers; synchronous descriptor callbacks cached once per transformer.",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/namedevaluation.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/NamedEvaluation.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "660966670ce39324fe3bd4a6fa268c1bc885fe935aa3cfdb1cf8331550e4c03b",
+      "emitFunctionCount": 20,
+      "excludedSymbols": [],
+      "emitCampaignReview": "artifacts/emit/source-review/es-decorators-named.json",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "adaptations": "Borrowed ByteStringValue names and Slice headers preserve source/factory owners; required AST and slice copies retained. Mutable class/lexical frame identities remain pointers; synchronous descriptor callbacks cached once per transformer.",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/classfields.go",
+      "status": "ported",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/ClassFields.cs",
+      "emitFunctionCount": 134,
+      "sourceSha256": "13713b18f6182747f99b9996ac0166c7cda83167ae9aedf631789d074f1f1333",
+      "upstreamSha256": "8cb3c33485d17ac2be75d992b77e8a12aa351967de9f60b4a6d4a170ada790c5",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-classfields.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/classthis.go",
+      "status": "ported",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/ClassThis.cs",
+      "emitFunctionCount": 1,
+      "sourceSha256": "9c19c6f34dfe2861b3560e8c88a0965ddd49f48fcdf9254f67d191b6c7baa3a2",
+      "upstreamSha256": "743c4eb5589106bac6b517bf72fac421dfa1cb72849f05c5f6638d95e0c310d1",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-classfields.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/async.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/Async.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "cee29f8eecd1a8e6fb3fdcf173bd1a051f43729d4ef681246342af66f3c44fa0",
+      "emitFunctionCount": 42,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/forawait.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/ForAwait.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "5829a1390005d4affb2a82e0a8f7ebcbdb25b2ad76486846cf0c2b6a603a5f4a",
+      "emitFunctionCount": 29,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/using.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/Using.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "85478efd6eed9fae5d6126990fc346b4776354527afa1ee2aa426747626c5327",
+      "emitFunctionCount": 23,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/objectrestspread.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/ObjectRestSpread.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "36158036c41682a4148384e5ea1fa1cb99f16c2e7df5a0887da3197ff1eafd61",
+      "emitFunctionCount": 24,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/exponentiation.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/Exponentiation.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "3f7020cf46a0d8ce2dcc13b37e871a232d88d7a6ea7b20ce536d1ed0f74c1fe6",
+      "emitFunctionCount": 5,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/logicalassignment.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/LogicalAssignment.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "13fec48fbd85b28c8b0696f6392cb95ee492d68b86fe54d2c3cbd6e7ab2610b9",
+      "emitFunctionCount": 3,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/nullishcoalescing.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/NullishCoalescing.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "586c5d408ec008fd40922b826e36d1d2067f4345134dac81186af4b942b39d5d",
+      "emitFunctionCount": 3,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/optionalcatch.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/OptionalCatch.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "a7b01e12cdcf1d98176cfc1f1719231afc0dcbaa56f55ec25114c26862e630fa",
+      "emitFunctionCount": 3,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/optionalchain.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/OptionalChain.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "283b69e7a2881ff5e358afa6f5eb836f9149df56fd98c538c362966a2d462c51",
+      "emitFunctionCount": 11,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/taggedtemplate.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/TaggedTemplate.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "5bc3625b9555f4d1485e289d21f35a76095f6516fed7302630ec69e456239e3b",
+      "emitFunctionCount": 8,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/usestrict.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/UseStrict.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "ad9fb13e2af3908ceefea4ad60229c6c55ca11fad5cdec75a095e2865ccc6d59",
+      "emitFunctionCount": 3,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/utilities.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/Utilities.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "fbf5d1932cacd705b9d965bbc6a69ac93ed3f61051f457d422f9157218ad5919",
+      "emitFunctionCount": 10,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/transformers/estransforms/definitions.go",
+      "destination": "src/TypeScript.Scanner/Transformers/EsTransforms/Definitions.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "db46fe592ef6979837cc14970fc0cf2e7a6e8f5611932c9e9994cdf22052936f",
+      "emitFunctionCount": 1,
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/collections/ordered_set.go",
+      "destination": "src/TypeScript.Scanner/Collections/OrderedSet.cs",
+      "status": "ported",
+      "scope": "Complete pinned source file; algorithms, required copies and explicit capacities preserved. Full target-selected stage output/diagnostic comparisons are scoped evidence, not whole compiler output acceptance.",
+      "upstreamSha256": "04392cd94a87e795031f29391fd5291b20bb1c0a11313472c884003cba7a8d7d",
+      "emitFunctionCount": 8,
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignState": "Complete mapped implementation independently reviewed; integrated managed and actual Linux x64 Native AOT gates passed. Full compiler emission remains later acceptance.",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
+    },
+    {
+      "upstream": "tsc/internal/collections/ordered_set_test.go",
+      "destination": "validation/Emit.Checks/OrderedSetChecks.cs",
+      "status": "ported-tests",
+      "scope": "Original TestOrderedSet public assertions retained. TestOrderedSetWithSizeHint allocation-count assertion is unchanged Go-runtime-only reference evidence; CLR hinted1024 public behavior authored separately.",
+      "upstreamSha256": "0fbcaa895c7b18c48057a6e7cfcacf06fabc659bf0d78691cf7517489280db5f",
+      "originalTestFunctionCount": 1,
+      "originalGoOnlyTestFunctionCount": 1,
+      "emitCampaignReview": "artifacts/emit/source-review/es-runtime.json",
+      "emitCampaignState": "Original public assertions passed managed and actual Native AOT. Go-specific allocation test passed only in Go; authored CLR hinted behavior remains separate.",
+      "emitCampaignEvidence": "validation/results/emit-es-transforms-verified.json"
     }
   ],
   "activePhase": {
     "name": "whole-emit-dependency-completion",
     "baselineCommit": "e3131a5b",
-    "status": "Complete TypeScript transform family accepted; full ES family next, followed by JSX/modules/declarations/Program and whole-output acceptance.",
+    "status": "Complete ES family accepted with1304managed passes and actualLinuxx64Native151original/168controls; nextJSX/modules/inliner. Whole-emit contract remains active.",
     "contract": "docs/EMIT-CONTRACT.md",
     "state": "docs/STATE.md",
     "testInventory": "docs/EMIT-TEST-INVENTORY.md",
@@ -6937,7 +7156,9 @@
     "prerequisiteCheckpoint": "3e78aede",
     "printerResolverEvidence": "validation/results/emit-printer-resolver-verified.json",
     "printerResolverCheckpoint": "34ade775",
-    "tsTransformsEvidence": "validation/results/emit-ts-transforms-verified.json"
+    "tsTransformsEvidence": "validation/results/emit-ts-transforms-verified.json",
+    "tsTransformsCheckpoint": "b0cf6af4",
+    "esTransformsEvidence": "validation/results/emit-es-transforms-verified.json"
   },
   "acceptedScannerCheckpoint": {
     "commit": "0a50e67",

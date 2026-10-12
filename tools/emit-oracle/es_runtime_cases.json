@@ -1,0 +1,1678 @@
+[
+  {
+    "Name": "TargetBoundaryES2015",
+    "Input": "declare const value: any; declare const obj: any; async function work() { const {a, ...rest} = obj; try { value.x ??= 2; value.y ||= 3; value.z \u0026\u0026= 4; return await value?.method?.(a ** 2) ?? rest; } catch { return tag`\\xg`; } } declare function tag(...args: any[]): any;",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __makeTemplateObject = (this \u0026\u0026 this.__makeTemplateObject) || function (cooked, raw) {\n    if (Object.defineProperty) { Object.defineProperty(cooked, \"raw\", { value: raw }); } else { cooked.raw = raw; }\n    return cooked;\n};\nvar __awaiter = (this \u0026\u0026 this.__awaiter) || function (thisArg, _arguments, P, generator) {\n    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }\n    return new (P || (P = Promise))(function (resolve, reject) {\n        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }\n        function rejected(value) { try { step(generator[\"throw\"](value)); } catch (e) { reject(e); } }\n        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }\n        step((generator = generator.apply(thisArg, _arguments || [])).next());\n    });\n};\nvar __rest = (this \u0026\u0026 this.__rest) || function (s, e) {\n    var t = {};\n    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) \u0026\u0026 e.indexOf(p) \u003c 0)\n        t[p] = s[p];\n    if (s != null \u0026\u0026 typeof Object.getOwnPropertySymbols === \"function\")\n        for (var i = 0, p = Object.getOwnPropertySymbols(s); i \u003c p.length; i++) {\n            if (e.indexOf(p[i]) \u003c 0 \u0026\u0026 Object.prototype.propertyIsEnumerable.call(s, p[i]))\n                t[p[i]] = s[p[i]];\n        }\n    return t;\n};\nfunction work() {\n    return __awaiter(this, void 0, void 0, function* () { var _a; var _b, _c; const { a } = obj, rest = __rest(obj, [\"a\"]); try {\n        (_b = value.x) !== null \u0026\u0026 _b !== void 0 ? _b : (value.x = 2);\n        value.y || (value.y = 3);\n        value.z \u0026\u0026 (value.z = 4);\n        return (_c = yield (_a = value === null || value === void 0 ? void 0 : value.method) === null || _a === void 0 ? void 0 : _a.call(value, Math.pow(a, 2))) !== null \u0026\u0026 _c !== void 0 ? _c : rest;\n    }\n    catch (_d) {\n        return tag(__makeTemplateObject([void 0], [\"\\\\xg\"]));\n    } });\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "TargetBoundaryES2016",
+    "Input": "declare const value: any; declare const obj: any; async function work() { const {a, ...rest} = obj; try { value.x ??= 2; value.y ||= 3; value.z \u0026\u0026= 4; return await value?.method?.(a ** 2) ?? rest; } catch { return tag`\\xg`; } } declare function tag(...args: any[]): any;",
+    "Other": "",
+    "Target": "ES2016",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __makeTemplateObject = (this \u0026\u0026 this.__makeTemplateObject) || function (cooked, raw) {\n    if (Object.defineProperty) { Object.defineProperty(cooked, \"raw\", { value: raw }); } else { cooked.raw = raw; }\n    return cooked;\n};\nvar __awaiter = (this \u0026\u0026 this.__awaiter) || function (thisArg, _arguments, P, generator) {\n    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }\n    return new (P || (P = Promise))(function (resolve, reject) {\n        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }\n        function rejected(value) { try { step(generator[\"throw\"](value)); } catch (e) { reject(e); } }\n        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }\n        step((generator = generator.apply(thisArg, _arguments || [])).next());\n    });\n};\nvar __rest = (this \u0026\u0026 this.__rest) || function (s, e) {\n    var t = {};\n    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) \u0026\u0026 e.indexOf(p) \u003c 0)\n        t[p] = s[p];\n    if (s != null \u0026\u0026 typeof Object.getOwnPropertySymbols === \"function\")\n        for (var i = 0, p = Object.getOwnPropertySymbols(s); i \u003c p.length; i++) {\n            if (e.indexOf(p[i]) \u003c 0 \u0026\u0026 Object.prototype.propertyIsEnumerable.call(s, p[i]))\n                t[p[i]] = s[p[i]];\n        }\n    return t;\n};\nfunction work() {\n    return __awaiter(this, void 0, void 0, function* () { var _a; var _b, _c; const { a } = obj, rest = __rest(obj, [\"a\"]); try {\n        (_b = value.x) !== null \u0026\u0026 _b !== void 0 ? _b : (value.x = 2);\n        value.y || (value.y = 3);\n        value.z \u0026\u0026 (value.z = 4);\n        return (_c = yield (_a = value === null || value === void 0 ? void 0 : value.method) === null || _a === void 0 ? void 0 : _a.call(value, a ** 2)) !== null \u0026\u0026 _c !== void 0 ? _c : rest;\n    }\n    catch (_d) {\n        return tag(__makeTemplateObject([void 0], [\"\\\\xg\"]));\n    } });\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "TargetBoundaryES2017",
+    "Input": "declare const value: any; declare const obj: any; async function work() { const {a, ...rest} = obj; try { value.x ??= 2; value.y ||= 3; value.z \u0026\u0026= 4; return await value?.method?.(a ** 2) ?? rest; } catch { return tag`\\xg`; } } declare function tag(...args: any[]): any;",
+    "Other": "",
+    "Target": "ES2017",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __makeTemplateObject = (this \u0026\u0026 this.__makeTemplateObject) || function (cooked, raw) {\n    if (Object.defineProperty) { Object.defineProperty(cooked, \"raw\", { value: raw }); } else { cooked.raw = raw; }\n    return cooked;\n};\nvar __rest = (this \u0026\u0026 this.__rest) || function (s, e) {\n    var t = {};\n    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) \u0026\u0026 e.indexOf(p) \u003c 0)\n        t[p] = s[p];\n    if (s != null \u0026\u0026 typeof Object.getOwnPropertySymbols === \"function\")\n        for (var i = 0, p = Object.getOwnPropertySymbols(s); i \u003c p.length; i++) {\n            if (e.indexOf(p[i]) \u003c 0 \u0026\u0026 Object.prototype.propertyIsEnumerable.call(s, p[i]))\n                t[p[i]] = s[p[i]];\n        }\n    return t;\n};\nasync function work() { var _a; var _b, _c; const { a } = obj, rest = __rest(obj, [\"a\"]); try {\n    (_b = value.x) !== null \u0026\u0026 _b !== void 0 ? _b : (value.x = 2);\n    value.y || (value.y = 3);\n    value.z \u0026\u0026 (value.z = 4);\n    return (_c = await ((_a = value === null || value === void 0 ? void 0 : value.method) === null || _a === void 0 ? void 0 : _a.call(value, a ** 2))) !== null \u0026\u0026 _c !== void 0 ? _c : rest;\n}\ncatch (_d) {\n    return tag(__makeTemplateObject([void 0], [\"\\\\xg\"]));\n} }\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "TargetBoundaryES2018",
+    "Input": "declare const value: any; declare const obj: any; async function work() { const {a, ...rest} = obj; try { value.x ??= 2; value.y ||= 3; value.z \u0026\u0026= 4; return await value?.method?.(a ** 2) ?? rest; } catch { return tag`\\xg`; } } declare function tag(...args: any[]): any;",
+    "Other": "",
+    "Target": "ES2018",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nasync function work() { var _a; var _b, _c; const { a, ...rest } = obj; try {\n    (_b = value.x) !== null \u0026\u0026 _b !== void 0 ? _b : (value.x = 2);\n    value.y || (value.y = 3);\n    value.z \u0026\u0026 (value.z = 4);\n    return (_c = await ((_a = value === null || value === void 0 ? void 0 : value.method) === null || _a === void 0 ? void 0 : _a.call(value, a ** 2))) !== null \u0026\u0026 _c !== void 0 ? _c : rest;\n}\ncatch (_d) {\n    return tag `\\xg`;\n} }\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "TargetBoundaryES2019",
+    "Input": "declare const value: any; declare const obj: any; async function work() { const {a, ...rest} = obj; try { value.x ??= 2; value.y ||= 3; value.z \u0026\u0026= 4; return await value?.method?.(a ** 2) ?? rest; } catch { return tag`\\xg`; } } declare function tag(...args: any[]): any;",
+    "Other": "",
+    "Target": "ES2019",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nasync function work() { var _a; var _b, _c; const { a, ...rest } = obj; try {\n    (_b = value.x) !== null \u0026\u0026 _b !== void 0 ? _b : (value.x = 2);\n    value.y || (value.y = 3);\n    value.z \u0026\u0026 (value.z = 4);\n    return (_c = await ((_a = value === null || value === void 0 ? void 0 : value.method) === null || _a === void 0 ? void 0 : _a.call(value, a ** 2))) !== null \u0026\u0026 _c !== void 0 ? _c : rest;\n}\ncatch {\n    return tag `\\xg`;\n} }\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "TargetBoundaryES2020",
+    "Input": "declare const value: any; declare const obj: any; async function work() { const {a, ...rest} = obj; try { value.x ??= 2; value.y ||= 3; value.z \u0026\u0026= 4; return await value?.method?.(a ** 2) ?? rest; } catch { return tag`\\xg`; } } declare function tag(...args: any[]): any;",
+    "Other": "",
+    "Target": "ES2020",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nasync function work() { const { a, ...rest } = obj; try {\n    value.x ?? (value.x = 2);\n    value.y || (value.y = 3);\n    value.z \u0026\u0026 (value.z = 4);\n    return await value?.method?.(a ** 2) ?? rest;\n}\ncatch {\n    return tag `\\xg`;\n} }\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "TargetBoundaryES2021",
+    "Input": "declare const value: any; declare const obj: any; async function work() { const {a, ...rest} = obj; try { value.x ??= 2; value.y ||= 3; value.z \u0026\u0026= 4; return await value?.method?.(a ** 2) ?? rest; } catch { return tag`\\xg`; } } declare function tag(...args: any[]): any;",
+    "Other": "",
+    "Target": "ES2021",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nasync function work() { const { a, ...rest } = obj; try {\n    value.x ??= 2;\n    value.y ||= 3;\n    value.z \u0026\u0026= 4;\n    return await value?.method?.(a ** 2) ?? rest;\n}\ncatch {\n    return tag `\\xg`;\n} }\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "TargetBoundaryES2022",
+    "Input": "declare const value: any; declare const obj: any; async function work() { const {a, ...rest} = obj; try { value.x ??= 2; value.y ||= 3; value.z \u0026\u0026= 4; return await value?.method?.(a ** 2) ?? rest; } catch { return tag`\\xg`; } } declare function tag(...args: any[]): any;",
+    "Other": "",
+    "Target": "ES2022",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nasync function work() { const { a, ...rest } = obj; try {\n    value.x ??= 2;\n    value.y ||= 3;\n    value.z \u0026\u0026= 4;\n    return await value?.method?.(a ** 2) ?? rest;\n}\ncatch {\n    return tag `\\xg`;\n} }\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "TargetBoundaryESNext",
+    "Input": "declare const value: any; declare const obj: any; async function work() { const {a, ...rest} = obj; try { value.x ??= 2; value.y ||= 3; value.z \u0026\u0026= 4; return await value?.method?.(a ** 2) ?? rest; } catch { return tag`\\xg`; } } declare function tag(...args: any[]): any;",
+    "Other": "",
+    "Target": "ESNext",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nasync function work() { const { a, ...rest } = obj; try {\n    value.x ??= 2;\n    value.y ||= 3;\n    value.z \u0026\u0026= 4;\n    return await value?.method?.(a ** 2) ?? rest;\n}\ncatch {\n    return tag `\\xg`;\n} }\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "ExponentiationComputedReceiver",
+    "Input": "declare const obj: any; declare function receiver(): any; declare function key(): any; receiver()[key()] **= obj; receiver().value **= obj; let x = 2; x **= 3; const y = x ** 2;",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar _a, _b, _c;\n(_a = receiver())[_b = key()] = Math.pow(_a[_b], obj);\n(_c = receiver()).value = Math.pow(_c.value, obj);\nlet x = 2;\nx = Math.pow(x, 3);\nconst y = Math.pow(x, 2);\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "LogicalAssignmentReceivers",
+    "Input": "declare function obj(): any; declare function key(): any; obj()[key()] ||= 1; obj().x \u0026\u0026= 2; obj()[key()] ??= 3;",
+    "Other": "",
+    "Target": "ES2020",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar _a, _b, _c, _d, _e;\n(_a = obj())[_b = key()] || (_a[_b] = 1);\n(_c = obj()).x \u0026\u0026 (_c.x = 2);\n(_d = obj())[_e = key()] ?? (_d[_e] = 3);\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "OptionalCallReceivers",
+    "Input": "declare const x: any; declare function obj(): any; declare function key(): any; const a = obj()?.[key()]?.(1); const b = (x?.method)(); const c = x.method?.(2); const d = delete obj()?.[key()];",
+    "Other": "",
+    "Target": "ES2019",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar _a, _b, _c, _d;\nconst a = (_b = (_a = obj()) === null || _a === void 0 ? void 0 : _a[key()]) === null || _b === void 0 ? void 0 : _b.call(_a, 1);\nconst b = (x === null || x === void 0 ? void 0 : x.method).call(x);\nconst c = (_c = x.method) === null || _c === void 0 ? void 0 : _c.call(x, 2);\nconst d = (_d = obj()) === null || _d === void 0 ? true : delete _d[key()];\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "NullishEvaluation",
+    "Input": "declare function value(): any; declare const x: any; const a = value() ?? value(); const b = x ?? value();",
+    "Other": "",
+    "Target": "ES2019",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar _a;\nconst a = (_a = value()) !== null \u0026\u0026 _a !== void 0 ? _a : value();\nconst b = x !== null \u0026\u0026 x !== void 0 ? x : value();\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "OptionalCatchAndBound",
+    "Input": "try { throw 1; } catch { console.log(2); } try { throw 3; } catch (e) { console.log(e); }",
+    "Other": "",
+    "Target": "ES2018",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\ntry {\n    throw 1;\n}\ncatch (_a) {\n    console.log(2);\n}\ntry {\n    throw 3;\n}\ncatch (e) {\n    console.log(e);\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "AsyncLexicalArguments",
+    "Input": "async function f(x: number) { const arrow = async () =\u003e { await x; return arguments[0]; }; return arrow(); }",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __awaiter = (this \u0026\u0026 this.__awaiter) || function (thisArg, _arguments, P, generator) {\n    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }\n    return new (P || (P = Promise))(function (resolve, reject) {\n        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }\n        function rejected(value) { try { step(generator[\"throw\"](value)); } catch (e) { reject(e); } }\n        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }\n        step((generator = generator.apply(thisArg, _arguments || [])).next());\n    });\n};\nfunction f(x) {\n    var arguments_1 = arguments;\n    return __awaiter(this, void 0, void 0, function* () { const arrow = () =\u003e __awaiter(this, void 0, void 0, function* () { yield x; return arguments_1[0]; }); return arrow(); });\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "AsyncParameterDefaultsRest",
+    "Input": "async function f(first = 1, ...rest: number[]) { await first; let item = rest[0]; return [item, arguments.length]; }",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __awaiter = (this \u0026\u0026 this.__awaiter) || function (thisArg, _arguments, P, generator) {\n    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }\n    return new (P || (P = Promise))(function (resolve, reject) {\n        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }\n        function rejected(value) { try { step(generator[\"throw\"](value)); } catch (e) { reject(e); } }\n        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }\n        step((generator = generator.apply(thisArg, _arguments || [])).next());\n    });\n};\nfunction f() {\n    var arguments_1 = arguments;\n    return __awaiter(this, arguments, void 0, function* (first = 1, ...rest) { yield first; let item = rest[0]; return [item, arguments_1.length]; });\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "AsyncCollisionCatchScopes",
+    "Input": "async function f(value: number) { let value = 1; await value; try { throw 2; } catch (value) { let value = 3; await value; } for (let value of [1, 2]) { await value; } return value; }",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __awaiter = (this \u0026\u0026 this.__awaiter) || function (thisArg, _arguments, P, generator) {\n    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }\n    return new (P || (P = Promise))(function (resolve, reject) {\n        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }\n        function rejected(value) { try { step(generator[\"throw\"](value)); } catch (e) { reject(e); } }\n        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }\n        step((generator = generator.apply(thisArg, _arguments || [])).next());\n    });\n};\nfunction f(value) {\n    return __awaiter(this, void 0, void 0, function* () { let value = 1; yield value; try {\n        throw 2;\n    }\n    catch (value) {\n        let value = 3;\n        yield value;\n    } for (let value of [1, 2]) {\n        yield value;\n    } return value; });\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": [
+        {
+          "File": "/main.ts",
+          "Start": 17,
+          "Length": 5,
+          "End": 22,
+          "Code": 2300,
+          "Category": 1,
+          "Key": "Duplicate_identifier_0_2300",
+          "Message": "Duplicate identifier 'value'.",
+          "Args": [
+            "value"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        },
+        {
+          "File": "/main.ts",
+          "Start": 38,
+          "Length": 5,
+          "End": 43,
+          "Code": 2300,
+          "Category": 1,
+          "Key": "Duplicate_identifier_0_2300",
+          "Message": "Duplicate identifier 'value'.",
+          "Args": [
+            "value"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        },
+        {
+          "File": "/main.ts",
+          "Start": 99,
+          "Length": 5,
+          "End": 104,
+          "Code": 2492,
+          "Category": 1,
+          "Key": "Cannot_redeclare_identifier_0_in_catch_clause_2492",
+          "Message": "Cannot redeclare identifier 'value' in catch clause.",
+          "Args": [
+            "value"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ]
+    }
+  },
+  {
+    "Name": "AsyncArgumentsLocalShadow",
+    "Input": "async function f(arguments: any) { await 1; return arguments; } const a = async (x: any) =\u003e { await x; return arguments; };",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __awaiter = (this \u0026\u0026 this.__awaiter) || function (thisArg, _arguments, P, generator) {\n    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }\n    return new (P || (P = Promise))(function (resolve, reject) {\n        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }\n        function rejected(value) { try { step(generator[\"throw\"](value)); } catch (e) { reject(e); } }\n        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }\n        step((generator = generator.apply(thisArg, _arguments || [])).next());\n    });\n};\nfunction f(arguments) {\n    var arguments_1 = arguments;\n    return __awaiter(this, void 0, void 0, function* () { yield 1; return arguments_1; });\n}\nconst a = (x) =\u003e {\n    var arguments_2 = arguments;\n    return __awaiter(void 0, void 0, void 0, function* () { yield x; return arguments_2; });\n};\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": [
+        {
+          "File": "/main.ts",
+          "Start": 17,
+          "Length": 9,
+          "End": 26,
+          "Code": 1100,
+          "Category": 1,
+          "Key": "Invalid_use_of_0_in_strict_mode_1100",
+          "Message": "Invalid use of 'arguments' in strict mode.",
+          "Args": [
+            "arguments"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        },
+        {
+          "File": "/main.ts",
+          "Start": 110,
+          "Length": 9,
+          "End": 119,
+          "Code": 2304,
+          "Category": 1,
+          "Key": "Cannot_find_name_0_2304",
+          "Message": "Cannot find name 'arguments'.",
+          "Args": [
+            "arguments"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ]
+    }
+  },
+  {
+    "Name": "AsyncSuperBindings",
+    "Input": "class Base { value = 1; method() { return 2; } } class Derived extends Base { async method() { super.value++; super[\"value\"] += await 1; return super.method() + super[\"method\"](); } }",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __awaiter = (this \u0026\u0026 this.__awaiter) || function (thisArg, _arguments, P, generator) {\n    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }\n    return new (P || (P = Promise))(function (resolve, reject) {\n        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }\n        function rejected(value) { try { step(generator[\"throw\"](value)); } catch (e) { reject(e); } }\n        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }\n        step((generator = generator.apply(thisArg, _arguments || [])).next());\n    });\n};\nclass Base {\n    constructor() {\n        this.value = 1;\n    }\n    method() { return 2; }\n}\nclass Derived extends Base {\n    method() {\n        const _superIndex = (function (geti, seti) {\n            const cache = Object.create(null);\n            return name =\u003e cache[name] || (cache[name] = { get value() { return geti(name); }, set value(v) { seti(name, v); } });\n        })(name =\u003e super[name], (name, value) =\u003e super[name] = value);\n        const _super = Object.create(null, {\n            value: { get: () =\u003e super.value, set: v =\u003e super.value = v },\n            method: { get: () =\u003e super.method, set: v =\u003e super.method = v }\n        });\n        return __awaiter(this, void 0, void 0, function* () { _super.value++; _superIndex(\"value\").value += yield 1; return _super.method.call(this) + _superIndex(\"method\").value.call(this); });\n    }\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": [
+        {
+          "File": "/main.ts",
+          "Start": 84,
+          "Length": 6,
+          "End": 90,
+          "Code": 2416,
+          "Category": 1,
+          "Key": "Property_0_in_type_1_is_not_assignable_to_the_same_property_in_base_type_2_2416",
+          "Message": "Property 'method' in type 'Derived' is not assignable to the same property in base type 'Base'.",
+          "Args": [
+            "method",
+            "Derived",
+            "Base"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [
+            {
+              "File": "/main.ts",
+              "Start": 84,
+              "Length": 6,
+              "End": 90,
+              "Code": 2322,
+              "Category": 1,
+              "Key": "Type_0_is_not_assignable_to_type_1_2322",
+              "Message": "Type '() =\u003e Promise\u003cnumber\u003e' is not assignable to type '() =\u003e number'.",
+              "Args": [
+                "() =\u003e Promise\u003cnumber\u003e",
+                "() =\u003e number"
+              ],
+              "Source": "",
+              "ReportsUnnecessary": false,
+              "ReportsDeprecated": false,
+              "SkippedOnNoEmit": false,
+              "Chain": [
+                {
+                  "File": "/main.ts",
+                  "Start": 84,
+                  "Length": 6,
+                  "End": 90,
+                  "Code": 2322,
+                  "Category": 1,
+                  "Key": "Type_0_is_not_assignable_to_type_1_2322",
+                  "Message": "Type 'Promise\u003cnumber\u003e' is not assignable to type 'number'.",
+                  "Args": [
+                    "Promise\u003cnumber\u003e",
+                    "number"
+                  ],
+                  "Source": "",
+                  "ReportsUnnecessary": false,
+                  "ReportsDeprecated": false,
+                  "SkippedOnNoEmit": false,
+                  "Chain": [],
+                  "Related": [],
+                  "Repopulate": null
+                }
+              ],
+              "Related": [],
+              "Repopulate": null
+            }
+          ],
+          "Related": [],
+          "Repopulate": null
+        },
+        {
+          "File": "/main.ts",
+          "Start": 101,
+          "Length": 5,
+          "End": 106,
+          "Code": 2855,
+          "Category": 1,
+          "Key": "Class_field_0_defined_by_the_parent_class_is_not_accessible_in_the_child_class_via_super_2855",
+          "Message": "Class field 'value' defined by the parent class is not accessible in the child class via super.",
+          "Args": [
+            "value"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ]
+    }
+  },
+  {
+    "Name": "AsyncNestedMethods",
+    "Input": "class B { method() { return 1; } } class C extends B { async method() { const arrow = async () =\u003e super.method() + await 1; function inner() { return arguments[0]; } class D { async f() { return await 2; } } return [await arrow(), inner(1), new D()]; } }",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __awaiter = (this \u0026\u0026 this.__awaiter) || function (thisArg, _arguments, P, generator) {\n    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }\n    return new (P || (P = Promise))(function (resolve, reject) {\n        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }\n        function rejected(value) { try { step(generator[\"throw\"](value)); } catch (e) { reject(e); } }\n        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }\n        step((generator = generator.apply(thisArg, _arguments || [])).next());\n    });\n};\nclass B {\n    method() { return 1; }\n}\nclass C extends B {\n    method() {\n        const _super = Object.create(null, {\n            method: { get: () =\u003e super.method }\n        });\n        return __awaiter(this, void 0, void 0, function* () { const arrow = () =\u003e __awaiter(this, void 0, void 0, function* () { return _super.method.call(this) + (yield 1); }); function inner() { return arguments[0]; } class D {\n            f() {\n                return __awaiter(this, void 0, void 0, function* () { return yield 2; });\n            }\n        } return [yield arrow(), inner(1), new D()]; });\n    }\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": [
+        {
+          "File": "/main.ts",
+          "Start": 61,
+          "Length": 6,
+          "End": 67,
+          "Code": 2416,
+          "Category": 1,
+          "Key": "Property_0_in_type_1_is_not_assignable_to_the_same_property_in_base_type_2_2416",
+          "Message": "Property 'method' in type 'C' is not assignable to the same property in base type 'B'.",
+          "Args": [
+            "method",
+            "C",
+            "B"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [
+            {
+              "File": "/main.ts",
+              "Start": 61,
+              "Length": 6,
+              "End": 67,
+              "Code": 2322,
+              "Category": 1,
+              "Key": "Type_0_is_not_assignable_to_type_1_2322",
+              "Message": "Type '() =\u003e Promise\u003cany[]\u003e' is not assignable to type '() =\u003e number'.",
+              "Args": [
+                "() =\u003e Promise\u003cany[]\u003e",
+                "() =\u003e number"
+              ],
+              "Source": "",
+              "ReportsUnnecessary": false,
+              "ReportsDeprecated": false,
+              "SkippedOnNoEmit": false,
+              "Chain": [
+                {
+                  "File": "/main.ts",
+                  "Start": 61,
+                  "Length": 6,
+                  "End": 67,
+                  "Code": 2322,
+                  "Category": 1,
+                  "Key": "Type_0_is_not_assignable_to_type_1_2322",
+                  "Message": "Type 'Promise\u003cany[]\u003e' is not assignable to type 'number'.",
+                  "Args": [
+                    "Promise\u003cany[]\u003e",
+                    "number"
+                  ],
+                  "Source": "",
+                  "ReportsUnnecessary": false,
+                  "ReportsDeprecated": false,
+                  "SkippedOnNoEmit": false,
+                  "Chain": [],
+                  "Related": [],
+                  "Repopulate": null
+                }
+              ],
+              "Related": [],
+              "Repopulate": null
+            }
+          ],
+          "Related": [],
+          "Repopulate": null
+        },
+        {
+          "File": "/main.ts",
+          "Start": 237,
+          "Length": 1,
+          "End": 238,
+          "Code": 2554,
+          "Category": 1,
+          "Key": "Expected_0_arguments_but_got_1_2554",
+          "Message": "Expected 0 arguments, but got 1.",
+          "Args": [
+            "0",
+            "1"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ]
+    }
+  },
+  {
+    "Name": "AsyncHoistLoops",
+    "Input": "async function f(input: any) { for (let x = await input; x \u003c 2; x++) await x; for (let y in input) await input[y]; for (let z of input) await z; let [a, ...rest] = input; return [a, rest]; }",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __awaiter = (this \u0026\u0026 this.__awaiter) || function (thisArg, _arguments, P, generator) {\n    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }\n    return new (P || (P = Promise))(function (resolve, reject) {\n        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }\n        function rejected(value) { try { step(generator[\"throw\"](value)); } catch (e) { reject(e); } }\n        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }\n        step((generator = generator.apply(thisArg, _arguments || [])).next());\n    });\n};\nfunction f(input) {\n    return __awaiter(this, void 0, void 0, function* () { for (let x = yield input; x \u003c 2; x++)\n        yield x; for (let y in input)\n        yield input[y]; for (let z of input)\n        yield z; let [a, ...rest] = input; return [a, rest]; });\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "AsyncGeneratorDelegation",
+    "Input": "async function* f(source: any) { yield await 1; yield* source; return await 2; }",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __await = (this \u0026\u0026 this.__await) || function (v) { return this instanceof __await ? (this.v = v, this) : new __await(v); }\nvar __asyncValues = (this \u0026\u0026 this.__asyncValues) || function (o) {\n    if (!Symbol.asyncIterator) throw new TypeError(\"Symbol.asyncIterator is not defined.\");\n    var m = o[Symbol.asyncIterator], i;\n    return m ? m.call(o) : (o = typeof __values === \"function\" ? __values(o) : o[Symbol.iterator](), i = {}, verb(\"next\"), verb(\"throw\"), verb(\"return\"), i[Symbol.asyncIterator] = function () { return this; }, i);\n    function verb(n) { i[n] = o[n] \u0026\u0026 function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }\n    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }\n};\nvar __asyncDelegator = (this \u0026\u0026 this.__asyncDelegator) || function (o) {\n    var i, p;\n    return i = {}, verb(\"next\"), verb(\"throw\", function (e) { throw e; }), verb(\"return\"), i[Symbol.iterator] = function () { return this; }, i;\n    function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: false } : f ? f(v) : v; } : f; }\n};\nvar __asyncGenerator = (this \u0026\u0026 this.__asyncGenerator) || function (thisArg, _arguments, generator) {\n    if (!Symbol.asyncIterator) throw new TypeError(\"Symbol.asyncIterator is not defined.\");\n    var g = generator.apply(thisArg, _arguments || []), i, q = [];\n    return i = Object.create((typeof AsyncIterator === \"function\" ? AsyncIterator : Object).prototype), verb(\"next\"), verb(\"throw\"), verb(\"return\", awaitReturn), i[Symbol.asyncIterator] = function () { return this; }, i;\n    function awaitReturn(f) { return function (v) { return Promise.resolve(v).then(f, reject); }; }\n    function verb(n, f) { if (g[n]) { i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) \u003e 1 || resume(n, v); }); }; if (f) i[n] = f(i[n]); } }\n    function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }\n    function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }\n    function fulfill(value) { resume(\"next\", value); }\n    function reject(value) { resume(\"throw\", value); }\n    function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }\n};\nfunction f(source) { return __asyncGenerator(this, arguments, function* f_1() { yield yield __await(yield __await(1)); yield __await(yield* __asyncDelegator(__asyncValues(source))); return yield __await(yield __await(2)); }); }\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "ForAwaitDestructuring",
+    "Input": "async function f(source: any) { for await (const {x, ...rest} of source) { if (x) break; console.log(rest); } }",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __awaiter = (this \u0026\u0026 this.__awaiter) || function (thisArg, _arguments, P, generator) {\n    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }\n    return new (P || (P = Promise))(function (resolve, reject) {\n        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }\n        function rejected(value) { try { step(generator[\"throw\"](value)); } catch (e) { reject(e); } }\n        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }\n        step((generator = generator.apply(thisArg, _arguments || [])).next());\n    });\n};\nvar __rest = (this \u0026\u0026 this.__rest) || function (s, e) {\n    var t = {};\n    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) \u0026\u0026 e.indexOf(p) \u003c 0)\n        t[p] = s[p];\n    if (s != null \u0026\u0026 typeof Object.getOwnPropertySymbols === \"function\")\n        for (var i = 0, p = Object.getOwnPropertySymbols(s); i \u003c p.length; i++) {\n            if (e.indexOf(p[i]) \u003c 0 \u0026\u0026 Object.prototype.propertyIsEnumerable.call(s, p[i]))\n                t[p[i]] = s[p[i]];\n        }\n    return t;\n};\nvar __asyncValues = (this \u0026\u0026 this.__asyncValues) || function (o) {\n    if (!Symbol.asyncIterator) throw new TypeError(\"Symbol.asyncIterator is not defined.\");\n    var m = o[Symbol.asyncIterator], i;\n    return m ? m.call(o) : (o = typeof __values === \"function\" ? __values(o) : o[Symbol.iterator](), i = {}, verb(\"next\"), verb(\"throw\"), verb(\"return\"), i[Symbol.asyncIterator] = function () { return this; }, i);\n    function verb(n) { i[n] = o[n] \u0026\u0026 function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }\n    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }\n};\nfunction f(source) {\n    return __awaiter(this, void 0, void 0, function* () { var _a, source_1, source_1_1; var _b, e_1, _c, _d; try {\n        for (_a = true, source_1 = __asyncValues(source); source_1_1 = yield source_1.next(), _b = source_1_1.done, !_b; _a = true) {\n            _d = source_1_1.value;\n            _a = false;\n            let _e = _d;\n            const { x } = _e, rest = __rest(_e, [\"x\"]);\n            if (x)\n                break;\n            console.log(rest);\n        }\n    }\n    catch (e_1_1) { e_1 = { error: e_1_1 }; }\n    finally {\n        try {\n            if (!_a \u0026\u0026 !_b \u0026\u0026 (_c = source_1.return)) yield _c.call(source_1);\n        }\n        finally { if (e_1) throw e_1.error; }\n    } });\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "ForAwaitLabelAndNestedFinally",
+    "Input": "async function f(a: any, b: any) { outer: for await (const x of a) { try { for await (const y of b) { if (y) continue outer; } } finally { await x; } } }",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __awaiter = (this \u0026\u0026 this.__awaiter) || function (thisArg, _arguments, P, generator) {\n    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }\n    return new (P || (P = Promise))(function (resolve, reject) {\n        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }\n        function rejected(value) { try { step(generator[\"throw\"](value)); } catch (e) { reject(e); } }\n        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }\n        step((generator = generator.apply(thisArg, _arguments || [])).next());\n    });\n};\nvar __asyncValues = (this \u0026\u0026 this.__asyncValues) || function (o) {\n    if (!Symbol.asyncIterator) throw new TypeError(\"Symbol.asyncIterator is not defined.\");\n    var m = o[Symbol.asyncIterator], i;\n    return m ? m.call(o) : (o = typeof __values === \"function\" ? __values(o) : o[Symbol.iterator](), i = {}, verb(\"next\"), verb(\"throw\"), verb(\"return\"), i[Symbol.asyncIterator] = function () { return this; }, i);\n    function verb(n) { i[n] = o[n] \u0026\u0026 function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }\n    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }\n};\nfunction f(a, b) {\n    return __awaiter(this, void 0, void 0, function* () { var _a, a_1, a_1_1, _b, b_1, b_1_1; var _c, e_1, _d, _e, _f, e_2, _g, _h; try {\n        outer: for (_a = true, a_1 = __asyncValues(a); a_1_1 = yield a_1.next(), _c = a_1_1.done, !_c; _a = true) {\n            _e = a_1_1.value;\n            _a = false;\n            const x = _e;\n            try {\n                try {\n                    for (_b = true, b_1 = (e_2 = void 0, __asyncValues(b)); b_1_1 = yield b_1.next(), _f = b_1_1.done, !_f; _b = true) {\n                        _h = b_1_1.value;\n                        _b = false;\n                        const y = _h;\n                        if (y)\n                            continue outer;\n                    }\n                }\n                catch (e_2_1) { e_2 = { error: e_2_1 }; }\n                finally {\n                    try {\n                        if (!_b \u0026\u0026 !_f \u0026\u0026 (_g = b_1.return)) yield _g.call(b_1);\n                    }\n                    finally { if (e_2) throw e_2.error; }\n                }\n            }\n            finally {\n                yield x;\n            }\n        }\n    }\n    catch (e_1_1) { e_1 = { error: e_1_1 }; }\n    finally {\n        try {\n            if (!_a \u0026\u0026 !_c \u0026\u0026 (_d = a_1.return)) yield _d.call(a_1);\n        }\n        finally { if (e_1) throw e_1.error; }\n    } });\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "AsyncGeneratorSuper",
+    "Input": "class B { value = 1; method() { return [1]; } } class C extends B { async *run() { yield super.value++; for await (const x of super.method()) yield x; yield* super[\"method\"](); } }",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __await = (this \u0026\u0026 this.__await) || function (v) { return this instanceof __await ? (this.v = v, this) : new __await(v); }\nvar __asyncValues = (this \u0026\u0026 this.__asyncValues) || function (o) {\n    if (!Symbol.asyncIterator) throw new TypeError(\"Symbol.asyncIterator is not defined.\");\n    var m = o[Symbol.asyncIterator], i;\n    return m ? m.call(o) : (o = typeof __values === \"function\" ? __values(o) : o[Symbol.iterator](), i = {}, verb(\"next\"), verb(\"throw\"), verb(\"return\"), i[Symbol.asyncIterator] = function () { return this; }, i);\n    function verb(n) { i[n] = o[n] \u0026\u0026 function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }\n    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }\n};\nvar __asyncDelegator = (this \u0026\u0026 this.__asyncDelegator) || function (o) {\n    var i, p;\n    return i = {}, verb(\"next\"), verb(\"throw\", function (e) { throw e; }), verb(\"return\"), i[Symbol.iterator] = function () { return this; }, i;\n    function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: false } : f ? f(v) : v; } : f; }\n};\nvar __asyncGenerator = (this \u0026\u0026 this.__asyncGenerator) || function (thisArg, _arguments, generator) {\n    if (!Symbol.asyncIterator) throw new TypeError(\"Symbol.asyncIterator is not defined.\");\n    var g = generator.apply(thisArg, _arguments || []), i, q = [];\n    return i = Object.create((typeof AsyncIterator === \"function\" ? AsyncIterator : Object).prototype), verb(\"next\"), verb(\"throw\"), verb(\"return\", awaitReturn), i[Symbol.asyncIterator] = function () { return this; }, i;\n    function awaitReturn(f) { return function (v) { return Promise.resolve(v).then(f, reject); }; }\n    function verb(n, f) { if (g[n]) { i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) \u003e 1 || resume(n, v); }); }; if (f) i[n] = f(i[n]); } }\n    function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }\n    function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }\n    function fulfill(value) { resume(\"next\", value); }\n    function reject(value) { resume(\"throw\", value); }\n    function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }\n};\nclass B {\n    constructor() {\n        this.value = 1;\n    }\n    method() { return [1]; }\n}\nclass C extends B {\n    run() {\n        const _superIndex = (function (geti, seti) {\n            const cache = Object.create(null);\n            return name =\u003e cache[name] || (cache[name] = { get value() { return geti(name); }, set value(v) { seti(name, v); } });\n        })(name =\u003e super[name], (name, value) =\u003e super[name] = value);\n        const _super = Object.create(null, {\n            value: { get: () =\u003e super.value, set: v =\u003e super.value = v },\n            method: { get: () =\u003e super.method, set: v =\u003e super.method = v }\n        });\n        return __asyncGenerator(this, arguments, function* run_1() { var _a, e_1, _b, _c; yield yield __await(_super.value++); try {\n            for (var _d = true, _e = __asyncValues(_super.method.call(this)), _f; _f = yield __await(_e.next()), _a = _f.done, !_a; _d = true) {\n                _c = _f.value;\n                _d = false;\n                const x = _c;\n                yield yield __await(x);\n            }\n        }\n        catch (e_1_1) { e_1 = { error: e_1_1 }; }\n        finally {\n            try {\n                if (!_d \u0026\u0026 !_a \u0026\u0026 (_b = _e.return)) yield __await(_b.call(_e));\n            }\n            finally { if (e_1) throw e_1.error; }\n        } yield __await(yield* __asyncDelegator(__asyncValues(_superIndex(\"method\").value.call(this)))); });\n    }\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": [
+        {
+          "File": "/main.ts",
+          "Start": 95,
+          "Length": 5,
+          "End": 100,
+          "Code": 2855,
+          "Category": 1,
+          "Key": "Class_field_0_defined_by_the_parent_class_is_not_accessible_in_the_child_class_via_super_2855",
+          "Message": "Class field 'value' defined by the parent class is not accessible in the child class via super.",
+          "Args": [
+            "value"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ]
+    }
+  },
+  {
+    "Name": "ForAwaitAssignmentReceiver",
+    "Input": "declare let target: any; async function f(source: any) { for await (target.value of source) { await target.value; } }",
+    "Other": "",
+    "Target": "ES2017",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __asyncValues = (this \u0026\u0026 this.__asyncValues) || function (o) {\n    if (!Symbol.asyncIterator) throw new TypeError(\"Symbol.asyncIterator is not defined.\");\n    var m = o[Symbol.asyncIterator], i;\n    return m ? m.call(o) : (o = typeof __values === \"function\" ? __values(o) : o[Symbol.iterator](), i = {}, verb(\"next\"), verb(\"throw\"), verb(\"return\"), i[Symbol.asyncIterator] = function () { return this; }, i);\n    function verb(n) { i[n] = o[n] \u0026\u0026 function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }\n    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }\n};\nasync function f(source) { var _a, e_1, _b, _c; try {\n    for (var _d = true, source_1 = __asyncValues(source), source_1_1; source_1_1 = await source_1.next(), _a = source_1_1.done, !_a; _d = true) {\n        _c = source_1_1.value;\n        _d = false;\n        target.value = _c;\n        await target.value;\n    }\n}\ncatch (e_1_1) { e_1 = { error: e_1_1 }; }\nfinally {\n    try {\n        if (!_d \u0026\u0026 !_a \u0026\u0026 (_b = source_1.return)) await _b.call(source_1);\n    }\n    finally { if (e_1) throw e_1.error; }\n} }\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "ObjectRestComputedDefault",
+    "Input": "declare function input(): any; declare function key(): any; const { [key()]: first = 1, ...rest } = input(); const { nested: { value, ...other } } = input();",
+    "Other": "",
+    "Target": "ES2017",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __rest = (this \u0026\u0026 this.__rest) || function (s, e) {\n    var t = {};\n    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) \u0026\u0026 e.indexOf(p) \u003c 0)\n        t[p] = s[p];\n    if (s != null \u0026\u0026 typeof Object.getOwnPropertySymbols === \"function\")\n        for (var i = 0, p = Object.getOwnPropertySymbols(s); i \u003c p.length; i++) {\n            if (e.indexOf(p[i]) \u003c 0 \u0026\u0026 Object.prototype.propertyIsEnumerable.call(s, p[i]))\n                t[p[i]] = s[p[i]];\n        }\n    return t;\n};\nconst _a = input(), _b = key(), _c = _a[_b], first = _c === void 0 ? 1 : _c, rest = __rest(_a, [typeof _b === \"symbol\" ? _b : _b + \"\"]);\nconst _d = input().nested, { value } = _d, other = __rest(_d, [\"value\"]);\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "ObjectRestParameterDefaults",
+    "Input": "function f({a, ...rest}: any = {}, after = a) { \"use strict\"; return [a, rest, after]; } const g = ({a, ...rest}: any, {b}: any = {}) =\u003e [a, rest, b];",
+    "Other": "",
+    "Target": "ES2017",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __rest = (this \u0026\u0026 this.__rest) || function (s, e) {\n    var t = {};\n    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) \u0026\u0026 e.indexOf(p) \u003c 0)\n        t[p] = s[p];\n    if (s != null \u0026\u0026 typeof Object.getOwnPropertySymbols === \"function\")\n        for (var i = 0, p = Object.getOwnPropertySymbols(s); i \u003c p.length; i++) {\n            if (e.indexOf(p[i]) \u003c 0 \u0026\u0026 Object.prototype.propertyIsEnumerable.call(s, p[i]))\n                t[p[i]] = s[p[i]];\n        }\n    return t;\n};\nfunction f(_a = {}, after) {\n    \"use strict\";\n    var { a } = _a, rest = __rest(_a, [\"a\"]);\n    if (after === void 0) { after = a; }\n    return [a, rest, after];\n}\nconst g = (_a, _b) =\u003e {\n    var { a } = _a, rest = __rest(_a, [\"a\"]);\n    var _c = _b === void 0 ? {} : _b, b = _c.b;\n    return [a, rest, b];\n};\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": [
+        {
+          "File": "/main.ts",
+          "Start": 11,
+          "Length": 22,
+          "End": 33,
+          "Code": 1346,
+          "Category": 1,
+          "Key": "This_parameter_is_not_allowed_with_use_strict_directive_1346",
+          "Message": "This parameter is not allowed with 'use strict' directive.",
+          "Args": null,
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [
+            {
+              "File": "/main.ts",
+              "Start": 48,
+              "Length": 13,
+              "End": 61,
+              "Code": 1349,
+              "Category": 1,
+              "Key": "use_strict_directive_used_here_1349",
+              "Message": "'use strict' directive used here.",
+              "Args": null,
+              "Source": "",
+              "ReportsUnnecessary": false,
+              "ReportsDeprecated": false,
+              "SkippedOnNoEmit": false,
+              "Chain": [],
+              "Related": [],
+              "Repopulate": null
+            }
+          ],
+          "Repopulate": null
+        },
+        {
+          "File": "/main.ts",
+          "Start": 35,
+          "Length": 9,
+          "End": 44,
+          "Code": 1346,
+          "Category": 1,
+          "Key": "This_parameter_is_not_allowed_with_use_strict_directive_1346",
+          "Message": "This parameter is not allowed with 'use strict' directive.",
+          "Args": null,
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [
+            {
+              "File": "/main.ts",
+              "Start": 48,
+              "Length": 13,
+              "End": 61,
+              "Code": 1349,
+              "Category": 1,
+              "Key": "use_strict_directive_used_here_1349",
+              "Message": "'use strict' directive used here.",
+              "Args": null,
+              "Source": "",
+              "ReportsUnnecessary": false,
+              "ReportsDeprecated": false,
+              "SkippedOnNoEmit": false,
+              "Chain": [],
+              "Related": [],
+              "Repopulate": null
+            }
+          ],
+          "Repopulate": null
+        },
+        {
+          "File": "/main.ts",
+          "Start": 48,
+          "Length": 13,
+          "End": 61,
+          "Code": 1347,
+          "Category": 1,
+          "Key": "use_strict_directive_cannot_be_used_with_non_simple_parameter_list_1347",
+          "Message": "'use strict' directive cannot be used with non-simple parameter list.",
+          "Args": null,
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [
+            {
+              "File": "/main.ts",
+              "Start": 11,
+              "Length": 22,
+              "End": 33,
+              "Code": 1348,
+              "Category": 1,
+              "Key": "Non_simple_parameter_declared_here_1348",
+              "Message": "Non-simple parameter declared here.",
+              "Args": null,
+              "Source": "",
+              "ReportsUnnecessary": false,
+              "ReportsDeprecated": false,
+              "SkippedOnNoEmit": false,
+              "Chain": [],
+              "Related": [],
+              "Repopulate": null
+            },
+            {
+              "File": "/main.ts",
+              "Start": 35,
+              "Length": 9,
+              "End": 44,
+              "Code": 6204,
+              "Category": 3,
+              "Key": "and_here_6204",
+              "Message": "and here.",
+              "Args": null,
+              "Source": "",
+              "ReportsUnnecessary": false,
+              "ReportsDeprecated": false,
+              "SkippedOnNoEmit": false,
+              "Chain": [],
+              "Related": [],
+              "Repopulate": null
+            }
+          ],
+          "Repopulate": null
+        }
+      ]
+    }
+  },
+  {
+    "Name": "ObjectRestAssignmentsLoopsCatch",
+    "Input": "declare let a: any, rest: any, source: any; ({a, ...rest} = source); for ({a, ...rest} of source) console.log(rest); try { throw source; } catch ({a, ...rest}) { console.log(a, rest); }",
+    "Other": "",
+    "Target": "ES2017",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __rest = (this \u0026\u0026 this.__rest) || function (s, e) {\n    var t = {};\n    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) \u0026\u0026 e.indexOf(p) \u003c 0)\n        t[p] = s[p];\n    if (s != null \u0026\u0026 typeof Object.getOwnPropertySymbols === \"function\")\n        for (var i = 0, p = Object.getOwnPropertySymbols(s); i \u003c p.length; i++) {\n            if (e.indexOf(p[i]) \u003c 0 \u0026\u0026 Object.prototype.propertyIsEnumerable.call(s, p[i]))\n                t[p[i]] = s[p[i]];\n        }\n    return t;\n};\n({ a } = source, rest = __rest(source, [\"a\"]));\nfor (let _a of source) {\n    ({ a } = _a, rest = __rest(_a, [\"a\"]));\n    console.log(rest);\n}\ntry {\n    throw source;\n}\ncatch (_b) {\n    var { a } = _b, rest = __rest(_b, [\"a\"]);\n    console.log(a, rest);\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": [
+        {
+          "File": "/main.ts",
+          "Start": 147,
+          "Length": 1,
+          "End": 148,
+          "Code": 2339,
+          "Category": 1,
+          "Key": "Property_0_does_not_exist_on_type_1_2339",
+          "Message": "Property 'a' does not exist on type 'unknown'.",
+          "Args": [
+            "a",
+            "unknown"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        },
+        {
+          "File": "/main.ts",
+          "Start": 153,
+          "Length": 4,
+          "End": 157,
+          "Code": 2700,
+          "Category": 1,
+          "Key": "Rest_types_may_only_be_created_from_object_types_2700",
+          "Message": "Rest types may only be created from object types.",
+          "Args": null,
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ]
+    }
+  },
+  {
+    "Name": "ObjectSpreadChunkOrder",
+    "Input": "declare function source(): any; const x = { a: 1, ...source(), b: 2, ...source(), c: 3 }; const y = { ...source() }; const z = { ...null, ...undefined };",
+    "Other": "",
+    "Target": "ES2017",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nconst x = Object.assign(Object.assign(Object.assign(Object.assign({ a: 1 }, source()), { b: 2 }), source()), { c: 3 });\nconst y = Object.assign({}, source());\nconst z = Object.assign(Object.assign({}, null), undefined);\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": [
+        {
+          "File": "/main.ts",
+          "Start": 129,
+          "Length": 7,
+          "End": 136,
+          "Code": 2698,
+          "Category": 1,
+          "Key": "Spread_types_may_only_be_created_from_object_types_2698",
+          "Message": "Spread types may only be created from object types.",
+          "Args": null,
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        },
+        {
+          "File": "/main.ts",
+          "Start": 138,
+          "Length": 12,
+          "End": 150,
+          "Code": 2698,
+          "Category": 1,
+          "Key": "Spread_types_may_only_be_created_from_object_types_2698",
+          "Message": "Spread types may only be created from object types.",
+          "Args": null,
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ]
+    }
+  },
+  {
+    "Name": "ObjectRestExportedBindings",
+    "Input": "export const {a, ...rest} = {a: 1, b: 2}; export function f({x, ...other}: any, y: any) { return [x, other, y]; }",
+    "Other": "",
+    "Target": "ES2017",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "var __rest = (this \u0026\u0026 this.__rest) || function (s, e) {\n    var t = {};\n    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) \u0026\u0026 e.indexOf(p) \u003c 0)\n        t[p] = s[p];\n    if (s != null \u0026\u0026 typeof Object.getOwnPropertySymbols === \"function\")\n        for (var i = 0, p = Object.getOwnPropertySymbols(s); i \u003c p.length; i++) {\n            if (e.indexOf(p[i]) \u003c 0 \u0026\u0026 Object.prototype.propertyIsEnumerable.call(s, p[i]))\n                t[p[i]] = s[p[i]];\n        }\n    return t;\n};\nvar _a;\nexport const { a } = (_a = { a: 1, b: 2 }, _a), rest = __rest(_a, [\"a\"]);\nexport function f(_a, y) { var { x } = _a, other = __rest(_a, [\"x\"]); return [x, other, y]; }\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "TaggedInvalidCookedRaw",
+    "Input": "declare function tag(...args: any[]): any; const value = 1; tag`\\xg${value}\\u{invalid}`; tag`plain`;",
+    "Other": "",
+    "Target": "ES2017",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __makeTemplateObject = (this \u0026\u0026 this.__makeTemplateObject) || function (cooked, raw) {\n    if (Object.defineProperty) { Object.defineProperty(cooked, \"raw\", { value: raw }); } else { cooked.raw = raw; }\n    return cooked;\n};\nconst value = 1;\ntag(__makeTemplateObject([void 0, void 0], [\"\\\\xg\", \"\\\\u{invalid}\"]), value);\ntag `plain`;\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "TaggedRawNewlines",
+    "Input": "declare function tag(...args: any[]): any; tag`\\xg\r\nsecond\rthird${1}tail`;",
+    "Other": "",
+    "Target": "ES2017",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __makeTemplateObject = (this \u0026\u0026 this.__makeTemplateObject) || function (cooked, raw) {\n    if (Object.defineProperty) { Object.defineProperty(cooked, \"raw\", { value: raw }); } else { cooked.raw = raw; }\n    return cooked;\n};\ntag(__makeTemplateObject([void 0, \"tail\"], [\"\\\\xg\\nsecond\\nthird\", \"tail\"]), 1);\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "UsingBlockAndLoop",
+    "Input": "declare function resource(): any; { using a = resource(), b = resource(); console.log(a, b); } for (using item of [resource()]) { console.log(item); }",
+    "Other": "",
+    "Target": "ES2022",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __addDisposableResource = (this \u0026\u0026 this.__addDisposableResource) || function (env, value, async) {\n    if (value !== null \u0026\u0026 value !== void 0) {\n        if (typeof value !== \"object\" \u0026\u0026 typeof value !== \"function\") throw new TypeError(\"Object expected.\");\n        var dispose, inner;\n        if (async) {\n            if (!Symbol.asyncDispose) throw new TypeError(\"Symbol.asyncDispose is not defined.\");\n            dispose = value[Symbol.asyncDispose];\n        }\n        if (dispose === void 0) {\n            if (!Symbol.dispose) throw new TypeError(\"Symbol.dispose is not defined.\");\n            dispose = value[Symbol.dispose];\n            if (async) inner = dispose;\n        }\n        if (typeof dispose !== \"function\") throw new TypeError(\"Object not disposable.\");\n        if (inner) dispose = function() { try { inner.call(this); } catch (e) { return Promise.reject(e); } };\n        env.stack.push({ value: value, dispose: dispose, async: async });\n    }\n    else if (async) {\n        env.stack.push({ async: true });\n    }\n    return value;\n};\nvar __disposeResources = (this \u0026\u0026 this.__disposeResources) || (function (SuppressedError) {\n    return function (env) {\n        function fail(e) {\n            env.error = env.hasError ? new SuppressedError(e, env.error, \"An error was suppressed during disposal.\") : e;\n            env.hasError = true;\n        }\n        var r, s = 0;\n        function next() {\n            while (r = env.stack.pop()) {\n                try {\n                    if (!r.async \u0026\u0026 s === 1) return s = 0, env.stack.push(r), Promise.resolve().then(next);\n                    if (r.dispose) {\n                        var result = r.dispose.call(r.value);\n                        if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) { fail(e); return next(); });\n                    }\n                    else s |= 1;\n                }\n                catch (e) {\n                    fail(e);\n                }\n            }\n            if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();\n            if (env.hasError) throw env.error;\n        }\n        return next();\n    };\n})(typeof SuppressedError === \"function\" ? SuppressedError : function (error, suppressed, message) {\n    var e = new Error(message);\n    return e.name = \"SuppressedError\", e.error = error, e.suppressed = suppressed, e;\n});\n{\n    const env_1 = { stack: [], error: void 0, hasError: false };\n    try {\n        const a = __addDisposableResource(env_1, resource(), false), b = __addDisposableResource(env_1, resource(), false);\n        console.log(a, b);\n    }\n    catch (e_1) {\n        env_1.error = e_1;\n        env_1.hasError = true;\n    }\n    finally {\n        __disposeResources(env_1);\n    }\n}\nfor (const item_1 of [resource()]) {\n    const env_2 = { stack: [], error: void 0, hasError: false };\n    try {\n        const item = __addDisposableResource(env_2, item_1, false);\n        console.log(item);\n    }\n    catch (e_2) {\n        env_2.error = e_2;\n        env_2.hasError = true;\n    }\n    finally {\n        __disposeResources(env_2);\n    }\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [
+        {
+          "File": null,
+          "Start": 0,
+          "Length": 0,
+          "End": 0,
+          "Code": 2318,
+          "Category": 1,
+          "Key": "Cannot_find_global_type_0_2318",
+          "Message": "Cannot find global type 'Disposable'.",
+          "Args": [
+            "Disposable"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "AwaitUsingNested",
+    "Input": "declare function resource(): any; async function f() { await using first = resource(); { using second = resource(); await first; } return first; }",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __awaiter = (this \u0026\u0026 this.__awaiter) || function (thisArg, _arguments, P, generator) {\n    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }\n    return new (P || (P = Promise))(function (resolve, reject) {\n        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }\n        function rejected(value) { try { step(generator[\"throw\"](value)); } catch (e) { reject(e); } }\n        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }\n        step((generator = generator.apply(thisArg, _arguments || [])).next());\n    });\n};\nvar __addDisposableResource = (this \u0026\u0026 this.__addDisposableResource) || function (env, value, async) {\n    if (value !== null \u0026\u0026 value !== void 0) {\n        if (typeof value !== \"object\" \u0026\u0026 typeof value !== \"function\") throw new TypeError(\"Object expected.\");\n        var dispose, inner;\n        if (async) {\n            if (!Symbol.asyncDispose) throw new TypeError(\"Symbol.asyncDispose is not defined.\");\n            dispose = value[Symbol.asyncDispose];\n        }\n        if (dispose === void 0) {\n            if (!Symbol.dispose) throw new TypeError(\"Symbol.dispose is not defined.\");\n            dispose = value[Symbol.dispose];\n            if (async) inner = dispose;\n        }\n        if (typeof dispose !== \"function\") throw new TypeError(\"Object not disposable.\");\n        if (inner) dispose = function() { try { inner.call(this); } catch (e) { return Promise.reject(e); } };\n        env.stack.push({ value: value, dispose: dispose, async: async });\n    }\n    else if (async) {\n        env.stack.push({ async: true });\n    }\n    return value;\n};\nvar __disposeResources = (this \u0026\u0026 this.__disposeResources) || (function (SuppressedError) {\n    return function (env) {\n        function fail(e) {\n            env.error = env.hasError ? new SuppressedError(e, env.error, \"An error was suppressed during disposal.\") : e;\n            env.hasError = true;\n        }\n        var r, s = 0;\n        function next() {\n            while (r = env.stack.pop()) {\n                try {\n                    if (!r.async \u0026\u0026 s === 1) return s = 0, env.stack.push(r), Promise.resolve().then(next);\n                    if (r.dispose) {\n                        var result = r.dispose.call(r.value);\n                        if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) { fail(e); return next(); });\n                    }\n                    else s |= 1;\n                }\n                catch (e) {\n                    fail(e);\n                }\n            }\n            if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();\n            if (env.hasError) throw env.error;\n        }\n        return next();\n    };\n})(typeof SuppressedError === \"function\" ? SuppressedError : function (error, suppressed, message) {\n    var e = new Error(message);\n    return e.name = \"SuppressedError\", e.error = error, e.suppressed = suppressed, e;\n});\nfunction f() {\n    return __awaiter(this, void 0, void 0, function* () { const env_1 = { stack: [], error: void 0, hasError: false }; try {\n        const first = __addDisposableResource(env_1, resource(), true);\n        {\n            const env_2 = { stack: [], error: void 0, hasError: false };\n            try {\n                const second = __addDisposableResource(env_2, resource(), false);\n                yield first;\n            }\n            catch (e_1) {\n                env_2.error = e_1;\n                env_2.hasError = true;\n            }\n            finally {\n                __disposeResources(env_2);\n            }\n        }\n        return first;\n    }\n    catch (e_2) {\n        env_1.error = e_2;\n        env_1.hasError = true;\n    }\n    finally {\n        const result_1 = __disposeResources(env_1);\n        if (result_1)\n            yield result_1;\n    } });\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [
+        {
+          "File": null,
+          "Start": 0,
+          "Length": 0,
+          "End": 0,
+          "Code": 2318,
+          "Category": 1,
+          "Key": "Cannot_find_global_type_0_2318",
+          "Message": "Cannot find global type 'AsyncDisposable'.",
+          "Args": [
+            "AsyncDisposable"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        },
+        {
+          "File": null,
+          "Start": 0,
+          "Length": 0,
+          "End": 0,
+          "Code": 2318,
+          "Category": 1,
+          "Key": "Cannot_find_global_type_0_2318",
+          "Message": "Cannot find global type 'Disposable'.",
+          "Args": [
+            "Disposable"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "UsingExportsAndHoists",
+    "Input": "import {v} from \"other\"; export function f() { return v; } declare function resource(): any; using item = resource(); export const [a, b] = [item, v]; export default class { static value = item; }",
+    "Other": "export const v = 1;",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "var __addDisposableResource = (this \u0026\u0026 this.__addDisposableResource) || function (env, value, async) {\n    if (value !== null \u0026\u0026 value !== void 0) {\n        if (typeof value !== \"object\" \u0026\u0026 typeof value !== \"function\") throw new TypeError(\"Object expected.\");\n        var dispose, inner;\n        if (async) {\n            if (!Symbol.asyncDispose) throw new TypeError(\"Symbol.asyncDispose is not defined.\");\n            dispose = value[Symbol.asyncDispose];\n        }\n        if (dispose === void 0) {\n            if (!Symbol.dispose) throw new TypeError(\"Symbol.dispose is not defined.\");\n            dispose = value[Symbol.dispose];\n            if (async) inner = dispose;\n        }\n        if (typeof dispose !== \"function\") throw new TypeError(\"Object not disposable.\");\n        if (inner) dispose = function() { try { inner.call(this); } catch (e) { return Promise.reject(e); } };\n        env.stack.push({ value: value, dispose: dispose, async: async });\n    }\n    else if (async) {\n        env.stack.push({ async: true });\n    }\n    return value;\n};\nvar __setFunctionName = (this \u0026\u0026 this.__setFunctionName) || function (f, name, prefix) {\n    if (typeof name === \"symbol\") name = name.description ? \"[\".concat(name.description, \"]\") : \"\";\n    return Object.defineProperty(f, \"name\", { configurable: true, value: prefix ? \"\".concat(prefix, \" \", name) : name });\n};\nvar __disposeResources = (this \u0026\u0026 this.__disposeResources) || (function (SuppressedError) {\n    return function (env) {\n        function fail(e) {\n            env.error = env.hasError ? new SuppressedError(e, env.error, \"An error was suppressed during disposal.\") : e;\n            env.hasError = true;\n        }\n        var r, s = 0;\n        function next() {\n            while (r = env.stack.pop()) {\n                try {\n                    if (!r.async \u0026\u0026 s === 1) return s = 0, env.stack.push(r), Promise.resolve().then(next);\n                    if (r.dispose) {\n                        var result = r.dispose.call(r.value);\n                        if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) { fail(e); return next(); });\n                    }\n                    else s |= 1;\n                }\n                catch (e) {\n                    fail(e);\n                }\n            }\n            if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();\n            if (env.hasError) throw env.error;\n        }\n        return next();\n    };\n})(typeof SuppressedError === \"function\" ? SuppressedError : function (error, suppressed, message) {\n    var e = new Error(message);\n    return e.name = \"SuppressedError\", e.error = error, e.suppressed = suppressed, e;\n});\nvar _a;\nimport { v } from \"other\";\nexport function f() { return v; }\nexport { _default as default };\nvar item, _default;\nexport let a, b;\nconst env_1 = { stack: [], error: void 0, hasError: false };\ntry {\n    item = __addDisposableResource(env_1, resource(), false);\n    [a, b] = [item, v];\n    _default = (_a = class {\n        },\n        __setFunctionName(_a, \"default\"),\n        _a.value = item,\n        _a);\n}\ncatch (e_1) {\n    env_1.error = e_1;\n    env_1.hasError = true;\n}\nfinally {\n    __disposeResources(env_1);\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [
+        {
+          "File": null,
+          "Start": 0,
+          "Length": 0,
+          "End": 0,
+          "Code": 2318,
+          "Category": 1,
+          "Key": "Cannot_find_global_type_0_2318",
+          "Message": "Cannot find global type 'Disposable'.",
+          "Args": [
+            "Disposable"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "UsingExportEquals",
+    "Input": "declare function resource(): any; using item = resource(); export = item;",
+    "Other": "",
+    "Target": "ES2022",
+    "Module": "CommonJS",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __addDisposableResource = (this \u0026\u0026 this.__addDisposableResource) || function (env, value, async) {\n    if (value !== null \u0026\u0026 value !== void 0) {\n        if (typeof value !== \"object\" \u0026\u0026 typeof value !== \"function\") throw new TypeError(\"Object expected.\");\n        var dispose, inner;\n        if (async) {\n            if (!Symbol.asyncDispose) throw new TypeError(\"Symbol.asyncDispose is not defined.\");\n            dispose = value[Symbol.asyncDispose];\n        }\n        if (dispose === void 0) {\n            if (!Symbol.dispose) throw new TypeError(\"Symbol.dispose is not defined.\");\n            dispose = value[Symbol.dispose];\n            if (async) inner = dispose;\n        }\n        if (typeof dispose !== \"function\") throw new TypeError(\"Object not disposable.\");\n        if (inner) dispose = function() { try { inner.call(this); } catch (e) { return Promise.reject(e); } };\n        env.stack.push({ value: value, dispose: dispose, async: async });\n    }\n    else if (async) {\n        env.stack.push({ async: true });\n    }\n    return value;\n};\nvar __disposeResources = (this \u0026\u0026 this.__disposeResources) || (function (SuppressedError) {\n    return function (env) {\n        function fail(e) {\n            env.error = env.hasError ? new SuppressedError(e, env.error, \"An error was suppressed during disposal.\") : e;\n            env.hasError = true;\n        }\n        var r, s = 0;\n        function next() {\n            while (r = env.stack.pop()) {\n                try {\n                    if (!r.async \u0026\u0026 s === 1) return s = 0, env.stack.push(r), Promise.resolve().then(next);\n                    if (r.dispose) {\n                        var result = r.dispose.call(r.value);\n                        if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) { fail(e); return next(); });\n                    }\n                    else s |= 1;\n                }\n                catch (e) {\n                    fail(e);\n                }\n            }\n            if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();\n            if (env.hasError) throw env.error;\n        }\n        return next();\n    };\n})(typeof SuppressedError === \"function\" ? SuppressedError : function (error, suppressed, message) {\n    var e = new Error(message);\n    return e.name = \"SuppressedError\", e.error = error, e.suppressed = suppressed, e;\n});\nvar item, _default;\nconst env_1 = { stack: [], error: void 0, hasError: false };\ntry {\n    item = __addDisposableResource(env_1, resource(), false);\n    _default = item;\n}\ncatch (e_1) {\n    env_1.error = e_1;\n    env_1.hasError = true;\n}\nfinally {\n    __disposeResources(env_1);\n}\nexport = _default;\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [
+        {
+          "File": null,
+          "Start": 0,
+          "Length": 0,
+          "End": 0,
+          "Code": 2318,
+          "Category": 1,
+          "Key": "Cannot_find_global_type_0_2318",
+          "Message": "Cannot find global type 'Disposable'.",
+          "Args": [
+            "Disposable"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "UsingSwitchAndFor",
+    "Input": "declare function resource(): any; switch (1) { case 1: using x = resource(); console.log(x); break; default: console.log(2); } for (using x = resource(); x; ) { break; }",
+    "Other": "",
+    "Target": "ES2022",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __addDisposableResource = (this \u0026\u0026 this.__addDisposableResource) || function (env, value, async) {\n    if (value !== null \u0026\u0026 value !== void 0) {\n        if (typeof value !== \"object\" \u0026\u0026 typeof value !== \"function\") throw new TypeError(\"Object expected.\");\n        var dispose, inner;\n        if (async) {\n            if (!Symbol.asyncDispose) throw new TypeError(\"Symbol.asyncDispose is not defined.\");\n            dispose = value[Symbol.asyncDispose];\n        }\n        if (dispose === void 0) {\n            if (!Symbol.dispose) throw new TypeError(\"Symbol.dispose is not defined.\");\n            dispose = value[Symbol.dispose];\n            if (async) inner = dispose;\n        }\n        if (typeof dispose !== \"function\") throw new TypeError(\"Object not disposable.\");\n        if (inner) dispose = function() { try { inner.call(this); } catch (e) { return Promise.reject(e); } };\n        env.stack.push({ value: value, dispose: dispose, async: async });\n    }\n    else if (async) {\n        env.stack.push({ async: true });\n    }\n    return value;\n};\nvar __disposeResources = (this \u0026\u0026 this.__disposeResources) || (function (SuppressedError) {\n    return function (env) {\n        function fail(e) {\n            env.error = env.hasError ? new SuppressedError(e, env.error, \"An error was suppressed during disposal.\") : e;\n            env.hasError = true;\n        }\n        var r, s = 0;\n        function next() {\n            while (r = env.stack.pop()) {\n                try {\n                    if (!r.async \u0026\u0026 s === 1) return s = 0, env.stack.push(r), Promise.resolve().then(next);\n                    if (r.dispose) {\n                        var result = r.dispose.call(r.value);\n                        if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) { fail(e); return next(); });\n                    }\n                    else s |= 1;\n                }\n                catch (e) {\n                    fail(e);\n                }\n            }\n            if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();\n            if (env.hasError) throw env.error;\n        }\n        return next();\n    };\n})(typeof SuppressedError === \"function\" ? SuppressedError : function (error, suppressed, message) {\n    var e = new Error(message);\n    return e.name = \"SuppressedError\", e.error = error, e.suppressed = suppressed, e;\n});\nswitch (1) {\n    case 1:\n        using x = resource();\n        console.log(x);\n        break;\n    default: console.log(2);\n}\n{\n    const env_1 = { stack: [], error: void 0, hasError: false };\n    try {\n        const x = __addDisposableResource(env_1, resource(), false);\n        for (; x;) {\n            break;\n        }\n    }\n    catch (e_1) {\n        env_1.error = e_1;\n        env_1.hasError = true;\n    }\n    finally {\n        __disposeResources(env_1);\n    }\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [
+        {
+          "File": null,
+          "Start": 0,
+          "Length": 0,
+          "End": 0,
+          "Code": 2318,
+          "Category": 1,
+          "Key": "Cannot_find_global_type_0_2318",
+          "Message": "Cannot find global type 'Disposable'.",
+          "Args": [
+            "Disposable"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ],
+      "Semantic": [
+        {
+          "File": "/main.ts",
+          "Start": 55,
+          "Length": 20,
+          "End": 75,
+          "Code": 1547,
+          "Category": 1,
+          "Key": "using_declarations_are_not_allowed_in_case_or_default_clauses_unless_contained_within_a_block_1547",
+          "Message": "'using' declarations are not allowed in 'case' or 'default' clauses unless contained within a block.",
+          "Args": null,
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ]
+    }
+  },
+  {
+    "Name": "UsingAnonymousNames",
+    "Input": "declare function resource(): any; using value = class {}; await using asyncValue = async () =\u003e resource();",
+    "Other": "",
+    "Target": "ES2022",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __setFunctionName = (this \u0026\u0026 this.__setFunctionName) || function (f, name, prefix) {\n    if (typeof name === \"symbol\") name = name.description ? \"[\".concat(name.description, \"]\") : \"\";\n    return Object.defineProperty(f, \"name\", { configurable: true, value: prefix ? \"\".concat(prefix, \" \", name) : name });\n};\nvar __addDisposableResource = (this \u0026\u0026 this.__addDisposableResource) || function (env, value, async) {\n    if (value !== null \u0026\u0026 value !== void 0) {\n        if (typeof value !== \"object\" \u0026\u0026 typeof value !== \"function\") throw new TypeError(\"Object expected.\");\n        var dispose, inner;\n        if (async) {\n            if (!Symbol.asyncDispose) throw new TypeError(\"Symbol.asyncDispose is not defined.\");\n            dispose = value[Symbol.asyncDispose];\n        }\n        if (dispose === void 0) {\n            if (!Symbol.dispose) throw new TypeError(\"Symbol.dispose is not defined.\");\n            dispose = value[Symbol.dispose];\n            if (async) inner = dispose;\n        }\n        if (typeof dispose !== \"function\") throw new TypeError(\"Object not disposable.\");\n        if (inner) dispose = function() { try { inner.call(this); } catch (e) { return Promise.reject(e); } };\n        env.stack.push({ value: value, dispose: dispose, async: async });\n    }\n    else if (async) {\n        env.stack.push({ async: true });\n    }\n    return value;\n};\nvar __disposeResources = (this \u0026\u0026 this.__disposeResources) || (function (SuppressedError) {\n    return function (env) {\n        function fail(e) {\n            env.error = env.hasError ? new SuppressedError(e, env.error, \"An error was suppressed during disposal.\") : e;\n            env.hasError = true;\n        }\n        var r, s = 0;\n        function next() {\n            while (r = env.stack.pop()) {\n                try {\n                    if (!r.async \u0026\u0026 s === 1) return s = 0, env.stack.push(r), Promise.resolve().then(next);\n                    if (r.dispose) {\n                        var result = r.dispose.call(r.value);\n                        if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) { fail(e); return next(); });\n                    }\n                    else s |= 1;\n                }\n                catch (e) {\n                    fail(e);\n                }\n            }\n            if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();\n            if (env.hasError) throw env.error;\n        }\n        return next();\n    };\n})(typeof SuppressedError === \"function\" ? SuppressedError : function (error, suppressed, message) {\n    var e = new Error(message);\n    return e.name = \"SuppressedError\", e.error = error, e.suppressed = suppressed, e;\n});\nvar value, asyncValue;\nconst env_1 = { stack: [], error: void 0, hasError: false };\ntry {\n    value = __addDisposableResource(env_1, class {\n        static { __setFunctionName(this, \"value\"); }\n    }, false);\n    asyncValue = __addDisposableResource(env_1, __setFunctionName(async () =\u003e resource(), \"asyncValue\"), true);\n}\ncatch (e_1) {\n    env_1.error = e_1;\n    env_1.hasError = true;\n}\nfinally {\n    const result_1 = __disposeResources(env_1);\n    if (result_1)\n        await result_1;\n}\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [
+        {
+          "File": null,
+          "Start": 0,
+          "Length": 0,
+          "End": 0,
+          "Code": 2318,
+          "Category": 1,
+          "Key": "Cannot_find_global_type_0_2318",
+          "Message": "Cannot find global type 'AsyncDisposable'.",
+          "Args": [
+            "AsyncDisposable"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        },
+        {
+          "File": null,
+          "Start": 0,
+          "Length": 0,
+          "End": 0,
+          "Code": 2318,
+          "Category": 1,
+          "Key": "Cannot_find_global_type_0_2318",
+          "Message": "Cannot find global type 'Disposable'.",
+          "Args": [
+            "Disposable"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ],
+      "Semantic": [
+        {
+          "File": "/main.ts",
+          "Start": 58,
+          "Length": 5,
+          "End": 63,
+          "Code": 2853,
+          "Category": 1,
+          "Key": "await_using_statements_are_only_allowed_at_the_top_level_of_a_file_when_that_file_is_a_module_but_th_2853",
+          "Message": "'await using' statements are only allowed at the top level of a file when that file is a module, but this file has no imports or exports. Consider adding an empty 'export {}' to make this file a module.",
+          "Args": null,
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [],
+          "Related": [],
+          "Repopulate": null
+        }
+      ]
+    }
+  },
+  {
+    "Name": "UsingNativeESNext",
+    "Input": "declare function resource(): any; using value = resource(); async function f() { await using item = resource(); return item; }",
+    "Other": "",
+    "Target": "ESNext",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nusing value = resource();\nasync function f() { await using item = resource(); return item; }\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "UseStrictScript",
+    "Input": "const value = 1;",
+    "Other": "",
+    "Target": "ES2022",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nconst value = 1;\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "UseStrictESModule",
+    "Input": "export const value = 1;",
+    "Other": "",
+    "Target": "ES2022",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "export const value = 1;\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "UseStrictCommonJSStage",
+    "Input": "export const value = 1;",
+    "Other": "",
+    "Target": "ES2022",
+    "Module": "CommonJS",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nexport const value = 1;\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "UseStrictExistingDirective",
+    "Input": "\"custom\"; \"use strict\"; const value = 1;",
+    "Other": "",
+    "Target": "ES2022",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\n\"custom\";\n\"use strict\";\nconst value = 1;\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": []
+    }
+  },
+  {
+    "Name": "BorrowedUnicodeSuperTemplates",
+    "Input": "class Ω { π() { return 1; } } class Ж extends Ω { async π() { return super.π() + await 1; } } declare function 标签(...args: any[]): any; 标签`\\xg${1}终`;",
+    "Other": "",
+    "Target": "ES2015",
+    "Module": "ESNext",
+    "JSX": false,
+    "UseDefineForClassFields": null,
+    "ExperimentalDecorators": null,
+    "EmitDecoratorMetadata": null,
+    "StrictNullChecks": true,
+    "Output": "\"use strict\";\nvar __makeTemplateObject = (this \u0026\u0026 this.__makeTemplateObject) || function (cooked, raw) {\n    if (Object.defineProperty) { Object.defineProperty(cooked, \"raw\", { value: raw }); } else { cooked.raw = raw; }\n    return cooked;\n};\nvar __awaiter = (this \u0026\u0026 this.__awaiter) || function (thisArg, _arguments, P, generator) {\n    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }\n    return new (P || (P = Promise))(function (resolve, reject) {\n        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }\n        function rejected(value) { try { step(generator[\"throw\"](value)); } catch (e) { reject(e); } }\n        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }\n        step((generator = generator.apply(thisArg, _arguments || [])).next());\n    });\n};\nclass Ω {\n    π() { return 1; }\n}\nclass Ж extends Ω {\n    π() {\n        const _super = Object.create(null, {\n            π: { get: () =\u003e super.π }\n        });\n        return __awaiter(this, void 0, void 0, function* () { return _super.π.call(this) + (yield 1); });\n    }\n}\n标签(__makeTemplateObject([void 0, \"\\u7EC8\"], [\"\\\\xg\", \"\\u7EC8\"]), 1);\n",
+    "FullDiagnostics": {
+      "Config": [],
+      "Program": [],
+      "Syntactic": [],
+      "Global": [],
+      "Semantic": [
+        {
+          "File": "/main.ts",
+          "Start": 60,
+          "Length": 2,
+          "End": 62,
+          "Code": 2416,
+          "Category": 1,
+          "Key": "Property_0_in_type_1_is_not_assignable_to_the_same_property_in_base_type_2_2416",
+          "Message": "Property 'π' in type 'Ж' is not assignable to the same property in base type 'Ω'.",
+          "Args": [
+            "π",
+            "Ж",
+            "Ω"
+          ],
+          "Source": "",
+          "ReportsUnnecessary": false,
+          "ReportsDeprecated": false,
+          "SkippedOnNoEmit": false,
+          "Chain": [
+            {
+              "File": "/main.ts",
+              "Start": 60,
+              "Length": 2,
+              "End": 62,
+              "Code": 2322,
+              "Category": 1,
+              "Key": "Type_0_is_not_assignable_to_type_1_2322",
+              "Message": "Type '() =\u003e Promise\u003cnumber\u003e' is not assignable to type '() =\u003e number'.",
+              "Args": [
+                "() =\u003e Promise\u003cnumber\u003e",
+                "() =\u003e number"
+              ],
+              "Source": "",
+              "ReportsUnnecessary": false,
+              "ReportsDeprecated": false,
+              "SkippedOnNoEmit": false,
+              "Chain": [
+                {
+                  "File": "/main.ts",
+                  "Start": 60,
+                  "Length": 2,
+                  "End": 62,
+                  "Code": 2322,
+                  "Category": 1,
+                  "Key": "Type_0_is_not_assignable_to_type_1_2322",
+                  "Message": "Type 'Promise\u003cnumber\u003e' is not assignable to type 'number'.",
+                  "Args": [
+                    "Promise\u003cnumber\u003e",
+                    "number"
+                  ],
+                  "Source": "",
+                  "ReportsUnnecessary": false,
+                  "ReportsDeprecated": false,
+                  "SkippedOnNoEmit": false,
+                  "Chain": [],
+                  "Related": [],
+                  "Repopulate": null
+                }
+              ],
+              "Related": [],
+              "Repopulate": null
+            }
+          ],
+          "Related": [],
+          "Repopulate": null
+        }
+      ]
+    }
+  }
+]

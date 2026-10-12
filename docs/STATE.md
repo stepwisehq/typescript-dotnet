@@ -25,7 +25,7 @@ reproduction are committed; all build/test processes finished and the tree was c
 [independent ACK](../artifacts/emit/printer-resolver/acceptance-independent-review.json).
 No whole-emission or external-project claim follows from this dependency checkpoint.
 
-**TypeScript transform family accepted in the checkpoint containing this entry.**
+**TypeScript transform family accepted at `b0cf6af4`.**
 All seven pinned files (142 functions total) and required MultiMap (11 functions)
 are complete. The old TypeEraser-owned RuntimeSyntax leaf moved to its full mapped
 counterpart. Focused borrowed-name/helper overloads and SourceFile's explicit C#
@@ -46,20 +46,42 @@ One initial production build and two compile-only test attempts resolved API joi
 the third test invocation was the first behavior run and passed. No behavior
 expectations were weakened. Retained regression and Native publication passed first try.
 
-**Next coherent subsystem: complete ES transforms.** Release source freeze after
-this TS commit and immediately activate the agreed GPT-6.1 Sol lanes:
-- emit_foundation: ESDecorator and NamedEvaluation (3,286 upstream lines).
-- emit_print_maps: ClassFields and ClassThis (3,646 upstream lines).
-- emit_inventory: remaining 13 counterparts, including Async, ForAwait, Using,
-  ObjectRestSpread, shared Utilities and genuine Definitions (4,319 upstream lines).
-Inventory owns shared full-diagnostic/output harness registration. All lanes agreed
-shared helper APIs and byte-backed names during read-only preparation. No ES source
-edits yet at this commit; release immediately afterward. There are no direct upstream tests in the ES package; authored genuine
-Program/pinned-Go comparisons supplement, never replace, final original compiler tests.
-Each lane reviews another lane independently; root coordinates a whole-family build,
-source-map merge and acceptance. No partial factory placeholders in Definitions.
-Continue through ES, JSX, modules, declarations and Program output to whole-emit
-acceptance; subsystem commits do not end the mandate.
+**Complete ES family accepted in the checkpoint containing this entry.**
+All 17 pinned files/407 functions plus OrderedSet8 and narrow OrderedMap enumeration
+are independently reviewed. First managed behavior run passed287 emit; retained
+832checker+84type-system+101selectednoemit passed (1,304 total, none failed/skipped).
+Actual Linux x64 Native AOT publish15.651s/run4.106s passed151originalfunctions and
+168authoredcontrols. All processes finished; source/build metadata remain frozen
+until root commit. Bound evidence: validation/results/emit-es-transforms-verified.json.
+Final independent ACK: artifacts/emit/es-transforms/acceptance-independent-review.json.
+
+The80 authored comparisons cover runtime45/classfields21/decorators14 through
+real Program/pinned libraries, exact TS→ES target chain→UseStrict, full public
+diagnostic channels and target-aware output. Original OrderedSet public assertions
+ported; original Go allocation test is Go-only, CLR hinted behavior separately
+labeled. Final compiler corpus/runtime/output gates remain ahead. No external project.
+
+Four diagnostic builds (1.060/1.733/12.139/7.983s) fixed syntax/declaration/API joins;
+first behavior run passed21.138s including compile, 7s assertions. Source review
+restored explicit Go capacities and cached callbacks. Preserve make capacities and
+clone ownership during initial translation of future families. NamedEvaluation had
+20 actual functions already implemented/reviewed; earlier19 was metadata-only error.
+No source change or test rerun for that count correction.
+
+**Next: complete JSX, module transforms and const-enum inlining.** After ES commit,
+release and activate the already coordinated GPT-6.1 Sol lanes:
+- emit_print_maps: JSX48 (1,209 Go lines) + ConstEnum3.
+- emit_foundation: CommonJS83 (2,166 Go lines).
+- emit_inventory: remaining module metadata/ES/implied/utilities plus shared harness.
+No next-family production edits yet. Shared APIs coordinated read-only. OrderedSet,
+MultiMap, genuine resolver and printer dependencies are ready. Preserve module
+Utilities' existing upstream nil/empty TODO behavior, explicitly labeled as upstream
+limitations; do not invent new behavior or silently call those features complete.
+Actual chain is TS→conditionalJSX→ES→UseStrict→Module→conditionalConstEnum last.
+Root owns coordinated builds/map/evidence/commits. Independent review rotates by
+source ownership, adjusts when it avoids a harness bottleneck, never duplicates audits.
+Then complete declarations/support/Program output and whole-emit acceptance.
+Continue automatically through checkpoints; no renewed assignment needed.
 
 Retain source and execution reviews from `34ade775`; no broad repeat. Its review
 closed actual computed-name/mapper omissions, quote/context semantics and accessor

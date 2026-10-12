@@ -66,6 +66,20 @@ public sealed class OrderedMap<K, V>
             yield return keys![i];
     }
 
+    // Same live-count traversal as ordered_map.go Keys; struct sequence avoids
+    // a managed iterator allocation for embedded OrderedSet consumers.
+    internal KeySequence KeyValues() => new(this);
+    internal readonly struct KeySequence(OrderedMap<K, V> owner)
+    {
+        public KeyEnumerator GetEnumerator() => new(owner);
+    }
+    internal struct KeyEnumerator(OrderedMap<K, V> owner)
+    {
+        private int index = -1;
+        public K Current => owner.keys![index];
+        public bool MoveNext() => ++index < (owner.keys?.Count ?? 0);
+    }
+
     public IEnumerable<V> Values()
     {
         for (int i = 0; i < (keys?.Count ?? 0); i++)

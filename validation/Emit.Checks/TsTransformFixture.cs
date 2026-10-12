@@ -78,6 +78,17 @@ internal sealed class TsTransformFixture : IDisposable
             result = LegacyDecoratorsTransformer.NewLegacyDecoratorsTransformer(Options).TransformSourceFile(result);
         return result;
     }
+    // compiler/emitter.go:139-174: TS, then genuine ES selector, then UseStrict.
+    // JSX and module transforms are separate later families; these fixtures use TS.
+    internal SourceFile TransformSourceFileExactTsEsOrder()
+    {
+        SourceFile result = TransformSourceFileExactTsOrder();
+        var downleveler = TypeScript.Transformers.EsTransforms.EsTransforms.GetESTransformer(Options);
+        if (downleveler != null) result = downleveler.TransformSourceFile(result);
+        return TypeScript.Transformers.EsTransforms.UseStrictTransformer.NewUseStrictTransformer(Options).TransformSourceFile(result);
+    }
+    internal string PrintEsOutput(SourceFile file) => Printer.NewPrinter(
+        new PrinterOptions { NewLine = NewLineKind.LF, Target = Options.CompilerOptions.Target }, new PrintHandlers(), Context).EmitSourceFile(file);
     internal string PrintOutput(SourceFile file) => Printer.NewPrinter(
         new PrinterOptions { NewLine = NewLineKind.LF }, new PrintHandlers(), Context).EmitSourceFile(file);
     internal Slice<Diagnostic> Diagnostics() => checker.GetDiagnostics(File);
