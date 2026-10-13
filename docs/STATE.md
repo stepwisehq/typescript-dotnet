@@ -1,3 +1,57 @@
+# Completed: .NET 11 RC2 experiment (2026-10-13)
+
+User-requested isolated SDK11.0.100-rc.2.26504.105/net11.0/runtime11RC2 Native AOT
+publication passed without compiler C# changes. Only two TFMs changed in isolated
+copy; all632C# hashes match accepted .NET10 baseline. DefaultSDK/TFMs unchanged.
+Five rotated processes each.NET11/.NET10/Go per mode, all30 correct, all20Native
+fullNoGC16GiBemit/14GiBcheck qualified. Best11/10/Go emit9.69/9.70/8.37s;
+check-only6.54/6.42/5.95s. Median emit10.28/10.27/8.60s;check6.65/6.95/6.17s.
+.NET11 best versusGo +15.8%emit/+9.9%check meets20%target in this cohort.
+No demonstrated meaningful .NET11 throughput improvement: emitessentiallyequal,
+checkbest1.9%slower whilemedian4.3%faster; five observations/overlappingranges.
+All10,031outputs/150,466,543bytes exact and tencomparable known diagnosticsexact.
+
+Root exclusively ran publication+two15processcohorts; Solnet11_publish andnet11_perf
+prepared, SolFoundation independently reviewed actualbindings/allresultsCLEAR.
+One postpublicationpathguard incorrectly assumed private runtimeDLLs live in TFM
+folder; metadata-onlyfix admitted correct11RC2runtime/native paths, no republish.
+Preserve the failed-guard note, all samples and invariant-experiment evidence.
+No compiler/default changes. Results, MIT license and case-study maintenance notice
+are saved in the accompanying checkpoint. No running workload remains.
+
+Artifacts artifacts/vscode-net11-rc2/build-1,emit-1,noemit-1 and final-independent-review.json.
+[Assessment/reproduction](./VSCODE-CHECK-STATUS.md),
+[durable result](../validation/results/vscode-net11-rc2-performance.json).
+Do not rerun whole acceptance or adopt .NET11 automatically; this is the requested
+Linux x64 Native AOT tuned-performance experiment, not wholeplatformacceptance.
+Await next user direction.
+
+# Completed: invariant-globalization experiment (2026-10-13)
+
+The requested separate Linux x64 Native AOT experiment passed. Same 178 managed
+inputs: false control31,805,480 bytes; invariant31,628,136 bytes; reduction177,344
+bytes (0.56%). All10,031 VS Code outputs/150,466,543bytes and ten complete comparable
+CLI diagnostics match pinned Go; both compiler invocations exit2. No timing claim.
+3,330 focused xUnit cases pass under invariant1. Three actual invariant AOT validators
+pass: foundation3153 original+35 byte/text, configuration109, language-service406
+original+80authored plus separately reported external channels. Existing ATA/regex
+exclusions remain, one watcher built-in retry succeeds. Initial validator restore
+lacked AOT package targets and was rejected; corrected publication passed.
+
+Source/default project settings unchanged; actual HEAD fa23726e. Existing source
+hashes unchanged, historical baseline assembly metadata difference removed by fresh
+false-control publication. No new production change or commit. Independent Sol
+source, size, VS Code, managed, native and documentation review clear; see
+artifacts/vscode-invariant-globalization/final-independent-review.json.
+No running workload remains.
+
+See [assessment/reproduction](./INVARIANT-GLOBALIZATION.md) and
+[durable result](../validation/results/invariant-globalization.json). Logs and
+publication bindings: artifacts/vscode-invariant-globalization/validation-2,
+control-false-1, build-1 and vscode. Full compiler/LSP transport acceptance was not
+rerun; no new platform or speed claim. Keep the default unchanged: the observed
+size saving alone provides little incentive. Await the user's next direction.
+
 # Paused for the day at the user's request (2026-10-13)
 
 Latest results are recorded in [VS Code status](./VSCODE-CHECK-STATUS.md) and

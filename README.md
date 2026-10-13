@@ -1,5 +1,9 @@
 # TypeScript compiler and language services in C#
 
+> [!WARNING]
+> This project was created as a case study and will not be actively maintained.
+> It is provided as-is; ongoing fixes, updates, and support are not planned.
+
 A C# port of the pinned Go TypeScript compiler, with project checking, ordinary
 Program emit and a real language server. The agreed compiler and language-services
 contracts are complete and independently verified under **Linux x64 Native AOT**.
@@ -242,3 +246,11 @@ and verification records, not restrictions on the ordinary compiler or LSP above
 Their [foundation](./docs/FOUNDATION-ASSESSMENT.md),
 [binding](./docs/BINDING-COMPLETION-ASSESSMENT.md) and
 [collection](./docs/COLLECTIONS-ASSESSMENT.md) assessments retain that history.
+
+## Licensing
+
+Original project contributions are licensed under the [MIT License](./LICENSE).
+Translated upstream code retains its [Apache 2.0 license](./licenses/TypeScript-LICENSE.txt)
+and [notice](./licenses/TypeScript-NOTICE.txt). Other third-party code and data retain
+their respective licenses and attributions in [licenses](./licenses/). The MIT License
+does not replace those upstream or third-party terms.

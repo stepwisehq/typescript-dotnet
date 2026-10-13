@@ -1,0 +1,120 @@
+{
+  "status": "passed-focused-experiment",
+  "platform": "Linux x64 Native AOT",
+  "sdk": "10.0.401",
+  "runtime": "10.0.12",
+  "sourceHead": "fa23726ece50645372a635b3e41b87edbcac6902",
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "defaultAdopted": false,
+  "compilerSourceChanged": false,
+  "size": {
+    "sameManagedInputs": true,
+    "onlyGlobalizationRuntimeDifference": {
+      "removed": [
+        "--feature:System.Globalization.Invariant=true",
+        "--feature:System.Globalization.PredefinedCulturesOnly=true",
+        "--runtimeknob:System.Globalization.Invariant=true",
+        "--runtimeknob:System.Globalization.PredefinedCulturesOnly=true"
+      ],
+      "added": [
+        "--feature:System.Globalization.Invariant=false",
+        "--runtimeknob:System.Globalization.Invariant=false"
+      ]
+    },
+    "invariantBytes": 31628136,
+    "controlFalseBytes": 31805480,
+    "differenceBytes": -177344,
+    "qualification": "Fixed managed-input experiment; no runtime correctness or speed claim from size."
+  },
+  "reductionPercent": 0.5575894468500397,
+  "managedEnvironment": {
+    "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "1"
+  },
+  "managedTests": [
+    {
+      "suite": "Parser.Tests",
+      "passed": 604,
+      "failed": 0,
+      "notExecuted": 0,
+      "trx": "artifacts/vscode-invariant-globalization/managed/Parser.Tests/invariant-Parser.Tests.trx"
+    },
+    {
+      "suite": "Scanner.Tests",
+      "passed": 2550,
+      "failed": 0,
+      "notExecuted": 0,
+      "trx": "artifacts/vscode-invariant-globalization/managed/Scanner.Tests/invariant-Scanner.Tests.trx"
+    },
+    {
+      "suite": "configuration",
+      "passed": 109,
+      "failed": 0,
+      "notExecuted": 0,
+      "trx": "artifacts/vscode-invariant-globalization/managed/configuration/invariant-configuration.trx"
+    },
+    {
+      "suite": "language-services",
+      "passed": 67,
+      "failed": 0,
+      "notExecuted": 0,
+      "trx": "artifacts/vscode-invariant-globalization/managed/language-services/invariant-language-services.trx"
+    }
+  ],
+  "native": {
+    "progress": "artifacts/vscode-invariant-globalization/validation-2/progress.json",
+    "completion": "artifacts/vscode-invariant-globalization/validation-2/complete.json",
+    "allSelectedCommandsPassed": true,
+    "bindings": [
+      {
+        "path": "artifacts/vscode-invariant-globalization/validation-2/native/Configuration.Validation/actual-ilc-input.json",
+        "sha256": "4fef3693630b32a406934a20ebb4ea1868d5d031838cbf0988f1b8b0bd408782",
+        "binary": "/home/greg/projects/typescript-dotnet/artifacts/vscode-invariant-globalization/validation-2/native/Configuration.Validation/Configuration.Validation",
+        "binarySha256": "7c8d29247d6aa110dc54bba6416164769d1e01537a880aa1f652f372fe379566"
+      },
+      {
+        "path": "artifacts/vscode-invariant-globalization/validation-2/native/Foundation.Validation/actual-ilc-input.json",
+        "sha256": "dee1998fa657d0920748398fe6d4aa73a7874db7edaf4140fe2bc20f40030083",
+        "binary": "/home/greg/projects/typescript-dotnet/artifacts/vscode-invariant-globalization/validation-2/native/Foundation.Validation/Foundation.Validation",
+        "binarySha256": "5bbad0d0d5f5f29fb154392e4a5c37548cf53c047ff2d753cdd8de3d2f3c65c3"
+      },
+      {
+        "path": "artifacts/vscode-invariant-globalization/validation-2/native/LanguageServices.Validation/actual-ilc-input.json",
+        "sha256": "9c917c981a4a239ac5208766e1cfc1abed09ab8daca73b5b4b1ee70ee1175a52",
+        "binary": "/home/greg/projects/typescript-dotnet/artifacts/vscode-invariant-globalization/validation-2/native/LanguageServices.Validation/LanguageServices.Validation",
+        "binarySha256": "ce0acb1bf44ecf9911362e92110c33e9119152a4c93e61dd105e180394b62a4e"
+      }
+    ],
+    "foundationOriginalCases": 3153,
+    "foundationByteTextChecks": 35,
+    "configurationChecks": 109,
+    "languageServicesOriginalFunctions": 406,
+    "languageServicesAuthoredControls": 80,
+    "additionalChannels": "See native-check-04-LanguageServices.Validation/stdout.log for normalization, locale, Unicode, regex assertions and existing dispositions."
+  },
+  "vscode": {
+    "comparison": "artifacts/vscode-invariant-globalization/vscode/comparison.json",
+    "outputFiles": 10031,
+    "outputBytes": 150466543,
+    "byteMismatches": 0,
+    "exitCodes": [
+      2,
+      2
+    ],
+    "completeComparableDiagnostics": 10,
+    "diagnosticsAgree": true,
+    "invariantBinarySha256": "1855bbfb2fa531e046c72c4bbe9e9f83e0b8d6cbec4b5409c4fec30053cc4ddb"
+  },
+  "limitations": [
+    "Focused experiment, not full compiler or LSP transport acceptance rerun.",
+    "Linux x64 only; no additional platform or named-culture support claim.",
+    "No controlled speed measurement.",
+    "Existing language-service exclusions retained: upstream ATA skip; RE2 byte-escape and UTF-8 boundary skips; Fowler unsupported/control rows.",
+    "One existing watcher test retried successfully with its built-in timeout scaling; no expectations changed.",
+    "First validator attempt restored without PublishAot and produced managed output; admission rejected it. Corrected restore/publish rerun passed; failed attempt retained."
+  ],
+  "independentReview": {
+    "status": "clear",
+    "record": "artifacts/vscode-invariant-globalization/final-independent-review.json",
+    "scope": "Source dependencies, controlled size, VS Code comparison, managed and actual Native execution evidence, documentation and unchanged defaults"
+  }
+}

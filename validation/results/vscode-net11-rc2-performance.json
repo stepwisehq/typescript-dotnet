@@ -1,0 +1,441 @@
+{
+  "status": "passed-requested-performance-experiment",
+  "platform": "Linux x64 Native AOT AVX2",
+  "sdk": "11.0.100-rc.2.26504.105",
+  "targetFramework": "net11.0",
+  "runtime": "11.0.0-rc.2.26504.105",
+  "sourceHead": "fa23726ece50645372a635b3e41b87edbcac6902",
+  "sourceChanges": "Isolated snapshot only: two TargetFramework values net10.0 to net11.0; all632 compiler C# files identical to accepted.NET10 baseline. System.IO.Hashing10.0.8 unchanged.",
+  "defaultChanged": false,
+  "binarySha256": "f21050e001673f84b02f9d19eae0c3ccdbaaccbd0bb9db03571582508c2de991",
+  "baselineSha256": "5c0311c17692ba8c35fb5f99071ff5c77b4a16a7a76878598ee72abeb12bd585",
+  "native11Bytes": 30605320,
+  "native10Bytes": 31821848,
+  "upstream": "fed0bf24149fb1ed36039212648bafdafc1ea10e",
+  "vscode": "4038aefd2c4aa51457420ef764c4c2358ae0ddfa",
+  "emit": {
+    "summary": {
+      "go": {
+        "wallSeconds": {
+          "best": 8.37,
+          "median": 8.6,
+          "range": [
+            8.37,
+            9.97
+          ]
+        },
+        "cpuSeconds": {
+          "best": 74.92,
+          "median": 76.42,
+          "range": [
+            74.92,
+            88.91999999999999
+          ]
+        },
+        "peakResidentKiB": {
+          "best": 11297928,
+          "median": 11852708,
+          "range": [
+            11297928,
+            12000656
+          ]
+        }
+      },
+      "native": {
+        "wallSeconds": {
+          "best": 9.69,
+          "median": 10.28,
+          "range": [
+            9.69,
+            12.45
+          ]
+        },
+        "cpuSeconds": {
+          "best": 72.07,
+          "median": 76.6,
+          "range": [
+            72.07,
+            89.03
+          ]
+        },
+        "peakResidentKiB": {
+          "best": 14996736,
+          "median": 15003208,
+          "range": [
+            14996736,
+            15016276
+          ]
+        }
+      },
+      "baseline": {
+        "wallSeconds": {
+          "best": 9.7,
+          "median": 10.27,
+          "range": [
+            9.7,
+            11.06
+          ]
+        },
+        "cpuSeconds": {
+          "best": 73.97,
+          "median": 76.39,
+          "range": [
+            73.97,
+            86.14
+          ]
+        },
+        "peakResidentKiB": {
+          "best": 14999432,
+          "median": 15002564,
+          "range": [
+            14999432,
+            15008536
+          ]
+        }
+      }
+    },
+    "runtimeLabels": {
+      "native": ".NET11 RC2",
+      "baseline": "accepted .NET10",
+      "go": "pinned Go"
+    },
+    "samples": [
+      {
+        "runtime": "baseline",
+        "round": 1,
+        "wallSeconds": 11.06,
+        "cpuSeconds": 86.14,
+        "peakResidentKiB": 15005624
+      },
+      {
+        "runtime": "native",
+        "round": 1,
+        "wallSeconds": 10.28,
+        "cpuSeconds": 76.6,
+        "peakResidentKiB": 15000436
+      },
+      {
+        "runtime": "go",
+        "round": 1,
+        "wallSeconds": 8.6,
+        "cpuSeconds": 76.42,
+        "peakResidentKiB": 11297928
+      },
+      {
+        "runtime": "native",
+        "round": 2,
+        "wallSeconds": 12.45,
+        "cpuSeconds": 89.03,
+        "peakResidentKiB": 14996736
+      },
+      {
+        "runtime": "go",
+        "round": 2,
+        "wallSeconds": 9.97,
+        "cpuSeconds": 88.91999999999999,
+        "peakResidentKiB": 11986992
+      },
+      {
+        "runtime": "baseline",
+        "round": 2,
+        "wallSeconds": 10.25,
+        "cpuSeconds": 75.75,
+        "peakResidentKiB": 15002564
+      },
+      {
+        "runtime": "go",
+        "round": 3,
+        "wallSeconds": 8.45,
+        "cpuSeconds": 76.0,
+        "peakResidentKiB": 11414332
+      },
+      {
+        "runtime": "baseline",
+        "round": 3,
+        "wallSeconds": 10.44,
+        "cpuSeconds": 76.39,
+        "peakResidentKiB": 14999936
+      },
+      {
+        "runtime": "native",
+        "round": 3,
+        "wallSeconds": 9.69,
+        "cpuSeconds": 72.07,
+        "peakResidentKiB": 15015856
+      },
+      {
+        "runtime": "go",
+        "round": 4,
+        "wallSeconds": 8.37,
+        "cpuSeconds": 74.92,
+        "peakResidentKiB": 12000656
+      },
+      {
+        "runtime": "native",
+        "round": 4,
+        "wallSeconds": 10.4,
+        "cpuSeconds": 76.3,
+        "peakResidentKiB": 15003208
+      },
+      {
+        "runtime": "baseline",
+        "round": 4,
+        "wallSeconds": 9.7,
+        "cpuSeconds": 73.97,
+        "peakResidentKiB": 14999432
+      },
+      {
+        "runtime": "native",
+        "round": 5,
+        "wallSeconds": 10.2,
+        "cpuSeconds": 76.76,
+        "peakResidentKiB": 15016276
+      },
+      {
+        "runtime": "baseline",
+        "round": 5,
+        "wallSeconds": 10.27,
+        "cpuSeconds": 76.6,
+        "peakResidentKiB": 15008536
+      },
+      {
+        "runtime": "go",
+        "round": 5,
+        "wallSeconds": 8.88,
+        "cpuSeconds": 78.53,
+        "peakResidentKiB": 11852708
+      }
+    ],
+    "best11To10": 0.9989690721649485,
+    "best11ToGo": 1.1577060931899643
+  },
+  "noemit": {
+    "summary": {
+      "go": {
+        "wallSeconds": {
+          "best": 5.95,
+          "median": 6.17,
+          "range": [
+            5.95,
+            7.3
+          ]
+        },
+        "cpuSeconds": {
+          "best": 49.01,
+          "median": 49.75,
+          "range": [
+            49.01,
+            62.69
+          ]
+        },
+        "peakResidentKiB": {
+          "best": 8678696,
+          "median": 8912356,
+          "range": [
+            8678696,
+            9002060
+          ]
+        }
+      },
+      "candidate": {
+        "wallSeconds": {
+          "best": 6.54,
+          "median": 6.65,
+          "range": [
+            6.54,
+            7.78
+          ]
+        },
+        "cpuSeconds": {
+          "best": 40.97,
+          "median": 41.95,
+          "range": [
+            40.97,
+            46.17
+          ]
+        },
+        "peakResidentKiB": {
+          "best": 12038916,
+          "median": 12053692,
+          "range": [
+            12038916,
+            12060024
+          ]
+        }
+      },
+      "baseline": {
+        "wallSeconds": {
+          "best": 6.42,
+          "median": 6.95,
+          "range": [
+            6.42,
+            7.16
+          ]
+        },
+        "cpuSeconds": {
+          "best": 40.86,
+          "median": 43.33,
+          "range": [
+            40.86,
+            46.29
+          ]
+        },
+        "peakResidentKiB": {
+          "best": 12038752,
+          "median": 12043228,
+          "range": [
+            12038752,
+            12053112
+          ]
+        }
+      }
+    },
+    "runtimeLabels": {
+      "candidate": ".NET11 RC2",
+      "baseline": "accepted .NET10",
+      "go": "pinned Go"
+    },
+    "samples": [
+      {
+        "runtime": "baseline",
+        "round": 1,
+        "wallSeconds": 7.16,
+        "cpuSeconds": 46.29,
+        "peakResidentKiB": 12053112
+      },
+      {
+        "runtime": "candidate",
+        "round": 1,
+        "wallSeconds": 7.78,
+        "cpuSeconds": 45.99,
+        "peakResidentKiB": 12049880
+      },
+      {
+        "runtime": "go",
+        "round": 1,
+        "wallSeconds": 7.3,
+        "cpuSeconds": 62.69,
+        "peakResidentKiB": 8678696
+      },
+      {
+        "runtime": "candidate",
+        "round": 2,
+        "wallSeconds": 7.18,
+        "cpuSeconds": 46.17,
+        "peakResidentKiB": 12059360
+      },
+      {
+        "runtime": "go",
+        "round": 2,
+        "wallSeconds": 6.17,
+        "cpuSeconds": 49.75,
+        "peakResidentKiB": 8912356
+      },
+      {
+        "runtime": "baseline",
+        "round": 2,
+        "wallSeconds": 6.95,
+        "cpuSeconds": 43.33,
+        "peakResidentKiB": 12046864
+      },
+      {
+        "runtime": "go",
+        "round": 3,
+        "wallSeconds": 6.32,
+        "cpuSeconds": 51.11,
+        "peakResidentKiB": 8933068
+      },
+      {
+        "runtime": "baseline",
+        "round": 3,
+        "wallSeconds": 7.03,
+        "cpuSeconds": 43.480000000000004,
+        "peakResidentKiB": 12042796
+      },
+      {
+        "runtime": "candidate",
+        "round": 3,
+        "wallSeconds": 6.54,
+        "cpuSeconds": 41.11,
+        "peakResidentKiB": 12060024
+      },
+      {
+        "runtime": "go",
+        "round": 4,
+        "wallSeconds": 5.95,
+        "cpuSeconds": 49.01,
+        "peakResidentKiB": 9002060
+      },
+      {
+        "runtime": "candidate",
+        "round": 4,
+        "wallSeconds": 6.65,
+        "cpuSeconds": 41.95,
+        "peakResidentKiB": 12053692
+      },
+      {
+        "runtime": "baseline",
+        "round": 4,
+        "wallSeconds": 6.55,
+        "cpuSeconds": 41.349999999999994,
+        "peakResidentKiB": 12043228
+      },
+      {
+        "runtime": "candidate",
+        "round": 5,
+        "wallSeconds": 6.65,
+        "cpuSeconds": 40.97,
+        "peakResidentKiB": 12038916
+      },
+      {
+        "runtime": "baseline",
+        "round": 5,
+        "wallSeconds": 6.42,
+        "cpuSeconds": 40.86,
+        "peakResidentKiB": 12038752
+      },
+      {
+        "runtime": "go",
+        "round": 5,
+        "wallSeconds": 5.98,
+        "cpuSeconds": 49.7,
+        "peakResidentKiB": 8902152
+      }
+    ],
+    "best11To10": 1.0186915887850467,
+    "best11ToGo": 1.099159663865546
+  },
+  "correctness": {
+    "all30ProcessesPassed": true,
+    "all20NativeFullNoGcRegionsQualified": true,
+    "eachEmitRunFiles": 10031,
+    "eachEmitRunBytes": 150466543,
+    "eachRunCompleteComparableDiagnostics": 10,
+    "exitCode": 2,
+    "qualification": "Known VSCode diagnostics identical, not diagnostic-free. Existing text observer limitations retained."
+  },
+  "policy": {
+    "primary": "Best of five each per mode; all samples retained",
+    "publication": "Speed, UseSizeOptimizedLinq=false, AVX2, ServerGC, minimum128workers, EventSource=false, InvariantGlobalization=false",
+    "runtime": "Eight checkers; explicit one-shot NoGC16GiB total/2GiB LOH emit,14/2GiB check-only,20GiB MemAvailable preflight. Budgets not memory caps.",
+    "workload": "Warm input caches, rotated fresh processes, skipLibCheck, retained actual output/diagnostic comparison. No parallel build/workload."
+  },
+  "interpretation": "No demonstrated meaningful throughput improvement: emit best/median essentially equal; check-only best11 is1.87%slower while median4.32%faster than10. Five samples do not establish significance. Both.NET11 best ratios meet1.2 target for this workload.",
+  "limitations": [
+    "Only Linux x64 Native AOT with accepted tuned settings; not JIT or default-runtime evaluation.",
+    "Existing compiler/emit/LSP whole acceptance was not rerun for SDK experiment.",
+    "No .NET11-specific optimization or API migration attempted.",
+    "Historical baseline metadata stamp differs but compiler sources match.",
+    "Initial postpublish metadata guard assumed private runtime DLLs live under net11.0; corrected package-path check accepted actual11RC2 runtime/native DLLs without rebuilding."
+  ],
+  "records": {
+    "publication": "artifacts/vscode-net11-rc2/build-1/native-avx2/actual-ilc-input.json",
+    "emit": "artifacts/vscode-net11-rc2/emit-1/comparison.json",
+    "noemit": "artifacts/vscode-net11-rc2/noemit-1/comparison.json"
+  },
+  "independentReview": {
+    "status": "clear",
+    "record": "artifacts/vscode-net11-rc2/final-independent-review.json",
+    "scope": "Source/method, genuine11RC2 publication, frozen bindings, all30 correctness/policy results and independently recomputed summaries"
+  }
+}

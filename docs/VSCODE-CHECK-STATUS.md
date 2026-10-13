@@ -1,5 +1,71 @@
 # VS Code: current measurements and historical performance evidence
 
+## .NET 11 RC2 experiment (2026-10-13)
+
+A separate `net11.0` Native AOT build using SDK `11.0.100-rc.2.26504.105` and
+runtime/ILCompiler `11.0.0-rc.2.26504.105` passed the requested VS Code comparison.
+All 632 compiler C# files match the accepted .NET 10 baseline; only the two target
+frameworks changed in the isolated copy. Default projects remain on .NET 10.
+
+Five fresh processes per compiler per mode ran on the same host, alternating
+.NET 11, accepted .NET 10 and pinned Go. Best-of-five remains the primary measure.
+
+| Workload | .NET 11 best / median (s) | .NET 10 best / median (s) | Go best / median (s) | .NET 11 best versus Go |
+| --- | ---: | ---: | ---: | --- |
+| Check + emit | 9.69 / 10.28 | 9.70 / 10.27 | 8.37 / 8.60 | +15.8%, target met |
+| Check-only | 6.54 / 6.65 | 6.42 / 6.95 | 5.95 / 6.17 | +9.9%, target met |
+
+This does **not demonstrate a meaningful speed improvement from .NET 11**. Emit
+best and median are essentially equal. Check-only's best is 1.9% slower on .NET 11,
+while its median is 4.3% faster; five samples and overlapping ranges do not establish
+significance. Existing earlier cohorts remain separate, not pooled into these results.
+Peak memory remains similar; full CPU/RSS samples are in the records. The .NET 11
+executable is 30,605,320 bytes versus 31,821,848 bytes for the accepted .NET 10 binary.
+
+| Workload | .NET 11 wall samples (s) | .NET 10 wall samples (s) | Go wall samples (s) |
+| --- | --- | --- | --- |
+| Check + emit | 10.28, 12.45, 9.69, 10.40, 10.20 | 11.06, 10.25, 10.44, 9.70, 10.27 | 8.60, 9.97, 8.45, 8.37, 8.88 |
+| Check-only | 7.78, 7.18, 6.54, 6.65, 6.65 | 7.16, 6.95, 7.03, 6.55, 6.42 | 7.30, 6.17, 6.32, 5.95, 5.98 |
+
+All 30 processes passed correctness guards. Every emit run reproduced all 10,031
+files/150,466,543 bytes exactly; all runs matched the ten complete comparable
+known diagnostics and exit 2. All 20 Native runs qualified their full no-GC regions.
+This is not a clean-diagnostic project or a rerun of whole compiler/LSP acceptance.
+
+Retained policy: Linux x64/glibc, AVX2, Speed, non-size-optimized LINQ, Server GC,
+128 minimum workers, EventSource disabled, ordinary globalization, eight checkers,
+`skipLibCheck`, and explicit 16/2 GiB no-GC emit / 14/2 GiB check-only reservations
+with 20 GiB available-memory preflight. `System.IO.Hashing` stays at 10.0.8. No
+compiler/API optimization was added for .NET 11. JIT and other platforms are untested.
+
+[Durable results](../validation/results/vscode-net11-rc2-performance.json),
+[emit cohort](../artifacts/vscode-net11-rc2/emit-1/comparison.json) and
+[check-only cohort](../artifacts/vscode-net11-rc2/noemit-1/comparison.json) retain
+all measurements and correctness evidence. [Publication](../artifacts/vscode-net11-rc2/build-1/native-avx2/actual-ilc-input.json)
+binds actual .NET 11 runtime inputs. A postpublish metadata guard initially rejected
+four private runtime DLLs outside the TFM subfolder; correcting that path assumption
+finalized the existing successful build without source changes or republishing.
+
+Reproduction controllers (use new output directories and preserve SDK availability):
+
+```sh
+python3 artifacts/vscode-net11-rc2/publish.py
+python3 artifacts/vscode-net11-rc2/benchmark-emit.py artifacts/vscode-net11-rc2/emit-fresh \
+  --native artifacts/vscode-net11-rc2/build-1/native-avx2/tscheck \
+  --current-binding artifacts/vscode-net11-rc2/build-1/native-avx2/actual-ilc-input.json \
+  --reference artifacts/vscode-current-performance/measurement-1/reference \
+  --runs 5 --no-gc-budget-gib 16
+python3 artifacts/vscode-net11-rc2/benchmark-noemit.py artifacts/vscode-net11-rc2/noemit-fresh \
+  --native artifacts/vscode-net11-rc2/build-1/native-avx2/tscheck \
+  --binding artifacts/vscode-net11-rc2/build-1/native-avx2/actual-ilc-input.json \
+  --emit-cohort artifacts/vscode-net11-rc2/emit-fresh
+```
+
+The publication script intentionally refuses to replace an existing `build-1`;
+reuse its verified binary for repeated timings, or set a new output root in a copy
+of the publication script before rebuilding. Publication took 35.75 seconds after
+restore; this is build time, not a workload sample. Default SDK/TFMs are unchanged.
+
 ## Same-host pre-LSP/current investigation (2026-10-13)
 
 The apparent emit regression did **not** persist in the controlled best-run

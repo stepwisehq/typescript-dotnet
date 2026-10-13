@@ -1,3 +1,20 @@
+# Completed: .NET 11 RC2 performance experiment
+
+The separate genuine .NET 11 RC2 Native AOT build and all 30 VS Code comparison
+runs passed. Best emit11/10/Go:9.69/9.70/8.37s; check-only6.54/6.42/5.95s.
+No clear throughput improvement; .NET10 defaults remain unchanged. See
+[current measurements](./docs/VSCODE-CHECK-STATUS.md) and [STATE.md](./docs/STATE.md).
+No running workload remains; results/documentation are saved in the accompanying
+checkpoint with the MIT license and case-study maintenance notice.
+
+# Completed: invariant globalization experiment
+
+The requested Linux x64 Native AOT experiment passed VS Code output/diagnostic
+comparison and focused managed/native checks. Same-input executable reduction is
+177,344 bytes (0.56%). Compiler source and default settings remain unchanged.
+See [assessment](./docs/INVARIANT-GLOBALIZATION.md) and the active top of
+[STATE.md](./docs/STATE.md). No workload remains; await the next user direction.
+
 # Paused for the day
 
 The user asked to record the latest results and stop. See [STATE.md](./docs/STATE.md)
