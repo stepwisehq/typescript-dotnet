@@ -1,5 +1,14 @@
 # Reaching the VS Code emit performance target
 
+This is the historical optimization/delivery summary. The fresh post-LSP comparison
+on 2026-10-13 is in [current VS Code measurements](./VSCODE-CHECK-STATUS.md):
+The latest matched pre-LSP/current/Go cohort gives current check + emit 9.61 s /
+Go 8.52 s (+12.8%) and check-only 6.96 s / 6.15 s (+13.2%), both observed targets met.
+Pre-LSP emit best is 9.68 s, while its median is faster than current; variability
+remains unexplained. Earlier current emit misses of +42.3% and +34.3% remain preserved.
+All emitted files and comparable diagnostics still match. The historical results
+and work described below are unchanged; no stable LSP regression or cause is established.
+
 The delivered Native AOT compiler completed the VS Code check-and-emit workload in **10.18 seconds**, compared with **9.37 seconds for pinned TypeScript Go**: **8.6% slower**, within the requested 20% limit. These are the best results from five fresh processes for each compiler, run in alternating order with warm inputs. Every measured run produced the same **10,031 files, 150,466,543 bytes and ten complete comparable diagnostic messages**.
 
 The work ran from baseline `edc53e02` to delivery `9b8fa74a`. It preserved the Go compiler algorithms and ownership rules while restoring inexpensive storage and reuse patterns in the .NET representation. The [accepted proof](../validation/results/vscode-emit-performance.json), [independent review](../validation/results/vscode-emit-performance-review.json) and [detailed measurements](./VSCODE-CHECK-STATUS.md) retain the successful results and the approaches that did not meet the target. The earlier [checker performance summary](./PERFORMANCE-EPIC-SUMMARY.md) describes a separate delivery.

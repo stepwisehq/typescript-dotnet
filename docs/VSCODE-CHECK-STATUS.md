@@ -1,7 +1,193 @@
-# VS Code checking: diagnostic repairs and performance evidence
+# VS Code: current measurements and historical performance evidence
+
+## Same-host pre-LSP/current investigation (2026-10-13)
+
+The apparent emit regression did **not** persist in the controlled best-run
+comparison. Five fresh processes each used the preserved pre-LSP Native executable,
+the unchanged current executable and pinned Go, with the same inputs and policy.
+All 30 completed processes passed their complete output/diagnostic guards; every
+Native full no-GC region qualified.
+
+| Workload | Pre-LSP best / median (s) | Current best / median (s) | Go best / median (s) | Current best versus Go |
+| --- | ---: | ---: | ---: | ---: |
+| Check + emit | 9.68 / 12.46 | 9.61 / 13.52 | 8.52 / 9.62 | +12.8%, target met |
+| Check-only | 8.44 / 9.55 | 6.96 / 9.49 | 6.15 / 6.83 | +13.2%, target met |
+
+Current emit is 0.7% faster than pre-LSP by best run, but 8.5% slower by median;
+the broad ranges overlap. Check-only's best is 17.5% faster, while medians are
+nearly identical. These five-observation cohorts do not establish statistical
+significance or a causal improvement/regression. The same current binary previously
+had emit bests of 11.51 and 11.24 seconds, with +42.3% and +34.3% overhead versus
+Go; those failed targets remain preserved below, rather than pooled or replaced.
+
+Emit allocations remain approximately 14.75–14.78 GB and Native RSS is comparable.
+The [source audit](../artifacts/vscode-current-performance/lsp-era-source-audit.json)
+found no demonstrated growth in ordinary emit work. Native image growth from
+roughly 20 to 31 MB motivates a layout hypothesis, not a measured cause. Substantial
+same-binary timing variability remains unexplained; this evidence does not justify
+an LSP rollback or compiler change. No new profile was collected.
+
+[Emit records](../artifacts/vscode-current-performance/baseline-emit-1/comparison.json),
+[check-only records](../artifacts/vscode-current-performance/baseline-noemit-2/comparison.json)
+and the [compact investigation record](../validation/results/vscode-lsp-era-investigation.json)
+retain all samples, CPU/RSS, policy and binary bindings. The first check-only attempt
+stopped on a harness exit-map KeyError after one correct process; that partial
+attempt is preserved and excluded. The corrected map expects the original exit 2
+for all three compilers. Existing reproduction commands below retain the matched
+checker/runtime policy; the saved triple-cohort controllers record exact order.
+
+## Earlier post-LSP cohorts (2026-10-13)
+
+In these earlier cohorts, outputs matched, but **check+emit missed the 20% target
+while check-only met it**. Best-to-best remains the primary policy, with every
+sample and its variability retained.
+
+| Workload | Native best / median / range (s) | Go best / median / range (s) | Best ratio | 20% target |
+| --- | --- | --- | ---: | --- |
+| Check + emit (requested repeat) | 11.24 / 14.74 / 11.24–15.29 | 8.37 / 9.22 / 8.37–10.92 | 1.342891 (+34.3%) | Missed |
+| Check + emit (preceding cohort) | 11.51 / 12.16 / 11.51–14.45 | 8.09 / 9.70 / 8.09–11.03 | 1.422744 (+42.3%) | Missed |
+| Check-only | 6.77 / 7.29 / 6.77–9.68 | 5.84 / 6.72 / 5.84–8.67 | 1.159247 (+15.9%) | Met |
+
+The preceding requested same-binary/settings check + emit repeat measured:
+**11.24 s Native / 8.37 s Go = 1.342891 (+34.3%)**, still above the target.
+Native median/range is 14.74 s / 11.24–15.29 s; Go 9.22 s / 8.37–10.92 s. New wall
+samples are Native 15.15, 14.74, 11.24, 15.29, 11.98 and Go 9.22, 8.67, 8.37, 10.27, 10.92.
+Native CPU best/median/range is 82.10 / 111.95 / 82.10–114.66 s, peak RSS
+14,992,912 / 15,014,056 / 14,992,912–15,028,604 KiB. Go CPU is 75.70 / 86.32 / 75.70–98.64 s,
+peak RSS 11,335,288 / 11,354,308 / 11,335,288–11,815,180 KiB. The
+[repeat cohort](../artifacts/vscode-current-performance/emit-repeat-2/comparison.json)
+and [durable repeat record](../validation/results/vscode-post-lsp-emit-repeat.json)
+retain all ten output/diagnostic checks and full-region qualification for all five
+Native runs. Check-only was not rerun during that repeat.
+The following tables preserve the preceding cohort unchanged; samples from the two
+cohorts are not pooled and no compiler-change or LSP causality is inferred.
+
+Wall samples in each runtime's execution order:
+
+| Workload | Native seconds | Go seconds |
+| --- | --- | --- |
+| Check + emit | 11.98, 11.51, 13.25, 14.45, 12.16 | 11.03, 8.80, 8.09, 10.59, 9.70 |
+| Check-only | 9.68, 7.29, 6.77, 7.13, 7.35 | 6.72, 5.96, 5.84, 8.67, 7.19 |
+
+| Workload / runtime | CPU best / median / range (s) | Peak RSS best / median / range (KiB) |
+| --- | --- | --- |
+| Check + emit / Native | 87.05 / 93.70 / 87.05–109.70 | 15,009,512 / 15,017,252 / 15,009,512–15,021,076 |
+| Check + emit / Go | 72.69 / 87.52 / 72.69–100.71 | 11,307,324 / 11,772,836 / 11,307,324–11,812,676 |
+| Check-only / Native | 42.64 / 45.55 / 42.64–66.99 | 12,041,148 / 12,042,988 / 12,041,148–12,057,096 |
+| Check-only / Go | 48.84 / 58.88 / 48.84–70.93 | 8,805,320 / 8,920,048 / 8,805,320–8,958,980 |
+
+The [fresh reference comparison](../artifacts/vscode-current-performance/measurement-1/reference/comparison.json)
+retains **10,031 paths, 150,466,543 bytes and ten complete comparable diagnostics**,
+all exact. Both compilers exit 2 for the known configuration-resolver diagnostics;
+this is not a clean-diagnostic project. Every measured emit run checks its full
+output and diagnostics. Every check-only run checks the complete diagnostic DTO/
+error expectation and pinned Go text, with the genuine Compile status fields
+reported separately. All ten Native runs qualified the full no-GC region and
+restored prior GC policy. No compiler or LSP implementation changed for this refresh.
+
+The [emit cohort](../artifacts/vscode-current-performance/measurement-1/emit/comparison.json),
+[check-only cohort](../artifacts/vscode-current-performance/measurement-1/noemit/comparison.json)
+and [durable proof](../validation/results/vscode-post-lsp-performance.json) retain raw
+commands, all samples, outputs, policies and identities. Current source is
+`f709d076`; VS Code is clean revision `4038aefd2c4aa51457420ef764c4c2358ae0ddfa`;
+upstream is `fed0bf24149fb1ed36039212648bafdafc1ea10e`. The fresh Native ELF SHA256 is
+`5c0311c17692ba8c35fb5f99071ff5c77b4a16a7a76878598ee72abeb12bd585`, bound to
+[actual ILC inputs](../artifacts/vscode-current-performance/build-1/native-avx2/actual-ilc-input.json).
+Pinned Go remains SHA256 `fb9f349bdbeaad767473a3ab2893271bd106e978ed58a1c0b5ffcd5502450528`.
+
+These are warm-input, alternating fresh-process cohorts on Linux x64/glibc, with
+AVX2, eight checkers, Server GC, minimum 128 workers and EventSource disabled.
+Publication uses Speed and `UseSizeOptimizedLinq=false`. Explicit one-shot no-GC
+reservations remain 16/2 GiB for emit and 14/2 GiB for check-only, with 20 GiB availability
+preflight. They are not process memory caps. GNU time wall output has 0.01 s precision.
+The observed best ratio is not statistical significance or a universal/platform-default
+performance promise. Comparing this cohort with the historical 10.18/9.37 and 8.55/7.13
+results does **not** isolate the effect of LSP changes; both Native and Go samples vary.
+Small retained LSP-era workloads do not replace this external-project evidence.
+
+### Reproduce the current policy
+
+Use the same VS Code revision/dependencies and pinned Go from the
+[reference build instructions](#reproduction-and-records). From the repository root,
+clean both ordinary and Linux RID build outputs before publishing, so stale
+dependency assemblies are not reused. The [executed publication controller](../artifacts/vscode-current-performance/publish-current.py)
+records the complete normal/RID rebuild and actual ILC checks for this run.
+Use existing tracked comparison/cohort tools with new output directories:
+
+```sh
+dotnet clean src/TypeScript.Check/TypeScript.Check.csproj -c Release
+dotnet clean src/TypeScript.Check/TypeScript.Check.csproj -c Release -r linux-x64
+dotnet publish src/TypeScript.Check/TypeScript.Check.csproj -c Release -r linux-x64 \
+  -p:PublishAot=true -p:OptimizationPreference=Speed -p:UseSizeOptimizedLinq=false \
+  -p:IlcInstructionSet=avx2 -p:ThreadPoolMinThreads=128 -p:EventSourceSupport=false \
+  -o artifacts/vscode-refresh/native
+```
+
+Capture configuration/package hashes **before** either compiler runs. The comparison
+tool creates the reference directory; attach that captured provenance afterward,
+then recompute the comparison record before passing it to the benchmark tool:
+
+```sh
+python3 - <<'PYREF'
+import hashlib, json, subprocess
+from pathlib import Path
+vscode = Path.cwd().parent / "vscode"
+files = {str((vscode / name).resolve()): hashlib.sha256((vscode / name).read_bytes()).hexdigest()
+         for name in ("src/tsconfig.json", "src/tsconfig.base.json", "package.json", "package-lock.json")}
+reference = Path("artifacts/vscode-refresh/reference")
+subprocess.run(["python3", "tools/compare-vscode-emit.py", str(reference),
+                "--native", "artifacts/vscode-refresh/native/tscheck",
+                "--go", "artifacts/emit/command-reference/tsgo"], check=True)
+assert all(hashlib.sha256(Path(path).read_bytes()).hexdigest() == value for path, value in files.items())
+(reference / "provenance.json").write_text(json.dumps({"files": files}, indent=2) + "\n")
+subprocess.run(["python3", "tools/compare-vscode-emit.py", str(reference), "--compare-only"], check=True)
+PYREF
+python3 tools/benchmark-vscode-emit.py artifacts/vscode-refresh/emit \
+  --native artifacts/vscode-refresh/native/tscheck \
+  --go artifacts/emit/command-reference/tsgo \
+  --reference artifacts/vscode-refresh/reference --runs 5 --checkers 8 --no-gc-budget-gib 16
+```
+
+For check-only, place a wrapper **beside** VS Code's original config, preserving
+implicit type roots and package resolution:
+
+```json
+{"extends":"./tsconfig.json","compilerOptions":{"checkers":8}}
+```
+
+Using that same wrapper for both compilers, repeat each command five times in
+alternating order (Go/Native, Native/Go, Go/Native, Native/Go, Go/Native). Keep separate
+output, time and policy files for every run:
+
+```sh
+/usr/bin/time -f '%e %U %S %M' -o native-time.txt \
+  env TSC_GC_POLICY_REPORT=native-policy.json artifacts/vscode-refresh/native/tscheck \
+  --config /absolute/path/to/vscode/src/tsconfig.checkers8.json --noEmit --json --no-gc-region \
+  > native-diagnostics.json
+/usr/bin/time -f '%e %U %S %M' -o go-time.txt \
+  artifacts/emit/command-reference/tsgo \
+  --project /absolute/path/to/vscode/src/tsconfig.checkers8.json --noEmit --skipLibCheck --pretty false \
+  > go-diagnostics.txt
+```
+
+Do not include exit 2 known diagnostics as a timing failure, or treat arbitrary
+nonzero exits as acceptable. Compare all diagnostics, retain every sample, require
+successful full-region end/restoration and remove unintended runtime overrides.
+These manual commands are a measurement recipe, not an automatic parity validator.
+The [recorded check-only controller](../artifacts/vscode-current-performance/run-noemit.py)
+shows the exact validation, policy and environment checks used for this cohort.
+No compiler build duration is counted as workload time.
 
 
-## Verified emit performance result
+## Historical records
+
+The sections below preserve earlier measurements, accepted scopes and investigation
+history. Their former “current” labels refer to those snapshots; the 2026-10-13
+section above is the latest external-project measurement.
+
+
+
+## Historical accepted emit performance result (2026-10-12)
 
 For the timeline and explanation of the work, see the
 [emit performance summary](./EMIT-PERFORMANCE-SUMMARY.md).
@@ -128,7 +314,7 @@ It binds binaries/config/source inputs, records every elapsed/CPU/RSS sample and
 fails if output, diagnostics or the full NoGC lifecycle differ. The budget argument
 validates the reported policy rather than configuring it. Use a new result directory.
 
-## Current whole-emit follow-up: exact main-project output
+## Historical whole-emit follow-up: exact main-project output
 
 After whole-emit acceptance at `7542f694`, the real VS Code main source project
 at VS Code HEAD `4038aefd` was compiled by the accepted Linux x64 Native executable

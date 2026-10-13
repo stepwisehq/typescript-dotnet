@@ -28,9 +28,6 @@ See the [upstream record](./UPSTREAM.md), [current state](./docs/STATE.md),
   client requests, progress, registration, shutdown, signals and parent monitoring.
 
 All **115 pinned standard-library declaration files** are embedded unchanged.
-The core compiler and LSP need neither a Go process nor Node. Go and Node participate
-in reference generation and differential verification; optional automatic type
-acquisition uses npm, and configured content-mapper hosts can require external tools.
 The library and CLI target .NET 10; [global.json](./global.json) pins the build SDK.
 
 ## Build and use
@@ -71,7 +68,10 @@ Configure an LSP-capable editor to launch that executable with `--lsp --stdio`,
 using the project directory as its working directory. Stdout carries only protocol
 frames; stderr is separate. The [editor connection guide](./docs/progress/lsp-public-launch-readiness.md)
 includes the pinned VS Code client's actual settings and local-executable route.
-The Native AOT executable does not require the .NET runtime installed on the server host.
+The published Native AOT executable runs without an installed .NET runtime.
+
+Optional automatic type acquisition uses npm. Configured content-mapper hosts may
+require additional tools, depending on the selected mapper.
 
 The long-lived server bypasses the one-shot CLI no-GC policy. Optional one-shot
 `--no-gc-region` requests 14 GiB total/2 GiB LOH for checking, or 16 GiB/2 GiB for
@@ -127,23 +127,28 @@ Important boundaries remain:
   plateaus, leak-freedom or universal speed. Runtime ownership adaptations, including
   parser stack continuation and IPC threads, have explicit resource tradeoffs.
 
-## Last VS Code comparison
+## Current VS Code comparison
 
-The last external VS Code output/performance comparison **predates the LSP work**.
-It was not rerun after the language-services changes. Its 10,031 emitted files
-(150,466,543 bytes) and ten complete diagnostics matched pinned Go exactly.
+A fresh post-LSP comparison on 2026-10-13 used the current build and pinned Go on
+VS Code's main source project. All **10,031 emitted files / 150,466,543 bytes** and
+all ten complete comparable diagnostics still match exactly. Both compilers exit 2
+for those known diagnostics.
 
 | Best of five, explicitly tuned Linux x64 | Native | Go | Native overhead |
 | --- | ---: | ---: | ---: |
-| Check + emit | 10.18 s | 9.37 s | 8.6% |
-| Check-only | 8.55 s | 7.13 s | 19.9% nominal |
+| Check + emit (same-host investigation) | 9.61 s | 8.52 s | 12.8% — within the 20% target |
+| Check-only (same-host investigation) | 6.96 s | 6.15 s | 13.2% — within the 20% target |
 
-The check-only margin is narrow at the timer's 0.01-second precision. These results
-use documented AVX2, checker-count, memory and runtime settings; they are not
-portable-default or universal guarantees. See [full measurements and reproduction](./docs/VSCODE-CHECK-STATUS.md).
-The final small retained LSP-era emit workloads are a separate protection cohort,
-with modest slowdowns on four workloads and faster ManyFiles; they do not refresh
-or substitute for the VS Code evaluation.
+The matched pre-LSP executable took 9.68 s for check + emit and 8.44 s for
+check-only. Emit medians were 13.52 s current / 12.46 s pre-LSP, so the best-run
+result does not establish unchanged performance. Earlier current-binary emit
+cohorts missed the target by 42.3% and 34.3%; all remain separately preserved.
+Same-binary variability is substantial and unexplained; no stable LSP regression
+has been demonstrated. All samples, medians, ranges, memory and complete no-GC
+qualification are in [current measurements and reproduction](./docs/VSCODE-CHECK-STATUS.md).
+These use AVX2, eight checkers, minimum 128 workers and explicit one-shot no-GC
+reservations; they are not portable-default or universal guarantees. Small retained
+LSP-era benchmarks are a separate workload and do not substitute for this comparison.
 
 ## Source and attribution
 

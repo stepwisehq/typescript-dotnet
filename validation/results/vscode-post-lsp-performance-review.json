@@ -1,0 +1,145 @@
+{
+  "status": "CLEAR actual correctness/binding/measurement interpretation; currentemit target NOT met",
+  "binarySha256": "5c0311c17692ba8c35fb5f99071ff5c77b4a16a7a76878598ee72abeb12bd585",
+  "actualILCInputs": 178,
+  "sourceSnapshotFiles": 636,
+  "ordinaryReference": {
+    "outputFiles": 10031,
+    "outputBytes": 150466543,
+    "completeComparableDiagnostics": 10,
+    "allOutputPathsBytesEqual": true
+  },
+  "method": "Fiveeach alternatingwarm-inputfreshprocesses/GNUtime0.01s primarywall; exactverification outsidetimer",
+  "emit": {
+    "summary": {
+      "go": {
+        "wallSeconds": {
+          "best": 8.09,
+          "median": 9.7,
+          "range": [
+            8.09,
+            11.03
+          ]
+        },
+        "cpuSeconds": {
+          "best": 72.69,
+          "median": 87.52,
+          "range": [
+            72.69,
+            100.71
+          ]
+        },
+        "peakResidentKiB": {
+          "best": 11307324,
+          "median": 11772836,
+          "range": [
+            11307324,
+            11812676
+          ]
+        }
+      },
+      "native": {
+        "wallSeconds": {
+          "best": 11.51,
+          "median": 12.16,
+          "range": [
+            11.51,
+            14.45
+          ]
+        },
+        "cpuSeconds": {
+          "best": 87.05,
+          "median": 93.7,
+          "range": [
+            87.05,
+            109.7
+          ]
+        },
+        "peakResidentKiB": {
+          "best": 15009512,
+          "median": 15017252,
+          "range": [
+            15009512,
+            15021076
+          ]
+        }
+      }
+    },
+    "bestNativeGoRatio": 1.42274412855377,
+    "target1_2Met": false,
+    "all10correctAndNoGC16_2Qualified": true
+  },
+  "noemit": {
+    "summary": {
+      "go": {
+        "wallSeconds": {
+          "best": 5.84,
+          "median": 6.72,
+          "range": [
+            5.84,
+            8.67
+          ]
+        },
+        "cpuSeconds": {
+          "best": 48.839999999999996,
+          "median": 58.879999999999995,
+          "range": [
+            48.839999999999996,
+            70.93
+          ]
+        },
+        "peakResidentKiB": {
+          "best": 8805320,
+          "median": 8920048,
+          "range": [
+            8805320,
+            8958980
+          ]
+        }
+      },
+      "candidate": {
+        "wallSeconds": {
+          "best": 6.77,
+          "median": 7.29,
+          "range": [
+            6.77,
+            9.68
+          ]
+        },
+        "cpuSeconds": {
+          "best": 42.64,
+          "median": 45.55,
+          "range": [
+            42.64,
+            66.99
+          ]
+        },
+        "peakResidentKiB": {
+          "best": 12041148,
+          "median": 12042988,
+          "range": [
+            12041148,
+            12057096
+          ]
+        }
+      }
+    },
+    "bestNativeGoRatio": 1.1592465753424657,
+    "target1_2Met": true,
+    "all10fullDTOAndRawDiagnosticsExactNoGC14_2Qualified": true
+  },
+  "qualifications": [
+    "Correctnesspassed doesnotmeanemitperformancetargetpassed; current1.422744 misses1.2.",
+    "Historical10.18/9.37emit and1.19916noemitremainhistorical, notcurrentguarantees.",
+    "Allrawsamples/variability/peakRSS retained; no statisticalsignificance/universalperformance orcausalLSPregression claim.",
+    "Reviewedcontroller verifiesallfiles eachrun; independentrawdiagnostics/policy/summary/hashchecks and3byte-exactoutputspots avoidrehashinggigabytes.",
+    "Go nonprettyformatter doesnotexposebyte-end/relatedDTOfields; remainunverified inthistextcomparison."
+  ],
+  "evidenceHashes": {
+    "artifacts/vscode-current-performance/measurement-1/reference/comparison.json": "97585b256beef08a69e883c613c5ce9e7331d38bd12d04602aceae8fcb261d96",
+    "artifacts/vscode-current-performance/measurement-1/emit/comparison.json": "537fede5e231d0d9225dbfbd2a35c66b53384a6f0255b8abc549498421c82166",
+    "artifacts/vscode-current-performance/measurement-1/noemit/comparison.json": "152c133b420bc1cefdf97590868962b298cc5ec68f04098717038a9f5b5354c0",
+    "artifacts/vscode-current-performance/measurement-1/complete.json": "d681e8b291ecfa5c08b33ed884360dfbb663693a78ba40c98e3added3801a205",
+    "validation/results/vscode-post-lsp-performance.json": "d9628eddcafcce4622a466273d35c8fbceb4b1cddeefb2d9c24cf2b2d3ec827e"
+  }
+}

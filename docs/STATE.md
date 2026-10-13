@@ -1,3 +1,88 @@
+# Paused for the day at the user's request (2026-10-13)
+
+Latest results are recorded in [VS Code status](./VSCODE-CHECK-STATUS.md) and
+[the investigation record](../validation/results/vscode-lsp-era-investigation.json).
+Same-host best times: current Native/Go 9.61/8.52 s for check+emit (+12.8%),
+6.96/6.15 s for check-only (+13.2%). Pre-LSP Native bests were 9.68 and 8.44 s.
+All 30 runs passed correctness checks; the current emit median remains 8.5% slower
+than pre-LSP, with broad variability and no established causal LSP regression.
+Earlier target misses are retained. No compiler changes or running workloads.
+Documentation and evidence are recorded in the accompanying commit. Do not resume
+investigation or run additional benchmarks until the user asks to continue.
+
+# Investigation checkpoint: LSP-era emit timing (2026-10-13)
+
+Completed a source audit and same-host comparison of the accepted pre-LSP Native
+executable, unchanged current Native executable, and pinned Go: five processes each
+for check+emit and check-only. All 30 completed runs passed output/diagnostic checks;
+all 20 Native runs qualified their full NoGC regions. Independent Sol review is clear.
+
+| Mode | Pre-LSP best / median | Current best / median | Go best / median |
+| --- | --- | --- | --- |
+| Check+emit | 9.68 / 12.46 s | 9.61 / 13.52 s | 8.52 / 9.62 s |
+| Check-only | 8.44 / 9.55 s | 6.96 / 9.49 s | 6.15 / 6.83 s |
+
+Current best ratios to Go are 1.127934 and 1.131707, within 20% in these cohorts.
+Retain both earlier emit target misses. Best emit is essentially unchanged from
+pre-LSP, but its median is 8.5% slower with broad overlapping ranges. Check-only
+medians are nearly equal. This does not establish a causal LSP regression or
+improvement; performance variability and the smaller median difference remain open.
+Emit allocations remain approximately 14.75–14.78 GB with similar peak RSS.
+Source audit found ordinary JS emit scheduling/writer pooling unchanged; added
+hover/declaration helpers have limited relevance to this JS-only workload. Larger
+AOT image layout and parser guard changes are hypotheses, not established causes.
+
+Evidence: artifacts/vscode-current-performance/baseline-emit-1 and baseline-noemit-2;
+source audit lsp-era-source-audit.json; independent review lsp-impact-review.json.
+The first noemit attempt stopped after one correct baseline process due to a missing
+baseline label in the harness exit-code lookup. The corrected lookup preserves exit2
+for all engines; the failed script/result remain in baseline-noemit-1 and are excluded
+from the fresh cohort. No compiler changes, new publication or profiles were needed.
+
+Documentation and durable result records are updated and independently reviewed.
+This checkpoint includes the saved documentation and evidence. No running workloads.
+The next informative investigation is fast versus
+slow runs of the same binary, observing CPU work/scheduling before speculative edits;
+do not automatically attribute the previous gap to LSP or revert accepted behavior.
+
+# Completed: requested repeat of VS Code check+emit (2026-10-13)
+
+Same current Native binary and pinned Go, unchanged settings and reference, five
+alternating runs each. Best Native11.24s/Go8.37s =1.342891x (+34.3%, target missed).
+Native samples15.15,14.74,11.24,15.29,11.98; Go9.22,8.67,8.37,10.27,10.92.
+Medians14.74/9.22s. All 10,031 output files/150,466,543 bytes and ten comparable
+diagnostics remain exact; all five Native full NoGC regions qualified. No build or
+compiler change. Results are in artifacts/vscode-current-performance/emit-repeat-2.
+Prior measurement-1 is retained separately below; check-only was not rerun.
+Repeated emit target misses justify investigation, but do not establish the cause.
+Sol review and documentation are complete; no further workload is pending from
+this repeat. Its results are included in the current checkpoint.
+
+# Completed: post-LSP VS Code refresh (2026-10-13)
+
+The user requested fresh current-build VS Code measurements and documentation updates.
+Root published the current source f709d076 as Linux x64 Native AOT, then ran a fresh
+ordinary output comparison and five alternating processes per compiler per scenario.
+All 10,031 emitted files (150,466,543 bytes) and ten comparable diagnostics match
+pinned Go; every timed run passed diagnostics and all Native NoGC regions qualified.
+Best check+emit: Native11.51s/Go8.09s =1.422744x, **misses the 20% target**.
+Best check-only: Native6.77s/Go5.84s =1.159247x, meets the observed target.
+All samples, medians/ranges, CPU/RSS and publication bindings are preserved in
+[the current record](../validation/results/vscode-post-lsp-performance.json).
+Do not rerun measurements or start optimizing merely because of this target miss:
+this mandate is a refresh, and cross-date samples do not isolate its cause.
+
+Current source HEAD f709d076; VS Code clean4038aefd; upstream
+fed0bf24149fb1ed36039212648bafdafc1ea10e. Retained AVX2/min-worker128/checkers8,
+Server GC, explicit NoGC16GiB emit/14GiB check-only and >=20GiB available preflight.
+Artifacts: artifacts/vscode-current-performance/build-1 and measurement-1;
+controllers/publication logs remain beside them. No compiler changes, new optimization
+campaign, or broad regression rerun. Historical accepted results remain unchanged.
+Sol independent result review is clear. README, current measurement/reproduction
+documentation and the historical summary pointer have been updated; the pending
+README runtime clarification is preserved. No further workloads are pending.
+The user subsequently requested a commit; this refresh is included in the current checkpoint.
+
 # Accepted: language services and LSP (2026-10-12)
 
 The [whole contract](./LANGUAGE-SERVICES-CONTRACT.md) is accepted and delivered at

@@ -1,3 +1,28 @@
+# Paused for the day
+
+The user asked to record the latest results and stop. See [STATE.md](./docs/STATE.md)
+for the same-host comparison and remaining uncertainty. Results and documentation
+are recorded in the accompanying commit. Do not resume workloads without a new user direction.
+
+# Latest: LSP-era performance investigation checkpoint
+
+Read [STATE.md](./docs/STATE.md) and [current measurements](./docs/VSCODE-CHECK-STATUS.md).
+Same-host pre-LSP/current/Go comparisons completed with all 30 runs correct. Best
+emit is essentially unchanged from pre-LSP (9.61 vs 9.68 s); its median is 8.5% slower
+amid broad variation. Current best ratios to Go are +12.8% emit and +13.2% check-only.
+Both earlier emit target misses remain preserved. No causal LSP regression or source
+fix was established; same-binary timing variability remains unresolved. Documentation
+is included in this checkpoint. Older active/stopping instructions below are historical context.
+
+# Earlier: first VS Code measurements after LSP
+
+The requested current-build comparison is complete. See [STATE.md](./docs/STATE.md)
+and [current measurements](./docs/VSCODE-CHECK-STATUS.md): outputs and diagnostics
+match; latest repeated best-of-five check+emit is 11.24s Native / 8.37s Go (34.3% overhead, target
+missed), and check-only is 6.77s / 5.84s (15.9%, target met). Historical measurements
+are preserved. This earlier measurement is included in the current checkpoint.
+The completed-epic instructions below are historical context.
+
 # Language services and LSP: final delivery
 
 The whole Linux x64 language-services/LSP contract is accepted after independent

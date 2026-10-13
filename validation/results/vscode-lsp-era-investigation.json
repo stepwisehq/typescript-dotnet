@@ -1,0 +1,478 @@
+{
+  "status": "Completed matched same-host investigation; independent result review CLEAR",
+  "cohorts": {
+    "emit": {
+      "path": "artifacts/vscode-current-performance/baseline-emit-1/comparison.json",
+      "sha256": "b08ba63cab34008d663863010c082990b4b2faa63cfdbfe9aa936124163868f0",
+      "summary": {
+        "go": {
+          "wallSeconds": {
+            "best": 8.52,
+            "median": 9.62,
+            "range": [
+              8.52,
+              11.94
+            ]
+          },
+          "cpuSeconds": {
+            "best": 75.24,
+            "median": 85.02,
+            "range": [
+              75.24,
+              106.38
+            ]
+          },
+          "peakResidentKiB": {
+            "best": 11326016,
+            "median": 11395948,
+            "range": [
+              11326016,
+              11840220
+            ]
+          }
+        },
+        "native": {
+          "wallSeconds": {
+            "best": 9.61,
+            "median": 13.52,
+            "range": [
+              9.61,
+              15.17
+            ]
+          },
+          "cpuSeconds": {
+            "best": 71.42,
+            "median": 102.22,
+            "range": [
+              71.42,
+              111.12
+            ]
+          },
+          "peakResidentKiB": {
+            "best": 15006188,
+            "median": 15010556,
+            "range": [
+              15006188,
+              15015204
+            ]
+          }
+        },
+        "baseline": {
+          "wallSeconds": {
+            "best": 9.68,
+            "median": 12.46,
+            "range": [
+              9.68,
+              13.56
+            ]
+          },
+          "cpuSeconds": {
+            "best": 71.05000000000001,
+            "median": 96.08999999999999,
+            "range": [
+              71.05000000000001,
+              103.56
+            ]
+          },
+          "peakResidentKiB": {
+            "best": 14999416,
+            "median": 15003576,
+            "range": [
+              14999416,
+              15018984
+            ]
+          }
+        }
+      },
+      "samples": [
+        {
+          "runtime": "baseline",
+          "round": 1,
+          "wallSeconds": 12.46,
+          "cpuSeconds": 96.08999999999999,
+          "peakResidentKiB": 15003576,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 1,
+          "wallSeconds": 13.52,
+          "cpuSeconds": 102.22,
+          "peakResidentKiB": 15010556,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 1,
+          "wallSeconds": 11.29,
+          "cpuSeconds": 100.8,
+          "peakResidentKiB": 11347688,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 2,
+          "wallSeconds": 14.76,
+          "cpuSeconds": 109.33,
+          "peakResidentKiB": 15015204,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 2,
+          "wallSeconds": 9.62,
+          "cpuSeconds": 85.02,
+          "peakResidentKiB": 11326016,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "baseline",
+          "round": 2,
+          "wallSeconds": 13.16,
+          "cpuSeconds": 99.01,
+          "peakResidentKiB": 15018984,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 3,
+          "wallSeconds": 11.94,
+          "cpuSeconds": 106.38,
+          "peakResidentKiB": 11717728,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "baseline",
+          "round": 3,
+          "wallSeconds": 13.56,
+          "cpuSeconds": 103.56,
+          "peakResidentKiB": 15008856,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 3,
+          "wallSeconds": 11.25,
+          "cpuSeconds": 87.09,
+          "peakResidentKiB": 15014592,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 4,
+          "wallSeconds": 8.53,
+          "cpuSeconds": 77.86,
+          "peakResidentKiB": 11395948,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 4,
+          "wallSeconds": 15.17,
+          "cpuSeconds": 111.12,
+          "peakResidentKiB": 15008008,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "baseline",
+          "round": 4,
+          "wallSeconds": 10.73,
+          "cpuSeconds": 80.66,
+          "peakResidentKiB": 15000192,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "native",
+          "round": 5,
+          "wallSeconds": 9.61,
+          "cpuSeconds": 71.42,
+          "peakResidentKiB": 15006188,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "baseline",
+          "round": 5,
+          "wallSeconds": 9.68,
+          "cpuSeconds": 71.05000000000001,
+          "peakResidentKiB": 14999416,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 5,
+          "wallSeconds": 8.52,
+          "cpuSeconds": 75.24,
+          "peakResidentKiB": 11840220,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        }
+      ]
+    },
+    "noemit": {
+      "path": "artifacts/vscode-current-performance/baseline-noemit-2/comparison.json",
+      "sha256": "fc9cca503a682b5409ece06f50bd8486d5c2514023cc023e0861ad0e87415bfe",
+      "summary": {
+        "go": {
+          "wallSeconds": {
+            "best": 6.15,
+            "median": 6.83,
+            "range": [
+              6.15,
+              7.59
+            ]
+          },
+          "cpuSeconds": {
+            "best": 52.010000000000005,
+            "median": 58.61,
+            "range": [
+              52.010000000000005,
+              69.69
+            ]
+          },
+          "peakResidentKiB": {
+            "best": 8766436,
+            "median": 8855612,
+            "range": [
+              8766436,
+              9079152
+            ]
+          }
+        },
+        "candidate": {
+          "wallSeconds": {
+            "best": 6.96,
+            "median": 9.49,
+            "range": [
+              6.96,
+              10.26
+            ]
+          },
+          "cpuSeconds": {
+            "best": 43.15,
+            "median": 63.2,
+            "range": [
+              43.15,
+              69.39
+            ]
+          },
+          "peakResidentKiB": {
+            "best": 12046604,
+            "median": 12056628,
+            "range": [
+              12046604,
+              12061760
+            ]
+          }
+        },
+        "baseline": {
+          "wallSeconds": {
+            "best": 8.44,
+            "median": 9.55,
+            "range": [
+              8.44,
+              10.12
+            ]
+          },
+          "cpuSeconds": {
+            "best": 55.97,
+            "median": 64.06,
+            "range": [
+              55.97,
+              70.57
+            ]
+          },
+          "peakResidentKiB": {
+            "best": 12037480,
+            "median": 12051092,
+            "range": [
+              12037480,
+              12054696
+            ]
+          }
+        }
+      },
+      "samples": [
+        {
+          "runtime": "baseline",
+          "round": 1,
+          "wallSeconds": 8.54,
+          "cpuSeconds": 56.65,
+          "peakResidentKiB": 12037480,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "candidate",
+          "round": 1,
+          "wallSeconds": 10.26,
+          "cpuSeconds": 67.91,
+          "peakResidentKiB": 12056628,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 1,
+          "wallSeconds": 7.59,
+          "cpuSeconds": 69.69,
+          "peakResidentKiB": 8854860,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "candidate",
+          "round": 2,
+          "wallSeconds": 9.49,
+          "cpuSeconds": 63.2,
+          "peakResidentKiB": 12056272,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 2,
+          "wallSeconds": 6.75,
+          "cpuSeconds": 57.61,
+          "peakResidentKiB": 8855612,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "baseline",
+          "round": 2,
+          "wallSeconds": 9.55,
+          "cpuSeconds": 64.06,
+          "peakResidentKiB": 12049224,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 3,
+          "wallSeconds": 7.43,
+          "cpuSeconds": 62.19,
+          "peakResidentKiB": 9079152,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "baseline",
+          "round": 3,
+          "wallSeconds": 8.44,
+          "cpuSeconds": 55.97,
+          "peakResidentKiB": 12051092,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "candidate",
+          "round": 3,
+          "wallSeconds": 9.98,
+          "cpuSeconds": 69.39,
+          "peakResidentKiB": 12061760,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 4,
+          "wallSeconds": 6.15,
+          "cpuSeconds": 52.010000000000005,
+          "peakResidentKiB": 8950688,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "candidate",
+          "round": 4,
+          "wallSeconds": 6.96,
+          "cpuSeconds": 43.15,
+          "peakResidentKiB": 12046604,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "baseline",
+          "round": 4,
+          "wallSeconds": 10.12,
+          "cpuSeconds": 70.57,
+          "peakResidentKiB": 12053796,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "candidate",
+          "round": 5,
+          "wallSeconds": 8.72,
+          "cpuSeconds": 57.36,
+          "peakResidentKiB": 12057216,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "baseline",
+          "round": 5,
+          "wallSeconds": 9.83,
+          "cpuSeconds": 68.97,
+          "peakResidentKiB": 12054696,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        },
+        {
+          "runtime": "go",
+          "round": 5,
+          "wallSeconds": 6.83,
+          "cpuSeconds": 58.61,
+          "peakResidentKiB": 8766436,
+          "correctnessPassed": true,
+          "noGcFullRegionQualified": true
+        }
+      ]
+    }
+  },
+  "bindingReferences": [
+    {
+      "path": "artifacts/vscode-current-performance/lsp-era-source-audit.json",
+      "sha256": "b087ff251f1c55303749481f66099e00919065b24324405ba8133b24f1a20554"
+    },
+    {
+      "path": "validation/results/vscode-post-lsp-performance.json",
+      "sha256": "bedea716bcc16bf6fa766738478365ef680e07616705b34552fe610fa66120ea"
+    },
+    {
+      "path": "validation/results/vscode-post-lsp-emit-repeat.json",
+      "sha256": "c4f5d44557b57489298b9723f111b2a6cd49a68cbb4564b120535e66f115952c"
+    },
+    {
+      "path": "artifacts/vscode-current-performance/preparation.json",
+      "sha256": "332ed96445990a95c04d824024aa926fabc5001c01524221706b7166cf05c660"
+    }
+  ],
+  "findings": [
+    "All 30 completed processes preserve required diagnostics/output and Native full-region policy.",
+    "Current emit best 9.61 versus baseline 9.68 seconds; median 13.52 versus 12.46. Current noemit best 6.96 versus baseline 8.44; median 9.49 versus 9.55.",
+    "Current best versus Go is +12.8% emit and +13.2% noemit; both observed best-run targets met. Earlier +42.3%/+34.3% emit cohorts remain distinct.",
+    "Emit allocated totals remain approximately 14.75\u201314.78 GB with comparable RSS. Source audit finds no demonstrated added ordinary emit work; larger Native image is a hypothesis, not attribution.",
+    "Substantial same-binary variability remains unexplained. No stable LSP regression, rollback or source change is justified by these observations. No profiles executed."
+  ],
+  "harnessDisposition": "baseline-noemit-1 stopped on a harness baseline exit-map KeyError after its first correct process; original artifacts preserved and excluded from completed noemit cohort. Corrected map expects exit 2 for all three variants.",
+  "independentResultReview": {
+    "path": "artifacts/vscode-current-performance/lsp-impact-review.json",
+    "sha256": "da87825dd2d28e49345d66fa41ec8c1890c2e7e1f17990515489313bbb60c845",
+    "status": "CLEAR qualified independent evidence review"
+  }
+}
