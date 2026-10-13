@@ -6,6 +6,14 @@ contracts are complete and independently verified under **Linux x64 Native AOT**
 This is a pinned-upstream implementation, not a claim of complete repository,
 all-platform or every historical TypeScript feature parity.
 
+Performance on vscode project:
+
+| Best of five, explicitly tuned Linux x64 | C# Native AOT | Go | Native overhead |
+| --- | ---: | ---: | ---: |
+| Check + emit (same-host investigation) | 9.61 s | 8.52 s | 12.8% — within the 20% target |
+| Check-only (same-host investigation) | 6.96 s | 6.15 s | 13.2% — within the 20% target |
+
+
 The reference is Microsoft TypeScript revision
 [`fed0bf24149fb1ed36039212648bafdafc1ea10e`](https://github.com/microsoft/TypeScript/tree/fed0bf24149fb1ed36039212648bafdafc1ea10e/tsc).
 See the [upstream record](./UPSTREAM.md), [current state](./docs/STATE.md),
