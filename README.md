@@ -12,6 +12,75 @@ See the [upstream record](./UPSTREAM.md), [current state](./docs/STATE.md),
 [compiler assessment](./docs/EMIT-ASSESSMENT.md) and
 [language-services assessment](./docs/LANGUAGE-SERVICES-ASSESSMENT.md).
 
+
+## Humon Scratch
+
+I know, "*another* port 🙄".
+
+But the lazy Rust port from last week struck close to home. I'm a bit of a TypeScript geek and I learned Golang way back during Stripe CTF3; a performance context and even clenching a 4th place in the document indexing round. Which some may remember was scaffolded in Scala.. Well I noped the f out of that and wrote it in Go 😂. And I'm a C# Stan.
+
+So this Rust port claimed to burn up "**400k in ChatGPT!!!**" and Codex couldn't get the job done after months. Opus 5.5 to the rescue in 10 hours and you *could* do it for "**$20k!!**".
+
+Wut?! Hold my 🍺
+
+### Goals
+* Use Codex
+* Port TypeScript from Golang to C#
+* Adhere closely to the Golang source
+* Optimize it to within +20% of Golang projects performance on VSCODE
+* Do it cheap!
+* Learn some shit
+
+Way back it was curious to me the TypeScript team selected Golang instead of C#. IIRC DotNet native AOT was still early days and Golang had more portability.. Also a lot of judgement calls over the suitability and how closely the concepts mapped; all understandable in the era of hand-porting code LOL. But I always wondered how fast a C# implementation *could* be..
+
+That last bit.. I wanted to see if the process could be optimized through early high-level strategy and steering where necessary.
+
+Not to bury the lede => **Cost was ~$75-100 USD**
+
+### Execution as recalled by a humon
+
+The basic setup was an Astra project coordinator delegating coding, research, and review tasks to 6.1 Sol sub agents.
+
+I worked with ChatpGPT(Astra) to produce the prompt provided to the agent. I explained my desire to stick close to the Golang source and to execute the work as efficiently as possible.
+
+The prompt was then provided to Codex.
+
+As it got going I suggested it record a re-entry in case the session was lost or the VM crashed(which it did!). And provided a few more steering ideas as I observed the work. I installed Sqlite for it to use for coordination, but it opted to stick with files throughout TMK.
+
+At this stage it was executing bounded vertical slices because I phrased the project as a "feasibility study". After it finished a campaign(what it started calling sprints?) I would take the summary back to ChatGPT and we'd decide the next chunk of work and a new prompt fed in to continue..
+
+After a few rounds I determined the token burn was low enough to finish the entire port cheaply, and moved to have the entire checker completed. The agent continued to expand the outer implementation boundary one "bounded vertical slice" at a time though.. This proving hugely inefficient as it kept running into hacks and kludges it contructed to make the feature slices "work" without error 🙃
+
+This was leading to tons of "churn" through test/analyze/fix cycles every time a missing bit of functionlity was hit. I directed it to start completing entire subsystem dependencies comprehensively and this made a big improvement.
+
+At this point I also noticed the agent had created tons of internal state partiy tests. It put code into the Golang project to record states of caches and etc and.. It became fixated on differences that seemed like they would have no externally observable impact, or that the upstream test suite should catch eventually anyway..
+
+So I directed it away from doing that which seemed to really accelerate work.
+
+At this point it was give the "epic" of completing checker parity. A new efficiency issue popped up where after subagents checked in fixes for tests it would run the **entire** fracking regression suite it built. I steered it towards targetted testing and deferring full regression for end of epic and this proved super helpful.
+
+From here on much less steering occured. Checker was finished and validated against the VSCODE project. And then we started the major performance push. Golang was allocating ~5.1G during the vscode project type check and we were doing like ~56G!!! Wall time was 6x+ 😭
+
+Here is the summary of the work that got us within +20% Golang: [PERF EPIC SUMMARY](./docs/PERFORMANCE-EPIC-SUMMARY.md)
+
+After checker the Emit and LSP epics were fed in and *laregely* required no stearing. The recorded perf epic lessons were used to get vscode complilation with emit to within +8.5% golang with no extre input from me..
+
+The LSP epic took about 12 hours, completely unattended.
+
+### Lessons Learned
+
+### Approach saves $$$$
+How work is carried out plays a huge role in the outcome; both the quality of results and how much token spend it took to get there. Some high-level strategy and a few process stearing can go a long way.
+
+### Golang source is optimized
+Hats off to the TypeScript team.. A lot has to do with idiomatic Golang being quite efficient in memory allocation and sharing compared to idtiomatic C#. But it's quite thoroughly adhered to and absolutely mopped the floor with the LLMs first checker parity build.
+
+### Agent fixation is real
+Agents can get fixated on a few tasks and start ignoring other responsibilities. The coordinator agent had a lot on its plate including being responsible for **efficient** execution of the project. However it was sometimes blind to obvious(to me) inefficiencies in the process that crept in.
+
+I believe a layer above the coordinator focused on analyzing and steering the coordinator on process efficiency could have potentially replaced me taking that role.
+
+
 ## What it does
 
 - Checks configured, multi-file projects using genuine compiler options, module
