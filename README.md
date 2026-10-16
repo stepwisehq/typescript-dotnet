@@ -29,7 +29,7 @@ See the [upstream record](./UPSTREAM.md), [current state](./docs/STATE.md),
 
 I know, "*another* port 🙄".
 
-But the lazy Rust port from last week struck close to home. I'm a bit of a TypeScript geek and I learned Golang way back during Stripe CTF3; a performance context and even clenching a 4th place in the document indexing round. Which some may remember was scaffolded in Scala.. Well I noped the f out of that and wrote it in Go 😂. And I'm a C# Stan.
+But the lazy Rust port from last week struck close to home. I'm a bit of a TypeScript geek and I learned Golang way back during Stripe CTF3; a performance context and even clenching a 4th place in the document indexing round. Which some may remember was scaffolded in Scala.. Well I noped out of that and wrote it in Go 😂. And I'm a C# Stan.
 
 So this Rust port claimed to burn up "**400k in ChatGPT!!!**" and Codex couldn't get the job done after months. Opus 5.5 to the rescue in 10 hours and you *could* do it for "**$20k!!**".
 
@@ -40,14 +40,52 @@ Wut?! Hold my 🍺
 * Port TypeScript from Golang to C#
 * Adhere closely to the Golang source
 * Optimize it to within +20% of Golang projects performance on VSCODE
+* Learn some stuff
 * Do it cheap!
-* Learn some shit
 
 Way back it was curious to me the TypeScript team selected Golang instead of C#. IIRC DotNet native AOT was still early days and Golang had more portability.. Also a lot of judgement calls over the suitability and how closely the concepts mapped; all understandable in the era of hand-porting code LOL. But I always wondered how fast a C# implementation *could* be..
 
-That last bit.. I wanted to see if the process could be optimized through early high-level strategy and steering where necessary.
+That last bit about doing it cheap.. I wanted to see if the process could be optimized through early high-level strategy and steering where necessary.
 
 Not to bury the lede => **Cost was ~$75-100 USD**
+
+### Overall Strategy
+
+High-level port direction and agent instruction was formed with ChatGPT *outside* Codex. A few explicit goals were articulated and used to form the initial agent prompt:
+
+* Astra 6 coordinating agent delegating research, implementation, and review to 6.1 Sol subagents
+* Keep port as close to the Golang source as possible; maintain function bounderias, class names, file names, structure, etc
+* Deviate where necessary for C# conventions
+* Write readable and maintainable code; assume humans will be reviewing
+* Implement the project as efficiently as possible; minimize rework, plan and task for work efficiency
+
+At a high-level, the strategy is for Codex to approach this like I would. Initially a straight port maintaining as much syntax and architecture as possible. This loweres the cognitive load(context) when referencing the source duruing implementation and debugging.
+
+ChatGPT synthesized this into the initial prompt which was fed into Codex. I would continue to consult with ChatGPT to generate steering prompts for Codex as the port progressed.
+
+### Key Performance Decisions
+
+After the checker was complete, and before Emit and LSP was implemented, I kicked off a performance epic with a target of +20% wall time over the Golang project when compiling VSCode.
+
+Initially, and before the target was set, Codex became fixated on making and testing local improvements. This was creating a ton of churn; very inefficient. Eventually it may have decided to go bigger, but I steered it towards more holistic and comprehensive work being necessary to come close to the highly optimized Golang source.
+
+Memory allocation was, predicably, the biggest performance issue with the C# code. Here are two changes that made the biggest gap reduction:
+
+**Slice\<T\>**
+
+During the first performance epic I pushed Codex towards introducing `Slice<T>`. It provided the storage/allocation/ownership semantics and syntax of Golang slice. This kept the C# code looking very syntatically similar to the Golang port, while provide very similar performance characteristics.
+
+**SharedMemoryView**
+
+The initial implementation used C# strings and substrings throughout. These create a ton of GC pressure as strings and substrings allocate on the heap, and they also create a lot of text encoding/decoding work for the CPU.
+
+Typical performant Golang code involving UTF-8 uses byte buffers and byte comparisons throughout, as well as using slice to avoid unecessary copying.
+
+System.Text.Json uses very similar techniques and as a good reference.
+
+I pushed Codex to utilize these techniques comprehensively, and it created `SharedMemoryView` for this purpose.
+
+
 
 ### Execution as recalled by a humon
 
