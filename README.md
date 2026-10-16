@@ -73,7 +73,7 @@ Memory allocation was, predicably, the biggest performance issue with the C# cod
 
 **Slice\<T\>**
 
-During the first performance epic I pushed Codex towards introducing `Slice<T>`. It provided the storage/allocation/ownership semantics and syntax of Golang slice. This kept the C# code looking very syntatically similar to the Golang port, while provide very similar performance characteristics.
+During the first performance epic I pushed Codex towards introducing `Slice<T>`. It provided the storage/allocation/ownership semantics and syntax of Golang slice. This kept the C# code looking very syntatically similar to the Golang port, while providing very similar performance characteristics.
 
 **SharedMemoryView**
 
@@ -84,8 +84,6 @@ Typical performant Golang code involving UTF-8 uses byte buffers and byte compar
 System.Text.Json uses very similar techniques and as a good reference.
 
 I pushed Codex to utilize these techniques comprehensively, and it created `SharedMemoryView` for this purpose.
-
-
 
 ### Execution as recalled by a humon
 
