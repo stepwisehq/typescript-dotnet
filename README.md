@@ -69,13 +69,15 @@ After the checker was complete, and before Emit and LSP was implemented, I kicke
 
 Initially, and before the target was set, Codex became fixated on making and testing local improvements. This was creating a ton of churn; very inefficient. Eventually it may have decided to go bigger, but I steered it towards more holistic and comprehensive work being necessary to come close to the highly optimized Golang source.
 
+You can find Codex's summary of the main performance work [here](docs/PERFORMANCE-EPIC-SUMMARY.md).
+
 Memory allocation was, predicably, the biggest performance issue with the C# code. Here are two changes that made the biggest gap reduction:
 
-**Slice\<T\>**
+**[Slice\<T\>](src/TypeScript.Scanner/Runtime/Slice.cs)**
 
 During the first performance epic I pushed Codex towards introducing `Slice<T>`. It provided the storage/allocation/ownership semantics and syntax of Golang slice. This kept the C# code looking very syntatically similar to the Golang port, while providing very similar performance characteristics.
 
-**SharedMemoryView**
+**[ByteStringView](src/TypeScript.Scanner/Runtime/ByteStringView.cs)**
 
 The initial implementation used C# strings and substrings throughout. These create a ton of GC pressure as strings and substrings allocate on the heap, and they also create a lot of text encoding/decoding work for the CPU.
 
@@ -83,7 +85,7 @@ Typical performant Golang code involving UTF-8 uses byte buffers and byte compar
 
 System.Text.Json uses very similar techniques and as a good reference.
 
-I pushed Codex to utilize these techniques comprehensively, and it created `SharedMemoryView` for this purpose.
+I pushed Codex to utilize these techniques comprehensively, and it created `ByteStringView` for this purpose.
 
 ### Execution as recalled by a humon
 
