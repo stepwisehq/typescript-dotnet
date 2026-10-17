@@ -54,12 +54,12 @@ Not to bury the lede => **Cost was ~$75-100 USD**
 High-level port direction and agent instruction was formed with ChatGPT *outside* Codex. A few explicit goals were articulated and used to form the initial agent prompt:
 
 * Astra 6 coordinating agent delegating research, implementation, and review to 6.1 Sol subagents
-* Keep port as close to the Golang source as possible; maintain function bounderias, class names, file names, structure, etc
+* Keep port as close to the Golang source as possible; maintain function boundaries, class names, file names, structure, etc
 * Deviate where necessary for C# conventions
 * Write readable and maintainable code; assume humans will be reviewing
 * Implement the project as efficiently as possible; minimize rework, plan and task for work efficiency
 
-At a high-level, the strategy is for Codex to approach this like I would. Initially a straight port maintaining as much syntax and architecture as possible. This loweres the cognitive load(context) when referencing the source duruing implementation and debugging.
+At a high-level, the strategy is for Codex to approach this like I would. Initially a straight port maintaining as much syntax and architecture as possible. This lowers the cognitive load(context) when referencing the source during implementation and debugging.
 
 ChatGPT synthesized this into the initial prompt which was fed into Codex. I would continue to consult with ChatGPT to generate steering prompts for Codex as the port progressed.
 
@@ -75,13 +75,13 @@ Memory allocation was, predicably, the biggest performance issue with the C# cod
 
 **[Slice\<T\>](src/TypeScript.Scanner/Runtime/Slice.cs)**
 
-During the first performance epic I pushed Codex towards introducing `Slice<T>`. It provided the storage/allocation/ownership semantics and syntax of Golang slice. This kept the C# code looking very syntatically similar to the Golang port, while providing very similar performance characteristics.
+During the first performance epic I pushed Codex towards introducing `Slice<T>`. It provided the storage/allocation/ownership semantics and syntax of Golang slice. This kept the C# code looking very syntactically similar to the Golang port, while providing very similar performance characteristics.
 
 **[ByteStringView](src/TypeScript.Scanner/Runtime/ByteStringView.cs)**
 
 The initial implementation used C# strings and substrings throughout. These create a ton of GC pressure as strings and substrings allocate on the heap, and they also create a lot of text encoding/decoding work for the CPU.
 
-Typical performant Golang code involving UTF-8 uses byte buffers and byte comparisons throughout, as well as using slice to avoid unecessary copying.
+Typical performant Golang code involving UTF-8 uses byte buffers and byte comparisons throughout, as well as using slice to avoid unnecessary copying.
 
 System.Text.Json uses very similar techniques and as a good reference.
 
@@ -91,7 +91,7 @@ I pushed Codex to utilize these techniques comprehensively, and it created `Byte
 
 The basic setup was an Astra project coordinator delegating coding, research, and review tasks to 6.1 Sol sub agents.
 
-I worked with ChatpGPT(Astra) to produce the prompt provided to the agent. I explained my desire to stick close to the Golang source and to execute the work as efficiently as possible.
+I worked with ChatGPT(Astra) to produce the prompt provided to the agent. I explained my desire to stick close to the Golang source and to execute the work as efficiently as possible.
 
 The prompt was then provided to Codex.
 
@@ -99,31 +99,31 @@ As it got going I suggested it record a re-entry in case the session was lost or
 
 At this stage it was executing bounded vertical slices because I phrased the project as a "feasibility study". After it finished a campaign(what it started calling sprints?) I would take the summary back to ChatGPT and we'd decide the next chunk of work and a new prompt fed in to continue..
 
-After a few rounds I determined the token burn was low enough to finish the entire port cheaply, and moved to have the entire checker completed. The agent continued to expand the outer implementation boundary one "bounded vertical slice" at a time though.. This proving hugely inefficient as it kept running into hacks and kludges it contructed to make the feature slices "work" without error 🙃
+After a few rounds I determined the token burn was low enough to finish the entire port cheaply, and moved to have the entire checker completed. The agent continued to expand the outer implementation boundary one "bounded vertical slice" at a time though.. This proving hugely inefficient as it kept running into hacks and kludges it constructed to make the feature slices "work" without error 🙃
 
-This was leading to tons of "churn" through test/analyze/fix cycles every time a missing bit of functionlity was hit. I directed it to start completing entire subsystem dependencies comprehensively and this made a big improvement.
+This was leading to tons of "churn" through test/analyze/fix cycles every time a missing bit of functionality was hit. I directed it to start completing entire subsystem dependencies comprehensively and this made a big improvement.
 
-At this point I also noticed the agent had created tons of internal state partiy tests. It put code into the Golang project to record states of caches and etc and.. It became fixated on differences that seemed like they would have no externally observable impact, or that the upstream test suite should catch eventually anyway..
+At this point I also noticed the agent had created tons of internal state parity tests. It put code into the Golang project to record states of caches and etc and.. It became fixated on differences that seemed like they would have no externally observable impact, or that the upstream test suite should catch eventually anyway..
 
 So I directed it away from doing that which seemed to really accelerate work.
 
-At this point it was give the "epic" of completing checker parity. A new efficiency issue popped up where after subagents checked in fixes for tests it would run the **entire** fracking regression suite it built. I steered it towards targetted testing and deferring full regression for end of epic and this proved super helpful.
+At this point it was give the "epic" of completing checker parity. A new efficiency issue popped up where after subagents checked in fixes for tests it would run the **entire** fracking regression suite it built. I steered it towards targeted testing and deferring full regression for end of epic and this proved super helpful.
 
-From here on much less steering occured. Checker was finished and validated against the VSCODE project. And then we started the major performance push. Golang was allocating ~5.1G during the vscode project type check and we were doing like ~56G!!! Wall time was 6x+ 😭
+From here on much less steering occurred. Checker was finished and validated against the VSCODE project. And then we started the major performance push. Golang was allocating ~5.1G during the vscode project type check and we were doing like ~56G!!! Wall time was 6x+ 😭
 
 Here is the summary of the work that got us within +20% Golang: [PERF EPIC SUMMARY](./docs/PERFORMANCE-EPIC-SUMMARY.md)
 
-After checker the Emit and LSP epics were fed in and *laregely* required no stearing. The recorded perf epic lessons were used to get vscode complilation with emit to within +8.5% golang with no extre input from me..
+After checker the Emit and LSP epics were fed in and *largely* required no searing. The recorded perf epic lessons were used to get vscode compilation with emit to within +8.5% golang with no extra input from me..
 
 The LSP epic took about 12 hours, completely unattended.
 
 ### Lessons Learned
 
 ### Approach saves $$$$
-How work is carried out plays a huge role in the outcome; both the quality of results and how much token spend it took to get there. Some high-level strategy and a few process stearing can go a long way.
+How work is carried out plays a huge role in the outcome; both the quality of results and how much token spend it took to get there. Some high-level strategy and a few process steering can go a long way.
 
 ### Golang source is optimized
-Hats off to the TypeScript team.. A lot has to do with idiomatic Golang being quite efficient in memory allocation and sharing compared to idtiomatic C#. But it's quite thoroughly adhered to and absolutely mopped the floor with the LLMs first checker parity build.
+Hats off to the TypeScript team.. A lot has to do with idiomatic Golang being quite efficient in memory allocation and sharing compared to idiomatic C#. But it's quite thoroughly adhered to and absolutely mopped the floor with the LLMs first checker parity build.
 
 ### Agent fixation is real
 Agents can get fixated on a few tasks and start ignoring other responsibilities. The coordinator agent had a lot on its plate including being responsible for **efficient** execution of the project. However it was sometimes blind to obvious(to me) inefficiencies in the process that crept in.
